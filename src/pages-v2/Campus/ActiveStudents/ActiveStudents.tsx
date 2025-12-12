@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { SearchInput } from "../../../components-v2";
@@ -8,12 +8,14 @@ import { StudentTable, StudentData } from "../components/StudentTable";
 import { Pagination } from "../components/Pagination";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
+import { formatMemberSince } from "../../../lib/utils/dateUtils";
 import "./ActiveStudents.css";
 
 export const ActiveStudents: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
+  const exportRef = useRef<HTMLElement | null>(null);
   const entriesPerPage = 10;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
@@ -41,7 +43,7 @@ export const ActiveStudents: React.FC = () => {
     interests: student.interests || [],
     avatar: student.avatar,
     status: student.status,
-    memberSince: student.memberSince,
+    memberSince: formatMemberSince(student.memberSince),
     onlineLast: student.onlineLast,
     isFlagged: student.isFlagged,
   }));
@@ -50,10 +52,6 @@ export const ActiveStudents: React.FC = () => {
     (studentsData?.data.total || 0) / entriesPerPage
   );
   const paginatedStudents = students; // API already returns paginated data
-
-  const handleExport = () => {
-    console.log("Export clicked");
-  };
 
   const handleStudentClick = (student: StudentData) => {
     console.log("Student clicked:", student);
@@ -64,7 +62,7 @@ export const ActiveStudents: React.FC = () => {
   };
 
   return (
-    <main className="active-students-page">
+    <main className="active-students-page" ref={exportRef}>
       <div className="active-students-stats">
         <StatsCard
           title="Total students"
@@ -110,7 +108,7 @@ export const ActiveStudents: React.FC = () => {
               variant="primary"
             />
           </div>
-          <ExportButton onClick={handleExport} />
+          <ExportButton captureRef={exportRef} filename="active_students" />
         </div>
 
         {isLoading ? (

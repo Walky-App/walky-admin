@@ -26,8 +26,8 @@
 /* Close Icon */
 .deactivate-modal-close-icon {
   position: absolute;
-  top: var(--v2-spacing-24);
-  right: var(--v2-spacing-24);
+  top: 4px;
+  right: 8px;
   background: none;
   border: none;
   cursor: pointer;
@@ -47,14 +47,17 @@
 .deactivate-modal-content {
   display: flex;
   flex-direction: column;
-  gap: 46px;
-  width: 457px;
+  gap: 40px;
+  width: 100%;
+  max-width: 457px;
+  margin: 0 auto;
 }
 
 /* Embedded mode - adjust width */
 .deactivate-user-modal-body.embedded .deactivate-modal-content {
   width: 100%;
-  gap: 46px;
+  gap: 40px;
+  margin: 0;
 }
 
 /* Content Inner */

@@ -164,6 +164,37 @@
   margin: 0;
 }
 
+.user-email-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 260px;
+}
+
+.user-email {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #5b6168;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email-copy-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.user-email-copy-btn:disabled {
+  cursor: not-allowed;
+}
+
 .user-id-container {
   display: flex;
   gap: 4px;

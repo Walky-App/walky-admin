@@ -1,13 +1,9 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { DashboardSkeleton } from "../components";
 import { apiClient } from "../../../API";
 import API from "../../../API";
-import {
-  AssetIcon,
-  FilterBar,
-  LastUpdated,
-} from "../../../components-v2";
+import { AssetIcon, FilterBar, LastUpdated } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
 import { CRow, CCol } from "@coreui/react";
 import "./StudentBehavior.css";
@@ -41,39 +37,29 @@ const StudentBehavior: React.FC = () => {
   const { selectedCampus } = useCampus();
   const { timePeriod, setTimePeriod } = useDashboard();
   const [hoveredTooltip, setHoveredTooltip] = useState<number | null>(null);
+  const exportRef = useRef<HTMLElement | null>(null);
+  void API; // keep API import referenced
+
+  const comparisonCopy: Record<string, string> = {
+    week: "from last week",
+    month: "from last month",
+    "all-time": "quarter over quarter",
+  };
 
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ['studentBehavior', timePeriod, selectedSchool?._id, selectedCampus?._id],
-    queryFn: () => apiClient.api.adminV2DashboardStudentBehaviorList({
-      period: timePeriod,
-      schoolId: selectedSchool?._id,
-      campusId: selectedCampus?._id
-    }),
+    queryKey: [
+      "studentBehavior",
+      timePeriod,
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2DashboardStudentBehaviorList({
+        period: timePeriod,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
   });
-
-  const handleExport = async () => {
-    try {
-      const response = await API.get('/admin/v2/dashboard/student-behavior', {
-        params: {
-          period: timePeriod,
-          export: 'true',
-          schoolId: selectedSchool?._id,
-          campusId: selectedCampus?._id
-        },
-        responseType: 'blob',
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `student_behavior_stats_${timePeriod}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Export failed:", error);
-    }
-  };
 
   const data = (apiData?.data || {}) as any;
   const metricCards: MetricCard[] = data.metricCards || [];
@@ -87,13 +73,15 @@ const StudentBehavior: React.FC = () => {
     <main
       className="student-behavior-page"
       aria-label="Student Behavior Dashboard"
+      ref={exportRef}
     >
       {/* Filter Bar */}
       <FilterBar
         timePeriod={timePeriod}
         onTimePeriodChange={setTimePeriod}
         dateRange="October 1 – October 31"
-        onExport={handleExport}
+        exportTargetRef={exportRef}
+        exportFileName={`student_behavior_${timePeriod}`}
       />
 
       {/* Header Section */}
@@ -117,27 +105,44 @@ const StudentBehavior: React.FC = () => {
                 <span className="metric-card-unit">{card.unit}</span>
               </div>
               <div className="metric-card-change">
-                <AssetIcon
-                  name={
-                    card.changeDirection === "up"
-                      ? "trend-up-icon"
-                      : "trend-down-icon"
-                  }
-                  color={
-                    card.changeDirection === "up"
-                      ? theme.colors.trendUpGreen
-                      : theme.colors.trendDownRed
-                  }
-                  size={16}
-                />
+                {card.change.toLowerCase() === "no change" ||
+                card.changePercentage === "0%" ? (
+                  <span className="metric-card-change-dash" aria-hidden="true">
+                    —
+                  </span>
+                ) : (
+                  <AssetIcon
+                    name={
+                      card.changeDirection === "up"
+                        ? "trend-up-icon"
+                        : "trend-down-icon"
+                    }
+                    color={
+                      card.changeDirection === "up"
+                        ? theme.colors.trendUpGreen
+                        : theme.colors.trendDownRed
+                    }
+                    size={16}
+                  />
+                )}
                 <p className="metric-card-change-text">
                   <span
                     className="change-percentage"
-                    data-trend={card.changeDirection}
+                    data-trend={
+                      card.change.toLowerCase() === "no change" ||
+                      card.changePercentage === "0%"
+                        ? "neutral"
+                        : card.changeDirection
+                    }
                   >
                     {card.changePercentage}
                   </span>{" "}
-                  <span className="change-text">{card.change}</span>
+                  <span className="change-text">
+                    {card.change}
+                    {comparisonCopy[timePeriod]
+                      ? ` ${comparisonCopy[timePeriod]}`
+                      : ""}
+                  </span>
                 </p>
               </div>
               {card.hasTooltip && (
@@ -185,8 +190,9 @@ const StudentBehavior: React.FC = () => {
                 key={index}
                 xs={12}
                 md={3}
-                className={`completion-metric-col ${index === 4 ? "single-metric" : ""
-                  }`}
+                className={`completion-metric-col ${
+                  index === 4 ? "single-metric" : ""
+                }`}
               >
                 <div className="completion-metric">
                   <div className="completion-metric-header">

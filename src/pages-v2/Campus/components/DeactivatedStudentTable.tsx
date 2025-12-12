@@ -195,7 +195,7 @@ export const DeactivatedStudentTable: React.FC<
     },
     email: {
       label: "Email address",
-      sortable: true,
+      sortable: false,
       render: (student) => <span>{student.email}</span>,
     },
     interests: {
@@ -216,7 +216,7 @@ export const DeactivatedStudentTable: React.FC<
     },
     status: {
       label: "Status",
-      sortable: true,
+      sortable: false,
       render: (student) => <StatusBadge status={student.status} />,
     },
     memberSince: {

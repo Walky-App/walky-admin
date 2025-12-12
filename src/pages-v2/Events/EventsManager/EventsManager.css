@@ -83,6 +83,15 @@
   padding: 32px 24px !important;
 }
 
+.manager-table-empty {
+  margin: 16px 0 0;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #5b6168;
+}
+
 .events-list-title-1 {
   font-family: "Lato", sans-serif !important;
   font-size: 24px !important;

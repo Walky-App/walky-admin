@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./IdeasInsights.css";
 import { AssetIcon, ExportButton, LastUpdated } from "../../../components-v2";
 import { NoIdeasFound } from "../components/NoIdeasFound/NoIdeasFound";
@@ -20,6 +20,7 @@ export const IdeasInsights: React.FC = () => {
   );
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
+  const exportRef = useRef<HTMLElement | null>(null);
 
   const [stats, setStats] = useState({
     totalIdeas: 0,
@@ -123,10 +124,10 @@ export const IdeasInsights: React.FC = () => {
   }, [timePeriod]);
 
   return (
-    <main className="ideas-insights-page">
+    <main className="ideas-insights-page" ref={exportRef}>
       {/* Header with Export Button */}
       <div className="insights-header">
-        <ExportButton />
+        <ExportButton captureRef={exportRef} filename="ideas_insights" />
       </div>
 
       {/* Top 3 Stats Cards */}

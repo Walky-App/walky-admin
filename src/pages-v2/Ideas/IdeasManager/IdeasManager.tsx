@@ -4,8 +4,7 @@ import { apiClient } from "../../../API";
 import "./IdeasManager.css";
 import { IdeasTable } from "../components/IdeasTable/IdeasTable";
 import { IdeasTableSkeleton } from "../components/IdeasTableSkeleton/IdeasTableSkeleton";
-import { NoIdeasFound } from "../components/NoIdeasFound/NoIdeasFound";
-import { SearchInput, Pagination } from "../../../components-v2";
+import { SearchInput, Pagination, NoData } from "../../../components-v2";
 
 export const IdeasManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -62,6 +61,7 @@ export const IdeasManager: React.FC = () => {
 
   const totalPages = Math.ceil((ideasData?.data.total || 0) / 10);
   const totalEntries = ideasData?.data.total || 0;
+  const isEmpty = !isLoading && filteredIdeas.length === 0;
 
   return (
     <main className="ideas-manager-container">
@@ -94,10 +94,20 @@ export const IdeasManager: React.FC = () => {
           <div className="ideas-manager-table-container">
             {isLoading ? (
               <IdeasTableSkeleton />
-            ) : filteredIdeas.length === 0 ? (
-              <NoIdeasFound message="No ideas found" />
             ) : (
-              <IdeasTable ideas={filteredIdeas} />
+              <>
+                <div style={{ opacity: isEmpty ? 0.4 : 1 }}>
+                  <IdeasTable ideas={filteredIdeas} />
+                </div>
+                {isEmpty && (
+                  <NoData
+                    iconName="ideia-icon"
+                    iconColor="#526AC9"
+                    iconSize={40}
+                    message="No ideas found"
+                  />
+                )}
+              </>
             )}
           </div>
 

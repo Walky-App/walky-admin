@@ -2,7 +2,8 @@
   background-color: #ffffff;
   border: none;
   border-radius: 0;
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: visible;
   padding: 0 12px 8px;
 }
 

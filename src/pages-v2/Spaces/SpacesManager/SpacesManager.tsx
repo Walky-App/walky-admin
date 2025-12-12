@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { AssetIcon, SearchInput, Pagination } from "../../../components-v2";
+import {
+  AssetIcon,
+  SearchInput,
+  Pagination,
+  NoData,
+} from "../../../components-v2";
 import { SpaceTable } from "../components/SpaceTable/SpaceTable";
 import { SpaceTableSkeleton } from "../components/SpaceTableSkeleton/SpaceTableSkeleton";
-import { NoSpacesFound } from "../components/NoSpacesFound/NoSpacesFound";
 import "./SpacesManager.css";
 
 export const SpacesManager: React.FC = () => {
@@ -84,6 +88,7 @@ export const SpacesManager: React.FC = () => {
 
   const totalPages = Math.ceil((spacesData?.data.total || 0) / 10);
   const totalEntries = spacesData?.data.total || 0;
+  const isEmpty = !isLoading && filteredSpaces.length === 0;
 
   return (
     <main className="spaces-manager-container">
@@ -249,10 +254,20 @@ export const SpacesManager: React.FC = () => {
 
         {isLoading ? (
           <SpaceTableSkeleton />
-        ) : filteredSpaces.length === 0 ? (
-          <NoSpacesFound message="No spaces found" />
         ) : (
-          <SpaceTable spaces={filteredSpaces} />
+          <>
+            <div style={{ opacity: isEmpty ? 0.4 : 1 }}>
+              <SpaceTable spaces={filteredSpaces} />
+            </div>
+            {isEmpty && (
+              <NoData
+                iconName="space-icon"
+                iconColor="#526AC9"
+                iconSize={40}
+                message="No spaces found"
+              />
+            )}
+          </>
         )}
 
         {!isLoading && filteredSpaces.length > 0 && (

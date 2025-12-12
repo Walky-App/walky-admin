@@ -32,6 +32,7 @@ import modTableSearchIcon from '../../assets-v2/svg/mod-table-search-icon.svg?re
 import ndBarChart from '../../assets-v2/svg/nd-bar-chart.svg?react';
 import ndDonutChart from '../../assets-v2/svg/nd-donut-chart.svg?react';
 import ndGrafsEmpty from '../../assets-v2/svg/nd-grafs-empty.svg?react';
+import ndReportIcon from '../../assets-v2/svg/nd-report-icon.svg?react';
 import ndStackedBar from '../../assets-v2/svg/nd-stacked-bar.svg?react';
 import plusIcon from '../../assets-v2/svg/plus-icon.svg?react';
 import popularEmojiIcon from '../../assets-v2/svg/popular-emoji-icon.svg?react';
@@ -91,6 +92,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'nd-bar-chart': ndBarChart,
   'nd-donut-chart': ndDonutChart,
   'nd-grafs-empty': ndGrafsEmpty,
+  'nd-report-icon': ndReportIcon,
   'nd-stacked-bar': ndStackedBar,
   'plus-icon': plusIcon,
   'popular-emoji-icon': popularEmojiIcon,

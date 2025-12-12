@@ -1,7 +1,8 @@
 .space-table-wrapper {
   background-color: #ffffff;
   border-radius: 0;
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: visible;
   margin-top: 18px;
 }
 

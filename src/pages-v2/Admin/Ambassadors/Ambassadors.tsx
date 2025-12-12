@@ -11,6 +11,7 @@ import { CopyableId } from "../../../components-v2/CopyableId";
 import "./Ambassadors.css";
 import { useTheme } from "../../../hooks/useTheme";
 import { apiClient } from "../../../API";
+import { formatMemberSince } from "../../../lib/utils/dateUtils";
 
 interface AmbassadorData {
   id: string;
@@ -56,28 +57,25 @@ export const Ambassadors: React.FC = () => {
 
       const data = res.data.data || [];
 
-      const transformedAmbassadors = data.map((a: any) => ({
-        id: a._id,
-        studentId: a._id || "Unknown",
-        name: a.name || "Unknown",
-        avatar: a.avatar_url || "",
-        major: a.major || "Unknown",
-        ambassadorSince: a.createdAt
-          ? new Date(a.createdAt).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })
-          : "Unknown",
-        memberSince: a.createdAt
-          ? new Date(a.createdAt).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })
-          : "Unknown",
-        status: a.is_active ? "Active" : "Inactive",
-      }));
+      const transformedAmbassadors = data.map((a: any) => {
+        const formattedAmbassadorSince = formatMemberSince(a.createdAt);
+        const formattedMemberSince = formatMemberSince(a.createdAt);
+
+        return {
+          id: a._id,
+          studentId: a._id || "Unknown",
+          name: a.name || "Unknown",
+          avatar: a.avatar_url || "",
+          major: a.major || "Unknown",
+          ambassadorSince:
+            formattedAmbassadorSince === "N/A"
+              ? "Unknown"
+              : formattedAmbassadorSince,
+          memberSince:
+            formattedMemberSince === "N/A" ? "Unknown" : formattedMemberSince,
+          status: a.is_active ? "Active" : "Inactive",
+        };
+      });
 
       setAmbassadors(transformedAmbassadors);
     } catch (error) {

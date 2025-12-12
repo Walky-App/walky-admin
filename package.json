@@ -43,6 +43,8 @@
     "axios": "^1.10.0",
     "bootstrap": "^5.3.7",
     "date-fns": "^4.1.0",
+    "html2canvas": "^1.4.1",
+    "html2pdf.js": "^0.12.1",
     "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",

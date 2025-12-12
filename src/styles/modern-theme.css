@@ -5,83 +5,89 @@
    ============================================ */
 :root {
   /* Primary Colors - Modern Purple/Blue Gradient */
-  --modern-primary: #5E5CE6;        /* iOS Purple */
-  --modern-primary-hover: #4B4ACF;
-  --modern-primary-light: #7C7CFF;
-  --modern-primary-dark: #3634A3;
-  
+  --modern-primary: #5e5ce6; /* iOS Purple */
+  --modern-primary-hover: #4b4acf;
+  --modern-primary-light: #7c7cff;
+  --modern-primary-dark: #3634a3;
+
   /* Accent Colors */
-  --modern-accent-blue: #007AFF;    /* iOS Blue */
-  --modern-accent-green: #34C759;   /* Success Green */
-  --modern-accent-orange: #FF9500;  /* Warning Orange */
-  --modern-accent-red: #FF3B30;     /* Danger Red */
-  --modern-accent-teal: #5AC8FA;    /* Info Teal */
-  --modern-accent-pink: #FF2D55;    /* Alert Pink */
-  
+  --modern-accent-blue: #007aff; /* iOS Blue */
+  --modern-accent-green: #34c759; /* Success Green */
+  --modern-accent-orange: #ff9500; /* Warning Orange */
+  --modern-accent-red: #ff3b30; /* Danger Red */
+  --modern-accent-teal: #5ac8fa; /* Info Teal */
+  --modern-accent-pink: #ff2d55; /* Alert Pink */
+
   /* Light Mode Colors */
-  --modern-bg-primary: #FFFFFF;
-  --modern-bg-secondary: #F7F8FA;
-  --modern-bg-tertiary: #F0F2F5;
-  --modern-bg-elevated: #FFFFFF;
-  
+  --modern-bg-primary: #ffffff;
+  --modern-bg-secondary: #f7f8fa;
+  --modern-bg-tertiary: #f0f2f5;
+  --modern-bg-elevated: #ffffff;
+
   /* Text Colors Light Mode */
-  --modern-text-primary: #0A0D14;
-  --modern-text-secondary: #4B5563;
-  --modern-text-tertiary: #6B7280;
-  --modern-text-muted: #9CA3AF;
-  
+  --modern-text-primary: #0a0d14;
+  --modern-text-secondary: #4b5563;
+  --modern-text-tertiary: #6b7280;
+  --modern-text-muted: #9ca3af;
+
   /* Border Colors Light Mode */
-  --modern-border-primary: #E5E7EB;
-  --modern-border-secondary: #F3F4F6;
+  --modern-border-primary: #e5e7eb;
+  --modern-border-secondary: #f3f4f6;
   --modern-border-active: var(--modern-primary);
-  
+
   /* Card & Surface Colors Light Mode */
-  --modern-card-bg: #FFFFFF;
-  --modern-card-hover: #F9FAFB;
-  --modern-surface: #FAFBFC;
-  
+  --modern-card-bg: #ffffff;
+  --modern-card-hover: #f9fafb;
+  --modern-surface: #fafbfc;
+
   /* Shadows Light Mode */
   --modern-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --modern-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --modern-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --modern-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --modern-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --modern-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --modern-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 /* Dark Mode Colors */
 :root[data-coreui-theme="dark"] {
   /* Background Colors Dark Mode */
-  --modern-bg-primary: #0A0A0B;
+  --modern-bg-primary: #0a0a0b;
   --modern-bg-secondary: #111113;
-  --modern-bg-tertiary: #1A1A1D;
-  --modern-bg-elevated: #1F1F23;
-  
+  --modern-bg-tertiary: #1a1a1d;
+  --modern-bg-elevated: #1f1f23;
+
   /* Text Colors Dark Mode */
-  --modern-text-primary: #FAFAFA;
-  --modern-text-secondary: #A1A1AA;
-  --modern-text-tertiary: #71717A;
-  --modern-text-muted: #52525B;
-  
+  --modern-text-primary: #fafafa;
+  --modern-text-secondary: #a1a1aa;
+  --modern-text-tertiary: #71717a;
+  --modern-text-muted: #52525b;
+
   /* Border Colors Dark Mode */
-  --modern-border-primary: #27272A;
-  --modern-border-secondary: #1F1F23;
+  --modern-border-primary: #27272a;
+  --modern-border-secondary: #1f1f23;
   --modern-border-active: var(--modern-primary-light);
-  
+
   /* Card & Surface Colors Dark Mode */
   --modern-card-bg: #141416;
-  --modern-card-hover: #1A1A1D;
-  --modern-surface: #0F0F11;
-  
+  --modern-card-hover: #1a1a1d;
+  --modern-surface: #0f0f11;
+
   /* Adjusted Accent Colors for Dark Mode */
-  --modern-accent-green: #4ADE80;
-  --modern-accent-orange: #FB923C;
-  --modern-accent-red: #F87171;
-  --modern-accent-teal: #67E8F9;
-  
+  --modern-accent-green: #4ade80;
+  --modern-accent-orange: #fb923c;
+  --modern-accent-red: #f87171;
+  --modern-accent-teal: #67e8f9;
+
   /* Shadows Dark Mode */
   --modern-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --modern-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-  --modern-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-  --modern-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  --modern-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4),
+    0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --modern-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5),
+    0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --modern-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6),
+    0 10px 10px -5px rgba(0, 0, 0, 0.4);
 }
 
 /* ============================================
@@ -95,7 +101,7 @@
   --cui-info: var(--modern-accent-teal);
   --cui-warning: var(--modern-accent-orange);
   --cui-danger: var(--modern-accent-red);
-  
+
   --cui-body-bg: var(--modern-bg-secondary);
   --cui-body-color: var(--modern-text-primary);
   --cui-card-bg: var(--modern-card-bg);
@@ -108,7 +114,8 @@
 body {
   background: var(--modern-bg-secondary);
   color: var(--modern-text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'SF Pro Display', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter",
+    "SF Pro Display", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -144,7 +151,6 @@ body {
 [class*="badge"] {
   font-weight: 500;
   padding: 0.25rem 0.75rem;
-  border-radius: 6px;
   font-size: 0.75rem;
   letter-spacing: 0.025em;
   border: 1px solid transparent;
@@ -233,28 +239,28 @@ body {
 [data-coreui-theme="dark"] .badge-success,
 [data-coreui-theme="dark"] .bg-success {
   background: rgba(74, 222, 128, 0.15) !important;
-  color: #4ADE80 !important;
+  color: #4ade80 !important;
   border-color: rgba(74, 222, 128, 0.3) !important;
 }
 
 [data-coreui-theme="dark"] .badge-info,
 [data-coreui-theme="dark"] .bg-info {
   background: rgba(103, 232, 249, 0.15) !important;
-  color: #67E8F9 !important;
+  color: #67e8f9 !important;
   border-color: rgba(103, 232, 249, 0.3) !important;
 }
 
 [data-coreui-theme="dark"] .badge-warning,
 [data-coreui-theme="dark"] .bg-warning {
   background: rgba(251, 146, 60, 0.15) !important;
-  color: #FB923C !important;
+  color: #fb923c !important;
   border-color: rgba(251, 146, 60, 0.3) !important;
 }
 
 [data-coreui-theme="dark"] .badge-danger,
 [data-coreui-theme="dark"] .bg-danger {
   background: rgba(248, 113, 113, 0.15) !important;
-  color: #F87171 !important;
+  color: #f87171 !important;
   border-color: rgba(248, 113, 113, 0.3) !important;
 }
 
@@ -593,7 +599,6 @@ body {
 }
 
 .modal-body {
-  padding: 1.5rem;
   color: var(--modern-text-primary);
 }
 
@@ -637,5 +642,6 @@ body {
 
 /* Smooth transitions */
 * {
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease,
+    border-color 0.2s ease;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { SearchInput, Pagination } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
@@ -6,6 +6,7 @@ import { BannedStudentTable } from "../components/BannedStudentTable";
 import { StudentData } from "../components/StudentTable";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
+import { formatMemberSince } from "../../../lib/utils/dateUtils";
 import "./BannedStudents.css";
 
 import { useQuery } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ export const BannedStudents: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
+  const exportRef = useRef<HTMLElement | null>(null);
   const entriesPerPage = 10;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
@@ -48,7 +50,7 @@ export const BannedStudents: React.FC = () => {
     bannedTime: student.bannedTime,
     reason: student.reason,
     duration: student.duration,
-    memberSince: student.memberSince,
+    memberSince: formatMemberSince(student.memberSince),
     onlineLast: student.onlineLast,
     avatar: student.avatar,
     areaOfStudy: student.areaOfStudy,
@@ -65,16 +67,12 @@ export const BannedStudents: React.FC = () => {
   );
   const paginatedStudents = students;
 
-  const handleExport = () => {
-    console.log("Export banned students data");
-  };
-
   const handleStudentClick = (student: StudentData) => {
     console.log("Student clicked:", student);
   };
 
   return (
-    <main className="banned-students-page">
+    <main className="banned-students-page" ref={exportRef}>
       <div className="banned-students-stats">
         <StatsCard
           title="Total banned students"
@@ -115,7 +113,7 @@ export const BannedStudents: React.FC = () => {
               variant="primary"
             />
           </div>
-          <ExportButton onClick={handleExport} />
+          <ExportButton captureRef={exportRef} filename="banned_students" />
         </div>
 
         {isLoading ? (

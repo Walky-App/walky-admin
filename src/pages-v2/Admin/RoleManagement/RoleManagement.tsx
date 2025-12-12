@@ -1,4 +1,10 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import AssetIcon from "../../../components-v2/AssetIcon/AssetIcon";
 import {
   SearchInput,
@@ -6,8 +12,8 @@ import {
   ActionDropdown,
   FilterDropdown,
   Pagination,
+  NoData,
 } from "../../../components-v2";
-import { useTheme } from "../../../hooks/useTheme";
 import {
   RolePermissionsModal,
   RemoveMemberModal,
@@ -16,49 +22,48 @@ import {
   CreateMemberModal,
   MemberFormData,
 } from "../../../components-v2";
+import { useTheme } from "../../../hooks/useTheme";
+import { apiClient } from "../../../API";
 import "./RoleManagement.css";
 
-interface MemberData {
+type RoleType = "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator";
+
+type MemberData = {
   id: string;
   name: string;
   title: string;
   email: string;
   avatar: string;
-  role: "School Admin" | "Campus Admin" | "Moderator" | "Walky Admin";
+  role: RoleType;
   assignedBy: {
     name: string;
     email: string;
   };
   invitationStatus: "Accepted" | "Pending" | "Expired";
   lastActive: string | null;
-}
+};
 
-const getInitials = (name: string): string => {
-  return name
+const getInitials = (name: string): string =>
+  name
     .split(" ")
     .map((n) => n[0])
     .join("")
     .toUpperCase()
     .slice(0, 2);
-};
-
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiClient } from "../../../API";
-import toast from "react-hot-toast";
 
 export const RoleManagement: React.FC = () => {
   const { theme } = useTheme();
   const queryClient = useQueryClient();
+
+  const entriesPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState("All Roles");
-  const [selectedRole, setSelectedRole] = useState<
-    "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator" | null
-  >(null);
+  const [roleFilter, setRoleFilter] = useState<RoleType | "All Roles">(
+    "All Roles"
+  );
+  const [selectedRole, setSelectedRole] = useState<RoleType | null>(null);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
-  const entriesPerPage = 10;
 
-  // Action modals state
   const [isRemoveMemberModalOpen, setIsRemoveMemberModalOpen] = useState(false);
   const [isChangeRoleModalOpen, setIsChangeRoleModalOpen] = useState(false);
   const [isPasswordResetModalOpen, setIsPasswordResetModalOpen] =
@@ -72,32 +77,51 @@ export const RoleManagement: React.FC = () => {
       apiClient.api.adminV2MembersList({
         page: currentPage,
         limit: entriesPerPage,
-        search: searchQuery,
-        role: roleFilter,
-      }),
+        search: searchQuery || undefined,
+        role: roleFilter !== "All Roles" ? roleFilter : undefined,
+      } as any),
+    placeholderData: keepPreviousData,
   });
 
-  const members: MemberData[] = (membersData?.data.data || []).map(
-    (member: any) => ({
-      id: member.id,
-      name: member.name,
-      title: member.title,
-      email: member.email,
-      avatar: member.avatar,
-      role: member.role,
-      assignedBy: member.assignedBy,
-      invitationStatus: member.invitationStatus,
-      lastActive: member.lastActive,
-    })
+  const members: MemberData[] = useMemo(
+    () =>
+      (membersData?.data.data || []).map((member: any) => ({
+        id: member.id || member._id,
+        name:
+          member.name ||
+          `${member.first_name || ""} ${member.last_name || ""}`.trim(),
+        title: member.title || member.role || "Administrator",
+        email: member.email || member.institutional_email || "",
+        avatar: member.avatar || member.avatar_url || "",
+        role: (member.role || "Walky Admin") as RoleType,
+        assignedBy: {
+          name:
+            member.assignedBy?.name ||
+            member.assigned_by?.name ||
+            member.assigned_by_name ||
+            "",
+          email:
+            member.assignedBy?.email ||
+            member.assigned_by?.email ||
+            member.assigned_by_email ||
+            "",
+        },
+        invitationStatus: (member.invitationStatus ||
+          "Pending") as MemberData["invitationStatus"],
+        lastActive:
+          member.lastActive || member.last_active || member.last_login || null,
+      })),
+    [membersData]
   );
 
-  const handleCreateMember = () => {
-    setIsCreateMemberModalOpen(true);
+  const isEmpty = !isLoading && members.length === 0;
+
+  const handleRoleFilterSelect = (value: string) => {
+    setRoleFilter(value as RoleType | "All Roles");
+    setCurrentPage(1);
   };
 
-  const handleRoleClick = (
-    role: "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator"
-  ) => {
+  const handleRoleClick = (role: RoleType) => {
     setSelectedRole(role);
     setIsRoleModalOpen(true);
   };
@@ -107,88 +131,74 @@ export const RoleManagement: React.FC = () => {
     setSelectedRole(null);
   };
 
-  const handleRoleFilterSelect = (role: string) => {
-    setRoleFilter(role);
-  };
-
-  const handleChangeRole = (memberId: string) => {
-    const member = members.find((m) => m.id === memberId);
-    if (member) {
-      setSelectedMember(member);
-      setIsChangeRoleModalOpen(true);
-    }
-  };
-
-  const handleSendPasswordReset = (memberId: string) => {
-    const member = members.find((m) => m.id === memberId);
-    if (member) {
-      setSelectedMember(member);
-      setIsPasswordResetModalOpen(true);
-    }
-  };
-
   const handleRemoveMember = (memberId: string) => {
-    const member = members.find((m) => m.id === memberId);
-    if (member) {
-      setSelectedMember(member);
-      setIsRemoveMemberModalOpen(true);
-    }
+    const member = members.find((m) => m.id === memberId) || null;
+    setSelectedMember(member);
+    setIsRemoveMemberModalOpen(true);
   };
 
-  // Modal confirm handlers
   const handleConfirmRemoveMember = async () => {
     if (!selectedMember) return;
     try {
       await apiClient.api.adminV2MembersDelete(selectedMember.id);
-      toast.success(`Member ${selectedMember.name} removed successfully`);
+      toast.success("Member removed");
       queryClient.invalidateQueries({ queryKey: ["members"] });
     } catch (error) {
       console.error("Failed to remove member:", error);
       toast.error("Failed to remove member");
     }
     setIsRemoveMemberModalOpen(false);
-    setSelectedMember(null);
   };
 
-  const handleConfirmChangeRole = async (
-    newRole: "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator"
-  ) => {
+  const handleChangeRole = (memberId: string) => {
+    const member = members.find((m) => m.id === memberId) || null;
+    setSelectedMember(member);
+    setIsChangeRoleModalOpen(true);
+  };
+
+  const handleConfirmChangeRole = async (newRole: RoleType) => {
     if (!selectedMember) return;
     try {
       await apiClient.api.adminV2MembersRolePartialUpdate(selectedMember.id, {
         role: newRole,
       });
-      toast.success(`Role updated to ${newRole} for ${selectedMember.name}`);
+      toast.success("Role updated");
       queryClient.invalidateQueries({ queryKey: ["members"] });
     } catch (error) {
-      console.error("Failed to update role:", error);
-      toast.error("Failed to update role");
+      console.error("Failed to change role:", error);
+      toast.error("Failed to change role");
     }
     setIsChangeRoleModalOpen(false);
-    setSelectedMember(null);
+  };
+
+  const handleSendPasswordReset = (memberId: string) => {
+    const member = members.find((m) => m.id === memberId) || null;
+    setSelectedMember(member);
+    setIsPasswordResetModalOpen(true);
   };
 
   const handleConfirmPasswordReset = async () => {
     if (!selectedMember) return;
     try {
       await apiClient.api.adminV2MembersPasswordResetCreate(selectedMember.id);
-      toast.success(`Password reset sent to ${selectedMember.email}`);
+      toast.success("Password reset sent");
     } catch (error) {
       console.error("Failed to send password reset:", error);
       toast.error("Failed to send password reset");
     }
     setIsPasswordResetModalOpen(false);
-    setSelectedMember(null);
   };
+
+  const handleCreateMember = () => setIsCreateMemberModalOpen(true);
 
   const handleConfirmCreateMember = async (memberData: MemberFormData) => {
     try {
       await apiClient.api.adminV2MembersCreate({
-        name: `${memberData.firstName} ${memberData.lastName}`,
+        name: `${memberData.firstName} ${memberData.lastName}`.trim(),
         email: memberData.email,
         role: memberData.role,
-        title: memberData.role || "Administrator", // Use role as title since modal doesn't have title field
-      });
+        title: memberData.role || "Administrator",
+      } as any);
       toast.success("Member created successfully");
       queryClient.invalidateQueries({ queryKey: ["members"] });
     } catch (error) {
@@ -200,67 +210,31 @@ export const RoleManagement: React.FC = () => {
 
   const renderSkeletonRows = () =>
     Array.from({ length: 6 }).map((_, index) => (
-      <React.Fragment key={`member-skeleton-${index}`}>
-        <tr className="member-row skeleton-row">
-          <td className="member-full-name">
-            <div className="member-info">
-              <div className="skeleton-block skeleton-avatar" />
-              <div className="skeleton-stack">
-                <div className="skeleton-block skeleton-line" />
-                <div className="skeleton-block skeleton-line short" />
-              </div>
-            </div>
-          </td>
-          <td>
-            <div className="skeleton-block skeleton-line wide" />
-          </td>
-          <td>
-            <div className="skeleton-block skeleton-badge" />
-          </td>
-          <td>
-            <div className="skeleton-stack">
-              <div className="skeleton-block skeleton-line" />
-              <div className="skeleton-block skeleton-line short" />
-            </div>
-          </td>
-          <td>
-            <div className="skeleton-block skeleton-pill" />
-          </td>
-          <td>
-            <div className="skeleton-block skeleton-line short" />
-          </td>
-          <td className="member-actions">
-            <div className="skeleton-block skeleton-action" />
-          </td>
-        </tr>
-        {index < 5 && (
-          <tr className="member-divider-row">
-            <td colSpan={7}>
-              <Divider />
-            </td>
-          </tr>
-        )}
-      </React.Fragment>
+      <tr key={`skeleton-${index}`}>
+        <td colSpan={7} style={{ padding: "18px" }}>
+          <div className="member-skeleton" />
+        </td>
+      </tr>
     ));
 
   return (
     <main className="role-management-page">
-      {/* Page Header */}
       <div className="page-header">
         <h1 className="page-title">Role Management</h1>
         <p className="page-subtitle">Manage user role assignments</p>
       </div>
 
-      {/* Main Content Container */}
       <div className={`members-container ${theme.isDark ? "dark-mode" : ""}`}>
-        {/* Header with Filters and Create Button */}
         <div className="members-header">
           <div className="members-header-left">
             <h2 className="members-title">Members list</h2>
             <div className="members-filters">
               <SearchInput
                 value={searchQuery}
-                onChange={setSearchQuery}
+                onChange={(value) => {
+                  setSearchQuery(value);
+                  setCurrentPage(1);
+                }}
                 placeholder="Search"
                 variant="secondary"
               />
@@ -288,7 +262,6 @@ export const RoleManagement: React.FC = () => {
           </button>
         </div>
 
-        {/* Table Container */}
         <div className="members-table-wrapper">
           <table className="members-table">
             <thead>
@@ -327,134 +300,135 @@ export const RoleManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {isLoading
-                ? renderSkeletonRows()
-                : members.map((member, index) => (
-                    <React.Fragment key={member.id}>
-                      <tr className="member-row">
-                        {/* Full Name Column */}
-                        <td className="member-full-name">
-                          <div className="member-info">
-                            {member.avatar ? (
-                              <img
-                                src={member.avatar}
-                                alt={member.name}
-                                className="member-avatar"
-                              />
-                            ) : (
-                              <div className="member-avatar-placeholder">
-                                {getInitials(member.name)}
-                              </div>
-                            )}
-                            <div className="member-details">
-                              <p className="member-name">{member.name}</p>
-                              <p className="member-title">{member.title}</p>
+              {isLoading ? (
+                renderSkeletonRows()
+              ) : isEmpty ? (
+                <tr>
+                  <td colSpan={7} style={{ padding: "32px 16px" }}>
+                    <NoData message="No members found" />
+                  </td>
+                </tr>
+              ) : (
+                members.map((member, index) => (
+                  <React.Fragment key={member.id}>
+                    <tr className="member-row">
+                      <td className="member-full-name">
+                        <div className="member-info">
+                          {member.avatar ? (
+                            <img
+                              src={member.avatar}
+                              alt={member.name}
+                              className="member-avatar"
+                            />
+                          ) : (
+                            <div className="member-avatar-placeholder">
+                              {getInitials(member.name)}
                             </div>
+                          )}
+                          <div className="member-details">
+                            <p className="member-name">{member.name}</p>
+                            <p className="member-title">{member.title}</p>
                           </div>
-                        </td>
+                        </div>
+                      </td>
 
-                        {/* Email Column */}
-                        <td className="member-email">{member.email}</td>
+                      <td className="member-email">{member.email}</td>
 
-                        {/* Role Column */}
-                        <td className="member-role">
-                          <button
-                            data-testid="role-badge-btn"
-                            className="role-badge"
-                            onClick={() => handleRoleClick(member.role)}
-                          >
-                            {member.role}
-                          </button>
-                        </td>
+                      <td className="member-role">
+                        <button
+                          data-testid="role-badge-btn"
+                          className="role-badge"
+                          onClick={() => handleRoleClick(member.role)}
+                        >
+                          {member.role}
+                        </button>
+                      </td>
 
-                        {/* Assigned By Column */}
-                        <td className="member-assigned-by">
-                          <div className="assigned-by-info">
-                            <p className="assigned-by-name">
-                              {member.assignedBy.name}
-                            </p>
-                            <p className="assigned-by-email">
-                              {member.assignedBy.email}
-                            </p>
-                          </div>
-                        </td>
+                      <td className="member-assigned-by">
+                        <div className="assigned-by-info">
+                          <p className="assigned-by-name">
+                            {member.assignedBy.name || "--"}
+                          </p>
+                          <p className="assigned-by-email">
+                            {member.assignedBy.email || "--"}
+                          </p>
+                        </div>
+                      </td>
 
-                        {/* Invitation Status Column */}
-                        <td className="member-invitation-status">
-                          <span
-                            className={`status-badge ${member.invitationStatus.toLowerCase()}`}
-                          >
-                            {member.invitationStatus}
-                          </span>
-                        </td>
+                      <td className="member-invitation-status">
+                        <span
+                          className={`status-badge ${member.invitationStatus.toLowerCase()}`}
+                        >
+                          {member.invitationStatus}
+                        </span>
+                      </td>
 
-                        {/* Last Active Column */}
-                        <td className="member-last-active">
-                          {member.lastActive || "--"}
-                        </td>
+                      <td className="member-last-active">
+                        {member.lastActive || "--"}
+                      </td>
 
-                        {/* Actions Column */}
-                        <td className="member-actions">
-                          <ActionDropdown
-                            testId="member-actions"
-                            items={[
-                              {
-                                label: "Change role",
-                                onClick: (e) => {
-                                  e.stopPropagation();
-                                  handleChangeRole(member.id);
-                                },
+                      <td className="member-actions">
+                        <ActionDropdown
+                          testId="member-actions"
+                          items={[
+                            {
+                              label: "Change role",
+                              onClick: (e) => {
+                                e.stopPropagation();
+                                handleChangeRole(member.id);
                               },
-                              {
-                                label: "Send a password reset",
-                                onClick: (e) => {
-                                  e.stopPropagation();
-                                  handleSendPasswordReset(member.id);
-                                },
+                            },
+                            {
+                              label: "Send a password reset",
+                              onClick: (e) => {
+                                e.stopPropagation();
+                                handleSendPasswordReset(member.id);
                               },
-                              {
-                                label: "",
-                                isDivider: true,
-                                onClick: () => {},
+                            },
+                            {
+                              label: "",
+                              isDivider: true,
+                              onClick: () => {},
+                            },
+                            {
+                              label: "Remove member",
+                              variant: "danger",
+                              onClick: (e) => {
+                                e.stopPropagation();
+                                handleRemoveMember(member.id);
                               },
-                              {
-                                label: "Remove member",
-                                variant: "danger",
-                                onClick: (e) => {
-                                  e.stopPropagation();
-                                  handleRemoveMember(member.id);
-                                },
-                              },
-                            ]}
-                          />
+                            },
+                          ]}
+                        />
+                      </td>
+                    </tr>
+                    {index < members.length - 1 && (
+                      <tr className="member-divider-row">
+                        <td colSpan={7}>
+                          <Divider />
                         </td>
                       </tr>
-                      {index < members.length - 1 && (
-                        <tr className="member-divider-row">
-                          <td colSpan={7}>
-                            <Divider />
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  ))}
+                    )}
+                  </React.Fragment>
+                ))
+              )}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(
-            (membersData?.data.total || 0) / entriesPerPage
-          )}
-          totalEntries={membersData?.data.total || 0}
-          entriesPerPage={entriesPerPage}
-          onPageChange={setCurrentPage}
-        />
+        {!isLoading && members.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(
+              (membersData?.data.total || 0) / entriesPerPage
+            )}
+            totalEntries={membersData?.data.total || 0}
+            entriesPerPage={entriesPerPage}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
 
-      {/* Role Permissions Modal */}
       {selectedRole && (
         <RolePermissionsModal
           isOpen={isRoleModalOpen}
@@ -463,7 +437,6 @@ export const RoleManagement: React.FC = () => {
         />
       )}
 
-      {/* Remove Member Modal */}
       {selectedMember && (
         <RemoveMemberModal
           isOpen={isRemoveMemberModalOpen}
@@ -473,7 +446,6 @@ export const RoleManagement: React.FC = () => {
         />
       )}
 
-      {/* Change Role Modal */}
       {selectedMember && (
         <ChangeRoleModal
           isOpen={isChangeRoleModalOpen}
@@ -483,7 +455,6 @@ export const RoleManagement: React.FC = () => {
         />
       )}
 
-      {/* Send Password Reset Modal */}
       {selectedMember && (
         <SendPasswordResetModal
           isOpen={isPasswordResetModalOpen}
@@ -492,7 +463,6 @@ export const RoleManagement: React.FC = () => {
         />
       )}
 
-      {/* Create Member Modal */}
       <CreateMemberModal
         isOpen={isCreateMemberModalOpen}
         onClose={() => setIsCreateMemberModalOpen(false)}
