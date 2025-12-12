@@ -8,8 +8,8 @@ import {
   Divider,
   Pagination,
 } from "../../../components-v2";
-import CampusBoundary from "../../../pages/CampusBoundary";
 import { useTheme } from "../../../hooks/useTheme";
+import CampusBoundary from "../../CampusBoundary/CampusBoundary";
 
 interface CampusData {
   id: string;

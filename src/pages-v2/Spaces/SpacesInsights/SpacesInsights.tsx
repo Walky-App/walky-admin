@@ -1,6 +1,11 @@
 import React, { useRef, useState } from "react";
 import "./SpacesInsights.css";
-import { AssetIcon, ExportButton, LastUpdated } from "../../../components-v2";
+import {
+  AssetIcon,
+  ExportButton,
+  LastUpdated,
+  SkeletonLoader,
+} from "../../../components-v2";
 
 interface SpaceCategory {
   name: string;
@@ -16,8 +21,6 @@ interface SpaceItem {
   logo: string;
   members: number;
 }
-
-import SkeletonLoader from "../../../components/SkeletonLoader";
 
 const SpacesInsightsSkeleton = () => (
   <main className="spaces-insights-page">

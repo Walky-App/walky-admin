@@ -7,7 +7,6 @@ import {
   CButton,
   CSpinner,
 } from "@coreui/react";
-import { useTheme } from "../hooks/useTheme";
 import {
   GoogleMap,
   useJsApiLoader,
@@ -15,6 +14,7 @@ import {
   Libraries,
   StandaloneSearchBox,
 } from "@react-google-maps/api";
+import { useTheme } from "../../hooks/useTheme";
 
 declare global {
   interface Window {

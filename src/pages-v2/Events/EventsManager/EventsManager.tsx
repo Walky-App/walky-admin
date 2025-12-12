@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { SearchInput, FilterDropdown, NoData } from "../../../components-v2";
+import {
+  Pagination,
+  SearchInput,
+  FilterDropdown,
+  NoData,
+} from "../../../components-v2";
 import { EventTable } from "../components/EventTable/EventTable";
 import { EventTableSkeleton } from "../components/EventTableSkeleton/EventTableSkeleton";
-import { Pagination } from "../components/Pagination";
 import { EventCalendar } from "../components/EventCalendar/EventCalendar";
 import "./EventsManager.css";
 

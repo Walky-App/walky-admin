@@ -79,7 +79,6 @@ const StudentBehavior: React.FC = () => {
       <FilterBar
         timePeriod={timePeriod}
         onTimePeriodChange={setTimePeriod}
-        dateRange="October 1 – October 31"
         exportTargetRef={exportRef}
         exportFileName={`student_behavior_${timePeriod}`}
       />
