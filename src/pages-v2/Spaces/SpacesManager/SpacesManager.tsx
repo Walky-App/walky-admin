@@ -11,12 +11,40 @@ import { SpaceTable } from "../components/SpaceTable/SpaceTable";
 import { SpaceTableSkeleton } from "../components/SpaceTableSkeleton/SpaceTableSkeleton";
 import "./SpacesManager.css";
 
+interface SpaceCategory {
+  _id: string;
+  name: string;
+  order?: number;
+}
+
 export const SpacesManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Fetch categories dynamically
+  const { data: categoriesData } = useQuery({
+    queryKey: ["spaceCategories"],
+    queryFn: () => apiClient.api.adminSpaceCategoriesList(),
+  });
+
+  // Sort categories alphabetically by name
+  const categories: SpaceCategory[] = React.useMemo(() => {
+    const cats = (categoriesData?.data as SpaceCategory[] | undefined) || [];
+    return [...cats].sort((a, b) => a.name.localeCompare(b.name));
+  }, [categoriesData]);
+
+  // Helper to convert category name to slug (e.g., "Club Sports" -> "club-sports")
+  const toSlug = (name: string) => name.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and");
+
+  // Helper to get display name from current filter
+  const getFilterDisplayName = () => {
+    if (categoryFilter === "all") return "All categories";
+    const cat = categories.find((c) => toSlug(c.name) === categoryFilter);
+    return cat?.name || categoryFilter;
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -120,27 +148,7 @@ export const SpacesManager: React.FC = () => {
                 className="category-filter-button"
                 onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
               >
-                <span>
-                  {categoryFilter === "all"
-                    ? "All categorys"
-                    : categoryFilter === "clubs"
-                    ? "Clubs"
-                    : categoryFilter === "club-sports"
-                    ? "Club Sports"
-                    : categoryFilter === "im-teams"
-                    ? "IM Teams"
-                    : categoryFilter === "sororities"
-                    ? "Sororities"
-                    : categoryFilter === "fraternities"
-                    ? "Fraternities"
-                    : categoryFilter === "volunteer"
-                    ? "Volunteer"
-                    : categoryFilter === "academics"
-                    ? "Academics & Honors"
-                    : categoryFilter === "leadership"
-                    ? "Leadership & Government"
-                    : "Cultural & Diversity"}
-                </span>
+                <span>{getFilterDisplayName()}</span>
                 <AssetIcon name="arrow-down" size={10} color="#5B6168" />
               </button>
               {categoryDropdownOpen && (
@@ -154,98 +162,24 @@ export const SpacesManager: React.FC = () => {
                       setCategoryDropdownOpen(false);
                     }}
                   >
-                    All Categorys
+                    All categories
                   </div>
-                  <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("clubs");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Clubs
-                  </div>
-                  <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("club-sports");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Club Sports
-                  </div>
-                  <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("im-teams");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    IM Teams
-                  </div>
-                  <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("sororities");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Sororities
-                  </div>
-                  <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("fraternities");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Fraternities
-                  </div>
-                  <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("volunteer");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Volunteer
-                  </div>
-                  <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("academics");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Academics & Honors
-                  </div>
-                  <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("leadership");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Leadership & Government
-                  </div>
-                  <div className="category-dropdown-divider" />
-                  <div
-                    className="category-dropdown-item"
-                    onClick={() => {
-                      setCategoryFilter("cultural");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    Cultural & Diversity
-                  </div>
+                  {categories.map((cat) => (
+                    <React.Fragment key={cat._id}>
+                      <div className="category-dropdown-divider" />
+                      <div
+                        className={`category-dropdown-item ${
+                          categoryFilter === toSlug(cat.name) ? "active" : ""
+                        }`}
+                        onClick={() => {
+                          setCategoryFilter(toSlug(cat.name));
+                          setCategoryDropdownOpen(false);
+                        }}
+                      >
+                        {cat.name}
+                      </div>
+                    </React.Fragment>
+                  ))}
                 </div>
               )}
             </div>
