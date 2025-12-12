@@ -24,10 +24,10 @@ import {
   BanUserModal,
   Pagination,
   NoData,
+  SkeletonLoader,
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
-import SkeletonLoader from "../../../components/SkeletonLoader";
 
 // ... (Interface definitions kept same, just adding Skeleton)
 interface ReportData {

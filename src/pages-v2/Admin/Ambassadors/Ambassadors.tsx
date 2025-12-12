@@ -87,6 +87,7 @@ export const Ambassadors: React.FC = () => {
 
   useEffect(() => {
     fetchAmbassadors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   // Get initials from name

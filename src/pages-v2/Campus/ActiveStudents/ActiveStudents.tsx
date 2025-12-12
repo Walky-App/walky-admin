@@ -1,11 +1,10 @@
 import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { SearchInput } from "../../../components-v2";
+import { Pagination, SearchInput } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
 import { StudentTable, StudentData } from "../components/StudentTable";
-import { Pagination } from "../components/Pagination";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";

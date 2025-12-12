@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import "./ReportHistory.css";
 import {
@@ -15,11 +16,11 @@ import {
   FlagModal,
   Pagination,
   NoData,
+  SkeletonLoader,
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
 import { apiClient } from "../../../API";
-import SkeletonLoader from "../../../components/SkeletonLoader";
 
 interface HistoryReportData {
   id: string;

@@ -87,7 +87,6 @@ const PopularFeatures: React.FC = () => {
       <FilterBar
         timePeriod={timePeriod}
         onTimePeriodChange={setTimePeriod}
-        dateRange="October 1 – October 31"
         exportTargetRef={exportRef}
         exportFileName={`popular_features_${timePeriod}`}
       />
