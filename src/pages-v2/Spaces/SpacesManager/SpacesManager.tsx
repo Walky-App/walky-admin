@@ -32,7 +32,13 @@ export const SpacesManager: React.FC = () => {
 
   // Sort categories alphabetically by name
   const categories: SpaceCategory[] = React.useMemo(() => {
-    const cats = (categoriesData?.data as SpaceCategory[] | undefined) || [];
+    // Handle different response structures: { data: [...] } or { data: { data: [...] } }
+    const responseData = categoriesData?.data;
+    const cats: SpaceCategory[] = Array.isArray(responseData)
+      ? responseData
+      : Array.isArray((responseData as any)?.data)
+        ? (responseData as any).data
+        : [];
     return [...cats].sort((a, b) => a.name.localeCompare(b.name));
   }, [categoriesData]);
 
