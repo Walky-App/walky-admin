@@ -7,11 +7,6 @@ import { useTheme } from "./hooks/useTheme";
 import V2Routes from "./routes/v2Routes";
 
 import "./App.css";
-import "./styles/modern-theme.css";
-import "./styles/sidebar-modern.css";
-import "./styles/logo-background-fix.css";
-import "./styles/badge-fixes.css";
-import "./styles/visibility-fixes.css";
 
 import LoginV2 from "./pages-v2/LoginV2/LoginV2";
 import RecoverPasswordV2 from "./pages-v2/RecoverPasswordV2/RecoverPasswordV2/RecoverPasswordV2.tsx";

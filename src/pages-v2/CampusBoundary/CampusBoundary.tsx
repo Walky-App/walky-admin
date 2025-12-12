@@ -407,6 +407,7 @@ const CampusBoundary = ({
                         <input
                           type="text"
                           placeholder="Search for your campus location"
+                          data-testid="campus-boundary-search"
                           style={{
                             padding: "8px 12px",
                             borderRadius: "4px",
