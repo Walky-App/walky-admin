@@ -1,5 +1,5 @@
 import { apiClient } from "../API";
-import { Ambassador } from "../API/WalkyAPI";
+import { Ambassador } from "../types/ambassador";
 
 export const ambassadorService = {
   // Get all ambassadors

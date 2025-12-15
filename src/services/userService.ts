@@ -1,6 +1,25 @@
 import { apiClient } from "../API";
 import { User } from "../API/WalkyAPI";
 
+// Extended User type with role-related properties
+// Uses Omit to avoid type conflicts with base User interface
+export interface UserWithRoles extends Omit<User, "school_id" | "campus_id" | "roles"> {
+  _id?: string;
+  primary_role?: string;
+  role_assignments?: Array<{
+    role?: string;
+    campus_id?: string | { _id?: string; campus_name?: string };
+    school_id?: string | { _id?: string; name?: string };
+  }>;
+  roles?: Array<{
+    role?: string;
+    campus_id?: string | { _id?: string; campus_name?: string };
+    school_id?: string | { _id?: string; name?: string };
+  }>;
+  school_id?: string | { _id?: string; name?: string };
+  campus_id?: string | { _id?: string; campus_name?: string };
+}
+
 export interface UsersListParams {
   page?: number;
   limit?: number;

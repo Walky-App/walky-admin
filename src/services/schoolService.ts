@@ -3,6 +3,7 @@ import { apiClient } from "../API";
 export interface School {
   id: string;
   _id?: string;
+  name?: string;
   school_name?: string;
   display_name?: string;
   email_domain?: string;

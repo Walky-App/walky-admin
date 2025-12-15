@@ -1,7 +1,7 @@
 import { apiClient } from "../API";
-import { Campus } from "../API/WalkyAPI";
+import { Campus } from "../types/campus";
 
-// Extended Campus type with id for frontend compatibility
+// Re-export Campus with id included - types/campus.ts already has all extended properties
 type CampusWithId = Campus & { id: string };
 
 export const campusService = {

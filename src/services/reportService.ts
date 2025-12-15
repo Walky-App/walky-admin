@@ -1,5 +1,20 @@
 import { apiClient } from "../API";
 import { ContentType } from "../API/WalkyAPI";
+import { BannedUser, UserBanHistory } from "../types/report";
+
+// Type for pagination response
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+// Type for banned users response
+interface BannedUsersResponse {
+  users: BannedUser[];
+  pagination: Pagination;
+}
 
 export const reportService = {
   // Get all reports with filters
@@ -112,7 +127,7 @@ export const reportService = {
     limit?: number;
     search?: string;
     school_id?: string;
-  }) => {
+  }): Promise<BannedUsersResponse> => {
     try {
       console.log("🚀 Fetching banned users:", params);
 
@@ -120,12 +135,12 @@ export const reportService = {
       console.log("✅ Banned users response:", response.data);
 
       return {
-        users: response.data.users || [],
-        pagination: response.data.pagination || {
-          page: 1,
-          limit: 20,
-          total: 0,
-          pages: 0,
+        users: (response.data.users || []) as BannedUser[],
+        pagination: {
+          page: response.data.pagination?.page ?? 1,
+          limit: response.data.pagination?.limit ?? 20,
+          total: response.data.pagination?.total ?? 0,
+          pages: response.data.pagination?.pages ?? 0,
         },
       };
     } catch (error) {
@@ -151,12 +166,12 @@ export const reportService = {
   },
 
   // Get user ban history
-  getUserBanHistory: async (userId: string) => {
+  getUserBanHistory: async (userId: string): Promise<UserBanHistory> => {
     try {
       console.log("🚀 Fetching ban history for user:", userId);
       const response = await apiClient.api.adminUsersBanHistoryList(userId);
       console.log("✅ Ban history response:", response.data);
-      return response.data;
+      return response.data as unknown as UserBanHistory;
     } catch (error) {
       console.error("❌ Failed to fetch ban history:", error);
       throw error;
