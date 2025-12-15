@@ -149,7 +149,35 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
         };
       });
 
-      // Use ban history from details if available, otherwise use the separate endpoint
+      // Create ban history entry from top-level ban fields if no other history exists
+      const createBanHistoryFromDetails = () => {
+        if (details.bannedDate || details.bannedBy || details.banReason) {
+          const bannedDate = details.bannedAt ? new Date(details.bannedAt) : null;
+          return [{
+            title: "Account Banned",
+            duration: "N/A",
+            expiresIn: undefined,
+            reason: details.banReason || "No reason provided",
+            bannedDate: details.bannedDate || (bannedDate
+              ? bannedDate.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              : ""),
+            bannedTime: details.bannedTime || (bannedDate
+              ? bannedDate.toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit",
+                })
+              : ""),
+            bannedBy: details.bannedBy || "System",
+          }];
+        }
+        return [];
+      };
+
+      // Use ban history from details if available, then separate endpoint, then top-level fields
       const banHistory = details.banHistory && details.banHistory.length > 0
         ? (details.banHistory || []).map((b) => ({
             title: b.title || "Account Banned",
@@ -160,7 +188,9 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
             bannedTime: b.bannedTime || "",
             bannedBy: b.bannedBy || "System",
           }))
-        : formattedBanHistory;
+        : formattedBanHistory.length > 0
+          ? formattedBanHistory
+          : createBanHistoryFromDetails();
 
       // Merge details with existing student data
       const fullStudentData: StudentData = {
