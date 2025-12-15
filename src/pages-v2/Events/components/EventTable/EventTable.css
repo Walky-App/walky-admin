@@ -407,3 +407,14 @@
 [data-theme="dark"] .event-dropdown-item:hover {
   background-color: #3a3a3a;
 }
+
+/* Accessibility: Focus-visible styles */
+.event-table button:focus-visible,
+.event-table a:focus-visible,
+.event-table input:focus-visible,
+.event-table select:focus-visible,
+.event-table [role="button"]:focus-visible,
+.event-table [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

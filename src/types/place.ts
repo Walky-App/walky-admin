@@ -1,3 +1,5 @@
+import type { Campus } from '../contexts/CampusContext';
+
 export interface Place {
   _id: string;
   place_id: string;
@@ -106,5 +108,3 @@ export interface PlacesResponse {
   limit: number;
 }
 
-// Import Campus type
-import { Campus } from './campus';

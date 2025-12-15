@@ -79,38 +79,64 @@ export const RoleManagement: React.FC = () => {
         limit: entriesPerPage,
         search: searchQuery || undefined,
         role: roleFilter !== "All Roles" ? roleFilter : undefined,
-      } as any),
+      }),
     placeholderData: keepPreviousData,
   });
 
+  // Extended type for API response with possible additional fields
+  type ExtendedMember = {
+    id?: string;
+    _id?: string;
+    name?: string;
+    first_name?: string;
+    last_name?: string;
+    title?: string;
+    email?: string;
+    institutional_email?: string;
+    avatar?: string;
+    avatar_url?: string;
+    role?: string;
+    assignedBy?: { name?: string; email?: string };
+    assigned_by?: { name?: string; email?: string };
+    assigned_by_name?: string;
+    assigned_by_email?: string;
+    invitationStatus?: string;
+    lastActive?: string;
+    last_active?: string;
+    last_login?: string;
+  };
+
   const members: MemberData[] = useMemo(
     () =>
-      (membersData?.data.data || []).map((member: any) => ({
-        id: member.id || member._id,
-        name:
-          member.name ||
-          `${member.first_name || ""} ${member.last_name || ""}`.trim(),
-        title: member.title || member.role || "Administrator",
-        email: member.email || member.institutional_email || "",
-        avatar: member.avatar || member.avatar_url || "",
-        role: (member.role || "Walky Admin") as RoleType,
-        assignedBy: {
+      (membersData?.data.data || []).map((m) => {
+        const member = m as ExtendedMember;
+        return {
+          id: member.id || member._id || "",
           name:
-            member.assignedBy?.name ||
-            member.assigned_by?.name ||
-            member.assigned_by_name ||
-            "",
-          email:
-            member.assignedBy?.email ||
-            member.assigned_by?.email ||
-            member.assigned_by_email ||
-            "",
-        },
-        invitationStatus: (member.invitationStatus ||
-          "Pending") as MemberData["invitationStatus"],
-        lastActive:
-          member.lastActive || member.last_active || member.last_login || null,
-      })),
+            member.name ||
+            `${member.first_name || ""} ${member.last_name || ""}`.trim(),
+          title: member.title || member.role || "Administrator",
+          email: member.email || member.institutional_email || "",
+          avatar: member.avatar || member.avatar_url || "",
+          role: (member.role || "Walky Admin") as RoleType,
+          assignedBy: {
+            name:
+              member.assignedBy?.name ||
+              member.assigned_by?.name ||
+              member.assigned_by_name ||
+              "",
+            email:
+              member.assignedBy?.email ||
+              member.assigned_by?.email ||
+              member.assigned_by_email ||
+              "",
+          },
+          invitationStatus: (member.invitationStatus ||
+            "Pending") as MemberData["invitationStatus"],
+          lastActive:
+            member.lastActive || member.last_active || member.last_login || null,
+        };
+      }),
     [membersData]
   );
 
@@ -198,7 +224,7 @@ export const RoleManagement: React.FC = () => {
         email: memberData.email,
         role: memberData.role,
         title: memberData.role || "Administrator",
-      } as any);
+      });
       toast.success("Member created successfully");
       queryClient.invalidateQueries({ queryKey: ["members"] });
     } catch (error) {

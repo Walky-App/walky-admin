@@ -48,15 +48,15 @@ export const Campuses: React.FC = () => {
   });
 
   const campuses: CampusData[] = (campusesData?.data || []).map(
-    (campus: any) => ({
-      id: campus.id,
-      name: campus.name,
-      campusId: campus.id, // Using ID as campusId for display
-      location: campus.location,
-      address: campus.address,
-      status: campus.status as "Active" | "Inactive",
-      imageUrl: campus.imageUrl,
-      boundaryData: campus.boundaryData,
+    (campus) => ({
+      id: campus.id || "",
+      name: campus.name || "",
+      campusId: campus.id || "", // Using ID as campusId for display
+      location: campus.location || "",
+      address: campus.address || "",
+      status: (campus.status || "Active") as "Active" | "Inactive",
+      imageUrl: campus.imageUrl || "",
+      boundaryData: campus.boundaryData as CampusData["boundaryData"],
     })
   );
 

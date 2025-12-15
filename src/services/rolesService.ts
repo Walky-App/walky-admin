@@ -1,24 +1,11 @@
 import { apiClient } from "../API";
-import {
-  Role,
-  GroupedPermissions,
-  UserRole,
-  AssignRoleRequest,
-  RemoveRoleRequest,
-  CheckPermissionRequest,
-  CheckPermissionResponse,
-  CreateRoleRequest,
-  UpdateRoleRequest,
-  CreatePermissionRequest,
-  Permission,
-} from "../types/role";
 
 export const rolesService = {
   // Get all available roles
-  getRoles: async (): Promise<{ success: boolean; roles: Role[] }> => {
+  getRoles: async () => {
     try {
       console.log("🚀 Fetching roles");
-      const response = await apiClient.api.adminRolesList() as any;
+      const response = await apiClient.api.adminRolesList();
       console.log("✅ Roles response:", response.data);
       return response.data;
     } catch (error) {
@@ -28,10 +15,10 @@ export const rolesService = {
   },
 
   // Get all available permissions
-  getPermissions: async (): Promise<{ success: boolean; permissions: GroupedPermissions }> => {
+  getPermissions: async () => {
     try {
       console.log("🚀 Fetching permissions");
-      const response = await apiClient.api.adminPermissionsList() as any;
+      const response = await apiClient.api.adminPermissionsList();
       console.log("✅ Permissions response:", response.data);
       return response.data;
     } catch (error) {
@@ -41,10 +28,10 @@ export const rolesService = {
   },
 
   // Get user's roles
-  getUserRoles: async (userId: string): Promise<{ success: boolean; user: UserRole }> => {
+  getUserRoles: async (userId: string) => {
     try {
       console.log("🚀 Fetching user roles for:", userId);
-      const response = await apiClient.api.adminUsersRolesList(userId) as any;
+      const response = await apiClient.api.adminUsersRolesList(userId);
       console.log("✅ User roles response:", response.data);
       return response.data;
     } catch (error) {
@@ -54,10 +41,30 @@ export const rolesService = {
   },
 
   // Assign role to user
-  assignRole: async (userId: string, data: AssignRoleRequest): Promise<{ success: boolean; message: string; user: UserRole }> => {
+  assignRole: async (
+    userId: string,
+    data: {
+      role:
+        | "super_admin"
+        | "school_admin"
+        | "campus_admin"
+        | "editor"
+        | "moderator"
+        | "staff"
+        | "viewer"
+        | "student"
+        | "faculty"
+        | "parent";
+      campus_id?: string;
+      school_id?: string;
+    }
+  ) => {
     try {
       console.log("🚀 Assigning role to user:", userId, data);
-      const response = await apiClient.api.adminUsersAssignRoleCreate(userId, data as any) as any;
+      const response = await apiClient.api.adminUsersAssignRoleCreate(
+        userId,
+        data
+      );
       console.log("✅ Assign role response:", response.data);
       return response.data;
     } catch (error) {
@@ -67,10 +74,16 @@ export const rolesService = {
   },
 
   // Remove role from user
-  removeRole: async (userId: string, data: RemoveRoleRequest): Promise<{ success: boolean; message: string }> => {
+  removeRole: async (
+    userId: string,
+    data: { role: string; campus_id?: string }
+  ) => {
     try {
       console.log("🚀 Removing role from user:", userId, data);
-      const response = await apiClient.api.adminUsersRemoveRoleDelete(userId, data) as any;
+      const response = await apiClient.api.adminUsersRemoveRoleDelete(
+        userId,
+        data
+      );
       console.log("✅ Remove role response:", response.data);
       return response.data;
     } catch (error) {
@@ -80,10 +93,16 @@ export const rolesService = {
   },
 
   // Check if user has permission
-  checkPermission: async (userId: string, data: CheckPermissionRequest): Promise<CheckPermissionResponse> => {
+  checkPermission: async (
+    userId: string,
+    data: { permission: string; campus_id?: string; school_id?: string }
+  ) => {
     try {
       console.log("🚀 Checking user permission:", userId, data);
-      const response = await apiClient.api.adminUsersCheckPermissionCreate(userId, data) as any;
+      const response = await apiClient.api.adminUsersCheckPermissionCreate(
+        userId,
+        data
+      );
       console.log("✅ Check permission response:", response.data);
       return response.data;
     } catch (error) {
@@ -93,10 +112,16 @@ export const rolesService = {
   },
 
   // Create new role
-  createRole: async (data: CreateRoleRequest): Promise<{ success: boolean; role: Role; message: string }> => {
+  createRole: async (data: {
+    name: string;
+    display_name: string;
+    description: string;
+    permissions?: string[];
+    scope: "global" | "school" | "campus";
+  }) => {
     try {
       console.log("🚀 Creating new role:", data);
-      const response = await apiClient.api.adminRolesCreate(data) as any;
+      const response = await apiClient.api.adminRolesCreate(data);
       console.log("✅ Create role response:", response.data);
       return response.data;
     } catch (error) {
@@ -106,10 +131,17 @@ export const rolesService = {
   },
 
   // Update existing role
-  updateRole: async (roleId: string, data: UpdateRoleRequest): Promise<{ success: boolean; role: Role; message: string }> => {
+  updateRole: async (
+    roleId: string,
+    data: {
+      display_name?: string;
+      description?: string;
+      permissions?: string[];
+    }
+  ) => {
     try {
       console.log("🚀 Updating role:", roleId, data);
-      const response = await apiClient.api.adminRolesUpdate(roleId, data) as any;
+      const response = await apiClient.api.adminRolesUpdate(roleId, data);
       console.log("✅ Update role response:", response.data);
       return response.data;
     } catch (error) {
@@ -119,10 +151,10 @@ export const rolesService = {
   },
 
   // Delete role
-  deleteRole: async (roleId: string): Promise<{ success: boolean; message: string }> => {
+  deleteRole: async (roleId: string) => {
     try {
       console.log("🚀 Deleting role:", roleId);
-      const response = await apiClient.api.adminRolesDelete(roleId) as any;
+      const response = await apiClient.api.adminRolesDelete(roleId);
       console.log("✅ Delete role response:", response.data);
       return response.data;
     } catch (error) {
@@ -132,10 +164,14 @@ export const rolesService = {
   },
 
   // Create new permission
-  createPermission: async (data: CreatePermissionRequest): Promise<{ success: boolean; permission: Permission; message: string }> => {
+  createPermission: async (data: {
+    resource: string;
+    action: "create" | "read" | "update" | "delete" | "manage" | "assign";
+    description: string;
+  }) => {
     try {
       console.log("🚀 Creating new permission:", data);
-      const response = await apiClient.api.adminPermissionsCreate(data as any) as any;
+      const response = await apiClient.api.adminPermissionsCreate(data);
       console.log("✅ Create permission response:", response.data);
       return response.data;
     } catch (error) {
@@ -145,10 +181,10 @@ export const rolesService = {
   },
 
   // Delete permission
-  deletePermission: async (permissionId: string): Promise<{ success: boolean; message: string }> => {
+  deletePermission: async (permissionId: string) => {
     try {
       console.log("🚀 Deleting permission:", permissionId);
-      const response = await apiClient.api.adminPermissionsDelete(permissionId) as any;
+      const response = await apiClient.api.adminPermissionsDelete(permissionId);
       console.log("✅ Delete permission response:", response.data);
       return response.data;
     } catch (error) {

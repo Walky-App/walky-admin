@@ -417,3 +417,14 @@
     min-width: 120px;
   }
 }
+
+/* Accessibility: Focus-visible styles */
+.student-table button:focus-visible,
+.student-table a:focus-visible,
+.student-table input:focus-visible,
+.student-table select:focus-visible,
+.student-table [role="button"]:focus-visible,
+.student-table [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

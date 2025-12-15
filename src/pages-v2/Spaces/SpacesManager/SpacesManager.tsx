@@ -17,11 +17,20 @@ interface SpaceCategory {
   order?: number;
 }
 
+export type SpaceSortField = "spaceName" | "members" | "creationDate";
+
 export const SpacesManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<SpaceSortField | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Fetch categories dynamically
@@ -33,11 +42,12 @@ export const SpacesManager: React.FC = () => {
   // Sort categories alphabetically by name
   const categories: SpaceCategory[] = React.useMemo(() => {
     // Handle different response structures: { data: [...] } or { data: { data: [...] } }
-    const responseData = categoriesData?.data;
+    // Note: API returns void but actually sends array data
+    const responseData = categoriesData?.data as SpaceCategory[] | { data?: SpaceCategory[] } | undefined;
     const cats: SpaceCategory[] = Array.isArray(responseData)
       ? responseData
-      : Array.isArray((responseData as any)?.data)
-        ? (responseData as any).data
+      : Array.isArray(responseData?.data)
+        ? responseData.data
         : [];
     return [...cats].sort((a, b) => a.name.localeCompare(b.name));
   }, [categoriesData]);
@@ -69,21 +79,28 @@ export const SpacesManager: React.FC = () => {
   }, []);
 
   const { data: spacesData, isLoading } = useQuery({
-    queryKey: ["spaces", currentPage, searchQuery, categoryFilter],
+    queryKey: ["spaces", currentPage, searchQuery, categoryFilter, sortBy, sortOrder],
     queryFn: () =>
       apiClient.api.adminV2SpacesList({
         page: currentPage,
         limit: 10,
         search: searchQuery,
         category: categoryFilter,
+        sortBy,
+        sortOrder,
       }),
     placeholderData: keepPreviousData,
   });
 
-  const filteredSpaces = (spacesData?.data.data || []).map((space: any) => {
+  const handleSortChange = (field: SpaceSortField, order: "asc" | "desc") => {
+    setSortBy(field);
+    setSortOrder(order);
+    setCurrentPage(1);
+  };
+
+  const filteredSpaces = (spacesData?.data.data || []).map((space) => {
     const rawTimestamp =
-      space.createdAt ||
-      `${space.creationDate} ${space.creationTime}` ||
+      `${space.creationDate || ""} ${space.creationTime || ""}`.trim() ||
       space.creationDate;
     const parsed = rawTimestamp ? Date.parse(rawTimestamp) : NaN;
     const dateObj = Number.isNaN(parsed) ? null : new Date(parsed);
@@ -105,16 +122,18 @@ export const SpacesManager: React.FC = () => {
       : space.creationTime;
 
     return {
-      id: space.id,
-      spaceName: space.spaceName,
-      owner: space.owner,
-      studentId: space.studentId,
-      events: space.events,
-      members: space.members,
-      creationDate,
-      creationTime,
-      createdAt: dateObj ? dateObj.toISOString() : space.createdAt,
-      category: space.category,
+      id: space.id || "",
+      spaceName: space.spaceName || "",
+      owner: {
+        name: space.owner?.name || "",
+        avatar: space.owner?.avatar || "",
+      },
+      studentId: space.studentId || "",
+      events: space.events || 0,
+      members: space.members || 0,
+      creationDate: creationDate || "",
+      creationTime: creationTime || "",
+      category: space.category || "",
       isFlagged: space.isFlagged,
       flagReason: space.flagReason,
     };
@@ -143,7 +162,7 @@ export const SpacesManager: React.FC = () => {
           <div className="spaces-filters">
             <SearchInput
               value={searchQuery}
-              onChange={setSearchQuery}
+              onChange={handleSearchChange}
               placeholder="Search"
               variant="secondary"
             />
@@ -197,7 +216,12 @@ export const SpacesManager: React.FC = () => {
         ) : (
           <>
             <div style={{ opacity: isEmpty ? 0.4 : 1 }}>
-              <SpaceTable spaces={filteredSpaces} />
+              <SpaceTable
+                spaces={filteredSpaces}
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSortChange={handleSortChange}
+              />
             </div>
             {isEmpty && (
               <NoData

@@ -4,7 +4,7 @@ import { apiClient } from "../../../API";
 import { Pagination, SearchInput } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
-import { StudentTable, StudentData } from "../components/StudentTable";
+import { StudentTable, StudentData, StudentTableColumn } from "../components/StudentTable";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";
@@ -13,17 +13,31 @@ import "./ActiveStudents.css";
 export const ActiveStudents: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<StudentTableColumn | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const exportRef = useRef<HTMLElement | null>(null);
   const entriesPerPage = 10;
 
+  // Type for API sortBy parameter
+  type ApiSortField = "name" | "email" | "memberSince" | "onlineLast" | "status";
+  const apiSortBy = sortBy as ApiSortField | undefined;
+
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ["students", currentPage, searchQuery],
+    queryKey: ["students", currentPage, searchQuery, "active", sortBy, sortOrder],
     queryFn: () =>
       apiClient.api.adminV2StudentsList({
         page: currentPage,
         limit: entriesPerPage,
         search: searchQuery,
+        status: "active",
+        sortBy: apiSortBy,
+        sortOrder,
       }),
   });
 
@@ -34,16 +48,16 @@ export const ActiveStudents: React.FC = () => {
 
   const isLoading = isStudentsLoading || isStatsLoading;
 
-  const students = (studentsData?.data.data || []).map((student: any) => ({
-    id: student.id,
-    userId: student.userId,
-    name: student.name,
-    email: student.email,
+  const students: StudentData[] = (studentsData?.data.data || []).map((student) => ({
+    id: student.id || "",
+    userId: student.userId || "",
+    name: student.name || "",
+    email: student.email || "",
     interests: student.interests || [],
     avatar: student.avatar,
-    status: student.status,
+    status: (student.status || "active") as StudentData["status"],
     memberSince: formatMemberSince(student.memberSince),
-    onlineLast: student.onlineLast,
+    onlineLast: student.onlineLast || "",
     isFlagged: student.isFlagged,
   }));
 
@@ -60,6 +74,12 @@ export const ActiveStudents: React.FC = () => {
     console.log("Action clicked for:", student);
   };
 
+  const handleSortChange = (field: StudentTableColumn, order: "asc" | "desc") => {
+    setSortBy(field);
+    setSortOrder(order);
+    setCurrentPage(1); // Reset to first page when sorting changes
+  };
+
   return (
     <main className="active-students-page" ref={exportRef}>
       <div className="active-students-stats">
@@ -69,11 +89,6 @@ export const ActiveStudents: React.FC = () => {
           iconName="double-users-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
-          trend={{
-            value: "8.5%",
-            isPositive: true,
-            label: "from last month",
-          }}
         />
         <StatsCard
           title="Students with app access"
@@ -81,11 +96,6 @@ export const ActiveStudents: React.FC = () => {
           iconName="check-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
-          trend={{
-            value: "8.5%",
-            isPositive: true,
-            label: "from last month",
-          }}
           tooltip="These students have active access and are not banned or deactivated"
           showTooltip={hoveredTooltip === "app-access"}
           onTooltipHover={(show) =>
@@ -102,7 +112,7 @@ export const ActiveStudents: React.FC = () => {
             </h1>
             <SearchInput
               value={searchQuery}
-              onChange={setSearchQuery}
+              onChange={handleSearchChange}
               placeholder="Search"
               variant="primary"
             />
@@ -119,6 +129,9 @@ export const ActiveStudents: React.FC = () => {
             students={paginatedStudents}
             onStudentClick={handleStudentClick}
             onActionClick={handleActionClick}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onSortChange={handleSortChange}
           />
         )}
 

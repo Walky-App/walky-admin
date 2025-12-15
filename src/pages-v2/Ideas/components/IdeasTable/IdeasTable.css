@@ -283,3 +283,14 @@
 [data-theme="dark"] .ideas-table-date-time {
   color: #b0b0b0;
 }
+
+/* Accessibility: Focus-visible styles */
+.ideas-table button:focus-visible,
+.ideas-table a:focus-visible,
+.ideas-table input:focus-visible,
+.ideas-table select:focus-visible,
+.ideas-table [role="button"]:focus-visible,
+.ideas-table [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

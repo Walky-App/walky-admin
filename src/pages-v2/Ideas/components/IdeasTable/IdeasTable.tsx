@@ -38,17 +38,22 @@ export interface IdeaData {
   flagReason?: string;
 }
 
+export type IdeaSortField = "ideaTitle" | "collaborated" | "creationDate";
+
 interface IdeasTableProps {
   ideas: IdeaData[];
+  sortBy?: IdeaSortField;
+  sortOrder?: "asc" | "desc";
+  onSortChange?: (field: IdeaSortField, order: "asc" | "desc") => void;
 }
 
-type SortField = "ideaTitle" | "owner" | "collaborated" | "creationDate";
-type SortDirection = "asc" | "desc";
-
-export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
+export const IdeasTable: React.FC<IdeasTableProps> = ({
+  ideas,
+  sortBy,
+  sortOrder = "asc",
+  onSortChange,
+}) => {
   const queryClient = useQueryClient();
-  const [sortField, setSortField] = useState<SortField>("creationDate");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [ideaToDelete, setIdeaToDelete] = useState<IdeaData | null>(null);
   const [flagModalOpen, setFlagModalOpen] = useState(false);
@@ -60,20 +65,6 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedIdea, setSelectedIdea] = useState<IdeaData | null>(null);
 
-  const getCreationTimestamp = (idea: IdeaData) => {
-    if (idea.createdAt) {
-      const ts = Date.parse(idea.createdAt);
-      if (!Number.isNaN(ts)) return ts;
-    }
-
-    const combined = Date.parse(`${idea.creationDate} ${idea.creationTime}`);
-    if (!Number.isNaN(combined)) return combined;
-
-    const dateOnly = Date.parse(idea.creationDate);
-    if (!Number.isNaN(dateOnly)) return dateOnly;
-
-    return 0;
-  };
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2IdeasDelete(id),
@@ -127,63 +118,34 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
     },
   });
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+  const handleSort = (field: IdeaSortField) => {
+    if (!onSortChange) return;
+    if (sortBy === field) {
+      onSortChange(field, sortOrder === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field);
-      setSortDirection("asc");
+      onSortChange(field, "asc");
     }
   };
-
-  const sortedIdeas = [...ideas].sort((a, b) => {
-    let aValue: string | number;
-    let bValue: string | number;
-
-    switch (sortField) {
-      case "ideaTitle":
-        aValue = a.ideaTitle.trim();
-        bValue = b.ideaTitle.trim();
-        break;
-      case "owner":
-        aValue = a.owner.name.trim();
-        bValue = b.owner.name.trim();
-        break;
-      case "collaborated":
-        aValue = a.collaborated;
-        bValue = b.collaborated;
-        break;
-      case "creationDate":
-        aValue = getCreationTimestamp(a);
-        bValue = getCreationTimestamp(b);
-        break;
-      default:
-        return 0;
-    }
-
-    if (typeof aValue === "string" && typeof bValue === "string") {
-      const comparison = aValue.localeCompare(bValue, undefined, {
-        sensitivity: "base",
-        numeric: true,
-      });
-      if (comparison !== 0) {
-        return sortDirection === "asc" ? comparison : -comparison;
-      }
-      return 0;
-    }
-
-    if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-    return 0;
-  });
 
   const handleViewIdeaDetails = async (idea: IdeaData, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const response = (await apiClient.api.adminV2IdeasDetail(idea.id)) as any;
-      const details = response.data;
+      const response = await apiClient.api.adminV2IdeasDetail(idea.id);
+      type IdeaDetails = {
+        id?: string;
+        title?: string;
+        createdAt?: string;
+        creator?: { name?: string; avatar?: string; studentId?: string };
+        description?: string;
+        lookingFor?: string;
+        collaborators?: Array<{ user_id?: string; name?: string; avatar_url?: string }>;
+        isFlagged?: boolean;
+        flagReason?: string;
+      };
+      const details = response.data as IdeaDetails;
 
-      const created = new Date(details.createdAt);
+      const hasCreatedAt = Boolean(details.createdAt);
+      const created = hasCreatedAt ? new Date(details.createdAt!) : new Date();
       const creationDate = created.toLocaleDateString(undefined, {
         month: "long",
         day: "numeric",
@@ -200,8 +162,8 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
 
       // Map API response to IdeaData structure for the modal
       const ideaDetails: IdeaData = {
-        id: details.id,
-        ideaTitle: details.title,
+        id: details.id || "",
+        ideaTitle: details.title || "",
         owner: {
           name: ownerName,
           avatar: details.creator?.avatar,
@@ -212,8 +174,8 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
         creationTime,
         description: details.description,
         lookingFor: details.lookingFor || "N/A", // Assuming backend might return this
-        collaborators: (details.collaborators || []).map((c: any) => ({
-          id: c.user_id,
+        collaborators: (details.collaborators || []).map((c) => ({
+          id: c.user_id || "",
           name: c.name || "Unknown",
           avatar: c.avatar_url,
         })),
@@ -283,14 +245,9 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
                   />
                 </div>
               </th>
-              <th onClick={() => handleSort("owner")}>
+              <th>
                 <div className="ideas-table-header-cell">
                   <span>Owner</span>
-                  <AssetIcon
-                    name="swap-arrows-icon"
-                    size={24}
-                    color="#1D1B20"
-                  />
                 </div>
               </th>
               <th>
@@ -324,7 +281,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
           <div className="content-space-divider" />
 
           <tbody>
-            {sortedIdeas.map((idea, index) => (
+            {ideas.map((idea, index) => (
               <React.Fragment key={idea.id}>
                 <tr className={idea.isFlagged ? "idea-row-flagged" : ""}>
                   <td>
@@ -414,7 +371,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
                     />
                   </td>
                 </tr>
-                {index < sortedIdeas.length - 1 && !idea.isFlagged && (
+                {index < ideas.length - 1 && !idea.isFlagged && (
                   <tr className="idea-divider-row">
                     <td colSpan={7}>
                       <Divider />

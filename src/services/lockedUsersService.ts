@@ -1,75 +1,54 @@
+import { AxiosError } from "axios";
 import { apiClient } from "../API";
 
-interface GetLockedUsersParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-}
-
-interface UnlockUserParams {
-  reason?: string;
-  clearAttempts?: boolean;
-}
-
-interface BulkUnlockParams {
-  userIds: string[];
-  reason?: string;
-  clearAttempts?: boolean;
-}
-
-interface UpdateLockSettingsParams {
-  maxAttempts?: number;
-  lockDurationHours?: number;
-}
-
 class LockedUsersService {
-  async getLockedUsers(params: GetLockedUsersParams = {}) {
+  async getLockedUsers(params: { page?: number; limit?: number; search?: string } = {}) {
     try {
-      const response = await apiClient.api.adminLockedUsersList(params) as any;
+      const response = await apiClient.api.adminLockedUsersList(params);
       return response.data;
     } catch (error) {
-       
-      throw new Error((error as any).response?.data?.error || "Failed to fetch locked users");
+      const axiosError = error as AxiosError<{ error?: string }>;
+      throw new Error(axiosError.response?.data?.error || "Failed to fetch locked users");
     }
   }
 
-  async unlockUser(userId: string, params: UnlockUserParams = {}) {
+  async unlockUser(userId: string, params: { reason?: string; clearAttempts?: boolean } = {}) {
     try {
-      const response = await apiClient.api.adminUnlockUserCreate(userId, params) as any;
+      const response = await apiClient.api.adminUnlockUserCreate(userId, params);
       return response.data;
     } catch (error) {
-       
-      throw new Error((error as any).response?.data?.error || "Failed to unlock user");
+      const axiosError = error as AxiosError<{ error?: string }>;
+      throw new Error(axiosError.response?.data?.error || "Failed to unlock user");
     }
   }
 
-  async bulkUnlockUsers(params: BulkUnlockParams) {
+  async bulkUnlockUsers(params: { userIds: string[]; reason?: string; clearAttempts?: boolean }) {
     try {
-      const response = await apiClient.api.adminBulkUnlockUsersCreate(params) as any;
+      const response = await apiClient.api.adminBulkUnlockUsersCreate(params);
       return response.data;
     } catch (error) {
-       
-      throw new Error((error as any).response?.data?.error || "Failed to bulk unlock users");
+      const axiosError = error as AxiosError<{ error?: string }>;
+      throw new Error(axiosError.response?.data?.error || "Failed to bulk unlock users");
     }
   }
 
   async getUnlockStats() {
     try {
-      const response = await apiClient.api.adminUnlockStatsList() as any;
+      const response = await apiClient.api.adminUnlockStatsList();
       return response.data;
     } catch (error) {
-       
-      throw new Error((error as any).response?.data?.error || "Failed to fetch unlock stats");
+      const axiosError = error as AxiosError<{ error?: string }>;
+      throw new Error(axiosError.response?.data?.error || "Failed to fetch unlock stats");
     }
   }
 
-  async updateLockSettings(userId: string, params: UpdateLockSettingsParams) {
+  async updateLockSettings(userId: string, params: { maxAttempts?: number; lockDurationHours?: number }) {
     try {
-      const response = await apiClient.api.adminLockSettingsUpdate(userId, params) as any;
+      const response = await apiClient.api.adminLockSettingsUpdate(userId, params);
       return response.data;
     } catch (error) {
-       
-      throw new Error((error as any).response?.data?.error || "Failed to update lock settings");
+      const axiosError = error as AxiosError<{ error?: string }>;
+      throw new Error(axiosError.response?.data?.error || "Failed to update lock settings");
     }
   }
 }

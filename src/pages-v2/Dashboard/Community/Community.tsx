@@ -34,7 +34,7 @@ const Community: React.FC = () => {
 
   const chartLabels = apiData?.data.labels || [];
   const chartSubLabels = apiData?.data.subLabels;
-  const creationData = (apiData?.data.data || []).map((item: any) => ({
+  const creationData = (apiData?.data.data || []).map((item) => ({
     events: item.events || 0,
     ideas: item.ideas || 0,
     spaces: item.spaces || 0,

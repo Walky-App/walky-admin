@@ -269,8 +269,9 @@ export const EventCalendar: React.FC = () => {
   // Process events into a map by day
   const eventsByDay = new Map<number, ScheduledEventItem[]>();
 
-  (eventsData?.data.data || []).forEach((event: any) => {
-    const eventDateStr = event.date_and_time || event.eventDate;
+  (eventsData?.data.data || []).forEach((event) => {
+    const eventDateStr = event.start_date || event.eventDate || "";
+    if (!eventDateStr) return;
     const eventDate = new Date(eventDateStr);
 
     if (
@@ -283,11 +284,11 @@ export const EventCalendar: React.FC = () => {
       const formattedTime = formatEventTime(event, eventDate);
 
       existing.push({
-        id: event.id || event._id,
-        eventName: event.name || event.eventName,
+        id: event.id || "",
+        eventName: event.eventName || "",
         date: eventDate.toLocaleDateString(),
         time: formattedTime,
-        location: event.location || event.address || "Campus",
+        location: event.location || "Campus",
         eventImage: event.image_url,
       });
       eventsByDay.set(day, existing);
@@ -309,14 +310,37 @@ export const EventCalendar: React.FC = () => {
   const handleEventClick = async (eventId: string) => {
     try {
       const res = await apiClient.api.adminV2EventsDetail(eventId);
-      const event = res.data as any;
+      type EventDetails = {
+        id?: string;
+        _id?: string;
+        name?: string;
+        eventName?: string;
+        image_url?: string;
+        date_and_time?: string;
+        eventDate?: string;
+        eventTime?: string;
+        location?: string;
+        address?: string;
+        visibility?: string;
+        type?: string;
+        description?: string;
+        slots?: number;
+        spaceId?: string;
+        organizer?: { name?: string; id?: string; _id?: string; avatar?: string; avatar_url?: string };
+        participants?: Array<{ user_id?: string; name?: string; avatar_url?: string; status?: string }>;
+        isFlagged?: boolean;
+        flagReason?: string;
+      };
+      const event = res.data as EventDetails;
       if (event) {
+        const dateStr = event.date_and_time || event.eventDate || "";
+        const parsedDate = dateStr ? new Date(dateStr) : null;
         const displayDate =
           event.eventDate ||
-          new Date(event.date_and_time || event.eventDate).toLocaleDateString();
+          (parsedDate ? parsedDate.toLocaleDateString() : "");
         const displayTime =
           event.eventTime ||
-          new Date(event.date_and_time || event.eventDate).toLocaleTimeString(
+          (parsedDate ? parsedDate.toLocaleTimeString(
             [],
             {
               hour: "2-digit",
@@ -324,7 +348,7 @@ export const EventCalendar: React.FC = () => {
               hour12: true,
               timeZone: "UTC",
             }
-          );
+          ) : "");
 
         const eventDetails: EventDetailsData = {
           id: event.id || event._id || "",
@@ -340,18 +364,18 @@ export const EventCalendar: React.FC = () => {
           },
           date: displayDate,
           time: displayTime,
-          place: event.location || event.address || "Campus",
+          place: event.location || "Campus",
           status:
-            new Date(event.date_and_time || event.eventDate) < new Date()
+            parsedDate && parsedDate < new Date()
               ? "finished"
               : "upcoming",
-          type: (event.visibility || event.type) as "public" | "private",
+          type: (event.visibility || event.type || "public") as "public" | "private",
           description: event.description || "No description",
-          attendees: (event.participants || []).map((p: any) => ({
-            id: p.user_id,
+          attendees: (event.participants || []).map((p) => ({
+            id: p.user_id || "",
             name: p.name || "Unknown",
             avatar: p.avatar_url,
-            status: p.status,
+            status: p.status as "pending" | "confirmed" | "declined" | undefined,
           })),
           maxAttendees: event.slots || 0,
           eventImage: event.image_url,
@@ -458,7 +482,8 @@ export const EventCalendar: React.FC = () => {
   };
 
   const dayEvents = (eventsData?.data.data || [])
-    .filter((event: any) => {
+    .filter((event) => {
+      if (!event.eventDate) return false;
       const eventDate = new Date(event.eventDate);
       return (
         eventDate.getDate() === currentDate.getDate() &&
@@ -466,7 +491,7 @@ export const EventCalendar: React.FC = () => {
         eventDate.getFullYear() === currentDate.getFullYear()
       );
     })
-    .map((event: any) => {
+    .map((event) => {
       const startMinutes = parseTimeToMinutes(event.eventTime || "");
       const startLabel =
         startMinutes === null
@@ -474,8 +499,8 @@ export const EventCalendar: React.FC = () => {
           : formatMinutesToLabel(startMinutes);
 
       return {
-        id: event.id,
-        title: event.eventName,
+        id: event.id || "",
+        title: event.eventName || "",
         startTime: startLabel,
         endTime: getEndTime(event.eventTime || startLabel),
         type: (event.type as "public" | "private") || "public",
@@ -483,7 +508,8 @@ export const EventCalendar: React.FC = () => {
     });
 
   const weekEvents = (eventsData?.data.data || [])
-    .filter((event: any) => {
+    .filter((event) => {
+      if (!event.eventDate) return false;
       const eventDate = new Date(event.eventDate);
       const weekStart = new Date(currentDate);
       const day = weekStart.getDay();
@@ -494,8 +520,8 @@ export const EventCalendar: React.FC = () => {
 
       return eventDate >= monday && eventDate <= sunday;
     })
-    .map((event: any) => {
-      const date = new Date(event.eventDate);
+    .map((event) => {
+      const date = new Date(event.eventDate!);
       const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1; // Mon=0, Sun=6
 
       const startMinutes = parseTimeToMinutes(event.eventTime || "");
@@ -505,8 +531,8 @@ export const EventCalendar: React.FC = () => {
           : formatMinutesToLabel(startMinutes);
 
       return {
-        id: event.id,
-        title: event.eventName,
+        id: event.id || "",
+        title: event.eventName || "",
         day: dayIndex,
         startTime: startLabel,
         endTime: getEndTime(event.eventTime || startLabel),

@@ -774,3 +774,14 @@
     margin-left: auto;
   }
 }
+
+/* Accessibility: Focus-visible styles */
+.events-insights-page button:focus-visible,
+.events-insights-page a:focus-visible,
+.events-insights-page input:focus-visible,
+.events-insights-page select:focus-visible,
+.events-insights-page [role="button"]:focus-visible,
+.events-insights-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

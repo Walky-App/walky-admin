@@ -72,48 +72,45 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
 
       try {
         const isSuper = isSuperAdmin();
-        let schools: any[] = [];
+        let schools: School[] = [];
 
         if (isSuper) {
-          const response = (await apiClient.api.adminV2SchoolsList()) as any;
+          const response = await apiClient.api.adminV2SchoolsList();
           console.log("Schools API response:", response);
 
-          let rawSchools: any[] = [];
+          type RawSchool = { _id?: string; id?: string; school_name?: string; name?: string };
+          let rawSchools: RawSchool[] = [];
 
           // Handle different response structures
-          if (Array.isArray(response)) {
-            rawSchools = response;
-          } else if (response && Array.isArray(response.data)) {
-            rawSchools = response.data;
-          } else if (
-            response &&
-            response.data &&
-            Array.isArray(response.data.data)
-          ) {
-            rawSchools = response.data.data;
+          const responseData = response.data as RawSchool[] | { data?: RawSchool[] };
+          if (Array.isArray(responseData)) {
+            rawSchools = responseData;
+          } else if (responseData && Array.isArray(responseData.data)) {
+            rawSchools = responseData.data;
           }
 
-          schools = rawSchools.map((s: any) => ({
+          schools = rawSchools.map((s) => ({
             ...s,
             school_name: s.school_name || s.name || "Unknown School",
-            _id: s._id || s.id,
-            id: s.id || s._id,
-          }));
+            _id: s._id || s.id || "",
+            id: s.id || s._id || "",
+          })) as School[];
           console.log("Parsed schools:", schools);
         } else {
-          const response = (await apiClient.api.schoolDetail(
+          const response = await apiClient.api.schoolDetail(
             user.school_id!
-          )) as any;
+          );
           console.log("School detail API response:", response);
-          const data = response.data || response;
+          type RawSchool = { _id?: string; id?: string; school_name?: string; name?: string };
+          const data = response.data as RawSchool | undefined;
           const rawSchools = data ? [data] : [];
 
-          schools = rawSchools.map((s: any) => ({
+          schools = rawSchools.map((s) => ({
             ...s,
             school_name: s.school_name || s.name || "Unknown School",
-            _id: s._id || s.id,
-            id: s.id || s._id,
-          }));
+            _id: s._id || s.id || "",
+            id: s.id || s._id || "",
+          })) as School[];
         }
 
         console.log("Setting available schools:", schools);
@@ -146,21 +143,20 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
 
       try {
         const isSuper = isSuperAdmin();
-        let campuses: any[] = [];
+        let campuses: Campus[] = [];
 
         if (isSuper) {
-          const query: any = {};
-          if (selectedSchool) {
-            query.school_id = selectedSchool._id || selectedSchool.id;
-          }
+          const schoolId = selectedSchool?._id || selectedSchool?.id;
 
-          const response = (await apiClient.api.adminV2CampusesList({
-            query,
-          } as any)) as any;
-          const responseData = response.data || response;
+          const response = await apiClient.api.adminV2CampusesList(
+            schoolId ? { school_id: schoolId } : undefined
+          );
 
-          let rawCampuses: any[] = [];
-          if (responseData && Array.isArray(responseData)) {
+          type RawCampus = { _id?: string; id?: string; campus_name?: string; name?: string; school_id?: string; schoolId?: string; is_active?: boolean; status?: string; image_url?: string; imageUrl?: string };
+          const responseData = response.data as RawCampus[] | { data?: RawCampus[]; campuses?: RawCampus[] };
+
+          let rawCampuses: RawCampus[] = [];
+          if (Array.isArray(responseData)) {
             rawCampuses = responseData;
           } else if (responseData && Array.isArray(responseData.data)) {
             rawCampuses = responseData.data;
@@ -168,21 +164,17 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             rawCampuses = responseData.campuses;
           }
 
-          campuses = rawCampuses.map((c: any) => ({
-            ...c,
+          campuses = rawCampuses.map((c) => ({
             campus_name: c.campus_name || c.name || "Unknown Campus",
-            _id: c._id || c.id,
-            id: c.id || c._id,
-            school_id: c.school_id || c.schoolId,
-            is_active: c.is_active ?? c.status === "Active",
-            image_url: c.image_url || c.imageUrl,
-          }));
+            _id: c._id || c.id || "",
+          })) as Campus[];
         } else {
-          const response = (await apiClient.api.campusesDetail(
+          const response = await apiClient.api.campusesDetail(
             user.campus_id!
-          )) as any;
-          const data = response.data || response;
-          let rawCampuses: any[] = [];
+          );
+          type RawCampus = { _id?: string; id?: string; campus_name?: string; name?: string; data?: RawCampus; campus?: RawCampus };
+          const data = response.data as RawCampus | undefined;
+          let rawCampuses: RawCampus[] = [];
 
           if (data) {
             if (data.data) rawCampuses = [data.data];
@@ -190,12 +182,12 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             else rawCampuses = [data];
           }
 
-          campuses = rawCampuses.map((c: any) => ({
+          campuses = rawCampuses.map((c) => ({
             ...c,
             campus_name: c.campus_name || c.name || "Unknown Campus",
-            _id: c._id || c.id,
-            id: c.id || c._id,
-          }));
+            _id: c._id || c.id || "",
+            id: c.id || c._id || "",
+          })) as Campus[];
         }
 
         setAvailableCampuses(campuses);

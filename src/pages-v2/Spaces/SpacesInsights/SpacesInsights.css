@@ -429,3 +429,14 @@
   object-fit: cover;
   display: block;
 }
+
+/* Accessibility: Focus-visible styles */
+.spaces-insights-page button:focus-visible,
+.spaces-insights-page a:focus-visible,
+.spaces-insights-page input:focus-visible,
+.spaces-insights-page select:focus-visible,
+.spaces-insights-page [role="button"]:focus-visible,
+.spaces-insights-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

@@ -436,3 +436,14 @@
 [data-theme="dark"] .idea-collaborations {
   color: #b0b0b0;
 }
+
+/* Accessibility: Focus-visible styles */
+.ideas-insights-page button:focus-visible,
+.ideas-insights-page a:focus-visible,
+.ideas-insights-page input:focus-visible,
+.ideas-insights-page select:focus-visible,
+.ideas-insights-page [role="button"]:focus-visible,
+.ideas-insights-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

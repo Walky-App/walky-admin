@@ -137,3 +137,12 @@
 .unsaved-changes-leave:hover {
   background: #b72a1f;
 }
+
+/* Accessibility: Focus-visible styles */
+.unsaved-changes-modal-content button:focus-visible,
+.unsaved-changes-modal-content a:focus-visible,
+.unsaved-changes-modal-content [role="button"]:focus-visible,
+.unsaved-changes-modal-content [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

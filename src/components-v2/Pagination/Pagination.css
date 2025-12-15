@@ -85,6 +85,13 @@
   border-color: #7b8fe8;
 }
 
+/* Accessibility: Focus-visible styles */
+.pagination-button:focus-visible,
+.pagination-number:focus-visible {
+  outline: 2px solid #321fdb;
+  outline-offset: 2px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .pagination-container {

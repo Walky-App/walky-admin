@@ -151,6 +151,11 @@ export const ReportSafety: React.FC = () => {
   const { theme } = useTheme();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>(
     "Pending review,Under evaluation"
@@ -219,9 +224,9 @@ export const ReportSafety: React.FC = () => {
   const banStudentMutation = useMutation({
     mutationFn: (data: { id: string; duration: number; reason: string }) =>
       apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, {
-        lockDuration: data.duration,
         lockReason: data.reason,
-      } as any),
+        isLocked: true,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reports"] });
       setToastMessage("User banned successfully");
@@ -274,16 +279,16 @@ export const ReportSafety: React.FC = () => {
     },
   });
 
-  const reports = (reportsData?.data.data || []).map((report: any) => ({
-    id: report.id,
-    description: report.description,
-    studentId: report.studentId,
-    reportedItemId: report.reportedItemId,
-    reportDate: report.reportDate,
-    type: report.type,
-    reason: report.reason,
-    reasonTag: report.reasonTag,
-    status: report.status,
+  const reports = (reportsData?.data.data || []).map((report) => ({
+    id: report.id || "",
+    description: report.description || "",
+    studentId: report.studentId || "",
+    reportedItemId: report.reportedItemId || "",
+    reportDate: report.reportDate || "",
+    type: (report.type as ReportData["type"]) || "User",
+    reason: report.reason || "",
+    reasonTag: (report.reasonTag as ReportData["reasonTag"]) || "Spam",
+    status: (report.status as ReportData["status"]) || "Pending review",
     isFlagged: report.isFlagged,
   }));
 
@@ -527,7 +532,7 @@ export const ReportSafety: React.FC = () => {
             <div className="reports-filters">
               <SearchInput
                 value={searchQuery}
-                onChange={setSearchQuery}
+                onChange={handleSearchChange}
                 placeholder="Search"
                 variant="secondary"
               />

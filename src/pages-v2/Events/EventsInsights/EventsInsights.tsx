@@ -69,12 +69,31 @@ export const EventsInsights: React.FC = () => {
   const handleEventClick = async (eventId: string) => {
     try {
       const res = await apiClient.api.adminV2EventsDetail(eventId);
-      const event = res.data as any;
+      type EventDetails = {
+        id?: string;
+        _id?: string;
+        name?: string;
+        image_url?: string;
+        date_and_time?: string;
+        location?: string;
+        address?: string;
+        visibility?: string;
+        description?: string;
+        slots?: number;
+        spaceId?: string;
+        organizer?: { name?: string; id?: string; _id?: string; avatar?: string; avatar_url?: string };
+        participants?: Array<{ user_id?: string; _id?: string; name?: string; avatar_url?: string; status?: string }>;
+        isFlagged?: boolean;
+        flagReason?: string;
+      };
+      const event = res.data as EventDetails;
 
       // Transform API data to EventDetailsData
+      const hasDateTime = Boolean(event.date_and_time);
+      const dateObj = hasDateTime ? new Date(event.date_and_time!) : null;
       const eventDetails: EventDetailsData = {
-        id: event.id || event._id,
-        eventName: event.name,
+        id: event.id || event._id || "",
+        eventName: event.name || "",
         eventImage: event.image_url,
         organizer: {
           name: event.organizer?.name || "Unknown",
@@ -85,21 +104,21 @@ export const EventsInsights: React.FC = () => {
             "N/A",
           avatar: event.organizer?.avatar || event.organizer?.avatar_url,
         },
-        date: new Date(event.date_and_time).toLocaleDateString(),
-        time: new Date(event.date_and_time).toLocaleTimeString([], {
+        date: dateObj ? dateObj.toLocaleDateString() : "",
+        time: dateObj ? dateObj.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
-        }),
+        }) : "",
         place: event.location || event.address || "Campus",
         status:
-          new Date(event.date_and_time) < new Date() ? "finished" : "upcoming",
-        type: event.visibility,
+          dateObj && dateObj < new Date() ? "finished" : "upcoming",
+        type: (event.visibility as "public" | "private") || "public",
         description: event.description || "",
-        attendees: (event.participants || []).map((p: any) => ({
-          id: p.user_id || p._id,
+        attendees: (event.participants || []).map((p) => ({
+          id: p.user_id || p._id || "",
           name: p.name || "Unknown",
           avatar: p.avatar_url,
-          status: p.status,
+          status: p.status as "pending" | "confirmed" | "declined" | undefined,
         })),
         maxAttendees: event.slots || 0,
         isFlagged: event.isFlagged || false,
@@ -122,7 +141,24 @@ export const EventsInsights: React.FC = () => {
           schoolId: selectedSchool?._id,
           campusId: selectedCampus?._id,
         });
-        const data = res.data as any;
+        type InsightsData = {
+          stats?: {
+            totalEvents?: number;
+            publicEvents?: number;
+            privateEvents?: number;
+            avgPublicAttendees?: number;
+            avgPrivateAttendees?: number;
+          };
+          lastUpdated?: string;
+          updatedAt?: string;
+          metadata?: { lastUpdated?: string };
+          expandReachData?: Array<{ name: string; value: number; color: string }>;
+          usersVsSpacesData?: Array<{ name: string; value: number; color: string }>;
+          interests?: Interest[];
+          publicEventsList?: EventItem[];
+          privateEventsList?: EventItem[];
+        };
+        const data = res.data as InsightsData;
 
         console.log("Fetched events insights data:", data);
 

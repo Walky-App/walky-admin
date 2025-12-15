@@ -8,7 +8,9 @@ import {
   ResponsiveContainer,
   Area,
   AreaChart,
+  TooltipProps,
 } from "recharts";
+import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { useTheme } from "../../../../hooks/useTheme";
 import "./LineChart.css";
 
@@ -41,9 +43,10 @@ export const LineChart: React.FC<LineChartProps> = ({
     value: data[index],
   }));
 
-  // Custom tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
+  // Custom tooltip - using explicit type for payload access
+  const CustomTooltip = (props: TooltipProps<ValueType, NameType> & { payload?: Array<{ value?: number | string }> }) => {
+    const { active, payload } = props;
+    if (active && payload && payload.length && payload[0].value !== undefined) {
       return (
         <div
           style={{
@@ -75,7 +78,8 @@ export const LineChart: React.FC<LineChartProps> = ({
   };
 
   // Custom X-axis tick with sub-labels
-  const CustomXAxisTick = ({ x, y, payload }: any) => {
+  const CustomXAxisTick = ({ x, y, payload }: { x?: number; y?: number; payload?: { value: string } }) => {
+    if (!payload) return null;
     const dataPoint = chartData.find((d) => d.name === payload.value);
 
     return (

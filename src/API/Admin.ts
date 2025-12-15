@@ -63,11 +63,25 @@ export class Admin<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        data?: {
+          places?: any[];
+          pagination?: {
+            total?: number;
+            limit?: number;
+            offset?: number;
+          };
+        };
+      },
+      void
+    >({
       path: `/admin/places`,
       method: "GET",
       query: query,
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -87,12 +101,19 @@ export class Admin<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        data?: any;
+      },
+      void
+    >({
       path: `/admin/places/${id}/categories`,
       method: "PUT",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
@@ -177,10 +198,18 @@ export class Admin<
    * @secure
    */
   placesRestoreCreate = (id: string, params: RequestParams = {}) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        message?: string;
+        data?: any;
+      },
+      void
+    >({
       path: `/admin/places/${id}/restore`,
       method: "POST",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -376,11 +405,33 @@ export class Admin<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        data?: {
+          parent_place?: {
+            place_id?: string;
+            name?: string;
+            place_category?: string;
+          };
+          nested_places?: any[];
+          pagination?: {
+            total?: number;
+            limit?: number;
+            offset?: number;
+            has_more?: boolean;
+            current_page?: number;
+            total_pages?: number;
+          };
+        };
+      },
+      void
+    >({
       path: `/admin/places/${placeId}/nested`,
       method: "GET",
       query: query,
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -819,11 +870,27 @@ export class Admin<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        data?: {
+          _id?: string;
+          name?: string;
+          description?: string;
+          google_types?: string[];
+          is_active?: boolean;
+          places_count?: number;
+          createdAt?: string;
+          updatedAt?: string;
+        }[];
+      },
+      void
+    >({
       path: `/admin/place-types`,
       method: "GET",
       query: query,
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -850,12 +917,27 @@ export class Admin<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        data?: {
+          _id?: string;
+          name?: string;
+          description?: string;
+          google_types?: string[];
+          is_active?: boolean;
+          createdAt?: string;
+          updatedAt?: string;
+        };
+      },
+      void
+    >({
       path: `/admin/place-types`,
       method: "POST",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
@@ -868,10 +950,26 @@ export class Admin<
    * @secure
    */
   placeTypesDetail = (id: string, params: RequestParams = {}) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        data?: {
+          _id?: string;
+          name?: string;
+          description?: string;
+          google_types?: string[];
+          is_active?: boolean;
+          places_count?: number;
+          createdAt?: string;
+          updatedAt?: string;
+        };
+      },
+      void
+    >({
       path: `/admin/place-types/${id}`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -899,12 +997,27 @@ export class Admin<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        data?: {
+          _id?: string;
+          name?: string;
+          description?: string;
+          google_types?: string[];
+          is_active?: boolean;
+          createdAt?: string;
+          updatedAt?: string;
+        };
+      },
+      void
+    >({
       path: `/admin/place-types/${id}`,
       method: "PUT",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
@@ -933,10 +1046,20 @@ export class Admin<
    * @secure
    */
   placeTypesGoogleTypesList = (params: RequestParams = {}) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        data?: {
+          type?: string;
+          places_count?: number;
+        }[];
+      },
+      void
+    >({
       path: `/admin/place-types/google-types`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**

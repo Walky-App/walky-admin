@@ -64,10 +64,6 @@ export interface CampusBoundaryPreview {
   center: {
     lat: number;
     lng: number;
-    center: {
-      lat: number;
-      lng: number;
-    };
   };
   area_sqm: number;
   area_acres: number;
@@ -77,36 +73,36 @@ export interface CampusBoundaryPreview {
 export const campusSyncService = {
   // Trigger sync for a specific campus
   syncCampus: async (campusId: string): Promise<SyncResult> => {
-    const response = await apiClient.api.adminCampusSyncSyncCreate(campusId, {}) as any;
-    return response.data.data;
+    const response = await apiClient.api.adminCampusSyncSyncCreate(campusId, {});
+    return response.data.data as SyncResult;
   },
 
   // Trigger sync for all campuses
   syncAllCampuses: async (): Promise<{ summary: { total: number; totalPlacesAdded: number; totalPlacesUpdated: number; totalPlacesRemoved: number }; results: SyncResult[] }> => {
-    const response = await apiClient.api.adminCampusSyncSyncAllCreate() as any;
-    return response.data.data;
+    const response = await apiClient.api.adminCampusSyncSyncAllCreate();
+    return response.data.data as { summary: { total: number; totalPlacesAdded: number; totalPlacesUpdated: number; totalPlacesRemoved: number }; results: SyncResult[] };
   },
 
   // Get sync logs
   getSyncLogs: async (params?: {
     campus_id?: string;
-    sync_status?: string;
+    sync_status?: 'completed' | 'failed' | 'partial' | 'in_progress';
     limit?: number;
     offset?: number;
   }): Promise<{ logs: SyncLog[]; pagination: { total: number; limit: number; offset: number } }> => {
-    const response = await apiClient.api.adminCampusSyncLogsList(params as any) as any;
-    return response.data.data;
+    const response = await apiClient.api.adminCampusSyncLogsList(params);
+    return response.data.data as unknown as { logs: SyncLog[]; pagination: { total: number; limit: number; offset: number } };
   },
 
   // Get campuses with sync status
   getCampusesWithSyncStatus: async (): Promise<CampusSyncStatus[]> => {
-    const response = await apiClient.api.adminCampusSyncCampusesList() as any;
-    return response.data.data;
+    const response = await apiClient.api.adminCampusSyncCampusesList();
+    return response.data.data as CampusSyncStatus[];
   },
 
   // Preview campus boundary and search points
   previewCampusBoundary: async (campusId: string): Promise<CampusBoundaryPreview> => {
-    const response = await apiClient.api.adminCampusSyncCampusPreviewList(campusId) as any;
-    return response.data.data;
+    const response = await apiClient.api.adminCampusSyncCampusPreviewList(campusId);
+    return response.data.data as CampusBoundaryPreview;
   }
 };

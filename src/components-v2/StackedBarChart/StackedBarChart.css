@@ -210,3 +210,12 @@
     align-items: flex-start;
   }
 }
+
+/* Accessibility: Focus-visible styles */
+.stacked-bar-chart button:focus-visible,
+.stacked-bar-chart a:focus-visible,
+.stacked-bar-chart [role="button"]:focus-visible,
+.stacked-bar-chart [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

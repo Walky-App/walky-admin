@@ -347,7 +347,7 @@ const CampusBoundary = ({
   }
 
   return (
-    <div className="" style={{ marginBottom: 0 }}>
+    <main className="campus-boundary-page" style={{ marginBottom: 0 }}>
       <CCard
         style={{
           backgroundColor: theme.colors.cardBg,
@@ -570,7 +570,7 @@ const CampusBoundary = ({
           </CForm>
         </CCardBody>
       </CCard>
-    </div>
+    </main>
   );
 };
 
