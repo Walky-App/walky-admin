@@ -371,6 +371,22 @@
   opacity: 0.8;
 }
 
+.report-date-cell {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  white-space: normal;
+  font-weight: 600;
+}
+
+.report-time {
+  font-size: 12px;
+  font-weight: 500;
+  color: #5b6168;
+  opacity: 0.9;
+}
+
 .report-type {
   font-weight: 600;
 }
@@ -498,4 +514,15 @@
 
 .reports-container.dark-mode .options-button:hover {
   opacity: 0.5;
+}
+
+/* Accessibility: Focus-visible styles */
+.report-safety-page button:focus-visible,
+.report-safety-page a:focus-visible,
+.report-safety-page input:focus-visible,
+.report-safety-page select:focus-visible,
+.report-safety-page [role="button"]:focus-visible,
+.report-safety-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }

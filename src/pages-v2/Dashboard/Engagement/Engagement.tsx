@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import API from "../../../API";
 import {
   CRow,
   CCol,
@@ -10,12 +9,13 @@ import {
   CDropdownMenu,
   CDropdownItem,
 } from "@coreui/react";
+import { AssetIcon, FilterBar, LastUpdated } from "../../../components-v2";
 import {
-  AssetIcon,
-  FilterBar,
-  LastUpdated,
-} from "../../../components-v2";
-import { StatsCard, LineChart, DonutChart, DashboardSkeleton } from "../components";
+  StatsCard,
+  LineChart,
+  DonutChart,
+  DashboardSkeleton,
+} from "../components";
 import { useTheme } from "../../../hooks/useTheme";
 import "./Engagement.css";
 
@@ -29,33 +29,47 @@ const Engagement: React.FC = () => {
   const { selectedCampus } = useCampus();
   const { timePeriod, setTimePeriod } = useDashboard();
   const [selectedMetric, setSelectedMetric] = useState("user-engagement");
+  const exportRef = useRef<HTMLElement | null>(null);
 
   const { data: engagementData, isLoading: isEngagementLoading } = useQuery({
-    queryKey: ['engagementStats', timePeriod, selectedSchool?._id, selectedCampus?._id],
-    queryFn: () => apiClient.api.adminV2DashboardEngagementList({
-      period: timePeriod,
-      schoolId: selectedSchool?._id,
-      campusId: selectedCampus?._id
-    }),
+    queryKey: [
+      "engagementStats",
+      timePeriod,
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2DashboardEngagementList({
+        period: timePeriod,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
     placeholderData: keepPreviousData,
   });
 
   const { data: retentionData, isLoading: isRetentionLoading } = useQuery({
-    queryKey: ['retentionStats', timePeriod, selectedSchool?._id, selectedCampus?._id],
-    queryFn: () => apiClient.api.adminV2DashboardRetentionList({
-      period: timePeriod,
-      schoolId: selectedSchool?._id,
-      campusId: selectedCampus?._id
-    }),
+    queryKey: [
+      "retentionStats",
+      timePeriod,
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2DashboardRetentionList({
+        period: timePeriod,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
     placeholderData: keepPreviousData,
   });
 
   const { data: dashboardStats, isLoading: isStatsLoading } = useQuery({
-    queryKey: ['dashboardStats', selectedSchool?._id, selectedCampus?._id],
-    queryFn: () => apiClient.api.adminV2DashboardStatsList({
-      schoolId: selectedSchool?._id,
-      campusId: selectedCampus?._id
-    }),
+    queryKey: ["dashboardStats", selectedSchool?._id, selectedCampus?._id],
+    queryFn: () =>
+      apiClient.api.adminV2DashboardStatsList({
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
     placeholderData: keepPreviousData,
   });
 
@@ -69,11 +83,11 @@ const Engagement: React.FC = () => {
   const userEngagementData = engagementData?.data.userEngagement || [];
   const sessionDurationData = engagementData?.data.sessionDuration || [];
   const totalChatsData = engagementData?.data.totalChats || [];
-  const donutData = (engagementData?.data.donutData || []).map((item: any) => ({
-    label: item.label || '',
+  const donutData = (engagementData?.data.donutData || []).map((item) => ({
+    label: item.label || "",
     value: item.value || 0,
-    percentage: item.percentage || '0%',
-    color: item.color || '#000',
+    percentage: item.percentage || "0%",
+    color: item.color || "#000",
   }));
   const chartLabels = engagementData?.data.labels || [];
   const chartSubLabels = engagementData?.data.subLabels;
@@ -86,45 +100,18 @@ const Engagement: React.FC = () => {
   const retentionLabels = retentionData?.data.labels || [];
   const retentionSubLabels = retentionData?.data.subLabels;
 
-  const handleExport = async () => {
-    try {
-      const endpoint = selectedMetric === "user-engagement"
-        ? '/admin/v2/dashboard/engagement'
-        : '/admin/v2/dashboard/retention';
-
-      const filename = selectedMetric === "user-engagement"
-        ? `engagement_stats_${timePeriod}.csv`
-        : `retention_stats_${timePeriod}.csv`;
-
-      const response = await API.get(endpoint, {
-        params: {
-          period: timePeriod,
-          export: 'true',
-          schoolId: selectedSchool?._id,
-          campusId: selectedCampus?._id
-        },
-        responseType: 'blob',
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Export failed:", error);
-    }
-  };
-
   return (
-    <main className="engagement-page" aria-label="User Engagement Dashboard">
+    <main
+      className="engagement-page"
+      aria-label="User Engagement Dashboard"
+      ref={exportRef}
+    >
       {/* Filter Bar */}
       <FilterBar
         timePeriod={timePeriod}
         onTimePeriodChange={setTimePeriod}
-        onExport={handleExport}
+        exportTargetRef={exportRef}
+        exportFileName={`engagement_${timePeriod}`}
       />
 
       {/* Stats Cards */}
@@ -140,11 +127,6 @@ const Engagement: React.FC = () => {
               />
             }
             iconBgColor={theme.colors.iconPurpleBg}
-            trend={{
-              value: "8.5%",
-              direction: "up",
-              text: "from last month",
-            }}
           />
         </CCol>
         <CCol xs={12} sm={6} md={6} lg={3}>
@@ -155,11 +137,6 @@ const Engagement: React.FC = () => {
               <AssetIcon name="calendar-icon" color={theme.colors.iconOrange} />
             }
             iconBgColor="#ffded1"
-            trend={{
-              value: "1.3%",
-              direction: "down",
-              text: "Up from last month",
-            }}
           />
         </CCol>
         <CCol xs={12} sm={6} md={6} lg={3}>
@@ -168,11 +145,6 @@ const Engagement: React.FC = () => {
             value={dashboardStats?.data.totalSpaces?.toString() || "0"}
             icon={<AssetIcon name="space-icon" color={theme.colors.iconBlue} />}
             iconBgColor="#d9e3f7"
-            trend={{
-              value: "1.3%",
-              direction: "up",
-              text: "Up from last month",
-            }}
           />
         </CCol>
         <CCol xs={12} sm={6} md={6} lg={3}>
@@ -181,11 +153,6 @@ const Engagement: React.FC = () => {
             value={dashboardStats?.data.totalIdeas?.toString() || "0"}
             icon={<AssetIcon name="ideas-icons" color="#ffb830" />}
             iconBgColor="#fff3d6"
-            trend={{
-              value: "1.3%",
-              direction: "up",
-              text: "Up from last month",
-            }}
           />
         </CCol>
       </CRow>
@@ -215,8 +182,9 @@ const Engagement: React.FC = () => {
             color="link"
             className="engagement-metric-toggle"
             style={{
-              border: `1px solid ${theme.isDark ? theme.colors.dropdownBorder : "#CAC4D0"
-                }`,
+              border: `1px solid ${
+                theme.isDark ? theme.colors.dropdownBorder : "#CAC4D0"
+              }`,
               borderRadius: "8px",
               padding: "12px 16px",
               backgroundColor: theme.colors.cardBg,

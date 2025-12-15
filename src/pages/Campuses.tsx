@@ -31,7 +31,7 @@ import { campusSyncService } from "../services/campusSyncService";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../lib/queryClient";
-import CampusBoundary from "./CampusBoundary";
+import CampusBoundary from "../pages-v2/CampusBoundary/CampusBoundary";
 import { CampusTableSkeleton } from "../components";
 import "../components/SyncButton.css";
 import { CopyableId } from "../components/CopyableId";
@@ -824,13 +824,13 @@ const Campuses: React.FC = () => {
                                     <CampusBoundary
                                       readOnly={true}
                                       initialBoundaryData={
-                                        campus.coordinates
+                                        campus.coordinates?.type &&
+                                        campus.coordinates?.coordinates
                                           ? {
                                               geometry: {
                                                 type: campus.coordinates.type,
                                                 coordinates:
-                                                  campus.coordinates
-                                                    .coordinates,
+                                                  campus.coordinates.coordinates,
                                               },
                                             }
                                           : null

@@ -31,6 +31,7 @@ interface ReportDetailModalProps {
       name: string;
       id: string;
       avatar: string;
+      email?: string;
       isDeactivated?: boolean;
       isBanned?: boolean;
     };
@@ -109,7 +110,11 @@ interface ReportDetailModalProps {
   onStatusChange?: (newStatus: ReportStatus) => void;
   onNoteRequired?: (newStatus: ReportStatus) => void;
   onDeactivateUser?: () => void;
-  onBanUser?: (duration: string, reason: string, resolveReports: boolean) => void;
+  onBanUser?: (
+    duration: string,
+    reason: string,
+    resolveReports: boolean
+  ) => void;
   isLoading?: boolean;
 }
 
@@ -127,6 +132,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
   const [activeTab, setActiveTab] = useState<SafetyTab>("ban");
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
+  const [isEmailCopied, setIsEmailCopied] = useState(false);
 
   const handleDeactivateUser = () => {
     setIsDeactivateModalOpen(true);
@@ -140,7 +146,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     if (onDeactivateUser) {
       onDeactivateUser();
     }
-    handleBackToReport();
+    setIsDeactivateModalOpen(false);
   };
 
   const handleBanConfirm = (
@@ -151,13 +157,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     if (onBanUser) {
       onBanUser(duration, reason, resolveReports);
     }
-    handleBackToReport();
-  };
-
-  const handleModalClose = () => {
-    setCurrentView("report");
-    setIsTransitioning(false);
-    onClose();
+    setIsBanModalOpen(false);
   };
 
   const renderReasonChip = (
@@ -171,6 +171,41 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     };
 
     return <div className={`reason-chip ${colorClasses[color]}`}>{reason}</div>;
+  };
+
+  const formatEmail = (email?: string) => {
+    if (!email) return "";
+
+    const MAX_LENGTH = 32;
+    if (email.length <= MAX_LENGTH) {
+      return email;
+    }
+
+    const atIndex = email.indexOf("@");
+
+    if (atIndex === -1) {
+      return `${email.slice(0, 12)}...${email.slice(-10)}`;
+    }
+
+    const localPart = email.slice(0, atIndex);
+    const domainPart = email.slice(atIndex);
+
+    const trimmedLocal = localPart.slice(0, 12);
+    const trimmedDomain =
+      domainPart.length > 16 ? domainPart.slice(-16) : domainPart;
+
+    return `${trimmedLocal}...${trimmedDomain}`;
+  };
+
+  const handleCopyEmail = (email?: string) => {
+    if (!email) return;
+
+    navigator.clipboard.writeText(email);
+    setIsEmailCopied(true);
+
+    setTimeout(() => {
+      setIsEmailCopied(false);
+    }, 2000);
   };
 
   const renderContentDetails = () => {
@@ -468,8 +503,8 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
   const userStatusMessage = reportData.associatedUser.isBanned
     ? "This user is currently banned"
     : reportData.associatedUser.isDeactivated
-      ? "This user is currently deactivated"
-      : null;
+    ? "This user is currently deactivated"
+    : null;
 
   const buttonsDisabled =
     reportData.associatedUser.isBanned ||
@@ -496,208 +531,204 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
           </button>
 
           {isLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px', fontSize: '1.2rem', color: '#666' }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "400px",
+                fontSize: "1.2rem",
+                color: "#666",
+              }}
+            >
               Loading report details...
             </div>
           ) : (
-            <>
-              {/* Report View */}
-              <div
-                className={`report-view-container ${
-                  currentView === "report" ? "view-active" : "view-hidden"
-                } ${isTransitioning ? "view-transitioning" : ""}`}
-              >
-                <div className="modal-content-wrapper">
-                  {/* Associated User */}
-                  <div className="associated-user-section">
-                    <h3 className="rdm-section-title">Associated user</h3>
-                    <div className="user-info-container">
-                      <div className="user-details">
-                        <img
-                          src={reportData.associatedUser.avatar}
-                          alt={reportData.associatedUser.name}
-                          className="rdm-user-avatar"
-                        />
-                        <div className="user-text">
-                          <h4 className="user-name">
-                            {reportData.associatedUser.name}
-                          </h4>
-                          <CopyableId id={reportData.associatedUser.id} />
-                        </div>
-                      </div>
-
-                      <div className="report-detail-user-actions">
-                        <div className="report-detail-action-buttons">
-                          <button
-                            className="report-detail-deactivate-button"
-                            onClick={handleDeactivateUser}
-                            disabled={buttonsDisabled}
-                            data-testid="report-detail-deactivate-btn"
-                            style={{ opacity: buttonsDisabled ? 0.4 : 1 }}
+            <div className="modal-content-wrapper">
+              {/* Associated User */}
+              <div className="associated-user-section">
+                <h3 className="rdm-section-title">Associated user</h3>
+                <div className="user-info-container">
+                  <div className="user-details">
+                    <img
+                      src={reportData.associatedUser.avatar}
+                      alt={reportData.associatedUser.name}
+                      className="rdm-user-avatar"
+                    />
+                    <div className="user-text">
+                      <h4 className="user-name">
+                        {reportData.associatedUser.name}
+                      </h4>
+                      {reportData.associatedUser.email && (
+                        <div className="user-email-row">
+                          <span
+                            className="user-email"
+                            title={reportData.associatedUser.email}
                           >
-                            Deactivate user
-                          </button>
+                            {formatEmail(reportData.associatedUser.email)}
+                          </span>
                           <button
-                            className="report-detail-ban-button"
-                            onClick={handleBanUser}
-                            disabled={buttonsDisabled}
-                            data-testid="report-detail-ban-btn"
-                            style={{ opacity: buttonsDisabled ? 0.4 : 1 }}
+                            className="user-email-copy-btn"
+                            data-testid="report-detail-email-copy-btn"
+                            onClick={() =>
+                              handleCopyEmail(reportData.associatedUser.email)
+                            }
+                            aria-label="Copy email"
+                            title="Copy email"
                           >
-                            Ban user
-                          </button>
-                        </div>
-                        {userStatusMessage && (
-                          <div className="report-detail-user-status-message">
-                            <AssetIcon name="tooltip-icon" size={16} />
-                            <span>{userStatusMessage}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Report Details */}
-                  <div className="rdm-report-details-section">
-                    <h3 className="rdm-section-title">Report details</h3>
-                    <div className="rdm-report-summary">
-                      <div className="rdm-report-header-row">
-                        <div className="rdm-report-type">
-                          <span className="rdm-label">Type:</span>
-                          <span className="rdm-value">{reportType}</span>
-                        </div>
-                        <span className="rdm-separator">|</span>
-                        <div className="rdm-report-status">
-                          <span className="rdm-label">Status:</span>
-                          <StatusDropdown
-                            value={reportData.status}
-                            onChange={(newStatus) => {
-                              if (onStatusChange) {
-                                onStatusChange(newStatus as ReportStatus);
-                              }
-                            }}
-                            onNoteRequired={(newStatus) => {
-                              if (onNoteRequired) {
-                                onNoteRequired(newStatus as ReportStatus);
-                              }
-                            }}
-                            options={[
-                              "Pending review",
-                              "Under evaluation",
-                              "Resolved",
-                              "Dismissed",
-                            ]}
-                            testId="modal-status-dropdown"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="rdm-report-reason-row">
-                        <span className="rdm-label">Reason:</span>
-                        {renderReasonChip(reportData.reason, reportData.reasonColor)}
-                      </div>
-
-                      <div className="rdm-report-date-row">
-                        <span className="rdm-label">Report date:</span>
-                        <span className="rdm-value">{reportData.reportDate}</span>
-                      </div>
-
-                      <div className="rdm-report-content-id-row">
-                        <span className="rdm-label">Reported content ID:</span>
-                        <div className="rdm-id-container">
-                          <div className="rdm-id-badge">{reportData.contentId}</div>
-                          <AssetIcon
-                            name="copy-icon"
-                            size={16}
-                            className="rdm-copy-icon"
-                          />
-                        </div>
-                      </div>
-
-                      <p className="rdm-report-description">
-                        <span className="rdm-label">Description:</span>{" "}
-                        {reportData.description}
-                      </p>
-
-                      <div className="rdm-reporting-user">
-                        <span className="rdm-label">Reporting user:</span>
-                        <img
-                          src={reportData.reportingUser.avatar}
-                          alt={reportData.reportingUser.name}
-                          className="rdm-reporting-user-avatar"
-                        />
-                        <div className="rdm-reporting-user-info">
-                          <p className="rdm-reporting-user-name">
-                            {reportData.reportingUser.name}
-                          </p>
-                          <div className="user-id-container">
-                            <div className="user-id-badge">
-                              {reportData.reportingUser.id}
-                            </div>
                             <AssetIcon
-                              name="copy-icon"
+                              name={
+                                isEmailCopied ? "check-copy-icon" : "copy-icon"
+                              }
                               size={16}
-                              className="rdm-copy-icon"
+                              color="#321FDB"
                             />
-                          </div>
+                          </button>
                         </div>
-                      </div>
+                      )}
+                      <CopyableId id={reportData.associatedUser.id} />
                     </div>
                   </div>
 
-                  {/* Content Details */}
-                  {renderContentDetails()}
-
-                  {/* Safety Record */}
-                  {renderSafetyRecord()}
-
-                  {/* Close Button */}
-                  <div className="modal-footer">
-                    <button
-                      className="close-footer-button"
-                      data-testid="report-detail-close-footer-button"
-                      onClick={handleModalClose}
-                    >
-                      Close
-                    </button>
+                  <div className="report-detail-user-actions">
+                    <div className="report-detail-action-buttons">
+                      <button
+                        className="report-detail-deactivate-button"
+                        onClick={handleDeactivateUser}
+                        disabled={buttonsDisabled}
+                        data-testid="report-detail-deactivate-btn"
+                        style={{ opacity: buttonsDisabled ? 0.4 : 1 }}
+                      >
+                        Deactivate user
+                      </button>
+                      <button
+                        className="report-detail-ban-button"
+                        onClick={handleBanUser}
+                        disabled={buttonsDisabled}
+                        data-testid="report-detail-ban-btn"
+                        style={{ opacity: buttonsDisabled ? 0.4 : 1 }}
+                      >
+                        Ban user
+                      </button>
+                    </div>
+                    {userStatusMessage && (
+                      <div className="report-detail-user-status-message">
+                        <AssetIcon name="tooltip-icon" size={16} />
+                        <span>{userStatusMessage}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Ban View */}
-              <div
-                className={`modal-view-container ${
-                  currentView === "ban" ? "view-active" : "view-hidden"
-                } ${isTransitioning ? "view-transitioning" : ""}`}
-              >
-                <div className="report-detail-embedded-wrapper">
-                  <BanUserModal
-                    visible={true}
-                    onClose={handleBackToReport}
-                    onConfirm={handleBanConfirm}
-                    userName={reportData.associatedUser.name}
-                    embedded={true}
-                  />
+              {/* Report Details */}
+              <div className="rdm-report-details-section">
+                <h3 className="rdm-section-title">Report details</h3>
+                <div className="rdm-report-summary">
+                  <div className="rdm-report-header-row">
+                    <div className="rdm-report-type">
+                      <span className="rdm-label">Type:</span>
+                      <span className="rdm-value">{reportType}</span>
+                    </div>
+                    <span className="rdm-separator">|</span>
+                    <div className="rdm-report-status">
+                      <span className="rdm-label">Status:</span>
+                      <StatusDropdown
+                        value={reportData.status}
+                        onChange={(newStatus) => {
+                          if (onStatusChange) {
+                            onStatusChange(newStatus as ReportStatus);
+                          }
+                        }}
+                        onNoteRequired={(newStatus) => {
+                          if (onNoteRequired) {
+                            onNoteRequired(newStatus as ReportStatus);
+                          }
+                        }}
+                        options={[
+                          "Pending review",
+                          "Under evaluation",
+                          "Resolved",
+                          "Dismissed",
+                        ]}
+                        testId="modal-status-dropdown"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="rdm-report-reason-row">
+                    <span className="rdm-label">Reason:</span>
+                    {renderReasonChip(
+                      reportData.reason,
+                      reportData.reasonColor
+                    )}
+                  </div>
+
+                  <div className="rdm-report-date-row">
+                    <span className="rdm-label">Report date:</span>
+                    <span className="rdm-value">{reportData.reportDate}</span>
+                  </div>
+
+                  <div className="rdm-report-content-id-row">
+                    <span className="rdm-label">Reported content ID:</span>
+                    <div className="rdm-id-container">
+                      <div className="rdm-id-badge">{reportData.contentId}</div>
+                      <AssetIcon
+                        name="copy-icon"
+                        size={16}
+                        className="rdm-copy-icon"
+                      />
+                    </div>
+                  </div>
+
+                  <p className="rdm-report-description">
+                    <span className="rdm-label">Description:</span>{" "}
+                    {reportData.description}
+                  </p>
+
+                  <div className="rdm-reporting-user">
+                    <span className="rdm-label">Reporting user:</span>
+                    <img
+                      src={reportData.reportingUser.avatar}
+                      alt={reportData.reportingUser.name}
+                      className="rdm-reporting-user-avatar"
+                    />
+                    <div className="rdm-reporting-user-info">
+                      <p className="rdm-reporting-user-name">
+                        {reportData.reportingUser.name}
+                      </p>
+                      <div className="user-id-container">
+                        <div className="user-id-badge">
+                          {reportData.reportingUser.id}
+                        </div>
+                        <AssetIcon
+                          name="copy-icon"
+                          size={16}
+                          className="rdm-copy-icon"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Deactivate View */}
-              <div
-                className={`modal-view-container ${
-                  currentView === "deactivate" ? "view-active" : "view-hidden"
-                } ${isTransitioning ? "view-transitioning" : ""}`}
-              >
-                <div className="report-detail-embedded-wrapper">
-                  <DeactivateUserModal
-                    visible={true}
-                    onClose={handleBackToReport}
-                    onConfirm={handleDeactivateConfirm}
-                    userName={reportData.associatedUser.name}
-                    embedded={true}
-                  />
-                </div>
+              {/* Content Details */}
+              {renderContentDetails()}
+
+              {/* Safety Record */}
+              {renderSafetyRecord()}
+
+              {/* Close Button */}
+              <div className="modal-footer">
+                <button
+                  className="close-footer-button"
+                  data-testid="report-detail-close-footer-button"
+                  onClick={onClose}
+                >
+                  Close
+                </button>
               </div>
-            </>
+            </div>
           )}
         </CModalBody>
       </CModal>

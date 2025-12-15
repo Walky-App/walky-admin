@@ -2,6 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
   margin-bottom: 24px;
 }
 
@@ -52,4 +54,15 @@
     align-items: flex-start;
     gap: 12px;
   }
+}
+
+/* Accessibility: Focus-visible styles */
+.filter-bar button:focus-visible,
+.filter-bar a:focus-visible,
+.filter-bar input:focus-visible,
+.filter-bar select:focus-visible,
+.filter-bar [role="button"]:focus-visible,
+.filter-bar [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }

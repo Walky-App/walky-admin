@@ -1,5 +1,4 @@
 .student-behavior-page {
-  padding: 0 var(--v2-spacing-8) 0 0;
   display: flex;
   flex-direction: column;
   gap: var(--v2-spacing-8);
@@ -124,6 +123,18 @@
   gap: var(--v2-spacing-1);
 }
 
+.student-behavior-page .metric-card-change-dash {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-lg);
+  line-height: 1;
+  color: #4a4cd9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+}
+
 .student-behavior-page .metric-card-change-text {
   font-family: var(--v2-font-family);
   font-weight: var(--v2-font-weight-normal);
@@ -144,6 +155,10 @@
   color: var(--v2-trend-down-red);
 }
 
+.student-behavior-page .change-percentage[data-trend="neutral"] {
+  color: #4a4cd9;
+}
+
 .student-behavior-page .change-text {
   color: var(--v2-body-color);
 }
@@ -157,7 +172,7 @@
 .student-behavior-page .metric-card-tooltip-btn {
   background: none;
   border: none;
-  cursor: pointer;
+  color: var(--v2-chart-blue);
   padding: 0;
   display: flex;
   align-items: center;
@@ -276,24 +291,23 @@
 
 .student-behavior-page .completion-progress-bar-container {
   width: 100%;
-  height: 23px;
+  height: 21px;
 }
 
 .student-behavior-page .completion-progress-bar-bg {
   width: 100%;
-  height: 21px;
+  height: 100%;
   border-radius: var(--v2-radius-xl);
   position: relative;
-  margin-top: 1px;
-  background-color: var(--v2-bg-select);
+  background-color: #ebf1ff;
+  overflow: hidden;
 }
 
 .student-behavior-page .completion-progress-bar {
-  height: 23px;
-  border-top-left-radius: var(--v2-radius-xl);
-  border-bottom-left-radius: var(--v2-radius-xl);
+  height: 100%;
+  border-radius: inherit;
   position: absolute;
-  top: -1px;
+  top: 0;
   left: 0;
 }
 

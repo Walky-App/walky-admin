@@ -210,11 +210,68 @@ export const EventCalendar: React.FC = () => {
     enabled: !!selectedCampus?._id,
   });
 
+  const formatTime = (timeStr: string) => timeStr?.trim() || "";
+
+  const parseTimeToMinutes = (timeStr: string) => {
+    if (!timeStr) return null;
+    const trimmed = timeStr.trim();
+
+    // Match formats like "04:19 AM" or "4:19 pm"
+    const ampmMatch = trimmed.match(
+      /^(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)$/i
+    );
+    if (ampmMatch) {
+      let hours = Number(ampmMatch[1]);
+      const minutes = Number(ampmMatch[2]);
+      const suffix = ampmMatch[3].toUpperCase();
+      if (hours === 12) hours = 0;
+      if (suffix === "PM") hours += 12;
+      return hours * 60 + minutes;
+    }
+
+    // Fallback for 24h strings like "16:30" or "16:30:00"
+    const parts = trimmed.split(":");
+    if (parts.length >= 2 && /^\d+$/.test(parts[0]) && /^\d+$/.test(parts[1])) {
+      const hours = Number(parts[0]);
+      const minutes = Number(parts[1]);
+      if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
+      return hours * 60 + minutes;
+    }
+
+    return null;
+  };
+
+  const formatMinutesToLabel = (totalMinutes: number) => {
+    const minutesNormalized =
+      ((totalMinutes % (24 * 60)) + 24 * 60) % (24 * 60);
+    const hours24 = Math.floor(minutesNormalized / 60);
+    const minutes = minutesNormalized % 60;
+    const suffix = hours24 >= 12 ? "PM" : "AM";
+    const hours12 = hours24 % 12 || 12;
+    return `${hours12.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")} ${suffix}`;
+  };
+
+  const formatEventTime = (event: any, eventDate: Date) => {
+    if (event.eventTime) {
+      return formatTime(event.eventTime);
+    }
+
+    return eventDate.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "UTC",
+    });
+  };
+
   // Process events into a map by day
   const eventsByDay = new Map<number, ScheduledEventItem[]>();
 
-  (eventsData?.data.data || []).forEach((event: any) => {
-    const eventDateStr = event.date_and_time || event.eventDate;
+  (eventsData?.data.data || []).forEach((event) => {
+    const eventDateStr = event.start_date || event.eventDate || "";
+    if (!eventDateStr) return;
     const eventDate = new Date(eventDateStr);
 
     if (
@@ -224,21 +281,14 @@ export const EventCalendar: React.FC = () => {
       const day = eventDate.getDate();
       const existing = eventsByDay.get(day) || [];
 
-      // Format time properly from the UTC date
-      const hours = eventDate.getHours();
-      const minutes = eventDate.getMinutes();
-      const ampm = hours >= 12 ? "PM" : "AM";
-      const displayHours = hours % 12 || 12;
-      const formattedTime = `${displayHours
-        .toString()
-        .padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+      const formattedTime = formatEventTime(event, eventDate);
 
       existing.push({
-        id: event.id || event._id,
-        eventName: event.name || event.eventName,
+        id: event.id || "",
+        eventName: event.eventName || "",
         date: eventDate.toLocaleDateString(),
         time: formattedTime,
-        location: event.location || event.address || "Campus",
+        location: event.location || "Campus",
         eventImage: event.image_url,
       });
       eventsByDay.set(day, existing);
@@ -260,8 +310,46 @@ export const EventCalendar: React.FC = () => {
   const handleEventClick = async (eventId: string) => {
     try {
       const res = await apiClient.api.adminV2EventsDetail(eventId);
-      const event = res.data as any;
+      type EventDetails = {
+        id?: string;
+        _id?: string;
+        name?: string;
+        eventName?: string;
+        image_url?: string;
+        date_and_time?: string;
+        eventDate?: string;
+        eventTime?: string;
+        location?: string;
+        address?: string;
+        visibility?: string;
+        type?: string;
+        description?: string;
+        slots?: number;
+        spaceId?: string;
+        organizer?: { name?: string; id?: string; _id?: string; avatar?: string; avatar_url?: string };
+        participants?: Array<{ user_id?: string; name?: string; avatar_url?: string; status?: string }>;
+        isFlagged?: boolean;
+        flagReason?: string;
+      };
+      const event = res.data as EventDetails;
       if (event) {
+        const dateStr = event.date_and_time || event.eventDate || "";
+        const parsedDate = dateStr ? new Date(dateStr) : null;
+        const displayDate =
+          event.eventDate ||
+          (parsedDate ? parsedDate.toLocaleDateString() : "");
+        const displayTime =
+          event.eventTime ||
+          (parsedDate ? parsedDate.toLocaleTimeString(
+            [],
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+              timeZone: "UTC",
+            }
+          ) : "");
+
         const eventDetails: EventDetailsData = {
           id: event.id || event._id || "",
           eventName: event.name || event.eventName || "",
@@ -274,27 +362,20 @@ export const EventCalendar: React.FC = () => {
               "N/A",
             avatar: event.organizer?.avatar || event.organizer?.avatar_url,
           },
-          date: new Date(
-            event.date_and_time || event.eventDate
-          ).toLocaleDateString(),
-          time: new Date(
-            event.date_and_time || event.eventDate
-          ).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          place: event.location || event.address || "Campus",
+          date: displayDate,
+          time: displayTime,
+          place: event.location || "Campus",
           status:
-            new Date(event.date_and_time || event.eventDate) < new Date()
+            parsedDate && parsedDate < new Date()
               ? "finished"
               : "upcoming",
-          type: (event.visibility || event.type) as "public" | "private",
+          type: (event.visibility || event.type || "public") as "public" | "private",
           description: event.description || "No description",
-          attendees: (event.participants || []).map((p: any) => ({
-            id: p.user_id,
+          attendees: (event.participants || []).map((p) => ({
+            id: p.user_id || "",
             name: p.name || "Unknown",
             avatar: p.avatar_url,
-            status: p.status,
+            status: p.status as "pending" | "confirmed" | "declined" | undefined,
           })),
           maxAttendees: event.slots || 0,
           eventImage: event.image_url,
@@ -395,16 +476,14 @@ export const EventCalendar: React.FC = () => {
 
   // Helper to calculate end time (default 1 hour duration)
   const getEndTime = (startTime: string) => {
-    if (!startTime) return "12:00";
-    const [hours, minutes] = startTime.split(":").map(Number);
-    const endHour = (hours + 1) % 24;
-    return `${endHour.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}`;
+    const minutes = parseTimeToMinutes(startTime);
+    if (minutes === null) return startTime || "";
+    return formatMinutesToLabel(minutes + 60);
   };
 
   const dayEvents = (eventsData?.data.data || [])
-    .filter((event: any) => {
+    .filter((event) => {
+      if (!event.eventDate) return false;
       const eventDate = new Date(event.eventDate);
       return (
         eventDate.getDate() === currentDate.getDate() &&
@@ -412,22 +491,25 @@ export const EventCalendar: React.FC = () => {
         eventDate.getFullYear() === currentDate.getFullYear()
       );
     })
-    .map((event: any) => ({
-      id: event.id,
-      title: event.eventName,
-      startTime: event.eventTime || "10:00",
-      endTime: getEndTime(event.eventTime || "10:00"),
-      type: (event.type as "public" | "private") || "public",
-    }));
+    .map((event) => {
+      const startMinutes = parseTimeToMinutes(event.eventTime || "");
+      const startLabel =
+        startMinutes === null
+          ? event.eventTime || "10:00 AM"
+          : formatMinutesToLabel(startMinutes);
+
+      return {
+        id: event.id || "",
+        title: event.eventName || "",
+        startTime: startLabel,
+        endTime: getEndTime(event.eventTime || startLabel),
+        type: (event.type as "public" | "private") || "public",
+      };
+    });
 
   const weekEvents = (eventsData?.data.data || [])
-    .filter((event: any) => {
-      // Filter logic for week view is handled by the component itself based on 'day' index,
-      // but we should pass events that fall within the current week range if possible.
-      // For simplicity, passing all events and letting the component filter by day index (0-6)
-      // might be risky if we have events from other weeks with same day index.
-      // Ideally, we should check if the event date is within the current week.
-
+    .filter((event) => {
+      if (!event.eventDate) return false;
       const eventDate = new Date(event.eventDate);
       const weekStart = new Date(currentDate);
       const day = weekStart.getDay();
@@ -438,15 +520,22 @@ export const EventCalendar: React.FC = () => {
 
       return eventDate >= monday && eventDate <= sunday;
     })
-    .map((event: any) => {
-      const date = new Date(event.eventDate);
+    .map((event) => {
+      const date = new Date(event.eventDate!);
       const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1; // Mon=0, Sun=6
+
+      const startMinutes = parseTimeToMinutes(event.eventTime || "");
+      const startLabel =
+        startMinutes === null
+          ? event.eventTime || "10:00 AM"
+          : formatMinutesToLabel(startMinutes);
+
       return {
-        id: event.id,
-        title: event.eventName,
+        id: event.id || "",
+        title: event.eventName || "",
         day: dayIndex,
-        startTime: event.eventTime || "10:00",
-        endTime: getEndTime(event.eventTime || "10:00"),
+        startTime: startLabel,
+        endTime: getEndTime(event.eventTime || startLabel),
         type: (event.type as "public" | "private") || "public",
       };
     });

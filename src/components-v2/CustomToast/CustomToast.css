@@ -96,3 +96,11 @@
 .custom-toast-close-btn:hover {
   opacity: 0.7;
 }
+
+/* Accessibility: Focus-visible styles */
+.custom-toast button:focus-visible,
+.custom-toast [role="button"]:focus-visible,
+.custom-toast [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

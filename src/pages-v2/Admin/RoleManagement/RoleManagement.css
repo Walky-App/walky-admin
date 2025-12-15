@@ -186,7 +186,8 @@
 .members-table-wrapper {
   background: #ffffff;
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: visible;
   margin-bottom: 32px;
 }
 
@@ -718,4 +719,15 @@
 
 .members-container.dark-mode .role-badge {
   color: #7a8fff;
+}
+
+/* Accessibility: Focus-visible styles */
+.role-management-page button:focus-visible,
+.role-management-page a:focus-visible,
+.role-management-page input:focus-visible,
+.role-management-page select:focus-visible,
+.role-management-page [role="button"]:focus-visible,
+.role-management-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }

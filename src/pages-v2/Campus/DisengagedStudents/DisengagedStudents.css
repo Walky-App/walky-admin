@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   gap: 50px;
-  padding: 32px 32px 32px 0;
   background-color: #ffffff;
   min-height: 100vh;
 }
@@ -294,4 +293,15 @@
   .disengaged-table {
     min-width: 800px;
   }
+}
+
+/* Accessibility: Focus-visible styles */
+.disengaged-students-page button:focus-visible,
+.disengaged-students-page a:focus-visible,
+.disengaged-students-page input:focus-visible,
+.disengaged-students-page select:focus-visible,
+.disengaged-students-page [role="button"]:focus-visible,
+.disengaged-students-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }

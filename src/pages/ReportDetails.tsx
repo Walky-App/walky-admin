@@ -42,7 +42,6 @@ import {
   ReportDetails as ReportDetailsType,
   BanUserRequest,
   ReportedUser,
-  ReportType,
 } from "../types/report";
 import { reportService } from "../services/reportService";
 import { format } from "date-fns";
@@ -149,7 +148,7 @@ const ReportDetails: React.FC = () => {
   };
 
   // Get status badge color
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status?: string) => {
     switch (status) {
       case "pending":
         return "warning";
@@ -165,7 +164,7 @@ const ReportDetails: React.FC = () => {
   };
 
   // Get report type color
-  const getTypeColor = (type: string) => {
+  const getTypeColor = (type?: string) => {
     switch (type) {
       case "user":
         return "danger";
@@ -181,7 +180,8 @@ const ReportDetails: React.FC = () => {
   };
 
   // Format reason
-  const formatReason = (reason: string) => {
+  const formatReason = (reason?: string) => {
+    if (!reason) return "Unknown";
     return reason
       .split("_")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -245,7 +245,7 @@ const ReportDetails: React.FC = () => {
                   </CBadge>
                 </div>
                 <CButtonGroup>
-                  {report.report_type === ReportType.USER &&
+                  {report.report_type === "user" &&
                     report.status !== "resolved" && (
                       <CButton
                         color="danger"
@@ -314,7 +314,7 @@ const ReportDetails: React.FC = () => {
                           <CListGroup flush>
                             <CListGroupItem className="d-flex justify-content-between align-items-center">
                               <strong>Report ID:</strong>
-                              <CopyableId id={report._id} />
+                              <CopyableId id={report._id || ""} />
                             </CListGroupItem>
                             <CListGroupItem className="d-flex justify-content-between">
                               <strong>Type:</strong>
@@ -335,10 +335,10 @@ const ReportDetails: React.FC = () => {
                             <CListGroupItem className="d-flex justify-content-between">
                               <strong>Created:</strong>
                               <span>
-                                {format(
-                                  new Date(report.createdAt),
+                                {(report.createdAt || report.created_at) ? format(
+                                  new Date(report.createdAt || report.created_at || ""),
                                   "MMM dd, yyyy HH:mm"
-                                )}
+                                ) : "Unknown"}
                               </span>
                             </CListGroupItem>
                             {report.resolved_at && (
@@ -358,36 +358,38 @@ const ReportDetails: React.FC = () => {
                     </CCol>
 
                     <CCol md={6}>
-                      <CCard className="mb-3">
-                        <CCardHeader>Reported By</CCardHeader>
-                        <CCardBody>
-                          <div className="d-flex align-items-center mb-3">
-                            <CAvatar
-                              src={report.reported_by.avatar_url || undefined}
-                              color="primary"
-                              textColor="white"
-                              className="me-3"
-                            >
-                              {!report.reported_by.avatar_url &&
-                                `${report.reported_by.first_name?.[0]}${report.reported_by.last_name?.[0]}`}
-                            </CAvatar>
-                            <div>
-                              <h6 className="mb-0">
-                                {report.reported_by.first_name}{" "}
-                                {report.reported_by.last_name}
-                              </h6>
-                              <small className="text-muted">
-                                {report.reported_by.email}
-                              </small>
+                      {report.reported_by && (
+                        <CCard className="mb-3">
+                          <CCardHeader>Reported By</CCardHeader>
+                          <CCardBody>
+                            <div className="d-flex align-items-center mb-3">
+                              <CAvatar
+                                src={report.reported_by.avatar_url || undefined}
+                                color="primary"
+                                textColor="white"
+                                className="me-3"
+                              >
+                                {!report.reported_by.avatar_url &&
+                                  `${report.reported_by.first_name?.[0]}${report.reported_by.last_name?.[0]}`}
+                              </CAvatar>
+                              <div>
+                                <h6 className="mb-0">
+                                  {report.reported_by.first_name}{" "}
+                                  {report.reported_by.last_name}
+                                </h6>
+                                <small className="text-muted">
+                                  {report.reported_by.email}
+                                </small>
+                              </div>
                             </div>
-                          </div>
-                          {report.school_id && (
-                            <div>
-                              <strong>School:</strong> {report.school_id.name}
-                            </div>
-                          )}
-                        </CCardBody>
-                      </CCard>
+                            {report.school_id && typeof report.school_id === "object" && (
+                              <div>
+                                <strong>School:</strong> {report.school_id.name}
+                              </div>
+                            )}
+                          </CCardBody>
+                        </CCard>
+                      )}
 
                       {report.reviewed_by && (
                         <CCard className="mb-3">
@@ -442,7 +444,7 @@ const ReportDetails: React.FC = () => {
 
                 {/* Reported Item Tab */}
                 <CTabPane visible={activeTab === "reported"}>
-                  {report.report_type === ReportType.USER &&
+                  {report.report_type === "user" &&
                   report.reportedItem ? (
                     <CCard>
                       <CCardHeader>Reported User</CCardHeader>
@@ -500,7 +502,7 @@ const ReportDetails: React.FC = () => {
                               <CListGroupItem className="d-flex justify-content-between align-items-center">
                                 <strong>User ID:</strong>
                                 <CopyableId
-                                  id={(report.reportedItem as ReportedUser)._id}
+                                  id={(report.reportedItem as ReportedUser)?._id || ""}
                                 />
                               </CListGroupItem>
                               {(report.reportedItem as ReportedUser)
@@ -514,12 +516,12 @@ const ReportDetails: React.FC = () => {
                                 </CListGroupItem>
                               )}
                               {(report.reportedItem as ReportedUser)
-                                .school_id && (
+                                ?.school_id && typeof (report.reportedItem as ReportedUser)?.school_id === "object" && (
                                 <CListGroupItem>
                                   <strong>School:</strong>{" "}
                                   {
-                                    (report.reportedItem as ReportedUser)
-                                      .school_id?.name
+                                    ((report.reportedItem as ReportedUser)
+                                      ?.school_id as { name?: string })?.name
                                   }
                                 </CListGroupItem>
                               )}
@@ -569,12 +571,14 @@ const ReportDetails: React.FC = () => {
                               <h6>{formatReason(related.reason)}</h6>
                               <p className="mb-1">{related.description}</p>
                               <small className="text-muted">
-                                Reported by {related.reported_by.first_name}{" "}
-                                {related.reported_by.last_name} on{" "}
-                                {format(
-                                  new Date(related.createdAt),
-                                  "MMM dd, yyyy"
+                                {related.reported_by && typeof related.reported_by === "object" && (
+                                  <>Reported by {related.reported_by.first_name}{" "}
+                                  {related.reported_by.last_name} on{" "}</>
                                 )}
+                                {(related.createdAt || related.created_at) ? format(
+                                  new Date(related.createdAt || related.created_at || ""),
+                                  "MMM dd, yyyy"
+                                ) : "Unknown date"}
                               </small>
                             </div>
                             <CBadge color={getStatusColor(related.status)}>

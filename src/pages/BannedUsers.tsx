@@ -253,10 +253,10 @@ const BannedUsers: React.FC = () => {
                             </div>
                           </CTableDataCell>
                           <CTableDataCell>
-                            {format(new Date(user.ban_date), "MMM dd, yyyy")}
+                            {user.ban_date ? format(new Date(user.ban_date), "MMM dd, yyyy") : "-"}
                             <br />
                             <small className="text-muted">
-                              {format(new Date(user.ban_date), "HH:mm")}
+                              {user.ban_date ? format(new Date(user.ban_date), "HH:mm") : ""}
                             </small>
                           </CTableDataCell>
                           <CTableDataCell>
@@ -286,11 +286,13 @@ const BannedUsers: React.FC = () => {
                             </div>
                           </CTableDataCell>
                           <CTableDataCell>
-                            {user.banned_by ? (
+                            {user.banned_by && typeof user.banned_by === "object" ? (
                               <div>
                                 {user.banned_by.first_name}{" "}
                                 {user.banned_by.last_name}
                               </div>
+                            ) : user.banned_by ? (
+                              <div>{user.banned_by}</div>
                             ) : (
                               <span className="text-muted">System</span>
                             )}
@@ -312,7 +314,7 @@ const BannedUsers: React.FC = () => {
                               onClick={() =>
                                 setUnbanModal({
                                   show: true,
-                                  userId: user._id,
+                                  userId: user._id || null,
                                   userName: `${user.first_name} ${user.last_name}`,
                                 })
                               }
@@ -461,11 +463,11 @@ const BannedUsers: React.FC = () => {
                               </p>
                               <small className="text-muted">
                                 Banned on{" "}
-                                {format(
+                                {ban.banned_at ? format(
                                   new Date(ban.banned_at),
                                   "MMM dd, yyyy HH:mm"
-                                )}
-                                {ban.banned_by && (
+                                ) : "Unknown"}
+                                {ban.banned_by && typeof ban.banned_by === "object" && (
                                   <>
                                     {" "}
                                     by {ban.banned_by.first_name}{" "}
@@ -482,7 +484,7 @@ const BannedUsers: React.FC = () => {
                                       new Date(ban.unbanned_at),
                                       "MMM dd, yyyy HH:mm"
                                     )}
-                                    {ban.unbanned_by && (
+                                    {ban.unbanned_by && typeof ban.unbanned_by === "object" && (
                                       <>
                                         {" "}
                                         by {ban.unbanned_by.first_name}{" "}
@@ -522,7 +524,7 @@ const BannedUsers: React.FC = () => {
                           <div className="d-flex justify-content-between align-items-start">
                             <div>
                               <h6>
-                                {report.reason
+                                {(report.reason || "Unknown")
                                   .split("_")
                                   .map(
                                     (w) =>
@@ -532,12 +534,14 @@ const BannedUsers: React.FC = () => {
                               </h6>
                               <p className="mb-1">{report.description}</p>
                               <small className="text-muted">
-                                Reported by {report.reported_by.first_name}{" "}
-                                {report.reported_by.last_name} on{" "}
-                                {format(
+                                {report.reported_by && typeof report.reported_by === "object" && (
+                                  <>Reported by {report.reported_by.first_name}{" "}
+                                  {report.reported_by.last_name} on{" "}</>
+                                )}
+                                {report.createdAt ? format(
                                   new Date(report.createdAt),
                                   "MMM dd, yyyy"
-                                )}
+                                ) : "Unknown date"}
                               </small>
                             </div>
                             <CBadge

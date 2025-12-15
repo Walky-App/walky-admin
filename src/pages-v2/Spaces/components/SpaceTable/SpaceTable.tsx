@@ -34,17 +34,22 @@ export interface SpaceData {
   flagReason?: string;
 }
 
+export type SpaceSortField = "spaceName" | "members" | "creationDate";
+
 interface SpaceTableProps {
   spaces: SpaceData[];
+  sortBy?: SpaceSortField;
+  sortOrder?: "asc" | "desc";
+  onSortChange?: (field: SpaceSortField, order: "asc" | "desc") => void;
 }
 
-type SortField = "spaceName" | "owner" | "events" | "members" | "creationDate";
-type SortDirection = "asc" | "desc";
-
-export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
+export const SpaceTable: React.FC<SpaceTableProps> = ({
+  spaces,
+  sortBy,
+  sortOrder = "asc",
+  onSortChange,
+}) => {
   const queryClient = useQueryClient();
-  const [sortField, setSortField] = useState<SortField | null>(null);
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [spaceToDelete, setSpaceToDelete] = useState<SpaceData | null>(null);
   const [flagModalOpen, setFlagModalOpen] = useState(false);
@@ -59,7 +64,8 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
   const [toastMessage, setToastMessage] = useState("");
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => apiClient.api.adminV2SpacesDelete(id),
+    mutationFn: (data: { id: string; reason: string }) =>
+      apiClient.api.adminV2SpacesDelete(data.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["spaces"] });
       setToastMessage(`Space deleted successfully`);
@@ -110,12 +116,12 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
     },
   });
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+  const handleSort = (field: SpaceSortField) => {
+    if (!onSortChange) return;
+    if (sortBy === field) {
+      onSortChange(field, sortOrder === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field);
-      setSortDirection("asc");
+      onSortChange(field, "asc");
     }
   };
 
@@ -124,9 +130,9 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
     setDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = (_reason: string) => {
+  const handleDeleteConfirm = (reason: string) => {
     if (spaceToDelete) {
-      deleteMutation.mutate(spaceToDelete.id);
+      deleteMutation.mutate({ id: spaceToDelete.id, reason });
     }
   };
 
@@ -137,7 +143,29 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
     e.stopPropagation();
     try {
       const response = await apiClient.api.adminV2SpacesDetail(space.id);
-      const details = response.data as any;
+      type SpaceDetails = {
+        id?: string;
+        name?: string;
+        owner?: { name?: string; avatar?: string; studentId?: string };
+        createdAt?: string;
+        category?: { name?: string };
+        chapter?: string;
+        contact?: string;
+        about?: string;
+        description?: string;
+        howWeUse?: string;
+        events?: Array<{ id?: string; name?: string; date?: string; location?: string; image_url?: string }>;
+        members?: Array<{ user_id?: string; name?: string; avatar_url?: string }>;
+        cover_image_url?: string;
+        logo_url?: string;
+        memberRange?: string;
+        yearEstablished?: number;
+        governingBody?: string;
+        primaryFocus?: string;
+        isFlagged?: boolean;
+        flagReason?: string;
+      };
+      const details = response.data as SpaceDetails;
       console.log("API Space Details Response:", details);
 
       // Map API response to SpaceDetailsData
@@ -150,12 +178,17 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
           studentId: details.owner?.studentId || "N/A",
         },
         creationDate: details.createdAt
-          ? new Date(details.createdAt).toLocaleDateString()
+          ? new Date(details.createdAt).toLocaleDateString(undefined, {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })
           : "N/A",
         creationTime: details.createdAt
           ? new Date(details.createdAt).toLocaleTimeString([], {
-              hour: "2-digit",
+              hour: "numeric",
               minute: "2-digit",
+              hour12: true,
             })
           : "N/A",
         category: details.category?.name || "Other",
@@ -165,7 +198,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
           details.about || details.description || "No description provided.",
         howWeUse: details.howWeUse || "N/A",
         description: details.description || "",
-        events: (details.events || []).map((ev: any) => ({
+        events: (details.events || []).map((ev) => ({
           id: ev.id || "",
           title: ev.name || "Untitled Event",
           date: ev.date ? new Date(ev.date).toLocaleDateString() : "TBD",
@@ -178,7 +211,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
           location: ev.location || "TBD",
           image: ev.image_url,
         })),
-        members: (details.members || []).map((m: any) => ({
+        members: (details.members || []).map((m) => ({
           id: m.user_id || "",
           name: m.name || "Unknown",
           avatar: m.avatar_url,
@@ -231,42 +264,6 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
     }
   };
 
-  const sortedSpaces = [...spaces].sort((a, b) => {
-    if (!sortField) return 0;
-
-    let aValue: string | number;
-    let bValue: string | number;
-
-    switch (sortField) {
-      case "spaceName":
-        aValue = a.spaceName.toLowerCase();
-        bValue = b.spaceName.toLowerCase();
-        break;
-      case "owner":
-        aValue = a.owner.name.toLowerCase();
-        bValue = b.owner.name.toLowerCase();
-        break;
-      case "events":
-        aValue = a.events;
-        bValue = b.events;
-        break;
-      case "members":
-        aValue = a.members;
-        bValue = b.members;
-        break;
-      case "creationDate":
-        aValue = new Date(a.creationDate).getTime();
-        bValue = new Date(b.creationDate).getTime();
-        break;
-      default:
-        return 0;
-    }
-
-    if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-    return 0;
-  });
-
   return (
     <div className="space-table-wrapper">
       <table className="space-table">
@@ -282,25 +279,13 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
               </div>
             </th>
             <th>
-              <div
-                className="space-table-header"
-                onClick={() => handleSort("owner")}
-              >
-                <span>Owner</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
-              </div>
+              <span>Owner</span>
             </th>
             <th>
               <span>Student ID</span>
             </th>
             <th>
-              <div
-                className="space-table-header"
-                onClick={() => handleSort("events")}
-              >
-                <span>Events</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
-              </div>
+              <span>Events</span>
             </th>
             <th>
               <div
@@ -329,7 +314,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
         <div className="content-space-divider" />
 
         <tbody>
-          {sortedSpaces.map((space, index) => (
+          {spaces.map((space, index) => (
             <React.Fragment key={space.id}>
               <tr className={space.isFlagged ? "space-row-flagged" : ""}>
                 <td>
@@ -424,7 +409,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({ spaces }) => {
                   />
                 </td>
               </tr>
-              {index < sortedSpaces.length - 1 && !space.isFlagged && (
+              {index < spaces.length - 1 && !space.isFlagged && (
                 <tr className="space-divider-row">
                   <td colSpan={7}>
                     <Divider />

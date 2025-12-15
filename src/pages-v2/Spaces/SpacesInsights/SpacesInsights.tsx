@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import "./SpacesInsights.css";
-import { AssetIcon, ExportButton, LastUpdated } from "../../../components-v2";
+import {
+  AssetIcon,
+  ExportButton,
+  LastUpdated,
+  SkeletonLoader,
+} from "../../../components-v2";
 
 interface SpaceCategory {
   name: string;
@@ -16,8 +21,6 @@ interface SpaceItem {
   logo: string;
   members: number;
 }
-
-import SkeletonLoader from "../../../components/SkeletonLoader";
 
 const SpacesInsightsSkeleton = () => (
   <main className="spaces-insights-page">
@@ -106,7 +109,9 @@ export const SpacesInsights: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
     "month"
   );
+  const exportRef = useRef<HTMLElement | null>(null);
 
+  // Filtered data for categories/top spaces
   const { data: insightsData, isLoading } = useQuery({
     queryKey: ["spacesInsights", timePeriod],
     queryFn: () =>
@@ -114,38 +119,51 @@ export const SpacesInsights: React.FC = () => {
     placeholderData: keepPreviousData,
   });
 
+  // All-time totals should remain constant regardless of filter selection
+  const { data: allTimeInsights, isLoading: isAllTimeLoading } = useQuery({
+    queryKey: ["spacesInsights", "all"],
+    queryFn: () => apiClient.api.adminV2SpacesInsightsList({ period: "all" }),
+  });
+
+  // Type assertion for optional metadata fields not in generated types
+  type InsightsWithMetadata = { lastUpdated?: string; updatedAt?: string; metadata?: { lastUpdated?: string } };
+  const insightsDataExtended = insightsData?.data as InsightsWithMetadata | undefined;
+  const allTimeDataExtended = allTimeInsights?.data as InsightsWithMetadata | undefined;
   const lastUpdated =
-    (insightsData as any)?.data?.lastUpdated ||
-    (insightsData as any)?.data?.updatedAt ||
-    (insightsData as any)?.data?.metadata?.lastUpdated;
+    insightsDataExtended?.lastUpdated ||
+    insightsDataExtended?.updatedAt ||
+    insightsDataExtended?.metadata?.lastUpdated ||
+    allTimeDataExtended?.lastUpdated ||
+    allTimeDataExtended?.updatedAt ||
+    allTimeDataExtended?.metadata?.lastUpdated;
   const categories: SpaceCategory[] = (
     insightsData?.data.popularCategories || []
-  ).map((category: any) => ({
-    name: category.name,
-    emoji: category.emoji,
+  ).map((category) => ({
+    name: category.name || "",
+    emoji: category.emoji || "",
     imageUrl: category.imageUrl,
-    spaces: category.spaces,
-    percentage: category.percentage,
+    spaces: category.spaces || 0,
+    percentage: category.percentage || 0,
   }));
 
   const topSpaces: SpaceItem[] = (insightsData?.data.topSpaces || []).map(
-    (space: any) => ({
-      rank: space.rank,
-      name: space.name,
+    (space) => ({
+      rank: space.rank || 0,
+      name: space.name || "",
       logo: space.logo || "",
-      members: space.members,
+      members: space.members || 0,
     })
   );
 
-  if (isLoading) {
+  if (isLoading || isAllTimeLoading) {
     return <SpacesInsightsSkeleton />;
   }
 
   return (
-    <main className="spaces-insights-page">
+    <main className="spaces-insights-page" ref={exportRef}>
       {/* Header with Export Button */}
       <div className="insights-header">
-        <ExportButton />
+        <ExportButton captureRef={exportRef} filename="spaces_insights" />
       </div>
 
       {/* Top 2 Stats Cards */}
@@ -160,7 +178,7 @@ export const SpacesInsights: React.FC = () => {
             </div>
           </div>
           <p className="stats-card-value">
-            {insightsData?.data.totalSpaces || 0}
+            {allTimeInsights?.data.totalSpaces || 0}
           </p>
         </div>
 
@@ -174,7 +192,7 @@ export const SpacesInsights: React.FC = () => {
             </div>
           </div>
           <p className="stats-card-value">
-            {insightsData?.data.totalMembers || 0}
+            {allTimeInsights?.data.totalMembers || 0}
           </p>
         </div>
       </div>

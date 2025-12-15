@@ -1,12 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import API from "../../../API";
-import {
-  AssetIcon,
-  FilterBar,
-  LastUpdated,
-} from "../../../components-v2";
+import { AssetIcon, FilterBar, LastUpdated } from "../../../components-v2";
 import { BarChart } from "./components/BarChart";
 import { DashboardSkeleton } from "../components";
 import "./Community.css";
@@ -21,47 +16,32 @@ const Community: React.FC = () => {
   const { timePeriod, setTimePeriod } = useDashboard();
 
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ['communityCreation', timePeriod, selectedSchool?._id, selectedCampus?._id],
-    queryFn: () => apiClient.api.adminV2DashboardCommunityCreationList({
-      period: timePeriod,
-      schoolId: selectedSchool?._id,
-      campusId: selectedCampus?._id
-    }),
+    queryKey: [
+      "communityCreation",
+      timePeriod,
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2DashboardCommunityCreationList({
+        period: timePeriod,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
   });
 
   // ... (inside component)
 
-  const handleExport = async () => {
-    try {
-      const response = await API.get('/admin/v2/dashboard/community-creation', {
-        params: {
-          period: timePeriod,
-          export: 'true',
-          schoolId: selectedSchool?._id,
-          campusId: selectedCampus?._id
-        },
-        responseType: 'blob',
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `community_creation_stats_${timePeriod}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Export failed:", error);
-    }
-  };
-
   const chartLabels = apiData?.data.labels || [];
   const chartSubLabels = apiData?.data.subLabels;
-  const creationData = (apiData?.data.data || []).map((item: any) => ({
+  const creationData = (apiData?.data.data || []).map((item) => ({
     events: item.events || 0,
     ideas: item.ideas || 0,
     spaces: item.spaces || 0,
   }));
+
+  // Keep hooks before any early returns to preserve hook order
+  const exportRef = useRef<HTMLElement | null>(null);
 
   // Format data for BarChart component
   const weeksFormatted = chartLabels.map((label: string, index: number) => ({
@@ -74,12 +54,17 @@ const Community: React.FC = () => {
   }
 
   return (
-    <main className="community-page" aria-label="Community Dashboard">
+    <main
+      className="community-page"
+      aria-label="Community Dashboard"
+      ref={exportRef}
+    >
       {/* Filter Bar */}
       <FilterBar
         timePeriod={timePeriod}
         onTimePeriodChange={setTimePeriod}
-        onExport={handleExport}
+        exportTargetRef={exportRef}
+        exportFileName={`community_${timePeriod}`}
       />
 
       {/* Header Section */}

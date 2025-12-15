@@ -40,13 +40,24 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
         search: searchQuery,
         role: "student",
         limit: 20,
-      } as any) as any;
+      });
 
       const data = res.data.data || [];
-      const students: Student[] = data.map((user: any) => ({
-        id: user.id || user._id,
-        name: user.name || `${user.first_name} ${user.last_name}`,
-        email: user.email,
+      // Extended type for API response with possible additional fields
+      type ExtendedMember = {
+        id?: string;
+        _id?: string;
+        name?: string;
+        first_name?: string;
+        last_name?: string;
+        email?: string;
+        avatar?: string;
+        avatar_url?: string;
+      };
+      const students: Student[] = (data as ExtendedMember[]).map((user) => ({
+        id: user.id || user._id || "",
+        name: user.name || `${user.first_name || ""} ${user.last_name || ""}`.trim() || "Unknown",
+        email: user.email || "",
         avatar: user.avatar_url || user.avatar || "https://via.placeholder.com/48",
       }));
 

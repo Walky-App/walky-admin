@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./IdeasInsights.css";
 import { AssetIcon, ExportButton, LastUpdated } from "../../../components-v2";
+import { NoIdeasFound } from "../components/NoIdeasFound/NoIdeasFound";
 import { apiClient } from "../../../API";
 
 interface PopularIdea {
@@ -19,6 +20,7 @@ export const IdeasInsights: React.FC = () => {
   );
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
+  const exportRef = useRef<HTMLElement | null>(null);
 
   const [stats, setStats] = useState({
     totalIdeas: 0,
@@ -36,15 +38,18 @@ export const IdeasInsights: React.FC = () => {
         const [totalRes, collaboratedRes, ideasRes] = await Promise.all([
           apiClient.api.adminAnalyticsIdeasCountList({
             type: "total",
-          } as any) as any,
+          }),
           apiClient.api.adminAnalyticsIdeasCountList({
             type: "collaborated",
-          } as any) as any,
-          apiClient.api.adminV2IdeasList({ limit: 100 } as any) as any,
+          }),
+          apiClient.api.adminV2IdeasList({ limit: 100 }),
         ]);
 
-        const total = totalRes.data.count || 0;
-        const collaborated = collaboratedRes.data.count || 0;
+        // Extract count from response - API returns different fields based on type
+        const totalData = totalRes.data as { totalIdeasCreated?: number; count?: number };
+        const collaboratedData = collaboratedRes.data as { collaboratedIdeasCount?: number; count?: number };
+        const total = totalData.totalIdeasCreated || totalData.count || 0;
+        const collaborated = collaboratedData.collaboratedIdeasCount || collaboratedData.count || 0;
 
         // Calculate conversion rate (collaborated / total) * 100
         const conversion =
@@ -56,34 +61,59 @@ export const IdeasInsights: React.FC = () => {
           conversionRate: conversion,
         });
 
+        // Type assertion for accessing optional metadata fields
+        const ideasData = ideasRes.data as { lastUpdated?: string; updatedAt?: string; metadata?: { lastUpdated?: string } };
         setLastUpdated(
-          (totalRes as any)?.data?.lastUpdated ||
-            (totalRes as any)?.data?.updatedAt ||
-            (collaboratedRes as any)?.data?.lastUpdated ||
-            (collaboratedRes as any)?.data?.updatedAt ||
-            (ideasRes as any)?.data?.lastUpdated ||
-            (ideasRes as any)?.data?.updatedAt ||
-            (ideasRes as any)?.data?.metadata?.lastUpdated
+          (totalData as { lastUpdated?: string }).lastUpdated ||
+            (totalData as { updatedAt?: string }).updatedAt ||
+            (collaboratedData as { lastUpdated?: string }).lastUpdated ||
+            (collaboratedData as { updatedAt?: string }).updatedAt ||
+            ideasData.lastUpdated ||
+            ideasData.updatedAt ||
+            ideasData.metadata?.lastUpdated
         );
 
         // Fetch popular ideas
         const allIdeas = ideasRes.data.data || [];
 
-        // Sort by collaborations (assuming there is a field for it, or we use participants count)
-        const sortedIdeas = allIdeas
-          .sort(
-            (a: any, b: any) =>
-              (b.participants_count || 0) - (a.participants_count || 0)
-          )
+        // Type for extended idea data from API
+        type ExtendedIdea = {
+          id?: string;
+          ideaTitle?: string;
+          owner?: { name?: string; avatar?: string };
+          studentId?: string;
+          collaborated?: number;
+          creationDate?: string;
+          creationTime?: string;
+          isFlagged?: boolean;
+          flagReason?: string;
+        };
+
+        // Sort by collaborations
+        const normalizedIdeas = (allIdeas as ExtendedIdea[])
+          .map((idea) => {
+            const collaborations = idea.collaborated || 0;
+
+            return {
+              ...idea,
+              collaborations,
+              ownerName: idea.owner?.name || "Unknown",
+              ownerAvatar: idea.owner?.avatar || "",
+            };
+          })
+          .filter((idea) => idea.collaborations > 0);
+
+        const sortedIdeas = normalizedIdeas
+          .sort((a, b) => b.collaborations - a.collaborations)
           .slice(0, 4)
-          .map((idea: any, index: number) => ({
+          .map((idea, index: number) => ({
             rank: index + 1,
-            title: idea.title,
+            title: idea.ideaTitle || "",
             owner: {
-              name: idea.user?.name || "Unknown",
-              avatar: idea.user?.avatar || "",
+              name: idea.ownerName,
+              avatar: idea.ownerAvatar,
             },
-            collaborations: idea.participants_count || 0,
+            collaborations: idea.collaborations,
           }));
 
         setPopularIdeas(sortedIdeas);
@@ -98,10 +128,10 @@ export const IdeasInsights: React.FC = () => {
   }, [timePeriod]);
 
   return (
-    <main className="ideas-insights-page">
+    <main className="ideas-insights-page" ref={exportRef}>
       {/* Header with Export Button */}
       <div className="insights-header">
-        <ExportButton />
+        <ExportButton captureRef={exportRef} filename="ideas_insights" />
       </div>
 
       {/* Top 3 Stats Cards */}
@@ -224,22 +254,32 @@ export const IdeasInsights: React.FC = () => {
         <div className="popular-ideas-card">
           <h2 className="popular-ideas-title">Popular Ideas</h2>
           <div className="popular-ideas-list">
-            {popularIdeas.map((idea) => (
-              <div key={idea.rank} className="popular-idea-item">
-                <div className="idea-item-left">
-                  <span className="idea-rank">{idea.rank}.</span>
-                  <img
-                    src={idea.owner.avatar}
-                    alt={idea.owner.name}
-                    className="idea-owner-avatar"
-                  />
-                  <p className="idea-title">{idea.title}</p>
+            {popularIdeas.length === 0 && !loading ? (
+              <NoIdeasFound message="No popular ideas yet" />
+            ) : (
+              popularIdeas.map((idea) => (
+                <div key={idea.rank} className="popular-idea-item">
+                  <div className="idea-item-left">
+                    <span className="idea-rank">{idea.rank}.</span>
+                    {idea.owner.avatar ? (
+                      <img
+                        src={idea.owner.avatar}
+                        alt={idea.owner.name}
+                        className="idea-owner-avatar"
+                      />
+                    ) : (
+                      <div className="idea-owner-avatar placeholder">
+                        <AssetIcon name="double-users-icon" size={24} />
+                      </div>
+                    )}
+                    <p className="idea-title">{idea.title}</p>
+                  </div>
+                  <p className="idea-collaborations">
+                    {idea.collaborations} Collaborations
+                  </p>
                 </div>
-                <p className="idea-collaborations">
-                  {idea.collaborations} Collaborations
-                </p>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>

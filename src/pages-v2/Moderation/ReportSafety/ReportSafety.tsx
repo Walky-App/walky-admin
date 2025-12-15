@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import "./ReportSafety.css";
 import {
@@ -18,10 +23,11 @@ import {
   CustomToast,
   BanUserModal,
   Pagination,
+  NoData,
+  SkeletonLoader,
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
-import SkeletonLoader from "../../../components/SkeletonLoader";
 
 // ... (Interface definitions kept same, just adding Skeleton)
 interface ReportData {
@@ -33,10 +39,10 @@ interface ReportData {
   type: "Event" | "Message" | "User" | "Space" | "Idea";
   reason: string;
   reasonTag:
-  | "Harmful / Unsafe Behavior"
-  | "Made Me Uncomfortable"
-  | "Spam"
-  | "Harassment";
+    | "Harmful / Unsafe Behavior"
+    | "Made Me Uncomfortable"
+    | "Spam"
+    | "Harassment";
   status: "Pending review" | "Under evaluation" | "Resolved" | "Dismissed";
   isFlagged?: boolean;
 }
@@ -76,11 +82,21 @@ const ReportSafetySkeleton = () => (
         <table className="reports-table">
           <thead>
             <tr>
-              <th><SkeletonLoader width="150px" height="20px" /></th>
-              <th><SkeletonLoader width="100px" height="20px" /></th>
-              <th><SkeletonLoader width="80px" height="20px" /></th>
-              <th><SkeletonLoader width="150px" height="20px" /></th>
-              <th><SkeletonLoader width="100px" height="20px" /></th>
+              <th>
+                <SkeletonLoader width="150px" height="20px" />
+              </th>
+              <th>
+                <SkeletonLoader width="100px" height="20px" />
+              </th>
+              <th>
+                <SkeletonLoader width="80px" height="20px" />
+              </th>
+              <th>
+                <SkeletonLoader width="150px" height="20px" />
+              </th>
+              <th>
+                <SkeletonLoader width="100px" height="20px" />
+              </th>
               <th></th>
             </tr>
           </thead>
@@ -89,13 +105,39 @@ const ReportSafetySkeleton = () => (
               <tr key={i}>
                 <td>
                   <SkeletonLoader width="200px" height="20px" />
-                  <SkeletonLoader width="100px" height="16px" className="mt-1" />
+                  <SkeletonLoader
+                    width="100px"
+                    height="16px"
+                    className="mt-1"
+                  />
                 </td>
-                <td><SkeletonLoader width="120px" height="20px" /></td>
-                <td><SkeletonLoader width="60px" height="24px" borderRadius="16px" /></td>
-                <td><SkeletonLoader width="180px" height="24px" borderRadius="16px" /></td>
-                <td><SkeletonLoader width="120px" height="32px" borderRadius="8px" /></td>
-                <td><SkeletonLoader width="24px" height="24px" /></td>
+                <td>
+                  <SkeletonLoader width="120px" height="20px" />
+                </td>
+                <td>
+                  <SkeletonLoader
+                    width="60px"
+                    height="24px"
+                    borderRadius="16px"
+                  />
+                </td>
+                <td>
+                  <SkeletonLoader
+                    width="180px"
+                    height="24px"
+                    borderRadius="16px"
+                  />
+                </td>
+                <td>
+                  <SkeletonLoader
+                    width="120px"
+                    height="32px"
+                    borderRadius="8px"
+                  />
+                </td>
+                <td>
+                  <SkeletonLoader width="24px" height="24px" />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -109,6 +151,11 @@ export const ReportSafety: React.FC = () => {
   const { theme } = useTheme();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>(
     "Pending review,Under evaluation"
@@ -177,9 +224,9 @@ export const ReportSafety: React.FC = () => {
   const banStudentMutation = useMutation({
     mutationFn: (data: { id: string; duration: number; reason: string }) =>
       apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, {
-        lockDuration: data.duration,
         lockReason: data.reason,
-      } as any),
+        isLocked: true,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reports"] });
       setToastMessage("User banned successfully");
@@ -232,16 +279,16 @@ export const ReportSafety: React.FC = () => {
     },
   });
 
-  const reports = (reportsData?.data.data || []).map((report: any) => ({
-    id: report.id,
-    description: report.description,
-    studentId: report.studentId,
-    reportedItemId: report.reportedItemId,
-    reportDate: report.reportDate,
-    type: report.type,
-    reason: report.reason,
-    reasonTag: report.reasonTag,
-    status: report.status,
+  const reports = (reportsData?.data.data || []).map((report) => ({
+    id: report.id || "",
+    description: report.description || "",
+    studentId: report.studentId || "",
+    reportedItemId: report.reportedItemId || "",
+    reportDate: report.reportDate || "",
+    type: (report.type as ReportData["type"]) || "User",
+    reason: report.reason || "",
+    reasonTag: (report.reasonTag as ReportData["reasonTag"]) || "Spam",
+    status: (report.status as ReportData["status"]) || "Pending review",
     isFlagged: report.isFlagged,
   }));
 
@@ -298,18 +345,117 @@ export const ReportSafety: React.FC = () => {
   };
 
   const getReasonColor = (reason: string) => {
-    switch (reason) {
-      case "Harmful / Unsafe Behavior":
-        return { bg: "#ffe5e4", text: "#a4181a" };
-      case "Made Me Uncomfortable":
-        return { bg: "#ffe2fa", text: "#91127c" };
-      case "Spam":
-        return { bg: "#fff3d6", text: "#8f5400" };
-      case "Harassment":
-        return { bg: "#ffe9f5", text: "#ba0066" };
-      default:
-        return { bg: "#f4f5f7", text: "#676d70" };
+    const palette = {
+      pinkBg: "#ffe2fa",
+      pinkText: "#91127c",
+      redBg: "#ffe5e4",
+      redText: "#a4181a",
+      blueBg: "#e5f2ff",
+      blueText: "#0a4e8c",
+      orangeBg: "#fff4e4",
+      orangeText: "#8f5400",
+      yellowBg: "#fffad6",
+      yellowText: "#7c670a",
+      purpleBg: "#f2e5ff",
+      purpleText: "#5a1a8c",
+      greyBg: "#f7f7f7",
+      greyText: "#6a6a6a",
+    };
+
+    const normalized = reason?.toLowerCase().trim() || "";
+
+    if (
+      normalized.includes("harassment") ||
+      normalized.includes("threat") ||
+      normalized.includes("hate speech")
+    ) {
+      return { bg: palette.pinkBg, text: palette.pinkText };
     }
+
+    if (normalized.includes("made me uncomfortable")) {
+      return { bg: palette.pinkBg, text: palette.pinkText };
+    }
+
+    if (
+      normalized.includes("explicit") ||
+      normalized.includes("nudity") ||
+      normalized.includes("inappropriate")
+    ) {
+      return { bg: palette.blueBg, text: palette.blueText };
+    }
+
+    if (
+      normalized.includes("self-injury") ||
+      normalized.includes("self injury") ||
+      normalized.includes("harmful behavior")
+    ) {
+      return { bg: palette.redBg, text: palette.redText };
+    }
+
+    if (
+      normalized.includes("unsafe behavior") ||
+      normalized.includes("harmful / unsafe")
+    ) {
+      return { bg: palette.redBg, text: palette.redText };
+    }
+
+    if (normalized.includes("unsafe or harmful")) {
+      return { bg: palette.yellowBg, text: palette.yellowText };
+    }
+
+    if (
+      normalized.includes("spam") ||
+      normalized.includes("fake profile") ||
+      normalized.includes("misuse") ||
+      normalized.includes("solicitation") ||
+      normalized.includes("sales")
+    ) {
+      return { bg: palette.yellowBg, text: palette.orangeText };
+    }
+
+    if (
+      normalized.includes("underage") ||
+      normalized.includes("policy violation")
+    ) {
+      return { bg: palette.purpleBg, text: palette.purpleText };
+    }
+
+    if (
+      normalized.includes("discriminatory") ||
+      normalized.includes("exclusionary")
+    ) {
+      return { bg: palette.purpleBg, text: palette.purpleText };
+    }
+
+    if (normalized.includes("duplicate event")) {
+      return { bg: palette.orangeBg, text: palette.orangeText };
+    }
+
+    if (
+      normalized.includes("duplicate") &&
+      (normalized.includes("impersonation") ||
+        normalized.includes("unauthorized"))
+    ) {
+      return { bg: palette.purpleBg, text: palette.purpleText };
+    }
+
+    if (normalized.includes("intellectual")) {
+      return { bg: palette.orangeBg, text: palette.orangeText };
+    }
+
+    if (normalized.includes("misinformation")) {
+      return { bg: palette.purpleBg, text: palette.purpleText };
+    }
+
+    if (normalized.includes("inappropriate or offensive")) {
+      return { bg: palette.orangeBg, text: palette.orangeText };
+    }
+
+    if (normalized.includes("other")) {
+      return { bg: palette.greyBg, text: palette.greyText };
+    }
+
+    return { bg: palette.greyBg, text: palette.greyText };
   };
 
   if (isReportsLoading || isStatsLoading) {
@@ -386,7 +532,7 @@ export const ReportSafety: React.FC = () => {
             <div className="reports-filters">
               <SearchInput
                 value={searchQuery}
-                onChange={setSearchQuery}
+                onChange={handleSearchChange}
                 placeholder="Search"
                 variant="secondary"
               />
@@ -430,7 +576,7 @@ export const ReportSafety: React.FC = () => {
         {/* Reports Table */}
         <div className="reports-table-wrapper">
           <table className="reports-table">
-            <thead>
+            <thead style={{ opacity: reports.length === 0 ? 0.4 : 1 }}>
               <tr>
                 <th>Report Description</th>
                 <th>
@@ -452,114 +598,129 @@ export const ReportSafety: React.FC = () => {
             <div className="content-space-divider" />
 
             <tbody>
-              {reports.map((report, index) => {
-                const reasonColors = getReasonColor(report.reasonTag);
-                return (
-                  <React.Fragment key={report.id}>
-                    <tr>
-                      <td>
-                        <div className="report-description-cell">
-                          <div className="report-content-wrapper">
-                            <p
-                              className="report-description"
-                              onClick={() => handleViewReport(report)}
-                            >
-                              {report.description}
-                            </p>
-                            <CopyableId
-                              id={report.studentId}
-                              label="Student ID"
-                              variant="secondary"
-                              iconColor="#ACB6BA"
-                              testId="copy-student-id"
-                            />
+              {reports.length === 0 ? (
+                <tr>
+                  <td colSpan={6} style={{ padding: "32px 16px" }}>
+                    <NoData
+                      iconName="nd-report-icon"
+                      iconColor="#546fd9"
+                      iconSize={28}
+                      message="No reported users or content"
+                    />
+                  </td>
+                </tr>
+              ) : (
+                reports.map((report, index) => {
+                  const reasonColors = getReasonColor(report.reasonTag);
+                  return (
+                    <React.Fragment key={report.id}>
+                      <tr>
+                        <td>
+                          <div className="report-description-cell">
+                            <div className="report-content-wrapper">
+                              <p
+                                className="report-description"
+                                onClick={() => handleViewReport(report)}
+                              >
+                                {report.description}
+                              </p>
+                              <CopyableId
+                                id={report.studentId}
+                                label="Student ID"
+                                variant="secondary"
+                                iconColor="#ACB6BA"
+                                testId="copy-student-id"
+                              />
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="report-date">{report.reportDate}</td>
-                      <td className="report-type">{report.type}</td>
-                      <td>
-                        <div
-                          className="reason-badge"
-                          style={{
-                            background: reasonColors.bg,
-                            color: reasonColors.text,
-                          }}
-                        >
-                          {report.reasonTag
-                            .split("/")
-                            .map((line: string, idx: number) => (
-                              <span key={idx}>
-                                {line}
-                                {idx === 0 && "/"}
-                              </span>
-                            ))}
-                        </div>
-                      </td>
-                      <td>
-                        <StatusDropdown
-                          value={report.status}
-                          onChange={(newStatus) =>
-                            handleStatusChange(report.id, newStatus)
-                          }
-                          onNoteRequired={(newStatus) =>
-                            handleNoteRequired(report.id, newStatus)
-                          }
-                          options={[
-                            "Pending review",
-                            "Under evaluation",
-                            "Resolved",
-                            "Dismissed",
-                          ]}
-                          testId={`status-dropdown-${report.id}`}
-                        />
-                      </td>
-                      <td>
-                        <ActionDropdown
-                          testId="report-options"
-                          items={[
-                            {
-                              label: "Report details",
-                              onClick: (e) => {
-                                e.stopPropagation();
-                                handleViewReport(report);
+                        </td>
+                        <td className="report-date">{report.reportDate}</td>
+                        <td className="report-type">{report.type}</td>
+                        <td>
+                          <div
+                            className="reason-badge"
+                            style={{
+                              background: reasonColors.bg,
+                              color: reasonColors.text,
+                            }}
+                          >
+                            {report.reasonTag
+                              .split("/")
+                              .map((line: string, idx: number) => (
+                                <span key={idx}>
+                                  {line}
+                                  {idx === 0 && "/"}
+                                </span>
+                              ))}
+                          </div>
+                        </td>
+                        <td>
+                          <StatusDropdown
+                            value={report.status}
+                            onChange={(newStatus) =>
+                              handleStatusChange(report.id, newStatus)
+                            }
+                            onNoteRequired={(newStatus) =>
+                              handleNoteRequired(report.id, newStatus)
+                            }
+                            options={[
+                              "Pending review",
+                              "Under evaluation",
+                              "Resolved",
+                              "Dismissed",
+                            ]}
+                            testId={`status-dropdown-${report.id}`}
+                          />
+                        </td>
+                        <td>
+                          <ActionDropdown
+                            testId="report-options"
+                            items={[
+                              {
+                                label: "Report details",
+                                onClick: (e) => {
+                                  e.stopPropagation();
+                                  handleViewReport(report);
+                                },
                               },
-                            },
-                            {
-                              label: "Flag",
-                              icon: "flag-icon",
-                              iconSize: 18,
-                              onClick: (e) => {
-                                e.stopPropagation();
-                                setSelectedReport(report);
-                                setIsFlagModalOpen(true);
+                              {
+                                label: "Flag",
+                                icon: "flag-icon",
+                                iconSize: 18,
+                                onClick: (e) => {
+                                  e.stopPropagation();
+                                  setSelectedReport(report);
+                                  setIsFlagModalOpen(true);
+                                },
                               },
-                            },
-                          ]}
-                        />
-                      </td>
-                    </tr>
-                    {index < reports.length - 1 && !report.isFlagged && (
-                      <tr className="report-divider-row">
-                        <td colSpan={5}>
-                          <Divider />
+                            ]}
+                          />
                         </td>
                       </tr>
-                    )}
-                  </React.Fragment>
-                );
-              })}
+                      {index < reports.length - 1 && !report.isFlagged && (
+                        <tr className="report-divider-row">
+                          <td colSpan={5}>
+                            <Divider />
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
 
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalEntries={totalEntries}
-          entriesPerPage={10}
-          onPageChange={setCurrentPage}
-        />
+        {totalEntries > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalEntries={totalEntries}
+            entriesPerPage={10}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
 
       <WriteNoteModal
@@ -582,6 +743,11 @@ export const ReportSafety: React.FC = () => {
               name: selectedReportDetails.reportedUser?.name || "Unknown",
               id: selectedReportDetails.reportedUser?.id || "N/A",
               avatar: selectedReportDetails.reportedUser?.avatar,
+              email:
+                selectedReportDetails.reportedUser?.email ||
+                selectedReportDetails.reportedUser?.emailAddress ||
+                selectedReportDetails.reportedUser?.mail ||
+                "",
               isBanned: selectedReportDetails.reportedUser?.isBanned || false,
               isDeactivated:
                 selectedReportDetails.reportedUser?.isDeactivated || false,
@@ -601,32 +767,32 @@ export const ReportSafety: React.FC = () => {
               event:
                 selectedReport.type === "Event"
                   ? {
-                    image: selectedReportDetails.content?.image_url,
-                    date: selectedReportDetails.content?.date,
-                    title: selectedReportDetails.content?.name,
-                    location: selectedReportDetails.content?.location,
-                  }
+                      image: selectedReportDetails.content?.image_url,
+                      date: selectedReportDetails.content?.date,
+                      title: selectedReportDetails.content?.name,
+                      location: selectedReportDetails.content?.location,
+                    }
                   : undefined,
               idea:
                 selectedReport.type === "Idea"
                   ? {
-                    title: selectedReportDetails.content?.title,
-                    tag: selectedReportDetails.content?.looking_for || "N/A",
-                    description: selectedReportDetails.content?.description,
-                    ideaBy:
-                      selectedReportDetails.reportedUser?.name || "Unknown",
-                    avatar: selectedReportDetails.reportedUser?.avatar || "",
-                  }
+                      title: selectedReportDetails.content?.title,
+                      tag: selectedReportDetails.content?.looking_for || "N/A",
+                      description: selectedReportDetails.content?.description,
+                      ideaBy:
+                        selectedReportDetails.reportedUser?.name || "Unknown",
+                      avatar: selectedReportDetails.reportedUser?.avatar || "",
+                    }
                   : undefined,
               space:
                 selectedReport.type === "Space"
                   ? {
-                    title: selectedReportDetails.content?.name,
-                    description: selectedReportDetails.content?.description,
-                    image: selectedReportDetails.content?.image_url,
-                    category: "Other", // Placeholder
-                    memberCount: "0", // Placeholder
-                  }
+                      title: selectedReportDetails.content?.name,
+                      description: selectedReportDetails.content?.description,
+                      image: selectedReportDetails.content?.image_url,
+                      category: "Other", // Placeholder
+                      memberCount: "0", // Placeholder
+                    }
                   : undefined,
             },
             safetyRecord: {

@@ -2,7 +2,9 @@
   background-color: #ffffff;
   border: none;
   border-radius: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 0 12px 8px;
 }
 
 .event-table {
@@ -72,17 +74,22 @@
 
 .event-table tbody tr.event-row-flagged {
   background-color: #fff3f2;
-  border-bottom: none;
+  border-bottom: 1px solid #f1f4f9;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06), inset 0 1px 0 #f1f4f9,
+    inset 0 -1px 0 #f1f4f9;
 }
 
 .event-table tbody tr.event-row-flagged td {
   background-color: #fff3f2;
   border-bottom: none;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .event-table tbody tr.event-row-flagged td:first-child {
   border-top-left-radius: 16px;
   border-bottom-left-radius: 16px;
+  padding-left: 35px;
   position: relative;
 }
 
@@ -98,6 +105,7 @@
   color: #1d1b20;
   opacity: 0.8;
   padding: 12px 16px;
+  vertical-align: middle;
 }
 
 .event-table td:last-child {
@@ -222,14 +230,16 @@
   gap: 4px;
   position: relative;
   z-index: 1;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .event-date {
   font-family: "Lato", sans-serif;
   font-size: 14px;
   font-weight: 600;
-  color: #1d1b20;
-  opacity: 0.8;
+  color: #1d1b20 !important;
+  opacity: 1;
   line-height: 100%;
   position: relative;
 }
@@ -238,7 +248,7 @@
   font-family: "Lato", sans-serif;
   font-size: 12px;
   font-weight: 400;
-  color: #5b6168;
+  color: #5b6168 !important;
   opacity: 1;
   line-height: 100%;
   position: relative;
@@ -382,7 +392,7 @@
 }
 
 [data-theme="dark"] .event-time {
-  color: #b0b0b0;
+  color: #b0b0b0 !important;
 }
 
 [data-theme="dark"] .event-dropdown-menu {
@@ -396,4 +406,15 @@
 
 [data-theme="dark"] .event-dropdown-item:hover {
   background-color: #3a3a3a;
+}
+
+/* Accessibility: Focus-visible styles */
+.event-table button:focus-visible,
+.event-table a:focus-visible,
+.event-table input:focus-visible,
+.event-table select:focus-visible,
+.event-table [role="button"]:focus-visible,
+.event-table [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }

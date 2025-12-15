@@ -42,6 +42,7 @@ import {
   // CreateRoleRequest,
   // UpdateRoleRequest,
   AssignRoleRequest,
+  RoleName,
 } from "../types/role";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -139,7 +140,11 @@ const RolesManagement: React.FC = () => {
   // Assign role mutation
   const assignRoleMutation = useMutation({
     mutationFn: ({ userId, data }: { userId: string; data: AssignRoleRequest }) =>
-      rolesService.assignRole(userId, data),
+      rolesService.assignRole(userId, {
+        role: data.role as RoleName,
+        campus_id: data.campus_id,
+        school_id: data.school_id,
+      }),
     onSuccess: () => {
       handleCloseAssignModal();
     },
@@ -155,8 +160,8 @@ const RolesManagement: React.FC = () => {
     if (!searchTerm) return roles;
     return roles.filter(
       (role) =>
-        role.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        role.display_name.toLowerCase().includes(searchTerm.toLowerCase())
+        (role.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+        (role.display_name?.toLowerCase() || "").includes(searchTerm.toLowerCase())
     );
   }, [roles, searchTerm]);
 
@@ -168,8 +173,8 @@ const RolesManagement: React.FC = () => {
       const matchingPerms = perms.filter(
         (p) =>
           resource.toLowerCase().includes(permissionSearch.toLowerCase()) ||
-          p.action.toLowerCase().includes(permissionSearch.toLowerCase()) ||
-          p.description.toLowerCase().includes(permissionSearch.toLowerCase())
+          (p.action?.toLowerCase() || "").includes(permissionSearch.toLowerCase()) ||
+          (p.description?.toLowerCase() || "").includes(permissionSearch.toLowerCase())
       );
       if (matchingPerms.length > 0) {
         filtered[resource] = matchingPerms;
@@ -260,7 +265,7 @@ const RolesManagement: React.FC = () => {
   };
 
   const confirmDelete = () => {
-    if (roleToDelete) {
+    if (roleToDelete?._id) {
       deleteRoleMutation.mutate(roleToDelete._id);
     }
   };
@@ -376,10 +381,10 @@ const RolesManagement: React.FC = () => {
                           </CBadge>
                         </CTableDataCell>
                         <CTableDataCell>
-                          <CBadge color="secondary">{role.permissions.length} permissions</CBadge>
+                          <CBadge color="secondary">{role.permissions?.length || 0} permissions</CBadge>
                         </CTableDataCell>
                         <CTableDataCell>
-                          {role.is_system_role ? (
+                          {(role as Role).is_system_role ? (
                             <CBadge color="warning">System</CBadge>
                           ) : (
                             <CBadge color="success">Custom</CBadge>
@@ -395,7 +400,7 @@ const RolesManagement: React.FC = () => {
                           >
                             <CIcon icon={cilPencil} />
                           </CButton> */}
-                          {!role.is_system_role && (
+                          {!(role as Role).is_system_role && (
                             <CButton
                               color="danger"
                               size="sm"
@@ -439,8 +444,8 @@ const RolesManagement: React.FC = () => {
                         </CTableRow>
                       </CTableHead>
                       <CTableBody>
-                        {perms.map((perm) => (
-                          <CTableRow key={perm.code}>
+                        {perms.map((perm: { _id?: string; action?: string; description?: string; resource?: string; code?: string }) => (
+                          <CTableRow key={perm.code || perm._id}>
                             <CTableDataCell>
                               <CBadge color="info">{perm.action}</CBadge>
                             </CTableDataCell>

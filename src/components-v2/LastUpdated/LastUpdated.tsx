@@ -37,7 +37,9 @@ export const LastUpdated: React.FC<LastUpdatedProps> = ({
         >
           Don't see the data you are looking for?{" "}
           <a
-            href="#"
+            href="https://walkyapp.com/contact/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="suggest-link"
             style={{ color: theme.colors.primary }}
           >

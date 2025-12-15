@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   gap: 50px;
-  padding: 32px 32px 32px 0;
   background-color: #ffffff;
   min-height: 100vh;
 }
@@ -107,4 +106,15 @@
   .active-students-pagination {
     padding: 16px 0;
   }
+}
+
+/* Accessibility: Focus-visible styles */
+.active-students-page button:focus-visible,
+.active-students-page a:focus-visible,
+.active-students-page input:focus-visible,
+.active-students-page select:focus-visible,
+.active-students-page [role="button"]:focus-visible,
+.active-students-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }

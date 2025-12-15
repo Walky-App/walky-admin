@@ -5,7 +5,9 @@ import { StatusBadge } from "../../pages-v2/Campus/components/StatusBadge";
 import { CustomToast } from "../CustomToast/CustomToast";
 import { BanUserModal } from "../BanUserModal/BanUserModal";
 import { DeactivateUserModal } from "../DeactivateUserModal/DeactivateUserModal";
+import { UnbanUserModal } from "../UnbanUserModal/UnbanUserModal";
 import { CopyableId } from "../CopyableId/CopyableId";
+import { formatMemberSince } from "../../lib/utils/dateUtils";
 import "./StudentProfileModal.css";
 
 export interface StudentProfileData {
@@ -64,12 +66,16 @@ interface StudentProfileModalProps {
   visible: boolean;
   student: StudentProfileData | null;
   onClose: () => void;
-  onBanUser?: (student: StudentProfileData, duration: string, reason: string) => void;
+  onBanUser?: (
+    student: StudentProfileData,
+    duration: string,
+    reason: string
+  ) => void;
   onDeactivateUser?: (student: StudentProfileData) => void;
+  onUnbanUser?: (student: StudentProfileData) => void;
 }
 
 type HistoryTab = "ban" | "report" | "block";
-type ModalView = "profile" | "ban" | "deactivate";
 
 export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   visible,
@@ -77,12 +83,32 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   onClose,
   onBanUser,
   onDeactivateUser,
+  onUnbanUser,
 }) => {
   const [activeTab, setActiveTab] = useState<HistoryTab>("ban");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [currentView, setCurrentView] = useState<ModalView>("profile");
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isBanModalOpen, setIsBanModalOpen] = useState(false);
+  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+  const [isUnbanModalOpen, setIsUnbanModalOpen] = useState(false);
+
+  const formatEmail = (email: string) => {
+    const MAX_LENGTH = 32;
+    if (!email || email.length <= MAX_LENGTH) return email;
+
+    const atIndex = email.indexOf("@");
+    if (atIndex === -1) {
+      return `${email.slice(0, 12)}...${email.slice(-10)}`;
+    }
+
+    const localPart = email.slice(0, atIndex);
+    const domainPart = email.slice(atIndex);
+    const trimmedLocal = localPart.slice(0, 12);
+    const trimmedDomain =
+      domainPart.length > 16 ? domainPart.slice(-16) : domainPart;
+
+    return `${trimmedLocal}...${trimmedDomain}`;
+  };
 
   if (!student) return null;
 
@@ -92,56 +118,41 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
     setShowToast(true);
   };
 
-
-
-
-
   const handleBanClick = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentView("ban");
-      setIsTransitioning(false);
-    }, 300);
+    setIsBanModalOpen(true);
   };
 
   const handleDeactivateClick = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentView("deactivate");
-      setIsTransitioning(false);
-    }, 300);
+    setIsDeactivateModalOpen(true);
   };
 
-  const handleBackToProfile = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentView("profile");
-      setIsTransitioning(false);
-    }, 300);
-  };
-
-  const handleConfirmBan = (reason: string, duration: string) => {
-    console.log(
-      "Banning user:",
-      student,
-      "Reason:",
-      reason,
-      "Duration:",
-      duration
-    );
+  const handleConfirmBan = (
+    duration: string,
+    reason: string,
+    _resolveReports: boolean
+  ) => {
     onBanUser?.(student, duration, reason);
-    handleBackToProfile();
+    setIsBanModalOpen(false);
   };
 
   const handleConfirmDeactivate = () => {
-    console.log("Deactivating user:", student);
     onDeactivateUser?.(student);
-    handleBackToProfile();
+    setIsDeactivateModalOpen(false);
+  };
+
+  const handleUnbanClick = () => {
+    setIsUnbanModalOpen(true);
+  };
+
+  const handleConfirmUnban = () => {
+    onUnbanUser?.(student);
+    setIsUnbanModalOpen(false);
   };
 
   const handleModalClose = () => {
-    setCurrentView("profile");
-    setIsTransitioning(false);
+    setIsBanModalOpen(false);
+    setIsDeactivateModalOpen(false);
+    setIsUnbanModalOpen(false);
     onClose();
   };
 
@@ -300,251 +311,260 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   };
 
   return (
-    <CModal
-      visible={visible}
-      onClose={handleModalClose}
-      alignment="center"
-      size="lg"
-      className="student-profile-modal"
-    >
-      <CModalBody className="student-profile-modal-body">
-        <button
-          data-testid="profile-close-icon"
-          className="profile-close-icon"
-          onClick={handleModalClose}
-          aria-label="Close modal"
-        >
-          <AssetIcon name="close-button" size={16} color="#5B6168" />
-        </button>
+    <>
+      <CModal
+        visible={visible}
+        onClose={handleModalClose}
+        alignment="center"
+        size="lg"
+        className={`student-profile-modal ${
+          isBanModalOpen || isDeactivateModalOpen ? "profile-hidden" : ""
+        }`}
+      >
+        <CModalBody className="student-profile-modal-body">
+          <button
+            data-testid="profile-close-icon"
+            className="profile-close-icon"
+            onClick={handleModalClose}
+            aria-label="Close modal"
+          >
+            <AssetIcon name="close-button" size={16} color="#5B6168" />
+          </button>
 
-        {/* View de Profile */}
-        <div
-          className={`profile-container ${currentView === "profile" ? "view-active" : "view-hidden"
-            } ${isTransitioning ? "view-transitioning" : ""}`}
-        >
-          <div className="profile-header">
-            <div className="profile-user-section">
-              <div className="profile-avatar-large">
-                {Boolean(student.isFlagged) && (
-                  <div className="profile-flag-icon">
-                    <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
-                  </div>
-                )}
-                {student.avatar && !student.avatar.match(/^[A-Z]$/) ? (
-                  <img src={student.avatar} alt={student.name} />
-                ) : (
-                  <div className="profile-avatar-placeholder">
-                    {student.avatar || student.name.charAt(0)}
-                  </div>
-                )}
-              </div>
-
-              <div className="profile-user-info">
-                <h2 className="profile-name">{student.name}</h2>
-
-                <div className="profile-email-row">
-                  <span className="profile-email">{student.email}</span>
-                  <button
-                    data-testid="profile-copy-email-btn"
-                    className="profile-copy-btn"
-                    onClick={handleCopyEmail}
-                    title="Copy email"
-                    aria-label="Copy email to clipboard"
-                  >
-                    <AssetIcon name="copy-icon" size={16} color="#ACB6BA" />
-                  </button>
-                </div>
-
-                <div className="profile-userid-row">
-                  <CopyableId
-                    id={student.userId}
-                    collapsed={true}
-                    showToast={true}
-                    testId="profile-userid"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="profile-action-buttons">
-              <button
-                data-testid="profile-deactivate-btn"
-                className="profile-btn profile-btn-deactivate"
-                onClick={handleDeactivateClick}
-              >
-                Deactivate user
-              </button>
-              <button
-                data-testid="profile-ban-btn"
-                className="profile-btn profile-btn-ban"
-                onClick={handleBanClick}
-              >
-                Ban user
-              </button>
-            </div>
-          </div>
-
-          <div className="profile-details-container">
-            <div className="profile-details-row">
-              <span className="profile-detail-label">Area of study:</span>
-              <span className="profile-detail-value">
-                {student.areaOfStudy || "N/A"}
-              </span>
-            </div>
-
-            <div className="profile-details-row">
-              <span className="profile-detail-label">Status:</span>
-              <StatusBadge status={student.status} />
-            </div>
-
-            <div className="profile-details-row">
-              <span className="profile-detail-label">Member since:</span>
-              <span className="profile-detail-value">
-                {student.memberSince}
-              </span>
-            </div>
-
-            <div className="profile-details-row">
-              <span className="profile-detail-label">Last login:</span>
-              <span className="profile-detail-value">{student.lastLogin}</span>
-            </div>
-
-            <div className="profile-details-row">
-              <span className="profile-detail-label">Total peers:</span>
-              <span className="profile-detail-value">
-                {student.totalPeers || 0}
-              </span>
-            </div>
-
-            <div className="profile-details-row">
-              <span className="profile-detail-label">Bio:</span>
-              <span className="profile-detail-value">
-                {student.bio || "No bio available"}
-              </span>
-            </div>
-
-            {student.interests && student.interests.length > 0 && (
-              <div className="profile-interests-section">
-                <span className="profile-detail-label">Interests:</span>
-                <div className="profile-interests-list">
-                  {student.interests.map((interest, idx) => (
-                    <div key={idx} className="profile-interest-chip">
-                      {interest}
+          {/* View de Profile */}
+          <div className="profile-container">
+            <div className="profile-header">
+              <div className="profile-user-section">
+                <div className="profile-avatar-large">
+                  {Boolean(student.isFlagged) && (
+                    <div className="profile-flag-icon">
+                      <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
                     </div>
-                  ))}
+                  )}
+                  {student.avatar && !student.avatar.match(/^[A-Z]$/) ? (
+                    <img src={student.avatar} alt={student.name} />
+                  ) : (
+                    <div className="profile-avatar-placeholder">
+                      {student.avatar || student.name.charAt(0)}
+                    </div>
+                  )}
+                </div>
+
+                <div className="profile-user-info">
+                  <h2 className="profile-name">{student.name}</h2>
+
+                  <div className="profile-email-row">
+                    <span className="profile-email" title={student.email}>
+                      {formatEmail(student.email)}
+                    </span>
+                    <button
+                      data-testid="profile-copy-email-btn"
+                      className="profile-copy-btn"
+                      onClick={handleCopyEmail}
+                      title="Copy email"
+                      aria-label="Copy email to clipboard"
+                    >
+                      <AssetIcon name="copy-icon" size={16} color="#ACB6BA" />
+                    </button>
+                  </div>
+
+                  <div className="profile-userid-row">
+                    <CopyableId
+                      id={student.userId}
+                      collapsed={true}
+                      showToast={true}
+                      testId="profile-userid"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="profile-action-buttons">
+                {student.status !== "banned" && (
+                  <button
+                    data-testid="profile-deactivate-btn"
+                    className="profile-btn profile-btn-deactivate"
+                    onClick={handleDeactivateClick}
+                  >
+                    Deactivate user
+                  </button>
+                )}
+                {student.status === "banned" ? (
+                  <button
+                    data-testid="profile-unban-btn"
+                    className="profile-btn profile-btn-unban"
+                    onClick={handleUnbanClick}
+                  >
+                    Unban user
+                  </button>
+                ) : (
+                  <button
+                    data-testid="profile-ban-btn"
+                    className="profile-btn profile-btn-ban"
+                    onClick={handleBanClick}
+                  >
+                    Ban user
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="profile-details-container">
+              <div className="profile-details-row">
+                <span className="profile-detail-label">Area of study:</span>
+                <span className="profile-detail-value">
+                  {student.areaOfStudy || "N/A"}
+                </span>
+              </div>
+
+              <div className="profile-details-row">
+                <span className="profile-detail-label">Status:</span>
+                <StatusBadge status={student.status} />
+              </div>
+
+              <div className="profile-details-row">
+                <span className="profile-detail-label">Member since:</span>
+                <span className="profile-detail-value">
+                  {formatMemberSince(student.memberSince)}
+                </span>
+              </div>
+
+              <div className="profile-details-row">
+                <span className="profile-detail-label">Last login:</span>
+                <span className="profile-detail-value">
+                  {student.lastLogin}
+                </span>
+              </div>
+
+              <div className="profile-details-row">
+                <span className="profile-detail-label">Total peers:</span>
+                <span className="profile-detail-value">
+                  {student.totalPeers || 0}
+                </span>
+              </div>
+
+              <div className="profile-details-row">
+                <span className="profile-detail-label">Bio:</span>
+                <span className="profile-detail-value">
+                  {student.bio || "No bio available"}
+                </span>
+              </div>
+
+              {student.interests && student.interests.length > 0 && (
+                <div className="profile-interests-section">
+                  <span className="profile-detail-label">Interests:</span>
+                  <div className="profile-interests-list">
+                    {student.interests.map((interest, idx) => (
+                      <div key={idx} className="profile-interest-chip">
+                        {interest}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {student.status === "banned" && (
+              <div className="profile-ban-info-container">
+                <div className="profile-details-row">
+                  <span className="profile-detail-label">Status:</span>
+                  <div className="profile-banned-badge">Banned</div>
+                </div>
+
+                <div className="profile-details-row">
+                  <span className="profile-detail-label">Banned by:</span>
+                  <span className="profile-detail-value">
+                    {student.bannedBy || "N/A"}
+                    {student.bannedByEmail && ` (${student.bannedByEmail})`}
+                  </span>
+                </div>
+
+                <div className="profile-details-row">
+                  <span className="profile-detail-label">Ban date:</span>
+                  <span className="profile-detail-value">
+                    {student.bannedDate || "N/A"}
+                    {student.bannedTime && ` - ${student.bannedTime}`}
+                  </span>
                 </div>
               </div>
             )}
-          </div>
 
-          {student.status === "banned" && (
-            <div className="profile-ban-info-container">
-              <div className="profile-details-row">
-                <span className="profile-detail-label">Status:</span>
-                <div className="profile-banned-badge">Banned</div>
+            <div className="profile-history-section">
+              <div className="profile-history-tabs">
+                <button
+                  data-testid="profile-history-ban-tab"
+                  className={`profile-history-tab ${
+                    activeTab === "ban" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("ban")}
+                >
+                  Ban history
+                </button>
+                <button
+                  data-testid="profile-history-report-tab"
+                  className={`profile-history-tab ${
+                    activeTab === "report" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("report")}
+                >
+                  Report history
+                </button>
+                <button
+                  data-testid="profile-history-block-tab"
+                  className={`profile-history-tab ${
+                    activeTab === "block" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("block")}
+                >
+                  Block history
+                </button>
               </div>
 
-              <div className="profile-details-row">
-                <span className="profile-detail-label">Banned by:</span>
-                <span className="profile-detail-value">
-                  {student.bannedBy || "N/A"}
-                  {student.bannedByEmail && ` (${student.bannedByEmail})`}
-                </span>
-              </div>
-
-              <div className="profile-details-row">
-                <span className="profile-detail-label">Ban date:</span>
-                <span className="profile-detail-value">
-                  {student.bannedDate || "N/A"}
-                  {student.bannedTime && ` - ${student.bannedTime}`}
-                </span>
+              <div className="profile-history-content">
+                {renderHistoryContent()}
               </div>
             </div>
-          )}
 
-          <div className="profile-history-section">
-            <div className="profile-history-tabs">
+            <div className="profile-close-button-container">
               <button
-                data-testid="profile-history-ban-tab"
-                className={`profile-history-tab ${activeTab === "ban" ? "active" : ""
-                  }`}
-                onClick={() => setActiveTab("ban")}
+                data-testid="profile-close-footer-btn"
+                className="profile-close-button"
+                onClick={handleModalClose}
               >
-                Ban history
-              </button>
-              <button
-                data-testid="profile-history-report-tab"
-                className={`profile-history-tab ${activeTab === "report" ? "active" : ""
-                  }`}
-                onClick={() => setActiveTab("report")}
-              >
-                Report history
-              </button>
-              <button
-                data-testid="profile-history-block-tab"
-                className={`profile-history-tab ${activeTab === "block" ? "active" : ""
-                  }`}
-                onClick={() => setActiveTab("block")}
-              >
-                Block history
+                Close
               </button>
             </div>
-
-            <div className="profile-history-content">
-              {renderHistoryContent()}
-            </div>
           </div>
+        </CModalBody>
 
-          <div className="profile-close-button-container">
-            <button
-              data-testid="profile-close-footer-btn"
-              className="profile-close-button"
-              onClick={handleModalClose}
-            >
-              Close
-            </button>
-          </div>
-        </div>
+        {showToast && (
+          <CustomToast
+            message={toastMessage}
+            onClose={() => setShowToast(false)}
+          />
+        )}
+      </CModal>
 
-        {/* View de Ban User */}
-        <div
-          className={`modal-view-container ${currentView === "ban" ? "view-active" : "view-hidden"
-            } ${isTransitioning ? "view-transitioning" : ""}`}
-        >
-          {currentView === "ban" && (
-            <BanUserModal
-              visible={true}
-              onClose={handleBackToProfile}
-              onConfirm={handleConfirmBan}
-              userName={student.name}
-              embedded={true}
-            />
-          )}
-        </div>
+      <BanUserModal
+        visible={isBanModalOpen}
+        onClose={() => setIsBanModalOpen(false)}
+        onConfirm={handleConfirmBan}
+        userName={student.name}
+      />
 
-        {/* View de Deactivate User */}
-        <div
-          className={`modal-view-container ${currentView === "deactivate" ? "view-active" : "view-hidden"
-            } ${isTransitioning ? "view-transitioning" : ""}`}
-        >
-          {currentView === "deactivate" && (
-            <DeactivateUserModal
-              visible={true}
-              onClose={handleBackToProfile}
-              onConfirm={handleConfirmDeactivate}
-              userName={student.name}
-              embedded={true}
-            />
-          )}
-        </div>
-      </CModalBody>
+      <DeactivateUserModal
+        visible={isDeactivateModalOpen}
+        onClose={() => setIsDeactivateModalOpen(false)}
+        onConfirm={handleConfirmDeactivate}
+        userName={student.name}
+      />
 
-      {showToast && (
-        <CustomToast
-          message={toastMessage}
-          onClose={() => setShowToast(false)}
-        />
-      )}
-    </CModal>
+      <UnbanUserModal
+        visible={isUnbanModalOpen}
+        onClose={() => setIsUnbanModalOpen(false)}
+        onConfirm={handleConfirmUnban}
+        userName={student.name}
+      />
+    </>
   );
 };

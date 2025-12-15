@@ -11,6 +11,7 @@ import { CopyableId } from "../../../components-v2/CopyableId";
 import "./Ambassadors.css";
 import { useTheme } from "../../../hooks/useTheme";
 import { apiClient } from "../../../API";
+import { formatMemberSince } from "../../../lib/utils/dateUtils";
 
 interface AmbassadorData {
   id: string;
@@ -49,35 +50,41 @@ export const Ambassadors: React.FC = () => {
   const fetchAmbassadors = async () => {
     setLoading(true);
     try {
-      const res = (await apiClient.ambassadors.ambassadorsList({
-        page: currentPage,
-        limit: 10,
-      } as any)) as any;
+      // Note: Backend doesn't support pagination, fetches all ambassadors
+      const res = await apiClient.ambassadors.ambassadorsList();
 
       const data = res.data.data || [];
 
-      const transformedAmbassadors = data.map((a: any) => ({
-        id: a._id,
-        studentId: a._id || "Unknown",
-        name: a.name || "Unknown",
-        avatar: a.avatar_url || "",
-        major: a.major || "Unknown",
-        ambassadorSince: a.createdAt
-          ? new Date(a.createdAt).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })
-          : "Unknown",
-        memberSince: a.createdAt
-          ? new Date(a.createdAt).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })
-          : "Unknown",
-        status: a.is_active ? "Active" : "Inactive",
-      }));
+      // Extended type for API response with possible additional fields
+      type ExtendedAmbassador = {
+        _id?: string;
+        name?: string;
+        avatar_url?: string;
+        avatar?: string;
+        major?: string;
+        createdAt?: string;
+        is_active?: boolean;
+      };
+
+      const transformedAmbassadors: AmbassadorData[] = (data as ExtendedAmbassador[]).map((a) => {
+        const formattedAmbassadorSince = formatMemberSince(a.createdAt);
+        const formattedMemberSince = formatMemberSince(a.createdAt);
+
+        return {
+          id: a._id || "",
+          studentId: a._id || "Unknown",
+          name: a.name || "Unknown",
+          avatar: a.avatar_url || a.avatar || "",
+          major: a.major || "Unknown",
+          ambassadorSince:
+            formattedAmbassadorSince === "N/A"
+              ? "Unknown"
+              : formattedAmbassadorSince,
+          memberSince:
+            formattedMemberSince === "N/A" ? "Unknown" : formattedMemberSince,
+          status: (a.is_active ? "Active" : "Inactive") as "Active" | "Inactive",
+        };
+      });
 
       setAmbassadors(transformedAmbassadors);
     } catch (error) {
@@ -110,8 +117,10 @@ export const Ambassadors: React.FC = () => {
       await Promise.all(
         selectedStudents.map((student) =>
           apiClient.ambassadors.ambassadorsCreate({
+            name: student.name || "",
+            email: student.email || "",
             user_id: student.id,
-          } as any)
+          })
         )
       );
 

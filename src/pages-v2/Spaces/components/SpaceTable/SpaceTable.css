@@ -1,7 +1,8 @@
 .space-table-wrapper {
   background-color: #ffffff;
   border-radius: 0;
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: visible;
   margin-top: 18px;
 }
 
@@ -231,21 +232,20 @@
 .creation-date-cell {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .creation-date {
   font-family: "Lato", sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
   line-height: 100%;
   color: #1d1b20;
-  opacity: 0.8;
 }
 
 .creation-time {
   font-family: "Lato", sans-serif;
-  font-weight: 400;
+  font-weight: 600;
   font-size: 12px;
   line-height: 100%;
   color: #5b6168;
@@ -408,4 +408,15 @@
 
 [data-theme="dark"] .space-dropdown-item-delete {
   color: #ff6b6b;
+}
+
+/* Accessibility: Focus-visible styles */
+.space-table button:focus-visible,
+.space-table a:focus-visible,
+.space-table input:focus-visible,
+.space-table select:focus-visible,
+.space-table [role="button"]:focus-visible,
+.space-table [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }

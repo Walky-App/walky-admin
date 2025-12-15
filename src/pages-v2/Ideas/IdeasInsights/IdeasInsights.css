@@ -13,6 +13,7 @@
   display: flex;
   gap: 20px;
   margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
 .stats-card {
@@ -82,6 +83,7 @@
   display: flex;
   align-items: center;
   gap: 9px;
+  flex-wrap: wrap;
 }
 
 .filter-label {
@@ -94,11 +96,13 @@
 
 .time-selector {
   display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .time-option {
   padding: 8px 16px;
-  border: 1px solid #a9abac;
+  border: 1px solid #c6c9cc;
   background: #ffffff;
   font-family: "Lato", sans-serif;
   font-weight: 600;
@@ -106,26 +110,22 @@
   color: #5b6168;
   cursor: pointer;
   transition: all 0.2s;
-  border-left: 0;
+  border-radius: 8px;
 }
 
 .time-option.first {
-  border-left: 1px solid #a9abac;
-  border-radius: 8px 0 0 8px;
+  border-radius: 8px;
 }
 
 .time-option.last {
-  border-radius: 0 8px 8px 0;
+  border-radius: 8px;
 }
 
 .time-option.active {
   background: #546fd9;
   color: #ffffff;
   border-color: #546fd9;
-}
-
-.time-option.active + .time-option {
-  border-left-color: #546fd9;
+  box-shadow: 0 0 0 1px #546fd9 inset;
 }
 
 /* Bottom Row */
@@ -237,6 +237,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .idea-item-left {
@@ -286,6 +288,68 @@
 
   .popular-ideas-card {
     max-height: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .stats-cards-row {
+    flex-direction: column;
+  }
+
+  .stats-card,
+  .time-card,
+  .popular-ideas-card {
+    width: 100%;
+  }
+
+  .time-card-header,
+  .stats-card-header {
+    gap: 12px;
+  }
+
+  .time-card-title,
+  .stats-card-title,
+  .popular-ideas-title,
+  .filter-label {
+    font-size: 15px;
+  }
+
+  .time-card-value,
+  .stats-card-value {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .insights-header {
+    justify-content: flex-start;
+  }
+
+  .time-period-filter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .time-selector {
+    width: 100%;
+  }
+
+  .time-option {
+    flex: 1 1 calc(50% - 8px);
+    text-align: center;
+  }
+
+  .popular-idea-item {
+    align-items: flex-start;
+  }
+
+  .idea-item-left {
+    flex: 1;
+  }
+
+  .idea-collaborations {
+    width: 100%;
   }
 }
 
@@ -371,4 +435,15 @@
 
 [data-theme="dark"] .idea-collaborations {
   color: #b0b0b0;
+}
+
+/* Accessibility: Focus-visible styles */
+.ideas-insights-page button:focus-visible,
+.ideas-insights-page a:focus-visible,
+.ideas-insights-page input:focus-visible,
+.ideas-insights-page select:focus-visible,
+.ideas-insights-page [role="button"]:focus-visible,
+.ideas-insights-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }

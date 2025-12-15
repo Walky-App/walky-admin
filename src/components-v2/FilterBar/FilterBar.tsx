@@ -18,6 +18,8 @@ interface FilterBarProps {
   dateRange?: string;
   onExport?: () => void;
   showExport?: boolean;
+  exportTargetRef?: React.RefObject<HTMLElement | null>;
+  exportFileName?: string;
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({
@@ -26,6 +28,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   dateRange,
   onExport,
   showExport = true,
+  exportTargetRef,
+  exportFileName,
 }) => {
   const { theme } = useTheme();
 
@@ -89,7 +93,13 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           )}
         </div>
       </div>
-      {showExport && onExport && <ExportButton onClick={onExport} />}
+      {showExport && (
+        <ExportButton
+          onClick={onExport}
+          captureRef={exportTargetRef}
+          filename={exportFileName}
+        />
+      )}
     </section>
   );
 };

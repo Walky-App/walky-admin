@@ -8,6 +8,12 @@
   box-shadow: 6px 6px 54px 0px rgba(0, 0, 0, 0.05);
 }
 
+.space-details-modal-wrapper.space-details-hidden .modal-content {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .space-details-modal-body {
   padding: 32px;
   background: #ffffff;
@@ -675,4 +681,13 @@
 [data-theme="dark"] .space-details-close-btn:hover {
   background-color: #3a3a3a;
   border-color: #7a8fff;
+}
+
+/* Accessibility: Focus-visible styles */
+.space-details-modal-content button:focus-visible,
+.space-details-modal-content a:focus-visible,
+.space-details-modal-content [role="button"]:focus-visible,
+.space-details-modal-content [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }

@@ -24,7 +24,7 @@ const LoginV2: React.FC = () => {
         password,
       });
 
-      const responseData = response.data as any;
+      const responseData = response.data;
       const token = responseData.access_token;
       const userData = responseData;
 

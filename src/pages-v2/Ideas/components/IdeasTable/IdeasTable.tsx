@@ -26,6 +26,7 @@ export interface IdeaData {
   collaborated: number;
   creationDate: string;
   creationTime: string;
+  createdAt?: string;
   description?: string;
   lookingFor?: string;
   collaborators?: Array<{
@@ -37,17 +38,22 @@ export interface IdeaData {
   flagReason?: string;
 }
 
+export type IdeaSortField = "ideaTitle" | "collaborated" | "creationDate";
+
 interface IdeasTableProps {
   ideas: IdeaData[];
+  sortBy?: IdeaSortField;
+  sortOrder?: "asc" | "desc";
+  onSortChange?: (field: IdeaSortField, order: "asc" | "desc") => void;
 }
 
-type SortField = "ideaTitle" | "owner" | "collaborated" | "creationDate";
-type SortDirection = "asc" | "desc";
-
-export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
+export const IdeasTable: React.FC<IdeasTableProps> = ({
+  ideas,
+  sortBy,
+  sortOrder = "asc",
+  onSortChange,
+}) => {
   const queryClient = useQueryClient();
-  const [sortField, setSortField] = useState<SortField>("creationDate");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [ideaToDelete, setIdeaToDelete] = useState<IdeaData | null>(null);
   const [flagModalOpen, setFlagModalOpen] = useState(false);
@@ -58,6 +64,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
   const [toastMessage, setToastMessage] = useState("");
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedIdea, setSelectedIdea] = useState<IdeaData | null>(null);
+
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2IdeasDelete(id),
@@ -111,70 +118,64 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
     },
   });
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+  const handleSort = (field: IdeaSortField) => {
+    if (!onSortChange) return;
+    if (sortBy === field) {
+      onSortChange(field, sortOrder === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field);
-      setSortDirection("asc");
+      onSortChange(field, "asc");
     }
   };
-
-  const sortedIdeas = [...ideas].sort((a, b) => {
-    let aValue: string | number;
-    let bValue: string | number;
-
-    switch (sortField) {
-      case "ideaTitle":
-        aValue = a.ideaTitle;
-        bValue = b.ideaTitle;
-        break;
-      case "owner":
-        aValue = a.owner.name;
-        bValue = b.owner.name;
-        break;
-      case "collaborated":
-        aValue = a.collaborated;
-        bValue = b.collaborated;
-        break;
-      case "creationDate":
-        aValue = new Date(`${a.creationDate} ${a.creationTime}`).getTime();
-        bValue = new Date(`${b.creationDate} ${b.creationTime}`).getTime();
-        break;
-      default:
-        return 0;
-    }
-
-    if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-    return 0;
-  });
 
   const handleViewIdeaDetails = async (idea: IdeaData, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const response = (await apiClient.api.adminV2IdeasDetail(idea.id)) as any;
-      const details = response.data;
+      const response = await apiClient.api.adminV2IdeasDetail(idea.id);
+      type IdeaDetails = {
+        id?: string;
+        title?: string;
+        createdAt?: string;
+        creator?: { name?: string; avatar?: string; studentId?: string };
+        description?: string;
+        lookingFor?: string;
+        collaborators?: Array<{ user_id?: string; name?: string; avatar_url?: string }>;
+        isFlagged?: boolean;
+        flagReason?: string;
+      };
+      const details = response.data as IdeaDetails;
+
+      const hasCreatedAt = Boolean(details.createdAt);
+      const created = hasCreatedAt ? new Date(details.createdAt!) : new Date();
+      const creationDate = created.toLocaleDateString(undefined, {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "UTC",
+      });
+      const creationTime = created.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "UTC",
+      });
+      const ownerName = getFirstName(details.creator?.name || "Unknown");
 
       // Map API response to IdeaData structure for the modal
       const ideaDetails: IdeaData = {
-        id: details.id,
-        ideaTitle: details.title,
+        id: details.id || "",
+        ideaTitle: details.title || "",
         owner: {
-          name: details.creator?.name || "Unknown",
+          name: ownerName,
           avatar: details.creator?.avatar,
         },
         studentId: details.creator?.studentId || "N/A",
         collaborated: details.collaborators?.length || 0,
-        creationDate: new Date(details.createdAt).toLocaleDateString(),
-        creationTime: new Date(details.createdAt).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        creationDate,
+        creationTime,
         description: details.description,
         lookingFor: details.lookingFor || "N/A", // Assuming backend might return this
-        collaborators: (details.collaborators || []).map((c: any) => ({
-          id: c.user_id,
+        collaborators: (details.collaborators || []).map((c) => ({
+          id: c.user_id || "",
           name: c.name || "Unknown",
           avatar: c.avatar_url,
         })),
@@ -230,145 +231,158 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({ ideas }) => {
 
   return (
     <>
-      <table className="ideas-table">
-        <thead>
-          <tr>
-            <th onClick={() => handleSort("ideaTitle")}>
-              <div className="ideas-table-header-cell">
-                <span>Idea title</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
-              </div>
-            </th>
-            <th onClick={() => handleSort("owner")}>
-              <div className="ideas-table-header-cell">
-                <span>Owner</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
-              </div>
-            </th>
-            <th>
-              <div className="ideas-table-header-cell">
-                <span>Student ID</span>
-              </div>
-            </th>
-            <th onClick={() => handleSort("collaborated")}>
-              <div className="ideas-table-header-cell">
-                <span>Collaborated</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
-              </div>
-            </th>
-            <th onClick={() => handleSort("creationDate")}>
-              <div className="ideas-table-header-cell">
-                <span>Creation date</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
-              </div>
-            </th>
-            <th></th>
-          </tr>
-        </thead>
-        <div className="content-space-divider" />
+      <div className="ideas-table-wrapper">
+        <table className="ideas-table">
+          <thead>
+            <tr>
+              <th onClick={() => handleSort("ideaTitle")}>
+                <div className="ideas-table-header-cell">
+                  <span>Idea title</span>
+                  <AssetIcon
+                    name="swap-arrows-icon"
+                    size={24}
+                    color="#1D1B20"
+                  />
+                </div>
+              </th>
+              <th>
+                <div className="ideas-table-header-cell">
+                  <span>Owner</span>
+                </div>
+              </th>
+              <th>
+                <div className="ideas-table-header-cell">
+                  <span>Student ID</span>
+                </div>
+              </th>
+              <th onClick={() => handleSort("collaborated")}>
+                <div className="ideas-table-header-cell">
+                  <span>Collaborated</span>
+                  <AssetIcon
+                    name="swap-arrows-icon"
+                    size={24}
+                    color="#1D1B20"
+                  />
+                </div>
+              </th>
+              <th onClick={() => handleSort("creationDate")}>
+                <div className="ideas-table-header-cell">
+                  <span>Creation date</span>
+                  <AssetIcon
+                    name="swap-arrows-icon"
+                    size={24}
+                    color="#1D1B20"
+                  />
+                </div>
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          <div className="content-space-divider" />
 
-        <tbody>
-          {sortedIdeas.map((idea, index) => (
-            <React.Fragment key={idea.id}>
-              <tr className={idea.isFlagged ? "idea-row-flagged" : ""}>
-                <td>
-                  {idea.isFlagged && (
-                    <AssetIcon
-                      name="flag-icon"
-                      size={16}
-                      color="#D53425"
-                      className="idea-flag-icon"
-                    />
-                  )}
-                  <div className="idea-title-cell">
-                    <span className="ideas-table-idea-title">
-                      {idea.ideaTitle}
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <div className="ideas-table-owner">
-                    <div className="ideas-table-owner-avatar">
-                      {idea.owner.avatar ? (
-                        <img src={idea.owner.avatar} alt={idea.owner.name} />
-                      ) : (
-                        <div className="ideas-table-owner-avatar-placeholder">
-                          {idea.owner.name.charAt(0)}
-                        </div>
-                      )}
+          <tbody>
+            {ideas.map((idea, index) => (
+              <React.Fragment key={idea.id}>
+                <tr className={idea.isFlagged ? "idea-row-flagged" : ""}>
+                  <td>
+                    {idea.isFlagged && (
+                      <AssetIcon
+                        name="flag-icon"
+                        size={16}
+                        color="#D53425"
+                        className="idea-flag-icon"
+                      />
+                    )}
+                    <div className="idea-title-cell">
+                      <span className="ideas-table-idea-title">
+                        {idea.ideaTitle}
+                      </span>
                     </div>
-                    <span className="ideas-table-owner-name">
-                      {getFirstName(idea.owner.name)}
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <CopyableId
-                    id={idea.studentId}
-                    label="Student ID"
-                    testId="copy-student-id"
-                  />
-                </td>
-                <td>
-                  <div className="ideas-table-collaborated-badge">
-                    {idea.collaborated}
-                  </div>
-                </td>
-                <td>
-                  <div className="ideas-table-date">
-                    <span className="ideas-table-date-main">
-                      {idea.creationDate}
-                    </span>
-                    <span className="ideas-table-date-time">
-                      {idea.creationTime}
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <ActionDropdown
-                    testId="idea-dropdown"
-                    items={[
-                      {
-                        label: "Idea Details",
-                        onClick: (e) => handleViewIdeaDetails(idea, e),
-                      },
-                      {
-                        isDivider: true,
-                        label: "",
-                        onClick: () => {},
-                      },
-                      idea.isFlagged
-                        ? {
-                            label: "Unflag",
-                            icon: "flag-icon",
-                            variant: "danger",
-                            onClick: (e) => handleUnflagIdea(idea, e),
-                          }
-                        : {
-                            label: "Flag",
-                            icon: "flag-icon",
-                            onClick: (e) => handleFlagIdea(idea, e),
-                          },
-                      {
-                        label: "Delete Idea",
-                        variant: "danger",
-                        onClick: (e) => handleDeleteClick(idea, e),
-                      },
-                    ]}
-                  />
-                </td>
-              </tr>
-              {index < sortedIdeas.length - 1 && !idea.isFlagged && (
-                <tr className="idea-divider-row">
-                  <td colSpan={7}>
-                    <Divider />
+                  </td>
+                  <td>
+                    <div className="ideas-table-owner">
+                      <div className="ideas-table-owner-avatar">
+                        {idea.owner.avatar ? (
+                          <img src={idea.owner.avatar} alt={idea.owner.name} />
+                        ) : (
+                          <div className="ideas-table-owner-avatar-placeholder">
+                            {idea.owner.name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      <span className="ideas-table-owner-name">
+                        {getFirstName(idea.owner.name)}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <CopyableId
+                      id={idea.studentId}
+                      label="Student ID"
+                      testId="copy-student-id"
+                    />
+                  </td>
+                  <td>
+                    <div className="ideas-table-collaborated-badge">
+                      {idea.collaborated}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="ideas-table-date">
+                      <span className="ideas-table-date-main">
+                        {idea.creationDate}
+                      </span>
+                      <span className="ideas-table-date-time">
+                        {idea.creationTime}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <ActionDropdown
+                      testId="idea-dropdown"
+                      items={[
+                        {
+                          label: "Idea Details",
+                          onClick: (e) => handleViewIdeaDetails(idea, e),
+                        },
+                        {
+                          isDivider: true,
+                          label: "",
+                          onClick: () => {},
+                        },
+                        idea.isFlagged
+                          ? {
+                              label: "Unflag",
+                              icon: "flag-icon",
+                              variant: "danger",
+                              onClick: (e) => handleUnflagIdea(idea, e),
+                            }
+                          : {
+                              label: "Flag",
+                              icon: "flag-icon",
+                              onClick: (e) => handleFlagIdea(idea, e),
+                            },
+                        {
+                          label: "Delete Idea",
+                          variant: "danger",
+                          onClick: (e) => handleDeleteClick(idea, e),
+                        },
+                      ]}
+                    />
                   </td>
                 </tr>
-              )}
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
+                {index < ideas.length - 1 && !idea.isFlagged && (
+                  <tr className="idea-divider-row">
+                    <td colSpan={7}>
+                      <Divider />
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <UnflagModal
         isOpen={unflagModalOpen}

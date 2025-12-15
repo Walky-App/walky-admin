@@ -1,7 +1,7 @@
 import React from "react";
 import { CModal, CModalBody } from "@coreui/react";
 import "./IdeaDetailsModal.css";
-import { AssetIcon, CopyableId } from "../../components-v2";
+import { AssetIcon, CopyableId, NoData } from "../../components-v2";
 
 export interface IdeaCollaborator {
   id: string;
@@ -38,6 +38,8 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
   ideaData,
 }) => {
   if (!ideaData) return null;
+
+  const getFirstName = (name: string) => name?.trim().split(" ")[0] || name;
 
   return (
     <CModal
@@ -85,12 +87,12 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
                     )}
                   </div>
                   <div className="idea-owner-info">
-                    <p className="idea-owner-name">{ideaData.owner.name}</p>
+                    <p className="idea-owner-name">
+                      {getFirstName(ideaData.owner.name)}
+                    </p>
                     <CopyableId
                       id={ideaData.owner.studentId}
                       label="Student ID"
-                      variant="secondary"
-                      iconColor="#ACB6BA"
                       testId="idea-owner-copy"
                     />
                   </div>
@@ -146,25 +148,32 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
                 <h3 className="idea-collaborators-title">Collaborators</h3>
               </div>
               <div className="idea-collaborators-list">
-                {ideaData.collaborators.map((collaborator) => (
-                  <div key={collaborator.id} className="idea-collaborator-item">
-                    <div className="idea-collaborator-avatar">
-                      {collaborator.avatar ? (
-                        <img
-                          src={collaborator.avatar}
-                          alt={collaborator.name}
-                        />
-                      ) : (
-                        <div className="idea-collaborator-avatar-placeholder">
-                          {collaborator.name.charAt(0)}
-                        </div>
-                      )}
+                {ideaData.collaborators.length === 0 ? (
+                  <NoData message="This idea has no collaborators yet" />
+                ) : (
+                  ideaData.collaborators.map((collaborator) => (
+                    <div
+                      key={collaborator.id}
+                      className="idea-collaborator-item"
+                    >
+                      <div className="idea-collaborator-avatar">
+                        {collaborator.avatar ? (
+                          <img
+                            src={collaborator.avatar}
+                            alt={collaborator.name}
+                          />
+                        ) : (
+                          <div className="idea-collaborator-avatar-placeholder">
+                            {collaborator.name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      <p className="idea-collaborator-name">
+                        {collaborator.name}
+                      </p>
                     </div>
-                    <p className="idea-collaborator-name">
-                      {collaborator.name}
-                    </p>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>

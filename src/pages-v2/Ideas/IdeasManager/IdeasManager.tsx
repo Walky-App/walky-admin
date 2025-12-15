@@ -4,38 +4,82 @@ import { apiClient } from "../../../API";
 import "./IdeasManager.css";
 import { IdeasTable } from "../components/IdeasTable/IdeasTable";
 import { IdeasTableSkeleton } from "../components/IdeasTableSkeleton/IdeasTableSkeleton";
-import { NoIdeasFound } from "../components/NoIdeasFound/NoIdeasFound";
-import { SearchInput, Pagination } from "../../../components-v2";
+import { SearchInput, Pagination, NoData } from "../../../components-v2";
+
+export type IdeaSortField = "ideaTitle" | "collaborated" | "creationDate";
 
 export const IdeasManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+  const [sortBy, setSortBy] = useState<IdeaSortField | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
   const { data: ideasData, isLoading } = useQuery({
-    queryKey: ["ideas", currentPage, searchQuery],
+    queryKey: ["ideas", currentPage, searchQuery, sortBy, sortOrder],
     queryFn: () =>
       apiClient.api.adminV2IdeasList({
         page: currentPage,
         limit: 10,
         search: searchQuery,
+        sortBy,
+        sortOrder,
       }),
     placeholderData: keepPreviousData,
   });
 
-  const filteredIdeas = (ideasData?.data.data || []).map((idea: any) => ({
-    id: idea.id,
-    ideaTitle: idea.ideaTitle,
-    owner: idea.owner,
-    studentId: idea.studentId,
-    collaborated: idea.collaborated,
-    creationDate: idea.creationDate,
-    creationTime: idea.creationTime,
-    isFlagged: idea.isFlagged,
-    flagReason: idea.flagReason,
-  }));
+  const handleSortChange = (field: IdeaSortField, order: "asc" | "desc") => {
+    setSortBy(field);
+    setSortOrder(order);
+    setCurrentPage(1);
+  };
+
+  const filteredIdeas = (ideasData?.data.data || []).map((idea) => {
+    const rawTimestamp =
+      `${idea.creationDate || ""} ${idea.creationTime || ""}`.trim() ||
+      idea.creationDate;
+    const parsed = rawTimestamp ? Date.parse(rawTimestamp) : NaN;
+    const dateObj = Number.isNaN(parsed) ? null : new Date(parsed);
+
+    const creationDate = dateObj
+      ? dateObj.toLocaleDateString(undefined, {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })
+      : idea.creationDate;
+
+    const creationTime = dateObj
+      ? dateObj.toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })
+      : idea.creationTime;
+
+    return {
+      id: idea.id || "",
+      ideaTitle: idea.ideaTitle || "",
+      owner: {
+        name: idea.owner?.name || "",
+        avatar: idea.owner?.avatar || "",
+      },
+      studentId: idea.studentId || "",
+      collaborated: idea.collaborated || 0,
+      creationDate: creationDate || "",
+      creationTime: creationTime || "",
+      isFlagged: idea.isFlagged,
+      flagReason: idea.flagReason,
+    };
+  });
 
   const totalPages = Math.ceil((ideasData?.data.total || 0) / 10);
   const totalEntries = ideasData?.data.total || 0;
+  const isEmpty = !isLoading && filteredIdeas.length === 0;
 
   return (
     <main className="ideas-manager-container">
@@ -57,7 +101,7 @@ export const IdeasManager: React.FC = () => {
               <div className="ideas-manager-search">
                 <SearchInput
                   value={searchQuery}
-                  onChange={setSearchQuery}
+                  onChange={handleSearchChange}
                   placeholder="Search"
                   variant="secondary"
                 />
@@ -68,10 +112,25 @@ export const IdeasManager: React.FC = () => {
           <div className="ideas-manager-table-container">
             {isLoading ? (
               <IdeasTableSkeleton />
-            ) : filteredIdeas.length === 0 ? (
-              <NoIdeasFound message="No ideas found" />
             ) : (
-              <IdeasTable ideas={filteredIdeas} />
+              <>
+                <div style={{ opacity: isEmpty ? 0.4 : 1 }}>
+                  <IdeasTable
+                    ideas={filteredIdeas}
+                    sortBy={sortBy}
+                    sortOrder={sortOrder}
+                    onSortChange={handleSortChange}
+                  />
+                </div>
+                {isEmpty && (
+                  <NoData
+                    iconName="ideia-icon"
+                    iconColor="#526AC9"
+                    iconSize={40}
+                    message="No ideas found"
+                  />
+                )}
+              </>
             )}
           </div>
 

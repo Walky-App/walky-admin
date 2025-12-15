@@ -37,6 +37,7 @@
   flex-direction: column;
   transition: margin-left 0.3s ease-in-out;
   min-height: 100vh;
+  min-width: 0;
 }
 
 .layout-main.with-sidebar {
@@ -52,6 +53,15 @@
   flex: 1;
   padding: 32px 32px 0 32px;
   background-color: var(--v2-bg-app);
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+  .layout-content {
+    padding: 24px 16px 0 16px;
+  }
 }
 
 /* Overlay */

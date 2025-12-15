@@ -164,6 +164,37 @@
   margin: 0;
 }
 
+.user-email-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 260px;
+}
+
+.user-email {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #5b6168;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email-copy-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.user-email-copy-btn:disabled {
+  cursor: not-allowed;
+}
+
 .user-id-container {
   display: flex;
   gap: 4px;
@@ -1170,4 +1201,13 @@
 
 [data-theme="dark"] .close-footer-button:hover {
   background-color: #3a3a3a;
+}
+
+/* Accessibility: Focus-visible styles */
+.report-detail-modal-content button:focus-visible,
+.report-detail-modal-content a:focus-visible,
+.report-detail-modal-content [role="button"]:focus-visible,
+.report-detail-modal-content [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }

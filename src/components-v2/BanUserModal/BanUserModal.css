@@ -50,14 +50,16 @@
 .ban-modal-content {
   display: flex;
   flex-direction: column;
-  gap: 46px;
-  width: 590px;
+  width: 100%;
+  max-width: 590px;
+  margin: 0 auto;
 }
 
 /* Embedded mode - adjust content */
 .ban-user-modal-body.embedded .ban-modal-content {
   width: 100%;
-  gap: 46px;
+  gap: 40px;
+  margin: 0;
 }
 
 /* Content Inner */

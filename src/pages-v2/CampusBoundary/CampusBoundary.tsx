@@ -7,7 +7,6 @@ import {
   CButton,
   CSpinner,
 } from "@coreui/react";
-import { useTheme } from "../hooks/useTheme";
 import {
   GoogleMap,
   useJsApiLoader,
@@ -15,6 +14,7 @@ import {
   Libraries,
   StandaloneSearchBox,
 } from "@react-google-maps/api";
+import { useTheme } from "../../hooks/useTheme";
 
 declare global {
   interface Window {
@@ -347,7 +347,7 @@ const CampusBoundary = ({
   }
 
   return (
-    <div className="" style={{ marginBottom: 0 }}>
+    <main className="campus-boundary-page" style={{ marginBottom: 0 }}>
       <CCard
         style={{
           backgroundColor: theme.colors.cardBg,
@@ -407,6 +407,7 @@ const CampusBoundary = ({
                         <input
                           type="text"
                           placeholder="Search for your campus location"
+                          data-testid="campus-boundary-search"
                           style={{
                             padding: "8px 12px",
                             borderRadius: "4px",
@@ -569,7 +570,7 @@ const CampusBoundary = ({
           </CForm>
         </CCardBody>
       </CCard>
-    </div>
+    </main>
   );
 };
 

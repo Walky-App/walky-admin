@@ -1,96 +1,66 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { AssetIcon, Pagination, SearchInput } from "../../../components-v2";
-import SkeletonLoader from "../../../components/SkeletonLoader";
-
-const SpacesManagerSkeleton = () => (
-  <main className="spaces-manager-container">
-    <div className="spaces-manager-header">
-      <div className="spaces-manager-title-section">
-        <SkeletonLoader width="250px" height="32px" />
-        <SkeletonLoader width="400px" height="18px" className="mt-2" />
-      </div>
-    </div>
-
-    <div className="spaces-manager-content">
-      <div className="spaces-list-header">
-        <h2 className="spaces-list-title">
-          <SkeletonLoader width="150px" height="24px" />
-        </h2>
-
-        <div className="spaces-filters">
-          <SkeletonLoader width="300px" height="40px" borderRadius="12px" />
-          <SkeletonLoader width="180px" height="40px" borderRadius="12px" />
-        </div>
-      </div>
-
-      <div className="space-table-wrapper">
-        <table className="space-table">
-          <thead>
-            <tr>
-              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-                <th key={i}>
-                  <SkeletonLoader width="80px" height="20px" />
-                </th>
-              ))}
-              <th></th>
-            </tr>
-          </thead>
-          <div className="content-space-divider" />
-          <tbody>
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <tr key={i}>
-                <td>
-                  <SkeletonLoader width="120px" height="20px" />
-                </td>
-                <td>
-                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                    <SkeletonLoader width="32px" height="32px" borderRadius="50%" />
-                    <SkeletonLoader width="100px" height="20px" />
-                  </div>
-                </td>
-                <td>
-                  <SkeletonLoader width="80px" height="20px" borderRadius="12px" />
-                </td>
-                <td>
-                  <SkeletonLoader width="40px" height="24px" borderRadius="16px" />
-                </td>
-                <td>
-                  <SkeletonLoader width="40px" height="24px" borderRadius="16px" />
-                </td>
-                <td>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    <SkeletonLoader width="90px" height="16px" />
-                    <SkeletonLoader width="60px" height="14px" />
-                  </div>
-                </td>
-                <td>
-                  <SkeletonLoader width="100px" height="24px" borderRadius="16px" />
-                </td>
-                <td>
-                  <SkeletonLoader width="24px" height="24px" borderRadius="4px" />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </main>
-);
-
+import {
+  AssetIcon,
+  SearchInput,
+  Pagination,
+  NoData,
+} from "../../../components-v2";
 import { SpaceTable } from "../components/SpaceTable/SpaceTable";
 import { SpaceTableSkeleton } from "../components/SpaceTableSkeleton/SpaceTableSkeleton";
-import { NoSpacesFound } from "../components/NoSpacesFound/NoSpacesFound";
 import "./SpacesManager.css";
+
+interface SpaceCategory {
+  _id: string;
+  name: string;
+  order?: number;
+}
+
+export type SpaceSortField = "spaceName" | "members" | "creationDate";
 
 export const SpacesManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<SpaceSortField | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Fetch categories dynamically
+  const { data: categoriesData } = useQuery({
+    queryKey: ["spaceCategories"],
+    queryFn: () => apiClient.api.adminSpaceCategoriesList(),
+  });
+
+  // Sort categories alphabetically by name
+  const categories: SpaceCategory[] = React.useMemo(() => {
+    // Handle different response structures: { data: [...] } or { data: { data: [...] } }
+    // Note: API returns void but actually sends array data
+    const responseData = categoriesData?.data as SpaceCategory[] | { data?: SpaceCategory[] } | undefined;
+    const cats: SpaceCategory[] = Array.isArray(responseData)
+      ? responseData
+      : Array.isArray(responseData?.data)
+        ? responseData.data
+        : [];
+    return [...cats].sort((a, b) => a.name.localeCompare(b.name));
+  }, [categoriesData]);
+
+  // Helper to convert category name to slug (e.g., "Club Sports" -> "club-sports")
+  const toSlug = (name: string) => name.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and");
+
+  // Helper to get display name from current filter
+  const getFilterDisplayName = () => {
+    if (categoryFilter === "all") return "All categories";
+    const cat = categories.find((c) => toSlug(c.name) === categoryFilter);
+    return cat?.name || categoryFilter;
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -109,37 +79,69 @@ export const SpacesManager: React.FC = () => {
   }, []);
 
   const { data: spacesData, isLoading } = useQuery({
-    queryKey: ["spaces", currentPage, searchQuery, categoryFilter],
+    queryKey: ["spaces", currentPage, searchQuery, categoryFilter, sortBy, sortOrder],
     queryFn: () =>
       apiClient.api.adminV2SpacesList({
         page: currentPage,
         limit: 10,
         search: searchQuery,
         category: categoryFilter,
+        sortBy,
+        sortOrder,
       }),
     placeholderData: keepPreviousData,
   });
 
-  const filteredSpaces = (spacesData?.data.data || []).map((space: any) => ({
-    id: space.id,
-    spaceName: space.spaceName,
-    owner: space.owner,
-    studentId: space.studentId,
-    events: space.events,
-    members: space.members,
-    creationDate: space.creationDate,
-    creationTime: space.creationTime,
-    category: space.category,
-    isFlagged: space.isFlagged,
-    flagReason: space.flagReason,
-  }));
+  const handleSortChange = (field: SpaceSortField, order: "asc" | "desc") => {
+    setSortBy(field);
+    setSortOrder(order);
+    setCurrentPage(1);
+  };
+
+  const filteredSpaces = (spacesData?.data.data || []).map((space) => {
+    const rawTimestamp =
+      `${space.creationDate || ""} ${space.creationTime || ""}`.trim() ||
+      space.creationDate;
+    const parsed = rawTimestamp ? Date.parse(rawTimestamp) : NaN;
+    const dateObj = Number.isNaN(parsed) ? null : new Date(parsed);
+
+    const creationDate = dateObj
+      ? dateObj.toLocaleDateString(undefined, {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })
+      : space.creationDate;
+
+    const creationTime = dateObj
+      ? dateObj.toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })
+      : space.creationTime;
+
+    return {
+      id: space.id || "",
+      spaceName: space.spaceName || "",
+      owner: {
+        name: space.owner?.name || "",
+        avatar: space.owner?.avatar || "",
+      },
+      studentId: space.studentId || "",
+      events: space.events || 0,
+      members: space.members || 0,
+      creationDate: creationDate || "",
+      creationTime: creationTime || "",
+      category: space.category || "",
+      isFlagged: space.isFlagged,
+      flagReason: space.flagReason,
+    };
+  });
 
   const totalPages = Math.ceil((spacesData?.data.total || 0) / 10);
   const totalEntries = spacesData?.data.total || 0;
-
-  if (isLoading) {
-    return <div className="p-4">Loading...</div>;
-  }
+  const isEmpty = !isLoading && filteredSpaces.length === 0;
 
   return (
     <main className="spaces-manager-container">
@@ -160,7 +162,7 @@ export const SpacesManager: React.FC = () => {
           <div className="spaces-filters">
             <SearchInput
               value={searchQuery}
-              onChange={setSearchQuery}
+              onChange={handleSearchChange}
               placeholder="Search"
               variant="secondary"
             />
@@ -171,59 +173,38 @@ export const SpacesManager: React.FC = () => {
                 className="category-filter-button"
                 onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
               >
-                <span>
-                  {categoryFilter === "all"
-                    ? "All categorys"
-                    : categoryFilter === "clubs"
-                      ? "Clubs"
-                      : categoryFilter === "club-sports"
-                        ? "Club Sports"
-                        : categoryFilter === "im-teams"
-                          ? "IM Teams"
-                          : categoryFilter === "sororities"
-                            ? "Sororities"
-                            : categoryFilter === "fraternities"
-                              ? "Fraternities"
-                              : categoryFilter === "volunteer"
-                                ? "Volunteer"
-                                : categoryFilter === "academics"
-                                  ? "Academics & Honors"
-                                  : categoryFilter === "leadership"
-                                    ? "Leadership & Government"
-                                    : "Cultural & Diversity"}
-                </span>
+                <span>{getFilterDisplayName()}</span>
                 <AssetIcon name="arrow-down" size={10} color="#5B6168" />
               </button>
               {categoryDropdownOpen && (
                 <div className="category-dropdown-menu">
                   <div
-                    className={`category-dropdown-item ${categoryFilter === "all" ? "active" : ""
-                      }`}
+                    className={`category-dropdown-item ${
+                      categoryFilter === "all" ? "active" : ""
+                    }`}
                     onClick={() => {
                       setCategoryFilter("all");
                       setCategoryDropdownOpen(false);
                     }}
                   >
-                    All Categorys
+                    All categories
                   </div>
-                  <div className="category-dropdown-divider" />
-                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("clubs"); setCategoryDropdownOpen(false); }}>Clubs</div>
-                  <div className="category-dropdown-divider" />
-                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("club-sports"); setCategoryDropdownOpen(false); }}>Club Sports</div>
-                  <div className="category-dropdown-divider" />
-                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("im-teams"); setCategoryDropdownOpen(false); }}>IM Teams</div>
-                  <div className="category-dropdown-divider" />
-                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("sororities"); setCategoryDropdownOpen(false); }}>Sororities</div>
-                  <div className="category-dropdown-divider" />
-                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("fraternities"); setCategoryDropdownOpen(false); }}>Fraternities</div>
-                  <div className="category-dropdown-divider" />
-                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("volunteer"); setCategoryDropdownOpen(false); }}>Volunteer</div>
-                  <div className="category-dropdown-divider" />
-                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("academics"); setCategoryDropdownOpen(false); }}>Academics & Honors</div>
-                  <div className="category-dropdown-divider" />
-                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("leadership"); setCategoryDropdownOpen(false); }}>Leadership & Government</div>
-                  <div className="category-dropdown-divider" />
-                  <div className="category-dropdown-item" onClick={() => { setCategoryFilter("cultural"); setCategoryDropdownOpen(false); }}>Cultural & Diversity</div>
+                  {categories.map((cat) => (
+                    <React.Fragment key={cat._id}>
+                      <div className="category-dropdown-divider" />
+                      <div
+                        className={`category-dropdown-item ${
+                          categoryFilter === toSlug(cat.name) ? "active" : ""
+                        }`}
+                        onClick={() => {
+                          setCategoryFilter(toSlug(cat.name));
+                          setCategoryDropdownOpen(false);
+                        }}
+                      >
+                        {cat.name}
+                      </div>
+                    </React.Fragment>
+                  ))}
                 </div>
               )}
             </div>
@@ -232,10 +213,25 @@ export const SpacesManager: React.FC = () => {
 
         {isLoading ? (
           <SpaceTableSkeleton />
-        ) : filteredSpaces.length === 0 ? (
-          <NoSpacesFound message="No spaces found" />
         ) : (
-          <SpaceTable spaces={filteredSpaces} />
+          <>
+            <div style={{ opacity: isEmpty ? 0.4 : 1 }}>
+              <SpaceTable
+                spaces={filteredSpaces}
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSortChange={handleSortChange}
+              />
+            </div>
+            {isEmpty && (
+              <NoData
+                iconName="space-icon"
+                iconColor="#526AC9"
+                iconSize={40}
+                message="No spaces found"
+              />
+            )}
+          </>
         )}
 
         {!isLoading && filteredSpaces.length > 0 && (

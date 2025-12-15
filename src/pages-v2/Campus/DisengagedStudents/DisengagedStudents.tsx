@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import {
   StudentProfileModal,
@@ -11,6 +11,7 @@ import {
 import { StatsCard } from "../components/StatsCard";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
+import { formatMemberSince } from "../../../lib/utils/dateUtils";
 import "./DisengagedStudents.css";
 
 import { useQuery } from "@tanstack/react-query";
@@ -18,6 +19,7 @@ import { apiClient } from "../../../API";
 
 interface DisengagedStudent {
   id: string;
+  userId?: string;
   name: string;
   avatar?: string;
   peers: number;
@@ -25,6 +27,12 @@ interface DisengagedStudent {
   memberSince: string;
   email: string;
   reported: boolean;
+  status?: string;
+  bio?: string;
+  lastLogin?: string;
+  areaOfStudy?: string;
+  totalPeers?: number;
+  interests?: string[];
 }
 
 export const DisengagedStudents: React.FC = () => {
@@ -32,10 +40,11 @@ export const DisengagedStudents: React.FC = () => {
     useState<DisengagedStudent | null>(null);
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
+  const [toastMessage] = useState("");
   const [currentPage] = useState(1);
   const entriesPerPage = 10;
 
+  const exportRef = useRef<HTMLElement | null>(null);
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
     queryKey: ["students", currentPage, "disengaged"],
     queryFn: () =>
@@ -54,24 +63,68 @@ export const DisengagedStudents: React.FC = () => {
   const isLoading = isStudentsLoading || isStatsLoading;
 
   const students: DisengagedStudent[] = (studentsData?.data.data || []).map(
-    (student: any) => ({
-      id: student.id,
-      name: student.name,
+    (student) => ({
+      id: student.id || "",
+      userId: student.userId,
+      name: student.name || "",
       avatar: student.avatar,
-      peers: student.peers || 0,
+      peers: student.peers || student.totalPeers || 0,
       ignoredInvitations: student.ignoredInvitations || 0,
-      memberSince: student.memberSince,
-      email: student.email,
+      memberSince: formatMemberSince(student.memberSince),
+      email: student.email || "",
       reported: student.isFlagged || false,
+      status: student.status,
+      bio: student.bio,
+      lastLogin: student.onlineLast,
+      areaOfStudy: student.studyMain,
+      totalPeers: student.totalPeers,
+      interests: student.interests || [],
     })
   );
   const handleSendOutreach = (student: DisengagedStudent) => {
     window.location.href = `mailto:${student.email}`;
   };
 
-  const handleStudentClick = (student: DisengagedStudent) => {
-    setSelectedStudent(student);
-    setProfileModalVisible(true);
+  const handleStudentClick = async (student: DisengagedStudent) => {
+    try {
+      const response = await apiClient.api.adminV2StudentsDetail(student.id);
+      const details = response.data;
+
+      // Format lastLogin date nicely
+      const formatLastLogin = (dateStr?: string) => {
+        if (!dateStr) return "N/A";
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return "N/A";
+        return date.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        });
+      };
+
+      // Merge details with existing student data
+      const fullStudentData: DisengagedStudent = {
+        ...student,
+        userId: details.userId || student.userId || student.id,
+        areaOfStudy: details.areaOfStudy || student.areaOfStudy || "N/A",
+        lastLogin: formatLastLogin(details.lastLogin || student.lastLogin),
+        totalPeers: details.totalPeers ?? details.peers ?? student.totalPeers ?? student.peers ?? 0,
+        bio: details.bio || student.bio || "No bio provided",
+        interests: details.interests || student.interests || [],
+        status: details.status || student.status,
+      };
+
+      setSelectedStudent(fullStudentData);
+      setProfileModalVisible(true);
+    } catch (error) {
+      console.error("Error fetching student details:", error);
+      // Fallback to basic data if API call fails
+      setSelectedStudent(student);
+      setProfileModalVisible(true);
+    }
   };
 
   const handleCloseProfile = () => {
@@ -79,35 +132,8 @@ export const DisengagedStudents: React.FC = () => {
     setSelectedStudent(null);
   };
 
-  const handleExport = async () => {
-    try {
-      const response = await apiClient.http.request({
-        path: "/api/admin/v2/students",
-        method: "GET",
-        query: {
-          status: "disengaged",
-          export: "true",
-        },
-        format: "blob",
-      });
-
-      // @ts-ignore
-      const url = window.URL.createObjectURL(new Blob([response]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `disengaged_students.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Export failed:", error);
-      setToastMessage("Export failed");
-      setShowToast(true);
-    }
-  };
-
   return (
-    <main className="disengaged-students-page">
+    <main className="disengaged-students-page" ref={exportRef}>
       {/* Stats Cards */}
       <div className="disengaged-students-stats">
         <StatsCard
@@ -116,11 +142,6 @@ export const DisengagedStudents: React.FC = () => {
           iconName="double-users-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
-          trend={{
-            value: "8.5%",
-            isPositive: true,
-            label: "from last month",
-          }}
         />
         <StatsCard
           title="Disengaged students"
@@ -129,11 +150,6 @@ export const DisengagedStudents: React.FC = () => {
           iconName="x-icon"
           iconBgColor="#FCE9E9"
           iconColor="#FF8082"
-          trend={{
-            value: "8.5%",
-            isPositive: false,
-            label: "from last month",
-          }}
         />
       </div>
 
@@ -149,7 +165,7 @@ export const DisengagedStudents: React.FC = () => {
               and the number of ignored invitations.
             </p>
           </div>
-          <ExportButton onClick={handleExport} />
+          <ExportButton captureRef={exportRef} filename="disengaged_students" />
         </div>
 
         {/* Custom Table */}
@@ -272,15 +288,20 @@ export const DisengagedStudents: React.FC = () => {
         student={
           selectedStudent
             ? ({
-                userId: selectedStudent.id,
+                id: selectedStudent.id,
+                userId: selectedStudent.userId || selectedStudent.id,
                 name: selectedStudent.name,
                 email: selectedStudent.email,
                 avatar: selectedStudent.avatar,
-                status: "disengaged" as const,
-                interests: [],
+                status: selectedStudent.status || "disengaged",
+                interests: selectedStudent.interests || [],
                 memberSince: selectedStudent.memberSince,
-                onlineLast: "-",
-              } as unknown as StudentProfileData)
+                lastLogin: selectedStudent.lastLogin || "N/A",
+                totalPeers:
+                  selectedStudent.totalPeers ?? selectedStudent.peers ?? 0,
+                bio: selectedStudent.bio || "No bio provided",
+                areaOfStudy: selectedStudent.areaOfStudy || "N/A",
+              } as StudentProfileData)
             : null
         }
         onClose={handleCloseProfile}

@@ -1,34 +1,30 @@
 import React from "react";
-import { useTheme } from "../hooks/useTheme";
 
 interface SkeletonLoaderProps {
-  height?: string;
-  width?: string;
-  borderRadius?: string;
+  width?: string | number;
+  height?: string | number;
+  borderRadius?: string | number;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
-  height = "20px",
   width = "100%",
+  height = "20px",
   borderRadius = "4px",
   className = "",
+  style = {},
 }) => {
-  const { theme } = useTheme();
-
   return (
     <div
       className={`skeleton-loader ${className}`}
       style={{
-        height,
         width,
+        height,
         borderRadius,
-        backgroundColor: theme.isDark ? "#343a40" : "#e9ecef",
-        background: theme.isDark
-          ? "linear-gradient(90deg, #343a40 25%, #495057 50%, #343a40 75%)"
-          : "linear-gradient(90deg, #e9ecef 25%, #dee2e6 50%, #e9ecef 75%)",
-        backgroundSize: "200% 100%",
-        animation: "skeleton-loading 1.5s infinite",
+        backgroundColor: "#e0e0e0",
+        animation: "pulse 1.5s ease-in-out infinite",
+        ...style,
       }}
     />
   );

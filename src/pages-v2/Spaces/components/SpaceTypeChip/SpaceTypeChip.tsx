@@ -16,9 +16,14 @@ export const SpaceTypeChip: React.FC<SpaceTypeChipProps> = ({ type }) => {
 
   const getClassName = () => {
     if (!type) return "space-type-chip-default";
-    // Sanitize type for CSS class: lowercase, replace spaces/special chars with dashes
-    const sanitized = type.toLowerCase().replace(/[^a-z0-9]/g, "-");
-    return `space-type-chip-${sanitized}`;
+    // Sanitize type for CSS class: lowercase, collapse non-alphanumerics into single dashes
+    const sanitized = type
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    return `space-type-chip-${sanitized || "default"}`;
   };
 
   return (

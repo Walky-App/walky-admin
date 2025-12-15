@@ -28,6 +28,7 @@ export interface EventData {
   studentId: string;
   eventDate: string;
   eventTime: string;
+  eventDateRaw?: string;
   attendees: number;
   status: "upcoming" | "finished";
   type: EventType;
@@ -35,17 +36,22 @@ export interface EventData {
   flagReason?: string;
 }
 
+export type EventSortField = "eventName" | "eventDate" | "attendeesCount";
+
 interface EventTableProps {
   events: EventData[];
+  sortBy?: EventSortField;
+  sortOrder?: "asc" | "desc";
+  onSortChange?: (field: EventSortField, order: "asc" | "desc") => void;
 }
 
-type SortField = "eventName" | "organizer" | "eventDate" | "attendees";
-type SortDirection = "asc" | "desc";
-
-export const EventTable: React.FC<EventTableProps> = ({ events }) => {
+export const EventTable: React.FC<EventTableProps> = ({
+  events,
+  sortBy,
+  sortOrder = "asc",
+  onSortChange,
+}) => {
   const queryClient = useQueryClient();
-  const [sortField, setSortField] = useState<SortField | null>(null);
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [eventToDelete, setEventToDelete] = useState<EventData | null>(null);
   const [flagModalOpen, setFlagModalOpen] = useState(false);
@@ -111,12 +117,12 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
     },
   });
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+  const handleSort = (field: EventSortField) => {
+    if (!onSortChange) return;
+    if (sortBy === field) {
+      onSortChange(field, sortOrder === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field);
-      setSortDirection("asc");
+      onSortChange(field, "asc");
     }
   };
 
@@ -134,15 +140,54 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
   const handleViewEvent = async (event: EventData, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      const response = (await apiClient.api.adminV2EventsDetail(
-        event.id
-      )) as any;
-      const details = response.data;
+      const response = await apiClient.api.adminV2EventsDetail(event.id);
+      type EventDetails = {
+        id?: string;
+        _id?: string;
+        name?: string;
+        image_url?: string;
+        date_and_time?: string;
+        eventDate?: string;
+        eventTime?: string;
+        event_time?: string;
+        location?: string;
+        address?: string;
+        visibility?: string;
+        description?: string;
+        slots?: number;
+        spaceId?: string;
+        organizer?: { name?: string; id?: string; _id?: string; avatar?: string; avatar_url?: string };
+        participants?: Array<{ user_id?: string; name?: string; avatar_url?: string; status?: string }>;
+        isFlagged?: boolean;
+        flagReason?: string;
+      };
+      const details = response.data as EventDetails;
+
+      const hasDateTime = Boolean(details.date_and_time);
+      const dateObj = hasDateTime ? new Date(details.date_and_time!) : null;
+
+      const displayDate = hasDateTime
+        ? new Intl.DateTimeFormat(undefined, {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            timeZone: "UTC",
+          }).format(dateObj as Date)
+        : details.eventDate || "";
+
+      const displayTime = hasDateTime
+        ? new Intl.DateTimeFormat(undefined, {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+            timeZone: "UTC",
+          }).format(dateObj as Date)
+        : details.eventTime || details.event_time || "";
 
       // Map API response to EventDetailsData
       const eventDetails: EventDetailsData = {
-        id: details.id || details._id,
-        eventName: details.name,
+        id: details.id || details._id || "",
+        eventName: details.name || "",
         eventImage: details.image_url,
         organizer: {
           name: details.organizer?.name || "Unknown",
@@ -153,25 +198,22 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
             "N/A",
           avatar: details.organizer?.avatar || details.organizer?.avatar_url,
         },
-        date: new Date(details.date_and_time).toLocaleDateString(),
-        time: new Date(details.date_and_time).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        date: displayDate,
+        time: displayTime,
         place: details.location || details.address || "Campus",
         status:
-          new Date(details.date_and_time) < new Date()
+          details.date_and_time && new Date(details.date_and_time) < new Date()
             ? "finished"
             : "upcoming",
-        type: details.visibility as "public" | "private",
-        description: details.description,
-        attendees: (details.participants || []).map((p: any) => ({
-          id: p.user_id,
+        type: (details.visibility as "public" | "private") || "public",
+        description: details.description || "",
+        attendees: (details.participants || []).map((p) => ({
+          id: p.user_id || "",
           name: p.name || "Unknown",
           avatar: p.avatar_url,
-          status: p.status,
+          status: p.status as "pending" | "confirmed" | "declined" | undefined,
         })),
-        maxAttendees: details.slots,
+        maxAttendees: details.slots || 0,
         isFlagged: details.isFlagged,
         flagReason: details.flagReason,
       };
@@ -218,38 +260,6 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
     }
   };
 
-  const sortedEvents = [...events].sort((a, b) => {
-    if (!sortField) return 0;
-
-    let aValue: string | number;
-    let bValue: string | number;
-
-    switch (sortField) {
-      case "eventName":
-        aValue = a.eventName.toLowerCase();
-        bValue = b.eventName.toLowerCase();
-        break;
-      case "organizer":
-        aValue = a.organizer.name.toLowerCase();
-        bValue = b.organizer.name.toLowerCase();
-        break;
-      case "eventDate":
-        aValue = new Date(a.eventDate).getTime();
-        bValue = new Date(b.eventDate).getTime();
-        break;
-      case "attendees":
-        aValue = a.attendees;
-        bValue = b.attendees;
-        break;
-      default:
-        return 0;
-    }
-
-    if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-    return 0;
-  });
-
   return (
     <div className="event-table-wrapper">
       <table className="event-table">
@@ -265,13 +275,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
               </div>
             </th>
             <th>
-              <div
-                className="event-table-header"
-                onClick={() => handleSort("organizer")}
-              >
-                <span>Organizer</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
-              </div>
+              <span>Organizer</span>
             </th>
             <th>
               <span>Student ID</span>
@@ -288,7 +292,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
             <th>
               <div
                 className="event-table-header"
-                onClick={() => handleSort("attendees")}
+                onClick={() => handleSort("attendeesCount")}
               >
                 <span>Attendees</span>
                 <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
@@ -305,7 +309,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
         </thead>
 
         <tbody>
-          {sortedEvents.map((event, index) => (
+          {events.map((event, index) => (
             <React.Fragment key={event.id}>
               <tr className={event.isFlagged ? "event-row-flagged" : ""}>
                 <td>
@@ -402,7 +406,7 @@ export const EventTable: React.FC<EventTableProps> = ({ events }) => {
                   />
                 </td>
               </tr>
-              {index < sortedEvents.length - 1 && !event.isFlagged && (
+              {index < events.length - 1 && !event.isFlagged && (
                 <tr className="event-divider-row">
                   <td colSpan={7}>
                     <Divider />

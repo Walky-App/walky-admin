@@ -99,7 +99,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 136px;
+  min-width: 168px;
+  max-width: 220px;
   height: 40px;
   background-color: #fcfdfd;
   border: 0.6px solid #a9abac;
@@ -111,6 +112,17 @@
   line-height: 100%;
   color: #5b6168;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.category-filter-button span {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .category-dropdown-menu {
@@ -136,6 +148,9 @@
   color: #1d1b20;
   padding: 8px 0;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .category-dropdown-item:hover {
@@ -301,4 +316,15 @@
 [data-theme="dark"] .pagination-page-number.active {
   background-color: #1a2840;
   border-color: #7a8fff;
+}
+
+/* Accessibility: Focus-visible styles */
+.spaces-manager button:focus-visible,
+.spaces-manager a:focus-visible,
+.spaces-manager input:focus-visible,
+.spaces-manager select:focus-visible,
+.spaces-manager [role="button"]:focus-visible,
+.spaces-manager [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }

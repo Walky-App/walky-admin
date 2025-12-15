@@ -7,26 +7,26 @@ export const placeTypeService = {
     is_active?: boolean;
     search?: string;
   }): Promise<PlaceType[]> => {
-    const response = await apiClient.admin.placeTypesList(params) as any;
-    return response.data.data;
+    const response = await apiClient.admin.placeTypesList(params);
+    return response.data.data as PlaceType[];
   },
 
   // Get place type by ID
   getById: async (id: string): Promise<PlaceType> => {
-    const response = await apiClient.admin.placeTypesDetail(id) as any;
-    return response.data.data;
+    const response = await apiClient.admin.placeTypesDetail(id);
+    return response.data.data as PlaceType;
   },
 
   // Create new place type
   create: async (data: CreatePlaceTypeRequest): Promise<PlaceType> => {
-    const response = await apiClient.admin.placeTypesCreate(data as any) as any;
-    return response.data.data;
+    const response = await apiClient.admin.placeTypesCreate(data);
+    return response.data.data as PlaceType;
   },
 
   // Update place type
   update: async (id: string, data: UpdatePlaceTypeRequest): Promise<PlaceType> => {
-    const response = await apiClient.admin.placeTypesUpdate(id, data as any) as any;
-    return response.data.data;
+    const response = await apiClient.admin.placeTypesUpdate(id, data);
+    return response.data.data as PlaceType;
   },
 
   // Delete place type
@@ -36,7 +36,7 @@ export const placeTypeService = {
 
   // Get available Google types
   getGoogleTypes: async (): Promise<GoogleType[]> => {
-    const response = await apiClient.admin.placeTypesGoogleTypesList() as any;
-    return response.data.data;
+    const response = await apiClient.admin.placeTypesGoogleTypesList();
+    return response.data.data as GoogleType[];
   },
 };

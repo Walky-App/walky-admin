@@ -1,6 +1,7 @@
  
 import React from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, TooltipProps } from "recharts";
+import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { useTheme } from "../../../../hooks/useTheme";
 import "./DonutChart.css";
 
@@ -25,9 +26,10 @@ export const DonutChart: React.FC<DonutChartProps> = ({ title, data }) => {
     value: item.value,
   }));
 
-  // Custom tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
+  // Custom tooltip - using explicit type for payload access
+  const CustomTooltip = (props: TooltipProps<ValueType, NameType> & { payload?: Array<{ value?: number; name?: string }> }) => {
+    const { active, payload } = props;
+    if (active && payload && payload.length && payload[0].value !== undefined) {
       const total = data.reduce((sum, item) => sum + item.value, 0);
       const percentage = ((payload[0].value / total) * 100).toFixed(2);
       return (

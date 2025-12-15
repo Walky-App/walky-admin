@@ -247,6 +247,21 @@
   opacity: 0.8;
 }
 
+.ban-date-cell {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  white-space: normal;
+}
+
+.ban-date-cell .student-time {
+  font-size: 12px;
+  font-weight: 500;
+  color: #5b6168;
+  opacity: 0.9;
+}
+
 .user-id-cell {
   display: flex;
   align-items: center;
@@ -401,4 +416,15 @@
     margin-right: 8px;
     min-width: 120px;
   }
+}
+
+/* Accessibility: Focus-visible styles */
+.student-table button:focus-visible,
+.student-table a:focus-visible,
+.student-table input:focus-visible,
+.student-table select:focus-visible,
+.student-table [role="button"]:focus-visible,
+.student-table [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }

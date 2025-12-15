@@ -33,7 +33,7 @@ import CIcon from "@coreui/icons-react";
 import { cilSearch, cilUserPlus, cilTrash } from "@coreui/icons";
 import { userService, UserWithRoles } from "../services/userService";
 import { rolesService } from "../services/rolesService";
-import { AssignRoleRequest, RemoveRoleRequest } from "../types/role";
+import { AssignRoleRequest, RemoveRoleRequest, RoleName } from "../types/role";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const UsersRoles: React.FC = () => {
@@ -78,14 +78,18 @@ const UsersRoles: React.FC = () => {
     queryFn: rolesService.getRoles,
   });
 
-  const users = usersData?.users || [];
+  const users = (usersData?.users || []) as UserWithRoles[];
   const pagination = usersData?.pagination;
   const roles = rolesData?.roles || [];
 
   // Assign role mutation
   const assignRoleMutation = useMutation({
     mutationFn: ({ userId, data }: { userId: string; data: AssignRoleRequest }) =>
-      rolesService.assignRole(userId, data),
+      rolesService.assignRole(userId, {
+        role: data.role as RoleName,
+        campus_id: data.campus_id,
+        school_id: data.school_id,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       handleCloseAssignModal();
@@ -134,7 +138,7 @@ const UsersRoles: React.FC = () => {
 
   const handleAssignSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedUser) {
+    if (selectedUser?._id) {
       assignRoleMutation.mutate({
         userId: selectedUser._id,
         data: {
@@ -152,7 +156,7 @@ const UsersRoles: React.FC = () => {
   };
 
   const handleRemoveConfirm = () => {
-    if (selectedUser && selectedRoleToRemove) {
+    if (selectedUser?._id && selectedRoleToRemove) {
       removeRoleMutation.mutate({
         userId: selectedUser._id,
         data: {
@@ -282,10 +286,10 @@ const UsersRoles: React.FC = () => {
                     </CTableDataCell>
                     <CTableDataCell>{user.email}</CTableDataCell>
                     <CTableDataCell>
-                      {user.school_id?.name && (
+                      {user.school_id && typeof user.school_id === "object" && user.school_id.name && (
                         <div className="small">
                           <strong>{user.school_id.name}</strong>
-                          {user.campus_id?.campus_name && (
+                          {user.campus_id && typeof user.campus_id === "object" && user.campus_id.campus_name && (
                             <div className="text-muted">{user.campus_id.campus_name}</div>
                           )}
                         </div>
@@ -302,9 +306,9 @@ const UsersRoles: React.FC = () => {
                           {user.roles.map((roleAssignment, idx) => (
                             <div key={idx} className="mb-1">
                               <CBadge color="secondary" className="me-1">
-                                {getRoleDisplayName(roleAssignment.role)}
+                                {getRoleDisplayName(roleAssignment.role || "")}
                               </CBadge>
-                              {roleAssignment.campus_id && (
+                              {roleAssignment.campus_id && typeof roleAssignment.campus_id === "object" && (
                                 <span className="small text-muted">
                                   @ {roleAssignment.campus_id.campus_name}
                                 </span>
@@ -316,8 +320,8 @@ const UsersRoles: React.FC = () => {
                                 onClick={() =>
                                   handleOpenRemoveModal(
                                     user,
-                                    roleAssignment.role,
-                                    roleAssignment.campus_id?._id
+                                    roleAssignment.role || "",
+                                    typeof roleAssignment.campus_id === "object" ? roleAssignment.campus_id?._id : roleAssignment.campus_id
                                   )
                                 }
                               >

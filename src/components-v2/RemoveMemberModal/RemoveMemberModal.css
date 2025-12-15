@@ -174,3 +174,12 @@
   background: #4a4a4a;
   border-color: #5a5a5a;
 }
+
+/* Accessibility: Focus-visible styles */
+.remove-member-modal-content button:focus-visible,
+.remove-member-modal-content a:focus-visible,
+.remove-member-modal-content [role="button"]:focus-visible,
+.remove-member-modal-content [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

@@ -19,6 +19,7 @@ import {
   Interest,
   Message,
   PeerRequest,
+  Report,
   User,
   WalkInvite,
 } from "./data-contracts";
@@ -1038,11 +1039,50 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        data?: {
+          _id?: string;
+          email?: string;
+          first_name?: string;
+          last_name?: string;
+          is_banned?: boolean;
+          /** @format date-time */
+          ban_date?: string;
+          /** @format date-time */
+          ban_expires_at?: string;
+          ban_reason?: string;
+          campus_id?: {
+            _id?: string;
+            campus_name?: string;
+          };
+          school_id?: {
+            _id?: string;
+            school_name?: string;
+          };
+          recentFailedAttempts?: {
+            /** @format date-time */
+            timestamp?: string;
+            ip_address?: string;
+            device_info?: string;
+          }[];
+          isExpired?: boolean;
+        }[];
+        pagination?: {
+          total?: number;
+          page?: number;
+          limit?: number;
+          pages?: number;
+        };
+      },
+      void
+    >({
       path: `/api/admin/locked-users`,
       method: "GET",
       query: query,
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -1067,12 +1107,24 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        message?: string;
+        data?: {
+          userId?: string;
+          email?: string;
+          attemptsCleared?: boolean;
+        };
+      },
+      void
+    >({
       path: `/api/admin/unlock-user/${userId}`,
       method: "POST",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
@@ -1095,12 +1147,24 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        message?: string;
+        data?: {
+          userId?: string;
+          email?: string;
+          success?: boolean;
+        }[];
+      },
+      void
+    >({
       path: `/api/admin/bulk-unlock-users`,
       method: "POST",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
@@ -1166,12 +1230,24 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        message?: string;
+        data?: {
+          userId?: string;
+          maxAttempts?: number;
+          lockDurationHours?: number;
+        };
+      },
+      void
+    >({
       path: `/api/admin/lock-settings/${userId}`,
       method: "PUT",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
@@ -1193,14 +1269,28 @@ export class Api<
       search?: string;
       school_id?: string;
       role?: string;
+      /** Filter by campus ID */
+      campus_id?: string;
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        users?: User[];
+        pagination?: {
+          page?: number;
+          limit?: number;
+          total?: number;
+          pages?: number;
+        };
+      },
+      void
+    >({
       path: `/api/admin/users`,
       method: "GET",
       query: query,
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -1219,11 +1309,24 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        users?: {
+          _id?: string;
+          first_name?: string;
+          last_name?: string;
+          email?: string;
+          avatar_url?: string;
+          role?: string;
+        }[];
+      },
+      void
+    >({
       path: `/api/admin/users/search`,
       method: "GET",
       query: query,
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -1236,10 +1339,16 @@ export class Api<
    * @secure
    */
   adminUsersDetail = (userId: string, params: RequestParams = {}) =>
-    this.request<void, void>({
+    this.request<
+      {
+        user?: User;
+      },
+      void
+    >({
       path: `/api/admin/users/${userId}`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -1582,6 +1691,8 @@ export class Api<
       endDate?: string;
       campusId?: string;
       schoolId?: string;
+      sortBy?: "eventName" | "eventDate" | "attendeesCount" | "type";
+      sortOrder?: "asc" | "desc";
     },
     params: RequestParams = {},
   ) =>
@@ -1597,8 +1708,17 @@ export class Api<
           studentId?: string;
           eventDate?: string;
           eventTime?: string;
-          attendees?: number;
+          /** @format date-time */
+          start_date?: string;
+          /** @format date-time */
+          end_date?: string;
+          attendeesCount?: number;
+          attendees?: object[];
           type?: string;
+          location?: string;
+          description?: string;
+          slots?: number;
+          image_url?: string;
           isFlagged?: boolean;
           flagReason?: string;
           /** Event status based on date (upcoming=future, ongoing=today, finished=past) */
@@ -1627,10 +1747,43 @@ export class Api<
    * @secure
    */
   adminV2EventsDetail = (id: string, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<
+      {
+        id?: string;
+        _id?: string;
+        name?: string;
+        image_url?: string;
+        date_and_time?: string;
+        location?: string;
+        address?: string;
+        visibility?: string;
+        description?: string;
+        slots?: number;
+        spaceId?: string;
+        attendeesCount?: number;
+        organizer?: {
+          name?: string;
+          avatar?: string;
+          studentId?: string;
+          id?: string;
+          _id?: string;
+          avatar_url?: string;
+        };
+        participants?: {
+          user_id?: string;
+          name?: string;
+          avatar_url?: string;
+          status?: string;
+        }[];
+        isFlagged?: boolean;
+        flagReason?: string;
+      },
+      any
+    >({
       path: `/api/admin/v2/events/${id}`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -1663,6 +1816,8 @@ export class Api<
       page?: number;
       limit?: number;
       search?: string;
+      sortBy?: "ideaTitle" | "collaborated" | "creationDate";
+      sortOrder?: "asc" | "desc";
     },
     params: RequestParams = {},
   ) =>
@@ -1705,10 +1860,35 @@ export class Api<
    * @secure
    */
   adminV2IdeasDetail = (id: string, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<
+      {
+        id?: string;
+        title?: string;
+        description?: string;
+        createdAt?: string;
+        lookingFor?: string;
+        collaboratorsCount?: number;
+        creator?: {
+          name?: string;
+          avatar?: string;
+          studentId?: string;
+          email?: string;
+        };
+        collaborators?: {
+          user_id?: string;
+          name?: string;
+          avatar_url?: string;
+          status?: string;
+        }[];
+        isFlagged?: boolean;
+        flagReason?: string;
+      },
+      any
+    >({
       path: `/api/admin/v2/ideas/${id}`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -1747,6 +1927,8 @@ export class Api<
       campusId?: string;
       /** Filter by time period */
       period?: "all" | "week" | "month" | "year";
+      sortBy?: "reportDate" | "type" | "status" | "reason";
+      sortOrder?: "asc" | "desc";
     },
     params: RequestParams = {},
   ) =>
@@ -1762,6 +1944,8 @@ export class Api<
           reasonTag?: string;
           status?: string;
           isFlagged?: boolean;
+          reportedItemId?: string;
+          reporterName?: string;
         }[];
         total?: number;
         page?: number;
@@ -1791,6 +1975,8 @@ export class Api<
         total?: number;
         pending?: number;
         underEvaluation?: number;
+        resolved?: number;
+        dismissed?: number;
       },
       any
     >({
@@ -2029,6 +2215,8 @@ export class Api<
       limit?: number;
       search?: string;
       category?: string;
+      sortBy?: "spaceName" | "members" | "creationDate" | "category";
+      sortOrder?: "asc" | "desc";
     },
     params: RequestParams = {},
   ) =>
@@ -2202,6 +2390,8 @@ export class Api<
       limit?: number;
       search?: string;
       status?: "active" | "deactivated" | "banned" | "disengaged";
+      sortBy?: "name" | "email" | "memberSince" | "onlineLast" | "status";
+      sortOrder?: "asc" | "desc";
     },
     params: RequestParams = {},
   ) =>
@@ -2217,6 +2407,22 @@ export class Api<
           memberSince?: string;
           onlineLast?: string;
           isFlagged?: boolean;
+          avatar?: string;
+          deactivatedDate?: string;
+          deactivatedBy?: string;
+          bannedDate?: string;
+          bannedBy?: string;
+          bannedByEmail?: string;
+          bannedTime?: string;
+          reason?: string;
+          duration?: string;
+          totalPeers?: number;
+          peers?: number;
+          bio?: string;
+          studyMain?: string;
+          studySecondary?: string;
+          ignoredInvitations?: number;
+          reported?: boolean;
         }[];
         total?: number;
         page?: number;
@@ -2271,11 +2477,47 @@ export class Api<
         userId?: string;
         name?: string;
         email?: string;
+        avatar?: string;
         interests?: string[];
         status?: string;
         memberSince?: string;
         onlineLast?: string;
         isFlagged?: boolean;
+        phone?: string;
+        studyMain?: string;
+        studySecondary?: string;
+        graduationYear?: number;
+        areaOfStudy?: string;
+        lastLogin?: string;
+        bio?: string;
+        totalPeers?: number;
+        peers?: number;
+        bannedAt?: string;
+        bannedBy?: string;
+        bannedByEmail?: string;
+        bannedDate?: string;
+        bannedTime?: string;
+        banReason?: string;
+        deletedAt?: string;
+        deletedBy?: string;
+        deletionReason?: string;
+        banHistory?: {
+          title?: string;
+          duration?: string;
+          expiresIn?: string;
+          reason?: string;
+          bannedDate?: string;
+          bannedTime?: string;
+          bannedBy?: string;
+        }[];
+        blockedByUsers?: {
+          id?: string;
+          name?: string;
+          avatar?: string;
+          date?: string;
+          time?: string;
+          reason?: string;
+        }[];
       },
       any
     >({
@@ -2391,7 +2633,13 @@ export class Api<
    * @request GET:/api/admin/v2/campuses
    * @secure
    */
-  adminV2CampusesList = (params: RequestParams = {}) =>
+  adminV2CampusesList = (
+    query?: {
+      /** Filter campuses by school ID */
+      school_id?: string;
+    },
+    params: RequestParams = {},
+  ) =>
     this.request<
       {
         id?: string;
@@ -2407,6 +2655,7 @@ export class Api<
     >({
       path: `/api/admin/v2/campuses`,
       method: "GET",
+      query: query,
       secure: true,
       format: "json",
       ...params,
@@ -3011,11 +3260,27 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        access_token?: string;
+        _id?: string;
+        email?: string;
+        first_name?: string;
+        last_name?: string;
+        role?: string;
+        school_id?: string;
+        campus_id?: string;
+        avatar_url?: string;
+        refresh_token?: string;
+        require_password_change?: boolean;
+      },
+      void
+    >({
       path: `/api/login`,
       method: "POST",
       body: data,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
@@ -3416,11 +3681,57 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        message?: string;
+        data?: {
+          totalActiveUsers?: number;
+          newUserRegistrations?: {
+            thisWeek?: number;
+            thisMonth?: number;
+            trend?: number;
+          };
+          appOpenings?: {
+            averagePerWeek?: number;
+            averagePerMonth?: number;
+          };
+          invitations?: {
+            averageCreated?: number;
+            averageAccepted?: number;
+            averageIgnored?: number;
+            acceptanceRate?: number;
+          };
+          events?: {
+            totalCreated?: number;
+            averageAttendance?: number;
+          };
+          activeSpaces?: number;
+          ideas?: {
+            createdThisWeek?: number;
+            createdThisMonth?: number;
+            collaborationsThisWeek?: number;
+            collaborationsThisMonth?: number;
+          };
+          reports?: {
+            byPeople?: number;
+            byEvents?: number;
+            byIdeas?: number;
+            bySpaces?: number;
+            totalRate?: number;
+          };
+        };
+        cached?: boolean;
+        /** @format date-time */
+        computedAt?: string;
+      },
+      void
+    >({
       path: `/api/admin/campus/${campusId}/metrics/social-health`,
       method: "GET",
       query: query,
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -3443,11 +3754,41 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        message?: string;
+        data?: {
+          averagePeers?: number;
+          averageTimeToFirstInteraction?: {
+            days?: number;
+            hours?: number;
+          };
+          completionRates?: {
+            walksCompleted?: number;
+            eventsAttended?: number;
+            spacesJoined?: number;
+          };
+          commonInterests?: {
+            interest?: string;
+            count?: number;
+            percentage?: number;
+          }[];
+          topFieldsOfStudy?: {
+            field?: string;
+            studentCount?: number;
+            interactionCount?: number;
+            averageInteractions?: number;
+          }[];
+        };
+      },
+      void
+    >({
       path: `/api/admin/campus/${campusId}/metrics/wellbeing`,
       method: "GET",
       query: query,
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -3460,10 +3801,26 @@ export class Api<
    * @secure
    */
   adminCampusMetricsKpisList = (campusId: string, params: RequestParams = {}) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        message?: string;
+        data?: {
+          totalUsers?: number;
+          activeUsers?: number;
+          newUsersThisMonth?: number;
+          totalSpaces?: number;
+          totalEvents?: number;
+          totalIdeas?: number;
+          averageEngagement?: number;
+        };
+      },
+      void
+    >({
       path: `/api/admin/campus/${campusId}/metrics/kpis`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -3587,12 +3944,30 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        message?: string;
+        data?: {
+          campus_id?: string;
+          sync_status?: "completed" | "failed" | "partial";
+          places_added?: number;
+          places_updated?: number;
+          places_removed?: number;
+          api_calls_used?: number;
+          sync_duration_ms?: number;
+          total_places_processed?: number;
+          errors?: string[];
+        };
+      },
+      void
+    >({
       path: `/api/admin/campus-sync/sync/${campusId}`,
       method: "POST",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
@@ -3605,10 +3980,32 @@ export class Api<
    * @secure
    */
   adminCampusSyncSyncAllCreate = (params: RequestParams = {}) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        message?: string;
+        data?: {
+          summary?: {
+            total?: number;
+            totalPlacesAdded?: number;
+            totalPlacesUpdated?: number;
+            totalPlacesRemoved?: number;
+          };
+          results?: {
+            campus_id?: string;
+            sync_status?: string;
+            places_added?: number;
+            places_updated?: number;
+            places_removed?: number;
+          }[];
+        };
+      },
+      void
+    >({
       path: `/api/admin/campus-sync/sync-all`,
       method: "POST",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -3639,11 +4036,43 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        data?: {
+          logs?: {
+            _id?: string;
+            campus_id?: {
+              _id?: string;
+              campus_name?: string;
+            };
+            /** @format date-time */
+            last_sync_date?: string;
+            places_added?: number;
+            places_updated?: number;
+            places_removed?: number;
+            api_calls_used?: number;
+            sync_status?: string;
+            sync_duration_ms?: number;
+            total_places_processed?: number;
+            error_message?: string;
+            /** @format date-time */
+            createdAt?: string;
+          }[];
+          pagination?: {
+            total?: number;
+            limit?: number;
+            offset?: number;
+          };
+        };
+      },
+      void
+    >({
       path: `/api/admin/campus-sync/logs`,
       method: "GET",
       query: query,
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -3656,10 +4085,32 @@ export class Api<
    * @secure
    */
   adminCampusSyncCampusesList = (params: RequestParams = {}) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        data?: {
+          _id?: string;
+          campus_name?: string;
+          coordinates?: object | null;
+          places_count?: number;
+          last_sync?: {
+            /** @format date-time */
+            date?: string;
+            status?: string;
+            places_added?: number;
+            places_updated?: number;
+            places_removed?: number;
+            api_calls_used?: number;
+          } | null;
+          has_coordinates?: boolean;
+        }[];
+      },
+      void
+    >({
       path: `/api/admin/campus-sync/campuses`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -3675,10 +4126,38 @@ export class Api<
     campusId: string,
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        data?: {
+          campus_name?: string;
+          boundary?: object;
+          search_points?: {
+            lat?: number;
+            lng?: number;
+            radius?: number;
+          }[];
+          bounds?: {
+            north?: number;
+            south?: number;
+            east?: number;
+            west?: number;
+          };
+          center?: {
+            lat?: number;
+            lng?: number;
+          };
+          area_sqm?: number;
+          area_acres?: number;
+          search_points_count?: number;
+        };
+      },
+      void
+    >({
       path: `/api/admin/campus-sync/campus/${campusId}/preview`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -6722,6 +7201,30 @@ export class Api<
    * No description
    *
    * @tags Peers
+   * @name UsersPeersUnblockCreate
+   * @summary Unblock a peer
+   * @request POST:/api/users/peers/unblock/{peer_id}
+   * @secure
+   */
+  usersPeersUnblockCreate = (peerId: string, params: RequestParams = {}) =>
+    this.request<
+      {
+        message?: string;
+      },
+      {
+        message?: string;
+      }
+    >({
+      path: `/api/users/peers/unblock/${peerId}`,
+      method: "POST",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Peers
    * @name UsersPeersAddCreate
    * @summary Add a peer directly
    * @request POST:/api/users/peers/add
@@ -7476,11 +7979,63 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        reports?: {
+          _id?: string;
+          reported_by?: {
+            _id?: string;
+            first_name?: string;
+            last_name?: string;
+            email?: string;
+            campus_id?: string;
+          };
+          report_type?:
+            | "user"
+            | "event"
+            | "space"
+            | "idea"
+            | "message"
+            | "peers";
+          reported_item_id?: string;
+          reason?: string;
+          description?: string;
+          status?: "pending" | "under_review" | "resolved" | "dismissed";
+          reviewed_by?: {
+            _id?: string;
+            first_name?: string;
+            last_name?: string;
+          };
+          admin_notes?: string;
+          /** @format date-time */
+          resolved_at?: string;
+          school_id?: {
+            _id?: string;
+            name?: string;
+          };
+          campus_id?: {
+            _id?: string;
+            campus_name?: string;
+          };
+          /** @format date-time */
+          createdAt?: string;
+          /** @format date-time */
+          updatedAt?: string;
+        }[];
+        pagination?: {
+          page?: number;
+          limit?: number;
+          total?: number;
+          pages?: number;
+        };
+      },
+      void
+    >({
       path: `/api/admin/reports`,
       method: "GET",
       query: query,
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -7500,12 +8055,19 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        message?: string;
+        report?: Report;
+      },
+      void
+    >({
       path: `/api/admin/reports/${reportId}/status`,
       method: "PATCH",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
@@ -7518,10 +8080,42 @@ export class Api<
    * @secure
    */
   adminReportsDetail = (reportId: string, params: RequestParams = {}) =>
-    this.request<void, void>({
+    this.request<
+      {
+        report?: Report;
+        /** The reported item (user, event, space, idea, or message) */
+        reportedItem?: {
+          _id?: string;
+          first_name?: string;
+          last_name?: string;
+          email?: string;
+          avatar_url?: string;
+          profile_bio?: string;
+          is_banned?: boolean;
+          ban_reason?: string;
+          report_count?: number;
+        };
+        relatedReports?: {
+          _id?: string;
+          reason?: string;
+          description?: string;
+          status?: string;
+          /** @format date-time */
+          createdAt?: string;
+          reported_by?: {
+            _id?: string;
+            first_name?: string;
+            last_name?: string;
+          };
+        }[];
+        totalRelatedReports?: number;
+      },
+      void
+    >({
       path: `/api/admin/reports/${reportId}`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -7543,12 +8137,33 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        message?: string;
+        user?: {
+          _id?: string;
+          first_name?: string;
+          last_name?: string;
+          email?: string;
+          is_banned?: boolean;
+          /** @format date-time */
+          ban_date?: string;
+          ban_reason?: string;
+          ban_duration?: number;
+          /** @format date-time */
+          ban_expires_at?: string;
+        };
+        report?: Report;
+        resolved_reports_count?: number;
+      },
+      void
+    >({
       path: `/api/admin/reports/${reportId}/ban-user`,
       method: "POST",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
@@ -7567,12 +8182,25 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        message?: string;
+        user?: {
+          _id?: string;
+          first_name?: string;
+          last_name?: string;
+          email?: string;
+          is_banned?: boolean;
+        };
+      },
+      void
+    >({
       path: `/api/admin/users/${userId}/unban`,
       method: "POST",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
@@ -7596,11 +8224,49 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        users?: {
+          _id?: string;
+          first_name?: string;
+          last_name?: string;
+          email?: string;
+          avatar_url?: string;
+          /** @format date-time */
+          ban_date?: string;
+          ban_reason?: string;
+          ban_duration?: number;
+          /** @format date-time */
+          ban_expires_at?: string;
+          report_count?: number;
+          banned_by?: {
+            _id?: string;
+            first_name?: string;
+            last_name?: string;
+          };
+          school_id?: {
+            _id?: string;
+            name?: string;
+          };
+          campus_id?: {
+            _id?: string;
+            campus_name?: string;
+          };
+        }[];
+        pagination?: {
+          page?: number;
+          limit?: number;
+          total?: number;
+          pages?: number;
+        };
+      },
+      void
+    >({
       path: `/api/admin/users/banned`,
       method: "GET",
       query: query,
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -7636,12 +8302,19 @@ export class Api<
     },
     params: RequestParams = {},
   ) =>
-    this.request<void, void>({
+    this.request<
+      {
+        message?: string;
+        updated_count?: number;
+      },
+      void
+    >({
       path: `/api/admin/reports/bulk`,
       method: "PATCH",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
   /**
@@ -7852,10 +8525,24 @@ export class Api<
    * @secure
    */
   adminRolesList = (params: RequestParams = {}) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        roles?: {
+          _id?: string;
+          name?: string;
+          display_name?: string;
+          description?: string;
+          scope?: "global" | "school" | "campus";
+          permissions?: string[];
+        }[];
+      },
+      void
+    >({
       path: `/api/admin/roles`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -7895,10 +8582,24 @@ export class Api<
    * @secure
    */
   adminPermissionsList = (params: RequestParams = {}) =>
-    this.request<void, void>({
+    this.request<
+      {
+        success?: boolean;
+        permissions?: Record<
+          string,
+          {
+            action?: string;
+            code?: string;
+            description?: string;
+          }[]
+        >;
+      },
+      void
+    >({
       path: `/api/admin/permissions`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -7965,10 +8666,31 @@ export class Api<
    * @secure
    */
   adminUsersRolesList = (userId: string, params: RequestParams = {}) =>
-    this.request<void, any>({
+    this.request<
+      {
+        success?: boolean;
+        user?: {
+          _id?: string;
+          first_name?: string;
+          last_name?: string;
+          email?: string;
+          primary_role?: string;
+          roles?: {
+            role?: string;
+            campus_id?: string;
+            school_id?: string;
+            assigned_by?: object;
+            /** @format date-time */
+            assigned_at?: string;
+          }[];
+        };
+      },
+      any
+    >({
       path: `/api/admin/users/${userId}/roles`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
   /**
@@ -8092,7 +8814,15 @@ export class Api<
    */
   schoolList = (params: RequestParams = {}) =>
     this.request<
-      void,
+      {
+        _id?: string;
+        school_name?: string;
+        display_name?: string;
+        email_domain?: string;
+        logo_url?: string;
+        is_active?: boolean;
+        admins?: string[];
+      }[],
       {
         message?: string;
         /** Error details (only in development mode) */
@@ -8101,6 +8831,7 @@ export class Api<
     >({
       path: `/api/school`,
       method: "GET",
+      format: "json",
       ...params,
     });
   /**

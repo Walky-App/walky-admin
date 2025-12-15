@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { SearchInput, FilterDropdown } from "../../../components-v2";
+import {
+  Pagination,
+  SearchInput,
+  FilterDropdown,
+  NoData,
+} from "../../../components-v2";
 import { EventTable } from "../components/EventTable/EventTable";
 import { EventTableSkeleton } from "../components/EventTableSkeleton/EventTableSkeleton";
-import { NoEventsFound } from "../components/NoEventsFound/NoEventsFound";
-import { Pagination } from "../components/Pagination";
 import { EventCalendar } from "../components/EventCalendar/EventCalendar";
 import "./EventsManager.css";
 
 type ViewMode = "list" | "calendar";
+type EventSortField = "eventName" | "eventDate" | "attendeesCount";
 
 export const EventsManager: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("list");
@@ -18,49 +22,118 @@ export const EventsManager: React.FC = () => {
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState<EventSortField | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setSearchQuery(searchInput);
+      setCurrentPage(1); // Reset to first page when searching
     }, 500);
 
     return () => clearTimeout(timer);
   }, [searchInput]);
 
   const { data: eventsData, isLoading } = useQuery({
-    queryKey: ["events", currentPage, searchQuery, typeFilter, statusFilter],
+    queryKey: ["events", currentPage, searchQuery, typeFilter, statusFilter, sortBy, sortOrder],
     queryFn: () =>
       apiClient.api.adminV2EventsList({
         page: currentPage,
         limit: 10,
         search: searchQuery,
         type: typeFilter,
+        status: statusFilter as "all" | "upcoming" | "ongoing" | "finished" | undefined,
+        sortBy,
+        sortOrder,
       }),
     placeholderData: keepPreviousData,
   });
 
+  const handleSortChange = (field: EventSortField, order: "asc" | "desc") => {
+    setSortBy(field);
+    setSortOrder(order);
+    setCurrentPage(1);
+  };
+
   const filteredEvents = (eventsData?.data.data || [])
-    .map((event: any) => ({
-      id: event.id,
-      eventName: event.eventName,
-      organizer: event.organizer,
-      studentId: event.studentId,
-      eventDate: event.eventDate,
-      eventTime: event.eventTime,
-      attendees: event.attendeesCount,
-      status: (new Date(event.eventDate) < new Date() ? "finished" : "upcoming") as "upcoming" | "finished",
-      type: event.type,
-      isFlagged: event.isFlagged,
-      flagReason: event.flagReason,
-    }))
-    .filter((event: any) => {
+    .map((event) => {
+      const rawDateTime = event.start_date || "";
+
+      const formatEventDateTime = (
+        primary?: string,
+        fallbackDate?: string,
+        fallbackTime?: string
+      ) => {
+        const candidates = [primary, fallbackDate].filter(Boolean) as string[];
+
+        for (const candidate of candidates) {
+          const parsed = Date.parse(candidate);
+          if (!Number.isNaN(parsed)) {
+            const dt = new Date(parsed);
+            return {
+              date: new Intl.DateTimeFormat("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }).format(dt),
+              time: new Intl.DateTimeFormat("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+              }).format(dt),
+              raw: dt.toISOString(),
+            };
+          }
+        }
+
+        return {
+          date: fallbackDate || "-",
+          time: fallbackTime || "",
+          raw: fallbackDate || primary || "",
+        };
+      };
+
+      const {
+        date: eventDate,
+        time: eventTime,
+        raw: eventDateRaw,
+      } = formatEventDateTime(rawDateTime, event.eventDate, event.eventTime);
+
+      const statusDate = eventDateRaw ? new Date(eventDateRaw) : null;
+      const status =
+        statusDate && !Number.isNaN(statusDate.getTime())
+          ? statusDate < new Date()
+            ? "finished"
+            : "upcoming"
+          : "upcoming";
+
+      return {
+        id: event.id || "",
+        eventName: event.eventName || "",
+        organizer: {
+          name: event.organizer?.name || "",
+          avatar: event.organizer?.avatar || "",
+        },
+        studentId: event.studentId || "",
+        eventDate,
+        eventTime,
+        eventDateRaw,
+        attendees: event.attendeesCount || 0,
+        status: status as "upcoming" | "finished",
+        type: (event.type || "public") as "public" | "private",
+        isFlagged: event.isFlagged || false,
+        flagReason: event.flagReason,
+      };
+    })
+    .filter((event) => {
       if (statusFilter === "all") return true;
       return event.status === statusFilter;
     });
 
   const totalPages = Math.ceil((eventsData?.data.total || 0) / 10);
   const totalEntries = eventsData?.data.total || 0;
+  const isEmpty = !isLoading && filteredEvents.length === 0;
 
   return (
     <main className="events-manager-container">
@@ -83,8 +156,9 @@ export const EventsManager: React.FC = () => {
         </button>
         <button
           data-testid="view-calendar-btn"
-          className={`view-toggle-btn ${viewMode === "calendar" ? "active" : ""
-            }`}
+          className={`view-toggle-btn ${
+            viewMode === "calendar" ? "active" : ""
+          }`}
           onClick={() => setViewMode("calendar")}
         >
           Calendar view
@@ -140,10 +214,25 @@ export const EventsManager: React.FC = () => {
             <>
               {isLoading ? (
                 <EventTableSkeleton />
-              ) : filteredEvents.length === 0 ? (
-                <NoEventsFound message="No events found" />
               ) : (
-                <EventTable events={filteredEvents} />
+                <>
+                  <div style={{ opacity: isEmpty ? 0.4 : 1 }}>
+                    <EventTable
+                      events={filteredEvents}
+                      sortBy={sortBy}
+                      sortOrder={sortOrder}
+                      onSortChange={handleSortChange}
+                    />
+                  </div>
+                  {isEmpty && (
+                    <NoData
+                      iconName="public-event-icon"
+                      iconColor="#526AC9"
+                      iconSize={40}
+                      message="No events found"
+                    />
+                  )}
+                </>
               )}
 
               {!isLoading && filteredEvents.length > 0 && (

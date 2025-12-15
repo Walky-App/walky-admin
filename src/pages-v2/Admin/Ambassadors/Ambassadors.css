@@ -101,6 +101,9 @@
 /* Table Wrapper */
 .ambassadors-table-wrapper {
   margin-bottom: 24px;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
 }
 
 /* Table */
@@ -545,6 +548,17 @@
   border-radius: 6px;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Accessibility: Focus-visible styles */
+.ambassadors-page button:focus-visible,
+.ambassadors-page a:focus-visible,
+.ambassadors-page input:focus-visible,
+.ambassadors-page select:focus-visible,
+.ambassadors-page [role="button"]:focus-visible,
+.ambassadors-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }
 
 /* Responsive */

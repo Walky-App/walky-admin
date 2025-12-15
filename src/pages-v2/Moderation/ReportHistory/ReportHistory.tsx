@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import "./ReportHistory.css";
 import {
@@ -14,6 +15,8 @@ import {
   Divider,
   FlagModal,
   Pagination,
+  NoData,
+  SkeletonLoader,
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
@@ -38,6 +41,11 @@ interface HistoryReportData {
 export const ReportHistory: React.FC = () => {
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] =
     useState<string>("Resolved,Dismissed");
@@ -66,11 +74,39 @@ export const ReportHistory: React.FC = () => {
   // Reports state
   const [historyReports, setHistoryReports] = useState<HistoryReportData[]>([]);
 
+  const renderTableSkeletonRows = () => (
+    <>
+      {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+        <tr key={i}>
+          <td>
+            <SkeletonLoader width="220px" height="20px" />
+            <SkeletonLoader width="120px" height="16px" className="mt-1" />
+          </td>
+          <td>
+            <SkeletonLoader width="130px" height="20px" />
+          </td>
+          <td>
+            <SkeletonLoader width="70px" height="24px" borderRadius="16px" />
+          </td>
+          <td>
+            <SkeletonLoader width="190px" height="24px" borderRadius="16px" />
+          </td>
+          <td>
+            <SkeletonLoader width="130px" height="32px" borderRadius="8px" />
+          </td>
+          <td>
+            <SkeletonLoader width="24px" height="24px" />
+          </td>
+        </tr>
+      ))}
+    </>
+  );
+
   const fetchReports = async () => {
     setLoading(true);
     try {
       // Fetch stats
-      const statsRes = (await apiClient.api.adminV2ReportsStatsList()) as any;
+      const statsRes = await apiClient.api.adminV2ReportsStatsList();
       setStats({
         total: statsRes.data.total || 0,
         resolved: statsRes.data.resolved || 0,
@@ -78,30 +114,26 @@ export const ReportHistory: React.FC = () => {
       });
 
       // Fetch reports
-      const reportsRes = (await apiClient.api.adminV2ReportsList({
+      const reportsRes = await apiClient.api.adminV2ReportsList({
         page: currentPage,
         limit: itemsPerPage,
         search: searchQuery,
         type: selectedTypes.length > 0 ? selectedTypes.join(",") : undefined,
         status: selectedStatus !== "all" ? selectedStatus : undefined,
-      } as any)) as any;
+      });
 
       const reports = reportsRes.data.data || [];
 
       // Transform API data to component format
-      const transformedReports = reports.map((r: any) => ({
-        id: r.id,
+      const transformedReports = reports.map((r) => ({
+        id: r.id || "",
         description: r.description || "No description",
         studentId: r.studentId || "Unknown",
-        reportDate: new Date(r.reportDate).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
-        type: r.type as any,
+        reportDate: r.reportDate || "",
+        type: (r.type as HistoryReportData["type"]) || "User",
         reason: r.reason || "Unknown",
-        reasonTag: (r.reasonTag as any) || "Other",
-        status: r.status as any,
+        reasonTag: (r.reasonTag || "Other") as HistoryReportData["reasonTag"],
+        status: (r.status as HistoryReportData["status"]) || "Pending review",
       }));
 
       setHistoryReports(transformedReports);
@@ -139,7 +171,7 @@ export const ReportHistory: React.FC = () => {
       );
 
       // Refresh stats
-      const statsRes = (await apiClient.api.adminV2ReportsStatsList()) as any;
+      const statsRes = await apiClient.api.adminV2ReportsStatsList();
       setStats({
         total: statsRes.data.total || 0,
         resolved: statsRes.data.resolved || 0,
@@ -148,6 +180,30 @@ export const ReportHistory: React.FC = () => {
     } catch (error) {
       console.error("Failed to update status:", error);
     }
+  };
+
+  const formatReportDateParts = (value?: string | null) => {
+    if (!value) return { date: "-", time: null as string | null };
+
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) {
+      return {
+        date: new Intl.DateTimeFormat("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          timeZone: "UTC",
+        }).format(parsed),
+        time: new Intl.DateTimeFormat("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+          timeZone: "UTC",
+        }).format(parsed),
+      };
+    }
+
+    return { date: value, time: null };
   };
 
   const handleNoteRequired = (reportId: string, newStatus: string) => {
@@ -161,7 +217,7 @@ export const ReportHistory: React.FC = () => {
         // Save note first
         await apiClient.api.adminV2ReportsNoteCreate(
           pendingStatusChange.reportId,
-          { note } as any
+          { note }
         );
 
         // Then update status
@@ -190,7 +246,7 @@ export const ReportHistory: React.FC = () => {
     setReportDetails(null); // Reset previous details
 
     try {
-      const res = (await apiClient.api.adminV2ReportsDetail(report.id)) as any;
+      const res = await apiClient.api.adminV2ReportsDetail(report.id);
       setReportDetails(res.data);
     } catch (error) {
       console.error("Failed to fetch report details:", error);
@@ -218,18 +274,121 @@ export const ReportHistory: React.FC = () => {
   const totalPages = Math.ceil(stats.total / itemsPerPage);
 
   const getReasonColor = (reason: string) => {
-    switch (reason) {
-      case "Self-Injury / Harmful Behavior":
-        return { bg: "#ffe5e4", text: "#a4181a" };
-      case "Inappropriate or offensive":
-        return { bg: "#fff4e4", text: "#8f5400" };
-      case "Harassment / Threats":
-        return { bg: "#ffe2fa", text: "#91127c" };
-      case "Spam":
-        return { bg: "#fff3d6", text: "#8f5400" };
-      default:
-        return { bg: "#f4f5f7", text: "#676d70" };
+    const palette = {
+      pinkBg: "#ffe2fa",
+      pinkText: "#91127c",
+      redBg: "#ffe5e4",
+      redText: "#a4181a",
+      blueBg: "#e5f2ff",
+      blueText: "#0a4e8c",
+      orangeBg: "#fff4e4",
+      orangeText: "#8f5400",
+      yellowBg: "#fffad6",
+      yellowText: "#7c670a",
+      purpleBg: "#f2e5ff",
+      purpleText: "#5a1a8c",
+      greyBg: "#f7f7f7",
+      greyText: "#6a6a6a",
+    };
+
+    const normalized = reason?.toLowerCase().trim() || "";
+
+    if (
+      normalized.includes("harassment") ||
+      normalized.includes("threat") ||
+      normalized.includes("hate speech")
+    ) {
+      return { bg: palette.pinkBg, text: palette.pinkText };
     }
+
+    if (normalized.includes("made me uncomfortable")) {
+      return { bg: palette.pinkBg, text: palette.pinkText };
+    }
+
+    if (
+      normalized.includes("explicit") ||
+      normalized.includes("nudity") ||
+      normalized.includes("inappropriate")
+    ) {
+      return { bg: palette.blueBg, text: palette.blueText };
+    }
+
+    if (
+      normalized.includes("self-injury") ||
+      normalized.includes("self injury") ||
+      normalized.includes("harmful behavior")
+    ) {
+      return { bg: palette.redBg, text: palette.redText };
+    }
+
+    if (
+      normalized.includes("unsafe behavior") ||
+      normalized.includes("harmful / unsafe")
+    ) {
+      return { bg: palette.redBg, text: palette.redText };
+    }
+
+    if (normalized.includes("unsafe or harmful")) {
+      return { bg: palette.yellowBg, text: palette.yellowText };
+    }
+
+    if (
+      normalized.includes("spam") ||
+      normalized.includes("fake profile") ||
+      normalized.includes("misuse") ||
+      normalized.includes("solicitation") ||
+      normalized.includes("sales")
+    ) {
+      return { bg: palette.yellowBg, text: palette.orangeText };
+    }
+
+    if (
+      normalized.includes("underage") ||
+      normalized.includes("policy violation")
+    ) {
+      return { bg: palette.purpleBg, text: palette.purpleText };
+    }
+
+    if (
+      normalized.includes("discriminatory") ||
+      normalized.includes("exclusionary")
+    ) {
+      return { bg: palette.purpleBg, text: palette.purpleText };
+    }
+
+    if (normalized.includes("duplicate event")) {
+      return { bg: palette.orangeBg, text: palette.orangeText };
+    }
+
+    if (
+      normalized.includes("duplicate") &&
+      (normalized.includes("impersonation") ||
+        normalized.includes("unauthorized"))
+    ) {
+      return { bg: palette.purpleBg, text: palette.purpleText };
+    }
+
+    if (normalized.includes("intellectual")) {
+      return { bg: palette.orangeBg, text: palette.orangeText };
+    }
+
+    if (normalized.includes("misinformation")) {
+      return { bg: palette.purpleBg, text: palette.purpleText };
+    }
+
+    if (normalized.includes("space") && normalized.includes("hate speech")) {
+      return { bg: palette.pinkBg, text: palette.pinkText };
+    }
+
+    if (normalized.includes("inappropriate or offensive")) {
+      return { bg: palette.orangeBg, text: palette.orangeText };
+    }
+
+    if (normalized.includes("other")) {
+      return { bg: palette.greyBg, text: palette.greyText };
+    }
+
+    return { bg: palette.greyBg, text: palette.greyText };
   };
 
   const handleDeactivateUser = async () => {
@@ -348,9 +507,10 @@ export const ReportHistory: React.FC = () => {
             <div className="reports-filters">
               <SearchInput
                 value={searchQuery}
-                onChange={setSearchQuery}
+                onChange={handleSearchChange}
                 placeholder="Search"
                 variant="secondary"
+                className="bounce-search"
               />
 
               <MultiSelectFilterDropdown
@@ -390,7 +550,11 @@ export const ReportHistory: React.FC = () => {
         {/* Reports Table */}
         <div className="reports-table-wrapper">
           <table className="reports-table">
-            <thead>
+            <thead
+              style={{
+                opacity: !loading && currentReports.length === 0 ? 0.4 : 1,
+              }}
+            >
               <tr>
                 <th>Report description</th>
                 <th>
@@ -413,21 +577,19 @@ export const ReportHistory: React.FC = () => {
 
             <tbody>
               {loading ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    style={{ textAlign: "center", padding: "20px" }}
-                  >
-                    Loading...
-                  </td>
-                </tr>
+                renderTableSkeletonRows()
               ) : currentReports.length === 0 ? (
                 <tr>
                   <td
                     colSpan={6}
-                    style={{ textAlign: "center", padding: "20px" }}
+                    style={{ padding: "32px 24px", textAlign: "center" }}
                   >
-                    No reports found
+                    <NoData
+                      iconName="nd-report-icon"
+                      iconColor="#546fd9"
+                      iconSize={28}
+                      message="No history of reported users or content."
+                    />
                   </td>
                 </tr>
               ) : (
@@ -455,7 +617,21 @@ export const ReportHistory: React.FC = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="report-date">{report.reportDate}</td>
+                        <td className="report-date">
+                          {(() => {
+                            const { date, time } = formatReportDateParts(
+                              report.reportDate
+                            );
+                            return (
+                              <div className="report-date-cell">
+                                <div>{date}</div>
+                                {time && (
+                                  <div className="report-time">{time}</div>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </td>
                         <td className="report-type">{report.type}</td>
                         <td>
                           <div
@@ -534,13 +710,15 @@ export const ReportHistory: React.FC = () => {
         </div>
 
         {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalEntries={stats.total}
-          entriesPerPage={itemsPerPage}
-          onPageChange={setCurrentPage}
-        />
+        {!loading && currentReports.length > 0 && totalPages > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalEntries={stats.total}
+            entriesPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
 
       <WriteNoteModal
@@ -564,6 +742,11 @@ export const ReportHistory: React.FC = () => {
               name: reportDetails?.reportedUser?.name || "Unknown User",
               id: reportDetails?.studentId || selectedReport.studentId,
               avatar: reportDetails?.reportedUser?.avatar || "",
+              email:
+                reportDetails?.reportedUser?.email ||
+                reportDetails?.reportedUser?.emailAddress ||
+                reportDetails?.reportedUser?.mail ||
+                "",
               isBanned: reportDetails?.reportedUser?.isBanned || false,
               isDeactivated:
                 reportDetails?.reportedUser?.isDeactivated || false,
@@ -573,8 +756,18 @@ export const ReportHistory: React.FC = () => {
             reason: reportDetails?.reason || selectedReport.reason,
             reasonColor: "red",
             reportDate: reportDetails?.reportDate
-              ? new Date(reportDetails.reportDate).toLocaleDateString()
-              : selectedReport.reportDate,
+              ? (() => {
+                  const { date, time } = formatReportDateParts(
+                    reportDetails.reportDate
+                  );
+                  return time ? `${date}, ${time}` : date;
+                })()
+              : (() => {
+                  const { date, time } = formatReportDateParts(
+                    selectedReport.reportDate
+                  );
+                  return time ? `${date}, ${time}` : date;
+                })(),
             contentId:
               reportDetails?.contentId ||
               reportDetails?.id ||

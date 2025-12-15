@@ -9,6 +9,7 @@ import {
 } from "../../components-v2";
 import { SpaceTypeChip } from "../../pages-v2/Spaces/components/SpaceTypeChip/SpaceTypeChip";
 import type { EventDetailsData } from "../../components-v2/EventDetailsModal/EventDetailsModal";
+import { getFirstName } from "../../lib/utils/nameUtils";
 
 export interface SpaceMember {
   id: string;
@@ -75,9 +76,14 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
 
   if (!spaceData) return null;
 
-  const filteredMembers = spaceData.members.filter((member) =>
-    member.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredMembers = spaceData.members.filter((member) => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return true;
+    const firstName = getFirstName(member.name).toLowerCase();
+    return (
+      firstName.includes(query) || member.name.toLowerCase().includes(query)
+    );
+  });
 
   const handleEventClick = (event: SpaceEvent) => {
     // Convert SpaceEvent to EventDetailsData
@@ -111,7 +117,9 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
       size="xl"
       alignment="center"
       backdrop="static"
-      className="space-details-modal-wrapper"
+      className={`space-details-modal-wrapper ${
+        eventDetailsModalOpen ? "space-details-hidden" : ""
+      }`}
     >
       <CModalBody className="space-details-modal-body">
         <button
@@ -249,24 +257,27 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
               <div className="space-tabs-navigation">
                 <button
                   data-testid="space-tab-members-btn"
-                  className={`space-tab-button ${activeTab === "members" ? "active" : ""
-                    }`}
+                  className={`space-tab-button ${
+                    activeTab === "members" ? "active" : ""
+                  }`}
                   onClick={() => setActiveTab("members")}
                 >
                   Members
                 </button>
                 <button
                   data-testid="space-tab-events-btn"
-                  className={`space-tab-button ${activeTab === "events" ? "active" : ""
-                    }`}
+                  className={`space-tab-button ${
+                    activeTab === "events" ? "active" : ""
+                  }`}
                   onClick={() => setActiveTab("events")}
                 >
                   Events
                 </button>
                 <button
                   data-testid="space-tab-details-btn"
-                  className={`space-tab-button ${activeTab === "details" ? "active" : ""
-                    }`}
+                  className={`space-tab-button ${
+                    activeTab === "details" ? "active" : ""
+                  }`}
                   onClick={() => setActiveTab("details")}
                 >
                   More details
@@ -296,11 +307,13 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
                               <img src={member.avatar} alt={member.name} />
                             ) : (
                               <div className="space-member-avatar-placeholder">
-                                {member.name.charAt(0)}
+                                {getFirstName(member.name).charAt(0)}
                               </div>
                             )}
                           </div>
-                          <p className="space-member-name">{member.name}</p>
+                          <p className="space-member-name">
+                            {getFirstName(member.name)}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -312,7 +325,7 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
                   <div className="space-tab-panel space-events-tab">
                     <div className="space-events-list">
                       {Array.isArray(spaceData.events) &&
-                        spaceData.events.length > 0 ? (
+                      spaceData.events.length > 0 ? (
                         spaceData.events.map((event) => (
                           <div
                             key={event.id}
@@ -425,6 +438,11 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
         onClose={() => {
           setEventDetailsModalOpen(false);
           setSelectedEvent(null);
+        }}
+        onCloseAll={() => {
+          setEventDetailsModalOpen(false);
+          setSelectedEvent(null);
+          onClose();
         }}
         eventData={selectedEvent}
       />
