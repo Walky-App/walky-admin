@@ -41,7 +41,7 @@ const ChangeRoleModal: React.FC<ChangeRoleModalProps> = ({
     if (isDropdownOpen && roleButtonRef.current) {
       const rect = roleButtonRef.current.getBoundingClientRect();
       setRoleMenuPosition({
-        top: rect.bottom + window.scrollY + 4,
+        top: rect.bottom + window.scrollY + 8,
         left: rect.left + window.scrollX,
         width: rect.width,
       });

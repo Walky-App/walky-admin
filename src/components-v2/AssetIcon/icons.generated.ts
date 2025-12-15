@@ -34,6 +34,7 @@ import ndDonutChart from '../../assets-v2/svg/nd-donut-chart.svg?react';
 import ndGrafsEmpty from '../../assets-v2/svg/nd-grafs-empty.svg?react';
 import ndReportIcon from '../../assets-v2/svg/nd-report-icon.svg?react';
 import ndStackedBar from '../../assets-v2/svg/nd-stacked-bar.svg?react';
+import pendingReviewIcon from '../../assets-v2/svg/pending-review-icon.svg?react';
 import plusIcon from '../../assets-v2/svg/plus-icon.svg?react';
 import popularEmojiIcon from '../../assets-v2/svg/popular-emoji-icon.svg?react';
 import priviteEventIcon from '../../assets-v2/svg/privite-event-icon.svg?react';
@@ -52,6 +53,7 @@ import topInterestsIcon from '../../assets-v2/svg/top-interests-icon.svg?react';
 import trendDownIcon from '../../assets-v2/svg/trend-down-icon.svg?react';
 import trendUpIcon from '../../assets-v2/svg/trend-up-icon.svg?react';
 import trendUpRed from '../../assets-v2/svg/trend-up-red.svg?react';
+import underEvaluationIcon from '../../assets-v2/svg/under-evaluation-icon.svg?react';
 import userInteractionsIcon from '../../assets-v2/svg/user-interactions-icon.svg?react';
 import vertical3DotsIcon from '../../assets-v2/svg/vertical-3-dots-icon.svg?react';
 import visitedPlacesIcon from '../../assets-v2/svg/visited-places-icon.svg?react';
@@ -94,6 +96,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'nd-grafs-empty': ndGrafsEmpty,
   'nd-report-icon': ndReportIcon,
   'nd-stacked-bar': ndStackedBar,
+  'pending-review-icon': pendingReviewIcon,
   'plus-icon': plusIcon,
   'popular-emoji-icon': popularEmojiIcon,
   'privite-event-icon': priviteEventIcon,
@@ -112,6 +115,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'trend-down-icon': trendDownIcon,
   'trend-up-icon': trendUpIcon,
   'trend-up-red': trendUpRed,
+  'under-evaluation-icon': underEvaluationIcon,
   'user-interactions-icon': userInteractionsIcon,
   'vertical-3-dots-icon': vertical3DotsIcon,
   'visited-places-icon': visitedPlacesIcon,

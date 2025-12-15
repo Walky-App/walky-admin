@@ -25,6 +25,11 @@
   height: 53px;
 }
 
+.student-table-header--muted {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 .student-table-header th {
   padding: 16px;
   text-align: left;
@@ -64,6 +69,20 @@
   transition: background-color 0.2s;
   position: relative;
   z-index: 1;
+}
+
+.student-table-empty-row td {
+  padding: 0;
+  border: none !important;
+}
+
+.student-table-empty-cell {
+  padding: 0;
+}
+
+.student-table-empty-cell .no-students-found {
+  width: 100%;
+  padding: 60px 16px;
 }
 
 .student-table-row td {

@@ -291,7 +291,11 @@ export const RoleManagement: React.FC = () => {
         <div className="members-table-wrapper">
           <table className="members-table">
             <thead>
-              <tr className="table-header-row">
+              <tr
+                className={`table-header-row${
+                  isEmpty ? " table-header-row--muted" : ""
+                }`}
+              >
                 <th>
                   <div className="full-name-header">
                     <span>Full Name</span>
@@ -329,8 +333,8 @@ export const RoleManagement: React.FC = () => {
               {isLoading ? (
                 renderSkeletonRows()
               ) : isEmpty ? (
-                <tr>
-                  <td colSpan={7} style={{ padding: "32px 16px" }}>
+                <tr className="members-empty-row">
+                  <td className="members-empty-cell" colSpan={7}>
                     <NoData message="No members found" />
                   </td>
                 </tr>

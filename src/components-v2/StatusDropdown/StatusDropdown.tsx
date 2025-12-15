@@ -93,7 +93,9 @@ export const StatusDropdown: React.FC<StatusDropdownProps> = ({
         createPortal(
           <div
             ref={dropdownRef}
-            className="status-dropdown-menu"
+            className={`status-dropdown-menu${
+              isOpen ? " status-dropdown-menu--open" : ""
+            }`}
             style={{
               position: "absolute",
               top: `${menuPosition.top}px`,

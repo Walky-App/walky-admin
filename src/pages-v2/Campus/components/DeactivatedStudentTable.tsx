@@ -15,21 +15,36 @@ import { apiClient } from "../../../API";
 import { getFirstName } from "../../../lib/utils/nameUtils";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
+import { NoStudentsFound } from "./NoStudentsFound/NoStudentsFound";
 import "./StudentTable.css";
 import { StudentData, StudentTableColumn } from "./StudentTable";
+
+type SortField = StudentTableColumn;
+type SortDirection = "asc" | "desc";
 
 interface DeactivatedStudentTableProps {
   students: StudentData[];
   columns?: StudentTableColumn[];
   onStudentClick?: (student: StudentData) => void;
   sortBy?: StudentTableColumn;
-  sortOrder?: "asc" | "desc";
-  onSortChange?: (field: StudentTableColumn, order: "asc" | "desc") => void;
+  sortOrder?: SortDirection;
+  onSortChange?: (field: StudentTableColumn, order: SortDirection) => void;
+  emptyMessage?: string;
 }
 
 export const DeactivatedStudentTable: React.FC<
   DeactivatedStudentTableProps
-> = ({ students, columns = ["userId", "name", "email"], onStudentClick, sortBy, sortOrder = "asc", onSortChange }) => {
+> = ({
+  students,
+  columns = ["userId", "name", "email"],
+  onStudentClick,
+  sortBy,
+  sortOrder = "asc",
+  onSortChange,
+  emptyMessage = "No students found",
+}) => {
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(
     null
   );
@@ -51,7 +66,7 @@ export const DeactivatedStudentTable: React.FC<
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["students"],
-        refetchType: "all"
+        refetchType: "all",
       });
       queryClient.invalidateQueries({ queryKey: ["studentStats"] });
       setToastMessage("User activated successfully");
@@ -69,7 +84,7 @@ export const DeactivatedStudentTable: React.FC<
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["students"],
-        refetchType: "all"
+        refetchType: "all",
       });
       setToastMessage("User flagged successfully");
       setShowToast(true);
@@ -137,14 +152,47 @@ export const DeactivatedStudentTable: React.FC<
   };
 
   const handleSort = (field: StudentTableColumn) => {
-    if (!onSortChange) return;
+    if (onSortChange) {
+      if (sortBy === field) {
+        onSortChange(field, sortOrder === "asc" ? "desc" : "asc");
+      } else {
+        onSortChange(field, "asc");
+      }
+      return;
+    }
 
-    if (sortBy === field) {
-      onSortChange(field, sortOrder === "asc" ? "desc" : "asc");
+    if (sortField === field) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
-      onSortChange(field, "asc");
+      setSortField(field);
+      setSortDirection("asc");
     }
   };
+
+  const sortedStudents = React.useMemo(() => {
+    const activeSortField = sortBy ?? sortField;
+    const activeSortDirection = sortOrder ?? sortDirection;
+
+    if (!activeSortField) return students;
+
+    return [...students].sort((a, b) => {
+      const aValue = a[activeSortField];
+      const bValue = b[activeSortField];
+
+      if (aValue === undefined || bValue === undefined) return 0;
+
+      let comparison = 0;
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === "number" && typeof bValue === "number") {
+        comparison = aValue - bValue;
+      }
+
+      return activeSortDirection === "asc" ? comparison : -comparison;
+    });
+  }, [students, sortBy, sortField, sortOrder, sortDirection]);
+
+  const isEmpty = sortedStudents.length === 0;
 
   const columnConfig: Record<
     StudentTableColumn,
@@ -259,7 +307,11 @@ export const DeactivatedStudentTable: React.FC<
     <div className="student-table-wrapper">
       <table className="student-table">
         <thead>
-          <tr className="student-table-header">
+          <tr
+            className={`student-table-header${
+              isEmpty ? " student-table-header--muted" : ""
+            }`}
+          >
             {columns.map((column) => {
               const config = columnConfig[column];
               return (
@@ -285,69 +337,80 @@ export const DeactivatedStudentTable: React.FC<
           </tr>
         </thead>
         <tbody>
-          {students.map((student, index) => (
-            <React.Fragment key={student.id}>
-              <tr
-                className="student-table-row"
-                onClick={() => onStudentClick?.(student)}
+          {isEmpty ? (
+            <tr className="student-table-empty-row">
+              <td
+                className="student-table-empty-cell"
+                colSpan={columns.length + 1}
               >
-                {columns.map((column) => (
-                  <td key={column} className="student-table-cell">
-                    {columnConfig[column].render(student)}
-                  </td>
-                ))}
-                <td className="student-table-cell student-table-actions">
-                  <ActionDropdown
-                    testId="deactivated-student-dropdown"
-                    items={[
-                      {
-                        label: "View profile",
-                        onClick: (e) => {
-                          e.stopPropagation();
-                          handleViewProfile(student);
+                <NoStudentsFound message={emptyMessage} />
+              </td>
+            </tr>
+          ) : (
+            sortedStudents.map((student, index) => (
+              <React.Fragment key={student.id}>
+                <tr
+                  className="student-table-row"
+                  onClick={() => onStudentClick?.(student)}
+                >
+                  {columns.map((column) => (
+                    <td key={column} className="student-table-cell">
+                      {columnConfig[column].render(student)}
+                    </td>
+                  ))}
+                  <td className="student-table-cell student-table-actions">
+                    <ActionDropdown
+                      testId="deactivated-student-dropdown"
+                      items={[
+                        {
+                          label: "View profile",
+                          onClick: (e) => {
+                            e.stopPropagation();
+                            handleViewProfile(student);
+                          },
                         },
-                      },
-                      {
-                        label: "Send email",
-                        onClick: (e) => {
-                          e.stopPropagation();
-                          handleSendEmail(student);
+                        {
+                          label: "Send email",
+                          onClick: (e) => {
+                            e.stopPropagation();
+                            handleSendEmail(student);
+                          },
                         },
-                      },
-                      {
-                        label: "Flag",
-                        icon: "flag-icon",
-                        onClick: (e) => {
-                          e.stopPropagation();
-                          handleFlagUser(student);
+                        {
+                          label: "Flag",
+                          icon: "flag-icon",
+                          onClick: (e) => {
+                            e.stopPropagation();
+                            handleFlagUser(student);
+                          },
                         },
-                      },
-                      {
-                        isDivider: true,
-                        label: "",
-                        onClick: () => {},
-                      },
-                      {
-                        label: "Activate user",
-                        variant: "danger",
-                        onClick: (e) => {
-                          e.stopPropagation();
-                          handleActivateUser(student);
+                        {
+                          isDivider: true,
+                          label: "",
+                          onClick: () => {},
                         },
-                      },
-                    ]}
-                  />
-                </td>
-              </tr>
-              {index < students.length - 1 && (
-                <tr className="student-divider-row">
-                  <td colSpan={columns.length + 1}>
-                    <Divider />
+                        {
+                          label: "Activate user",
+                          variant: "danger",
+                          onClick: (e) => {
+                            e.stopPropagation();
+                            handleActivateUser(student);
+                          },
+                        },
+                      ]}
+                    />
                   </td>
                 </tr>
-              )}
-            </React.Fragment>
-          ))}
+                {index < sortedStudents.length - 1 && (
+                  <tr className="student-divider-row">
+                    <td colSpan={columns.length + 1}>
+                      <Divider />
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))
+          )}
         </tbody>
       </table>
 
