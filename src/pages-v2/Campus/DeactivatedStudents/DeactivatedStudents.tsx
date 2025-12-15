@@ -7,7 +7,6 @@ import { StatsCard } from "../components/StatsCard";
 import { StudentData, StudentTableColumn } from "../components/StudentTable";
 import { DeactivatedStudentTable } from "../components/DeactivatedStudentTable";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
-import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";
 import "./DeactivatedStudents.css";
 
@@ -20,20 +19,35 @@ export const DeactivatedStudents: React.FC = () => {
     setCurrentPage(1); // Reset to first page when searching
   };
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<StudentTableColumn | undefined>(undefined);
+  const [sortBy, setSortBy] = useState<StudentTableColumn | undefined>(
+    undefined
+  );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const exportRef = useRef<HTMLElement | null>(null);
   const entriesPerPage = 10;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ["students", currentPage, searchQuery, "deactivated", sortBy, sortOrder],
+    queryKey: [
+      "students",
+      currentPage,
+      searchQuery,
+      "deactivated",
+      sortBy,
+      sortOrder,
+    ],
     queryFn: () =>
       apiClient.api.adminV2StudentsList({
         page: currentPage,
         limit: entriesPerPage,
         search: searchQuery,
         status: "deactivated",
-        sortBy: sortBy as "name" | "email" | "memberSince" | "onlineLast" | "status" | undefined,
+        sortBy: sortBy as
+          | "name"
+          | "email"
+          | "memberSince"
+          | "onlineLast"
+          | "status"
+          | undefined,
         sortOrder,
       }),
   });
@@ -45,19 +59,21 @@ export const DeactivatedStudents: React.FC = () => {
 
   const isListLoading = isStudentsLoading;
 
-  const students: StudentData[] = (studentsData?.data.data || []).map((student) => ({
-    id: student.id || "",
-    userId: student.userId || "",
-    name: student.name || "",
-    email: student.email || "",
-    status: (student.status as StudentData["status"]) || "deactivated",
-    interests: student.interests || [],
-    deactivatedDate: student.deactivatedDate,
-    deactivatedBy: student.deactivatedBy,
-    memberSince: formatMemberSince(student.memberSince),
-    onlineLast: student.onlineLast || "",
-    avatar: student.avatar,
-  }));
+  const students: StudentData[] = (studentsData?.data.data || []).map(
+    (student) => ({
+      id: student.id || "",
+      userId: student.userId || "",
+      name: student.name || "",
+      email: student.email || "",
+      status: (student.status as StudentData["status"]) || "deactivated",
+      interests: student.interests || [],
+      deactivatedDate: student.deactivatedDate,
+      deactivatedBy: student.deactivatedBy,
+      memberSince: formatMemberSince(student.memberSince),
+      onlineLast: student.onlineLast || "",
+      avatar: student.avatar,
+    })
+  );
 
   const totalPages = Math.ceil(
     (studentsData?.data.total || 0) / entriesPerPage
@@ -68,7 +84,10 @@ export const DeactivatedStudents: React.FC = () => {
     console.log("Student clicked:", student);
   };
 
-  const handleSortChange = (field: StudentTableColumn, order: "asc" | "desc") => {
+  const handleSortChange = (
+    field: StudentTableColumn,
+    order: "asc" | "desc"
+  ) => {
     setSortBy(field);
     setSortOrder(order);
     setCurrentPage(1);
@@ -119,8 +138,6 @@ export const DeactivatedStudents: React.FC = () => {
 
         {isListLoading ? (
           <StudentTableSkeleton />
-        ) : paginatedStudents.length === 0 ? (
-          <NoStudentsFound message="No deactivated users" />
         ) : (
           <DeactivatedStudentTable
             students={paginatedStudents}
@@ -137,6 +154,7 @@ export const DeactivatedStudents: React.FC = () => {
             sortBy={sortBy}
             sortOrder={sortOrder}
             onSortChange={handleSortChange}
+            emptyMessage="No deactivated users"
           />
         )}
 

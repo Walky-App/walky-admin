@@ -203,6 +203,11 @@
   border-radius: 12px;
 }
 
+.table-header-row--muted {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 .members-table thead th {
   font-family: "Lato", sans-serif;
   font-size: 14px;
@@ -257,6 +262,20 @@
 .member-divider-row td {
   padding: 0 !important;
   height: 1px;
+}
+
+.members-empty-row td {
+  padding: 0;
+  border: none;
+}
+
+.members-empty-cell {
+  padding: 0;
+}
+
+.members-empty-cell .no-data {
+  width: 100%;
+  padding: 60px 16px;
 }
 
 .members-table td:first-child {

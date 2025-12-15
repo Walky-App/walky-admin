@@ -220,6 +220,31 @@
   border-spacing: 0;
 }
 
+.reports-table thead th:nth-child(1),
+.reports-table tbody td:nth-child(1) {
+  width: 27%;
+}
+
+.reports-table thead th:nth-child(2),
+.reports-table tbody td:nth-child(2) {
+  width: 18%;
+}
+
+.reports-table thead th:nth-child(3),
+.reports-table tbody td:nth-child(3) {
+  width: 14%;
+}
+
+.reports-table thead th:nth-child(4),
+.reports-table tbody td:nth-child(4) {
+  width: 25%;
+}
+
+.reports-table thead th:nth-child(5),
+.reports-table tbody td:nth-child(5) {
+  width: 16%;
+}
+
 .reports-table thead {
   background: #f1f4f9;
 }
@@ -297,6 +322,7 @@
 .report-description-cell {
   display: flex;
   align-items: flex-start;
+  gap: 8px;
   max-width: 483px;
 }
 

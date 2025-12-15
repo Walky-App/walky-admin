@@ -5,7 +5,6 @@ import { StatsCard } from "../components/StatsCard";
 import { BannedStudentTable } from "../components/BannedStudentTable";
 import { StudentData, StudentTableColumn } from "../components/StudentTable";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
-import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";
 import "./BannedStudents.css";
 
@@ -21,17 +20,31 @@ export const BannedStudents: React.FC = () => {
     setCurrentPage(1); // Reset to first page when searching
   };
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<StudentTableColumn | undefined>(undefined);
+  const [sortBy, setSortBy] = useState<StudentTableColumn | undefined>(
+    undefined
+  );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const exportRef = useRef<HTMLElement | null>(null);
   const entriesPerPage = 10;
 
   // Type for API sortBy parameter
-  type ApiSortField = "name" | "email" | "memberSince" | "onlineLast" | "status";
+  type ApiSortField =
+    | "name"
+    | "email"
+    | "memberSince"
+    | "onlineLast"
+    | "status";
   const apiSortBy = sortBy as ApiSortField | undefined;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ["students", currentPage, searchQuery, "banned", sortBy, sortOrder],
+    queryKey: [
+      "students",
+      currentPage,
+      searchQuery,
+      "banned",
+      sortBy,
+      sortOrder,
+    ],
     queryFn: () =>
       apiClient.api.adminV2StudentsList({
         page: currentPage,
@@ -116,7 +129,7 @@ export const BannedStudents: React.FC = () => {
       lastLogin: student.lastLogin,
       totalPeers: student.totalPeers,
       bio: student.bio,
-      banHistory: student.banHistory?.map(b => ({
+      banHistory: student.banHistory?.map((b) => ({
         title: b.title || "",
         duration: b.duration || "",
         expiresIn: b.expiresIn,
@@ -125,7 +138,7 @@ export const BannedStudents: React.FC = () => {
         bannedTime: b.bannedTime || "",
         bannedBy: b.bannedBy || "",
       })),
-      blockedByUsers: student.blockedByUsers?.map(bu => ({
+      blockedByUsers: student.blockedByUsers?.map((bu) => ({
         id: bu.id || "",
         name: bu.name || "",
         avatar: bu.avatar,
@@ -145,7 +158,10 @@ export const BannedStudents: React.FC = () => {
     console.log("Student clicked:", student);
   };
 
-  const handleSortChange = (field: StudentTableColumn, order: "asc" | "desc") => {
+  const handleSortChange = (
+    field: StudentTableColumn,
+    order: "asc" | "desc"
+  ) => {
     setSortBy(field);
     setSortOrder(order);
     setCurrentPage(1);
@@ -193,8 +209,6 @@ export const BannedStudents: React.FC = () => {
 
         {isLoading ? (
           <StudentTableSkeleton />
-        ) : paginatedStudents.length === 0 ? (
-          <NoStudentsFound />
         ) : (
           <BannedStudentTable
             students={paginatedStudents}
@@ -211,6 +225,7 @@ export const BannedStudents: React.FC = () => {
             sortBy={sortBy}
             sortOrder={sortOrder}
             onSortChange={handleSortChange}
+            emptyMessage="No banned users"
           />
         )}
 

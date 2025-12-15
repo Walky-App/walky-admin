@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { CModal, CModalBody } from "@coreui/react";
 import "./ReportDetailModal.css";
 import AssetIcon from "../AssetIcon/AssetIcon";
+import { NoData } from "../NoData/NoData";
 import { CopyableId } from "../CopyableId/CopyableId";
 import { StatusDropdown } from "../StatusDropdown/StatusDropdown";
-import { DeactivateUserModal } from "../DeactivateUserModal/DeactivateUserModal";
-import { BanUserModal } from "../BanUserModal/BanUserModal";
+import SkeletonLoader from "../SkeletonLoader/SkeletonLoader";
 
 export type ReportType =
   | "Event"
@@ -130,34 +130,39 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
   isLoading,
 }) => {
   const [activeTab, setActiveTab] = useState<SafetyTab>("ban");
-  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
-  const [isBanModalOpen, setIsBanModalOpen] = useState(false);
   const [isEmailCopied, setIsEmailCopied] = useState(false);
 
   const handleDeactivateUser = () => {
-    setIsDeactivateModalOpen(true);
+    onDeactivateUser?.();
   };
 
   const handleBanUser = () => {
-    setIsBanModalOpen(true);
+    onBanUser?.("", "", false);
   };
 
-  const handleDeactivateConfirm = () => {
-    if (onDeactivateUser) {
-      onDeactivateUser();
-    }
-    setIsDeactivateModalOpen(false);
-  };
+  const formatDateTime = (value?: string | null) => {
+    if (!value) return "-";
 
-  const handleBanConfirm = (
-    duration: string,
-    reason: string,
-    resolveReports: boolean
-  ) => {
-    if (onBanUser) {
-      onBanUser(duration, reason, resolveReports);
-    }
-    setIsBanModalOpen(false);
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+
+    const datePart = new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC",
+    })
+      .format(parsed)
+      .toUpperCase();
+
+    const timePart = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "UTC",
+    }).format(parsed);
+
+    return `${datePart} | ${timePart}`;
   };
 
   const renderReasonChip = (
@@ -165,12 +170,14 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     color: "red" | "purple" | "orange"
   ) => {
     const colorClasses = {
-      red: "reason-chip-red",
-      purple: "reason-chip-purple",
-      orange: "reason-chip-orange",
+      red: "rdm-reason-chip-red",
+      purple: "rdm-reason-chip-purple",
+      orange: "rdm-reason-chip-orange",
     };
 
-    return <div className={`reason-chip ${colorClasses[color]}`}>{reason}</div>;
+    return (
+      <div className={`rdm-reason-chip ${colorClasses[color]}`}>{reason}</div>
+    );
   };
 
   const formatEmail = (email?: string) => {
@@ -213,19 +220,21 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
 
     if (reportType === "Event" && content.event) {
       return (
-        <div className="content-details-section">
+        <div className="rdm-content-section">
           <h3 className="rdm-section-title">Content details</h3>
-          <div className="content-container">
-            <div className="event-card">
+          <div className="rdm-content-container">
+            <div className="rdm-event-card">
               <img
                 src={content.event.image}
                 alt="Event"
-                className="event-image"
+                className="rdm-event-image"
               />
-              <div className="event-info">
-                <p className="event-date">{content.event.date}</p>
-                <h4 className="event-title">{content.event.title}</h4>
-                <div className="event-location">
+              <div className="rdm-event-info">
+                <p className="rdm-event-date">
+                  {formatDateTime(content.event.date)}
+                </p>
+                <h4 className="rdm-event-title">{content.event.title}</h4>
+                <div className="rdm-event-location">
                   <AssetIcon name="location-icon" size={20} />
                   <span>{content.event.location}</span>
                 </div>
@@ -238,23 +247,23 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
 
     if (reportType === "Event of Space" && content.space && content.event) {
       return (
-        <div className="content-details-section">
+        <div className="rdm-content-section">
           <h3 className="rdm-section-title">Content details</h3>
-          <div className="content-container dual-content">
-            <div className="space-section">
-              <h4 className="subsection-title">Space details</h4>
-              <div className="space-card">
+          <div className="rdm-content-container rdm-dual-content">
+            <div className="rdm-space-section">
+              <h4 className="rdm-subsection-title">Space details</h4>
+              <div className="rdm-space-card">
                 <img
                   src={content.space.image}
                   alt="Space"
-                  className="space-image"
+                  className="rdm-space-image"
                 />
-                <div className="space-info">
-                  <h4 className="space-title">{content.space.title}</h4>
-                  <p className="space-description">
+                <div className="rdm-space-info">
+                  <h4 className="rdm-space-title">{content.space.title}</h4>
+                  <p className="rdm-space-description">
                     {content.space.description}
                   </p>
-                  <div className="space-meta">
+                  <div className="rdm-space-meta">
                     <span>{content.space.category}</span>
                     <span>•</span>
                     <span>{content.space.memberCount}</span>
@@ -263,25 +272,27 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                 <AssetIcon
                   name="arrow-large-left-icon"
                   size={16}
-                  className="chevron-icon"
+                  className="rdm-chevron-icon"
                 />
               </div>
             </div>
 
-            <div className="divider-vertical" />
+            <div className="rdm-divider-vertical" />
 
-            <div className="event-section">
-              <h4 className="subsection-title">Event details</h4>
-              <div className="event-card-small">
+            <div className="rdm-event-section">
+              <h4 className="rdm-subsection-title">Event details</h4>
+              <div className="rdm-event-card-small">
                 <img
                   src={content.event.image}
                   alt="Event"
-                  className="event-image-small"
+                  className="rdm-event-image-small"
                 />
-                <div className="event-info">
-                  <p className="event-date">{content.event.date}</p>
-                  <h4 className="event-title">{content.event.title}</h4>
-                  <div className="event-location">
+                <div className="rdm-event-info">
+                  <p className="rdm-event-date">
+                    {formatDateTime(content.event.date)}
+                  </p>
+                  <h4 className="rdm-event-title">{content.event.title}</h4>
+                  <div className="rdm-event-location">
                     <AssetIcon name="location-icon" size={20} />
                     <span>{content.event.location}</span>
                   </div>
@@ -289,7 +300,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                 <AssetIcon
                   name="arrow-large-left-icon"
                   size={16}
-                  className="chevron-icon"
+                  className="rdm-chevron-icon"
                 />
               </div>
             </div>
@@ -300,19 +311,21 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
 
     if (reportType === "Space" && content.space) {
       return (
-        <div className="content-details-section">
+        <div className="rdm-content-section">
           <h3 className="rdm-section-title">Content details</h3>
-          <div className="content-container">
-            <div className="space-card">
+          <div className="rdm-content-container">
+            <div className="rdm-space-card">
               <img
                 src={content.space.image}
                 alt="Space"
-                className="space-image"
+                className="rdm-space-image"
               />
-              <div className="space-info">
-                <h4 className="space-title">{content.space.title}</h4>
-                <p className="space-description">{content.space.description}</p>
-                <div className="space-meta">
+              <div className="rdm-space-info">
+                <h4 className="rdm-space-title">{content.space.title}</h4>
+                <p className="rdm-space-description">
+                  {content.space.description}
+                </p>
+                <div className="rdm-space-meta">
                   <span>{content.space.category}</span>
                   <span>•</span>
                   <span>{content.space.memberCount}</span>
@@ -321,7 +334,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
               <AssetIcon
                 name="arrow-large-left-icon"
                 size={16}
-                className="chevron-icon"
+                className="rdm-chevron-icon"
               />
             </div>
           </div>
@@ -331,33 +344,35 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
 
     if (reportType === "Idea" && content.idea) {
       return (
-        <div className="content-details-section">
+        <div className="rdm-content-section">
           <h3 className="rdm-section-title">Content details</h3>
-          <div className="content-container">
-            <div className="idea-card">
-              <div className="idea-bar"></div>
-              <div className="idea-content">
-                <div className="idea-header">
-                  <div className="idea-title-section">
-                    <h4 className="idea-title">{content.idea.title}</h4>
+          <div className="rdm-content-container">
+            <div className="rdm-idea-card">
+              <div className="rdm-idea-bar"></div>
+              <div className="rdm-idea-content">
+                <div className="rdm-idea-header">
+                  <div className="rdm-idea-title-section">
+                    <h4 className="rdm-idea-title">{content.idea.title}</h4>
                   </div>
-                  <div className="idea-author">
-                    <div className="idea-by-text">
-                      <span className="idea-by-label">Idea by</span>
-                      <span className="idea-by-name">
+                  <div className="rdm-idea-author">
+                    <div className="rdm-idea-by-text">
+                      <span className="rdm-idea-by-label">Idea by</span>
+                      <span className="rdm-idea-by-name">
                         {content.idea.ideaBy}
                       </span>
                     </div>
                     <img
                       src={content.idea.avatar}
                       alt={content.idea.ideaBy}
-                      className="idea-author-avatar"
+                      className="rdm-idea-author-avatar"
                     />
                   </div>
                 </div>
-                <div className="idea-tag-section">
-                  <div className="idea-tag">{content.idea.tag}</div>
-                  <p className="idea-description">{content.idea.description}</p>
+                <div className="rdm-idea-tag-section">
+                  <div className="rdm-idea-tag">{content.idea.tag}</div>
+                  <p className="rdm-idea-description">
+                    {content.idea.description}
+                  </p>
                 </div>
               </div>
             </div>
@@ -368,14 +383,16 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
 
     if (reportType === "Message" && content.message) {
       return (
-        <div className="content-details-section">
+        <div className="rdm-content-section">
           <h3 className="rdm-section-title">Content details</h3>
-          <div className="content-container">
-            <div className="message-container">
-              <div className="message-bubble">
-                <p className="message-text">{content.message.text}</p>
+          <div className="rdm-content-container">
+            <div className="rdm-message-container">
+              <div className="rdm-message-bubble">
+                <p className="rdm-message-text">{content.message.text}</p>
               </div>
-              <p className="message-timestamp">{content.message.timestamp}</p>
+              <p className="rdm-message-timestamp">
+                {formatDateTime(content.message.timestamp)}
+              </p>
             </div>
           </div>
         </div>
@@ -385,117 +402,143 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     return null;
   };
 
+  const renderEmptyState = (message: string) => (
+    <div className="rdm-safety-item rdm-empty-state">
+      <NoData iconName="check-icon" message={message} />
+    </div>
+  );
+
   const renderSafetyRecord = () => {
     const { banHistory, reportHistory, blockHistory } = reportData.safetyRecord;
 
-    let content;
+    let content: React.ReactNode = null;
     if (activeTab === "ban") {
-      content = banHistory.map((ban, index) => (
-        <div key={index} className="safety-record-item">
-          <p className="ban-duration">{ban.duration}</p>
-          {ban.expiresIn && (
-            <div className="ban-duration-info">
-              <span className="ban-duration-label">Ban duration:</span>
-              <div className="ban-duration-badge">
-                {ban.duration.split(" ")[0]} Days
+      content =
+        banHistory.length > 0
+          ? banHistory.map((ban, index) => (
+              <div key={index} className="rdm-safety-item">
+                <p className="rdm-ban-duration">{ban.duration}</p>
+                {ban.expiresIn && (
+                  <div className="rdm-ban-duration-info">
+                    <span className="rdm-ban-duration-label">
+                      Ban duration:
+                    </span>
+                    <div className="rdm-ban-duration-badge">
+                      {ban.duration.split(" ")[0]} Days
+                    </div>
+                    <span className="rdm-ban-expires">{ban.expiresIn}</span>
+                  </div>
+                )}
+                <p className="rdm-safety-reason">
+                  <span className="rdm-label">Reason:</span> {ban.reason}
+                </p>
+                <p className="rdm-safety-meta">
+                  {ban.bannedOn} by {ban.bannedBy}
+                </p>
               </div>
-              <span className="ban-expires">{ban.expiresIn}</span>
-            </div>
-          )}
-          <p className="safety-reason">
-            <span className="rdm-label">Reason:</span> {ban.reason}
-          </p>
-          <p className="safety-meta">
-            {ban.bannedOn} by {ban.bannedBy}
-          </p>
-        </div>
-      ));
+            ))
+          : renderEmptyState("No ban history for this user");
     } else if (activeTab === "report") {
-      content = reportHistory.map((report, index) => (
-        <div key={index} className="safety-record-item rdm-report-item">
-          <div className="rdm-report-header">
-            <p className="rdm-report-content-label">
-              <span className="rdm-label">
-                Reported {reportType.toLowerCase()}:
-              </span>{" "}
-              <span className="rdm-report-content-name">
-                {report.reportedContent}
-              </span>
-            </p>
-            <div className="rdm-report-status-badge">
-              <span>{report.status}</span>
-              <AssetIcon name="arrow-down" size={10} />
-            </div>
-          </div>
-          <div className="rdm-report-id-row">
-            <span className="rdm-label">Report ID:</span>
-            <div className="rdm-id-container">
-              <div className="rdm-id-badge">{report.reportId}</div>
-              <AssetIcon name="copy-icon" size={16} className="rdm-copy-icon" />
-            </div>
-          </div>
-          <div className="rdm-report-reason-row">
-            <span className="rdm-label">Reason</span>
-            {renderReasonChip(report.reason, report.reasonColor)}
-          </div>
-          <p className="rdm-report-description">
-            <span className="rdm-label">Description:</span> {report.description}
-          </p>
-          <p className="safety-meta">
-            {report.reportedOn} by {report.reportedBy}
-          </p>
-        </div>
-      ));
-    } else if (activeTab === "block") {
-      content = (
-        <div className="safety-record-item">
-          <p className="block-title">Blocked By</p>
-          <div className="block-list">
-            {blockHistory.map((block, index) => (
-              <div key={index} className="block-item">
-                <img
-                  src={block.avatar}
-                  alt={block.name}
-                  className="block-avatar"
-                />
-                <div className="block-info">
-                  <p className="block-name">{block.name}</p>
-                  <p className="block-date">{block.blockedOn}</p>
+      content =
+        reportHistory.length > 0
+          ? reportHistory.map((report, index) => (
+              <div key={index} className="rdm-safety-item rdm-report-item">
+                <div className="rdm-report-header">
+                  <p className="rdm-report-content-label">
+                    <span className="rdm-label">
+                      Reported {reportType.toLowerCase()}:
+                    </span>{" "}
+                    <span className="rdm-report-content-name">
+                      {report.reportedContent}
+                    </span>
+                  </p>
+                  <div className="rdm-report-status-badge">
+                    <span>{report.status}</span>
+                    <AssetIcon name="arrow-down" size={10} />
+                  </div>
                 </div>
+                <div className="rdm-report-id-row">
+                  <span className="rdm-label">Report ID:</span>
+                  <div className="rdm-id-container">
+                    <div className="rdm-id-badge">{report.reportId}</div>
+                    <AssetIcon
+                      name="copy-icon"
+                      size={16}
+                      className="rdm-copy-icon"
+                    />
+                  </div>
+                </div>
+                <div className="rdm-report-reason-row">
+                  <span className="rdm-label">Reason</span>
+                  {renderReasonChip(report.reason, report.reasonColor)}
+                </div>
+                <p className="rdm-report-description">
+                  <span className="rdm-label">Description:</span>{" "}
+                  {report.description}
+                </p>
+                <p className="rdm-safety-meta">
+                  {report.reportedOn} by {report.reportedBy}
+                </p>
               </div>
-            ))}
+            ))
+          : renderEmptyState("No report history for this user");
+    } else if (activeTab === "block") {
+      content =
+        blockHistory.length > 0 ? (
+          <div className="rdm-safety-item">
+            <p className="rdm-block-title">Blocked By</p>
+            <div className="rdm-block-list">
+              {blockHistory.map((block, index) => (
+                <div key={index} className="rdm-block-item">
+                  <img
+                    src={block.avatar}
+                    alt={block.name}
+                    className="rdm-block-avatar"
+                  />
+                  <div className="rdm-block-info">
+                    <p className="rdm-block-name">{block.name}</p>
+                    <p className="rdm-block-date">{block.blockedOn}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      );
+        ) : (
+          renderEmptyState("No block history for this user")
+        );
     }
 
     return (
-      <div className="safety-record-section">
+      <div className="rdm-safety-record-section">
         <h3 className="rdm-section-title">User safety record</h3>
-        <div className="safety-tabs">
+        <div className="rdm-safety-tabs">
           <button
             data-testid="safety-tab-ban"
-            className={`safety-tab ${activeTab === "ban" ? "active" : ""}`}
+            className={`rdm-safety-tab ${activeTab === "ban" ? "active" : ""}`}
             onClick={() => setActiveTab("ban")}
           >
             Ban history ({banHistory.length})
           </button>
           <button
             data-testid="safety-tab-report"
-            className={`safety-tab ${activeTab === "report" ? "active" : ""}`}
+            className={`rdm-safety-tab ${
+              activeTab === "report" ? "active" : ""
+            }`}
             onClick={() => setActiveTab("report")}
           >
             Report history ({reportHistory.length})
           </button>
           <button
             data-testid="safety-tab-block"
-            className={`safety-tab ${activeTab === "block" ? "active" : ""}`}
+            className={`rdm-safety-tab ${
+              activeTab === "block" ? "active" : ""
+            }`}
             onClick={() => setActiveTab("block")}
           >
             Block history ({blockHistory.length})
           </button>
         </div>
-        <div className="safety-content">{content}</div>
+        <div className="rdm-safety-content">{content}</div>
       </div>
     );
   };
@@ -506,9 +549,252 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     ? "This user is currently deactivated"
     : null;
 
-  const buttonsDisabled =
-    reportData.associatedUser.isBanned ||
-    reportData.associatedUser.isDeactivated;
+  const renderContentSkeleton = () => {
+    const wrapContent = (body: React.ReactNode) => (
+      <div className="rdm-content-section">
+        <h3 className="rdm-section-title">Content details</h3>
+        {body}
+      </div>
+    );
+
+    if (reportType === "Event of Space") {
+      return wrapContent(
+        <div className="rdm-content-container rdm-dual-content">
+          <div className="rdm-loading-card rdm-content-loading-card">
+            <SkeletonLoader
+              height="112px"
+              width="96px"
+              borderRadius="8px"
+              className="rdm-loading-media"
+            />
+            <div className="rdm-loading-stack">
+              <SkeletonLoader height="18px" width="180px" />
+              <SkeletonLoader height="16px" width="200px" />
+              <SkeletonLoader height="14px" width="150px" />
+            </div>
+          </div>
+
+          <div className="rdm-loading-divider" />
+
+          <div className="rdm-loading-card rdm-content-loading-card">
+            <SkeletonLoader
+              height="112px"
+              width="96px"
+              borderRadius="8px"
+              className="rdm-loading-media"
+            />
+            <div className="rdm-loading-stack">
+              <SkeletonLoader height="18px" width="200px" />
+              <SkeletonLoader height="16px" width="180px" />
+              <SkeletonLoader height="14px" width="140px" />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (reportType === "Event") {
+      return wrapContent(
+        <div className="rdm-content-container">
+          <div className="rdm-loading-card">
+            <SkeletonLoader
+              height="96px"
+              width="96px"
+              borderRadius="8px"
+              className="rdm-loading-media"
+            />
+            <div className="rdm-loading-stack">
+              <SkeletonLoader height="14px" width="200px" />
+              <SkeletonLoader height="20px" width="220px" />
+              <SkeletonLoader height="14px" width="180px" />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (reportType === "Space") {
+      return wrapContent(
+        <div className="rdm-content-container">
+          <div className="rdm-loading-card">
+            <SkeletonLoader
+              height="112px"
+              width="96px"
+              borderRadius="8px"
+              className="rdm-loading-media"
+            />
+            <div className="rdm-loading-stack">
+              <SkeletonLoader height="20px" width="200px" />
+              <SkeletonLoader height="14px" width="240px" />
+              <SkeletonLoader height="14px" width="180px" />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (reportType === "Idea") {
+      return wrapContent(
+        <div className="rdm-content-container">
+          <div className="rdm-loading-card rdm-idea-loading-card">
+            <SkeletonLoader height="12px" width="8px" borderRadius="4px" />
+            <div className="rdm-loading-stack">
+              <SkeletonLoader height="18px" width="220px" />
+              <SkeletonLoader height="14px" width="180px" />
+              <SkeletonLoader height="14px" width="200px" />
+              <SkeletonLoader height="14px" width="160px" />
+            </div>
+            <SkeletonLoader
+              height="40px"
+              width="40px"
+              borderRadius="50%"
+              className="rdm-loading-media"
+            />
+          </div>
+        </div>
+      );
+    }
+
+    if (reportType === "Message") {
+      return wrapContent(
+        <div className="rdm-content-container">
+          <div className="rdm-loading-card rdm-message-loading-card">
+            <SkeletonLoader height="60px" width="100%" borderRadius="12px" />
+            <SkeletonLoader height="14px" width="120px" />
+          </div>
+        </div>
+      );
+    }
+
+    return wrapContent(
+      <div className="rdm-content-container">
+        <div className="rdm-loading-card">
+          <SkeletonLoader height="120px" width="120px" borderRadius="8px" />
+          <div className="rdm-loading-stack">
+            <SkeletonLoader height="18px" width="200px" />
+            <SkeletonLoader height="14px" width="180px" />
+            <SkeletonLoader height="14px" width="160px" />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderLoadingState = () => (
+    <div className="rdm-modal-loading" aria-busy="true">
+      <div className="rdm-associated-user-section">
+        <h3 className="rdm-section-title">Associated user</h3>
+        <div className="rdm-user-info">
+          <div className="rdm-user-details">
+            <SkeletonLoader
+              height="140px"
+              width="140px"
+              borderRadius="50%"
+              className="rdm-loading-avatar"
+            />
+            <div className="rdm-user-text">
+              <SkeletonLoader height="22px" width="180px" />
+              <SkeletonLoader height="16px" width="220px" />
+              <SkeletonLoader height="16px" width="160px" />
+            </div>
+          </div>
+
+          <div className="rdm-user-actions">
+            <div className="rdm-action-buttons">
+              <SkeletonLoader height="40px" width="150px" borderRadius="12px" />
+              <SkeletonLoader height="40px" width="120px" borderRadius="12px" />
+            </div>
+            <SkeletonLoader height="18px" width="210px" />
+          </div>
+        </div>
+      </div>
+
+      <div className="rdm-report-details-section">
+        <h3 className="rdm-section-title">Report details</h3>
+        <div className="rdm-report-summary">
+          <div className="rdm-report-header-row">
+            <div className="rdm-report-type">
+              <span className="rdm-label">Type:</span>
+              <SkeletonLoader height="18px" width="120px" />
+            </div>
+            <span className="rdm-separator">|</span>
+            <div className="rdm-report-status">
+              <span className="rdm-label">Status:</span>
+              <SkeletonLoader height="36px" width="190px" borderRadius="12px" />
+            </div>
+          </div>
+
+          <div className="rdm-report-reason-row">
+            <span className="rdm-label">Reason:</span>
+            <SkeletonLoader height="20px" width="140px" borderRadius="999px" />
+          </div>
+
+          <div className="rdm-report-date-row">
+            <span className="rdm-label">Report date:</span>
+            <SkeletonLoader height="16px" width="160px" />
+          </div>
+
+          <div className="rdm-report-content-id-row">
+            <span className="rdm-label">Reported content ID:</span>
+            <SkeletonLoader height="20px" width="180px" />
+          </div>
+
+          <div className="rdm-loading-stack">
+            <SkeletonLoader height="14px" width="100%" />
+            <SkeletonLoader height="14px" width="90%" />
+          </div>
+
+          <div className="rdm-reporting-user">
+            <span className="rdm-label">Reporting user:</span>
+            <SkeletonLoader height="38px" width="38px" borderRadius="50%" />
+            <div className="rdm-reporting-user-info">
+              <SkeletonLoader height="14px" width="160px" />
+              <SkeletonLoader height="14px" width="120px" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Details */}
+      {renderContentSkeleton()}
+
+      <div className="rdm-safety-section">
+        <h3 className="rdm-section-title">Safety record</h3>
+        <div className="rdm-safety-tabs">
+          <SkeletonLoader
+            height="36px"
+            width="140px"
+            borderRadius="12px"
+            className="rdm-loading-tab"
+          />
+          <SkeletonLoader
+            height="36px"
+            width="140px"
+            borderRadius="12px"
+            className="rdm-loading-tab"
+          />
+          <SkeletonLoader
+            height="36px"
+            width="140px"
+            borderRadius="12px"
+            className="rdm-loading-tab"
+          />
+        </div>
+        <div className="rdm-loading-stack">
+          <div className="rdm-loading-card">
+            <SkeletonLoader height="16px" width="240px" />
+            <SkeletonLoader height="14px" width="200px" />
+            <SkeletonLoader height="14px" width="180px" />
+          </div>
+          <div className="rdm-loading-card">
+            <SkeletonLoader height="16px" width="220px" />
+            <SkeletonLoader height="14px" width="190px" />
+            <SkeletonLoader height="14px" width="170px" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -517,58 +803,47 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
         onClose={onClose}
         size="xl"
         alignment="center"
-        className="report-detail-modal"
+        className="rdm-modal"
         backdrop="static"
       >
-        <CModalBody className="report-detail-modal-body">
+        <CModalBody className="rdm-modal-body">
           <button
-            className="close-button"
+            className="rdm-close-button"
             onClick={onClose}
             data-testid="report-detail-modal-close-btn"
             aria-label="Close modal"
           >
-            <AssetIcon name="close-button" size={24} />
+            <AssetIcon name="close-button" size={20} />
           </button>
 
           {isLoading ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "400px",
-                fontSize: "1.2rem",
-                color: "#666",
-              }}
-            >
-              Loading report details...
-            </div>
+            renderLoadingState()
           ) : (
-            <div className="modal-content-wrapper">
+            <div className="rdm-modal-content">
               {/* Associated User */}
-              <div className="associated-user-section">
+              <div className="rdm-associated-user-section">
                 <h3 className="rdm-section-title">Associated user</h3>
-                <div className="user-info-container">
-                  <div className="user-details">
+                <div className="rdm-user-info">
+                  <div className="rdm-user-details">
                     <img
                       src={reportData.associatedUser.avatar}
                       alt={reportData.associatedUser.name}
                       className="rdm-user-avatar"
                     />
-                    <div className="user-text">
-                      <h4 className="user-name">
+                    <div className="rdm-user-text">
+                      <h4 className="rdm-user-name">
                         {reportData.associatedUser.name}
                       </h4>
                       {reportData.associatedUser.email && (
-                        <div className="user-email-row">
+                        <div className="rdm-user-email-row">
                           <span
-                            className="user-email"
+                            className="rdm-user-email"
                             title={reportData.associatedUser.email}
                           >
                             {formatEmail(reportData.associatedUser.email)}
                           </span>
                           <button
-                            className="user-email-copy-btn"
+                            className="rdm-user-email-copy-btn"
                             data-testid="report-detail-email-copy-btn"
                             onClick={() =>
                               handleCopyEmail(reportData.associatedUser.email)
@@ -590,29 +865,25 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                     </div>
                   </div>
 
-                  <div className="report-detail-user-actions">
-                    <div className="report-detail-action-buttons">
+                  <div className="rdm-user-actions">
+                    <div className="rdm-action-buttons">
                       <button
-                        className="report-detail-deactivate-button"
+                        className="rdm-deactivate-btn"
                         onClick={handleDeactivateUser}
-                        disabled={buttonsDisabled}
                         data-testid="report-detail-deactivate-btn"
-                        style={{ opacity: buttonsDisabled ? 0.4 : 1 }}
                       >
                         Deactivate user
                       </button>
                       <button
-                        className="report-detail-ban-button"
+                        className="rdm-ban-btn"
                         onClick={handleBanUser}
-                        disabled={buttonsDisabled}
                         data-testid="report-detail-ban-btn"
-                        style={{ opacity: buttonsDisabled ? 0.4 : 1 }}
                       >
                         Ban user
                       </button>
                     </div>
                     {userStatusMessage && (
-                      <div className="report-detail-user-status-message">
+                      <div className="rdm-status-message">
                         <AssetIcon name="tooltip-icon" size={16} />
                         <span>{userStatusMessage}</span>
                       </div>
@@ -666,19 +937,14 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
 
                   <div className="rdm-report-date-row">
                     <span className="rdm-label">Report date:</span>
-                    <span className="rdm-value">{reportData.reportDate}</span>
+                    <span className="rdm-value">
+                      {formatDateTime(reportData.reportDate)}
+                    </span>
                   </div>
 
                   <div className="rdm-report-content-id-row">
                     <span className="rdm-label">Reported content ID:</span>
-                    <div className="rdm-id-container">
-                      <div className="rdm-id-badge">{reportData.contentId}</div>
-                      <AssetIcon
-                        name="copy-icon"
-                        size={16}
-                        className="rdm-copy-icon"
-                      />
-                    </div>
+                    <CopyableId id={reportData.contentId} />
                   </div>
 
                   <p className="rdm-report-description">
@@ -697,16 +963,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                       <p className="rdm-reporting-user-name">
                         {reportData.reportingUser.name}
                       </p>
-                      <div className="user-id-container">
-                        <div className="user-id-badge">
-                          {reportData.reportingUser.id}
-                        </div>
-                        <AssetIcon
-                          name="copy-icon"
-                          size={16}
-                          className="rdm-copy-icon"
-                        />
-                      </div>
+                      <CopyableId id={reportData.reportingUser.id} />
                     </div>
                   </div>
                 </div>
@@ -719,9 +976,9 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
               {renderSafetyRecord()}
 
               {/* Close Button */}
-              <div className="modal-footer">
+              <div className="rdm-modal-footer">
                 <button
-                  className="close-footer-button"
+                  className="rdm-close-footer-button"
                   data-testid="report-detail-close-footer-button"
                   onClick={onClose}
                 >
@@ -732,22 +989,6 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
           )}
         </CModalBody>
       </CModal>
-
-      {/* Deactivate User Modal */}
-      <DeactivateUserModal
-        visible={isDeactivateModalOpen}
-        onClose={() => setIsDeactivateModalOpen(false)}
-        onConfirm={handleDeactivateConfirm}
-        userName={reportData.associatedUser.name}
-      />
-
-      {/* Ban User Modal */}
-      <BanUserModal
-        visible={isBanModalOpen}
-        onClose={() => setIsBanModalOpen(false)}
-        onConfirm={handleBanConfirm}
-        userName={reportData.associatedUser.name}
-      />
     </>
   );
 };

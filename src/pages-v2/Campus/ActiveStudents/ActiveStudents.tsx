@@ -6,7 +6,6 @@ import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
 import { StudentTable, StudentData, StudentTableColumn } from "../components/StudentTable";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
-import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";
 import "./ActiveStudents.css";
 
@@ -122,8 +121,6 @@ export const ActiveStudents: React.FC = () => {
 
         {isLoading ? (
           <StudentTableSkeleton />
-        ) : paginatedStudents.length === 0 ? (
-          <NoStudentsFound />
         ) : (
           <StudentTable
             students={paginatedStudents}

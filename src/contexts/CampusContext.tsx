@@ -8,6 +8,8 @@ import React, {
 import { useAuth } from "../hooks/useAuth";
 
 export interface Campus {
+  name: string;
+  id: string;
   _id: string;
   campus_name: string;
   school_id?: {

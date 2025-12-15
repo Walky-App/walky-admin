@@ -1,31 +1,36 @@
-import React, { useState } from "react";
-import {
-  AssetIcon,
-  StudentProfileModal,
-  StudentProfileData,
-  UnbanUserModal,
-  DeactivateUserModal,
-  FlagUserModal,
-  ActionDropdown,
-  CustomToast,
-  Divider,
-  CopyableId,
-} from "../../../components-v2";
-import { getFirstName } from "../../../lib/utils/nameUtils";
+import React, { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { StatusBadge } from "./StatusBadge";
+import {
+  ActionDropdown,
+  AssetIcon,
+  CopyableId,
+  CustomToast,
+  DeactivateUserModal,
+  Divider,
+  FlagUserModal,
+  StudentProfileData,
+  StudentProfileModal,
+  UnbanUserModal,
+} from "../../../components-v2";
+import { getFirstName } from "../../../lib/utils/nameUtils";
 import { InterestChip } from "./InterestChip";
-import "./StudentTable.css";
+import { NoStudentsFound } from "./NoStudentsFound/NoStudentsFound";
+import { StatusBadge } from "./StatusBadge";
 import { StudentData, StudentTableColumn } from "./StudentTable";
+import "./StudentTable.css";
+
+type SortField = StudentTableColumn;
+type SortDirection = "asc" | "desc";
 
 interface BannedStudentTableProps {
   students: StudentData[];
   columns?: StudentTableColumn[];
   onStudentClick?: (student: StudentData) => void;
   sortBy?: StudentTableColumn;
-  sortOrder?: "asc" | "desc";
-  onSortChange?: (field: StudentTableColumn, order: "asc" | "desc") => void;
+  sortOrder?: SortDirection;
+  onSortChange?: (field: StudentTableColumn, order: SortDirection) => void;
+  emptyMessage?: string;
 }
 
 export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
@@ -43,7 +48,10 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
   sortBy,
   sortOrder = "asc",
   onSortChange,
+  emptyMessage = "No students found",
 }) => {
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(
     null
   );
@@ -65,11 +73,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
   const deactivateMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["students"],
-        refetchType: "all"
-      });
-      queryClient.invalidateQueries({ queryKey: ["studentStats"] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       setToastMessage("User deactivated successfully");
       setShowToast(true);
     },
@@ -82,11 +86,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
   const unbanMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsUnbanCreate(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["students"],
-        refetchType: "all"
-      });
-      queryClient.invalidateQueries({ queryKey: ["studentStats"] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       setToastMessage("User unbanned successfully");
       setShowToast(true);
     },
@@ -98,12 +98,9 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
 
   const flagMutation = useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
-      apiClient.api.adminV2StudentsFlagCreate(id, { reason: reason }),
+      apiClient.api.adminV2StudentsFlagCreate(id, { reason }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["students"],
-        refetchType: "all"
-      });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
       setToastMessage("User flagged successfully");
       setShowToast(true);
     },
@@ -115,113 +112,15 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
 
   const handleViewProfile = async (student: StudentData) => {
     try {
-      // Fetch student details and ban history in parallel
-      const [detailsResponse, banHistoryResponse] = await Promise.all([
-        apiClient.api.adminV2StudentsDetail(student.id),
-        apiClient.api.adminV2StudentsBanHistoryList(student.id).catch(() => ({ data: [] })),
-      ]);
+      const response = (await apiClient.api.adminV2StudentsDetail(
+        student.id
+      )) as any;
+      const details = response.data;
 
-      const details = detailsResponse.data;
-      const banHistoryData = banHistoryResponse.data || [];
-
-      // Format ban history from the separate endpoint
-      const formattedBanHistory = banHistoryData.map((b) => {
-        const bannedDate = b.bannedAt ? new Date(b.bannedAt) : null;
-        return {
-          title: "Account Banned",
-          duration: "N/A",
-          expiresIn: undefined,
-          reason: b.reason || "No reason provided",
-          bannedDate: bannedDate
-            ? bannedDate.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })
-            : "",
-          bannedTime: bannedDate
-            ? bannedDate.toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-              })
-            : "",
-          bannedBy: b.bannedBy || "System",
-        };
-      });
-
-      // Create ban history entry from top-level ban fields if no other history exists
-      const createBanHistoryFromDetails = () => {
-        if (details.bannedDate || details.bannedBy || details.banReason) {
-          const bannedDate = details.bannedAt ? new Date(details.bannedAt) : null;
-          return [{
-            title: "Account Banned",
-            duration: "N/A",
-            expiresIn: undefined,
-            reason: details.banReason || "No reason provided",
-            bannedDate: details.bannedDate || (bannedDate
-              ? bannedDate.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })
-              : ""),
-            bannedTime: details.bannedTime || (bannedDate
-              ? bannedDate.toLocaleTimeString("en-US", {
-                  hour: "numeric",
-                  minute: "2-digit",
-                })
-              : ""),
-            bannedBy: details.bannedBy || "System",
-          }];
-        }
-        return [];
-      };
-
-      // Use ban history from details if available, then separate endpoint, then top-level fields
-      const banHistory = details.banHistory && details.banHistory.length > 0
-        ? (details.banHistory || []).map((b) => ({
-            title: b.title || "Account Banned",
-            duration: b.duration || "N/A",
-            expiresIn: b.expiresIn,
-            reason: b.reason || "No reason provided",
-            bannedDate: b.bannedDate || "",
-            bannedTime: b.bannedTime || "",
-            bannedBy: b.bannedBy || "System",
-          }))
-        : formattedBanHistory.length > 0
-          ? formattedBanHistory
-          : createBanHistoryFromDetails();
-
-      // Merge details with existing student data
       const fullStudentData: StudentData = {
         ...student,
-        id: details.id || student.id,
-        userId: details.userId || student.userId,
-        name: details.name || student.name,
-        email: details.email || student.email,
-        avatar: details.avatar,
-        interests: details.interests || student.interests || [],
-        status: (details.status as StudentData["status"]) || student.status,
-        memberSince: details.memberSince || student.memberSince,
-        onlineLast: details.onlineLast || student.onlineLast,
-        areaOfStudy: details.areaOfStudy,
-        lastLogin: details.lastLogin,
-        totalPeers: details.totalPeers,
-        bio: details.bio,
-        bannedDate: details.bannedDate,
-        bannedBy: details.bannedBy,
-        bannedByEmail: details.bannedByEmail,
-        bannedTime: details.bannedTime,
-        reason: details.banReason,
-        duration: details.banHistory?.[0]?.duration || banHistory[0]?.duration,
-        banHistory,
-        blockedByUsers: (details.blockedByUsers || []).map((b) => ({
-          id: b.id || "",
-          name: b.name || "",
-          avatar: b.avatar,
-          date: b.date || "",
-          time: b.time || "",
-        })),
+        ...details,
+        banHistory: details.banHistory || [],
       };
 
       setSelectedStudent(fullStudentData);
@@ -301,15 +200,46 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     setStudentToUnban(null);
   };
 
-  const handleSort = (field: StudentTableColumn) => {
-    if (!onSortChange) return;
+  const handleSort = (field: SortField) => {
+    if (onSortChange) {
+      if (sortBy === field) {
+        onSortChange(field, sortOrder === "asc" ? "desc" : "asc");
+      } else {
+        onSortChange(field, "asc");
+      }
+      return;
+    }
 
-    if (sortBy === field) {
-      onSortChange(field, sortOrder === "asc" ? "desc" : "asc");
+    if (sortField === field) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
-      onSortChange(field, "asc");
+      setSortField(field);
+      setSortDirection("asc");
     }
   };
+
+  const sortedStudents = useMemo(() => {
+    const activeSortField = sortBy ?? sortField;
+    const activeSortDirection = sortOrder ?? sortDirection;
+
+    if (!activeSortField) return students;
+
+    return [...students].sort((a, b) => {
+      const aValue = (a as any)[activeSortField];
+      const bValue = (b as any)[activeSortField];
+
+      if (aValue === undefined || bValue === undefined) return 0;
+
+      let comparison = 0;
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === "number" && typeof bValue === "number") {
+        comparison = aValue - bValue;
+      }
+
+      return activeSortDirection === "asc" ? comparison : -comparison;
+    });
+  }, [students, sortBy, sortField, sortOrder, sortDirection]);
 
   const renderInterests = (interests?: string[]) => {
     if (!interests || interests.length === 0) return null;
@@ -333,25 +263,6 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     const { bannedDate, bannedTime } = student;
     if (!bannedDate && !bannedTime) {
       return { date: "-", time: null as string | null };
-    }
-
-    const combined = [bannedDate, bannedTime].filter(Boolean).join(" ");
-    const parsed = new Date(combined);
-
-    if (!Number.isNaN(parsed.getTime())) {
-      return {
-        date: new Intl.DateTimeFormat("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }).format(parsed),
-        time: bannedTime
-          ? new Intl.DateTimeFormat("en-US", {
-              hour: "numeric",
-              minute: "2-digit",
-            }).format(parsed)
-          : null,
-      };
     }
 
     return {
@@ -379,18 +290,25 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
       label: "Student name",
       sortable: true,
       render: (student) => (
-        <div className="student-info">
-          <div className="student-avatar">
-            {student.avatar && !student.avatar.match(/^[A-Z]$/) ? (
-              <img src={student.avatar} alt={student.name} />
-            ) : (
-              <div className="student-avatar-placeholder">
-                {student.avatar || student.name.charAt(0)}
-              </div>
-            )}
+        <>
+          {Boolean(student.isFlagged) && (
+            <div className="student-flag-icon">
+              <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
+            </div>
+          )}
+          <div className="student-info">
+            <div className="student-avatar">
+              {student.avatar && !student.avatar.match(/^[A-Z]$/) ? (
+                <img src={student.avatar} alt={student.name} />
+              ) : (
+                <div className="student-avatar-placeholder">
+                  {student.avatar || student.name.charAt(0)}
+                </div>
+              )}
+            </div>
+            <span className="student-name">{getFirstName(student.name)}</span>
           </div>
-          <span className="student-name">{getFirstName(student.name)}</span>
-        </div>
+        </>
       ),
     },
     email: {
@@ -425,18 +343,11 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
       ),
     },
     bannedDate: {
-      label: "Ban date",
+      label: "Banned date",
       sortable: true,
-      render: (student) =>
-        (() => {
-          const { date, time } = formatBanDateParts(student);
-          return (
-            <div className="student-date ban-date-cell">
-              <div>{date}</div>
-              {time && <div className="student-time">{time}</div>}
-            </div>
-          );
-        })(),
+      render: (student) => (
+        <span className="student-date">{formatBanDateParts(student).date}</span>
+      ),
     },
     bannedBy: {
       label: "Banned by",
@@ -444,7 +355,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
       render: (student) => <span>{student.bannedBy || "-"}</span>,
     },
     reason: {
-      label: "Reported content",
+      label: "Reason",
       sortable: false,
       render: (student) => <span>{student.reason || "-"}</span>,
     },
@@ -467,11 +378,17 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     },
   };
 
+  const isEmpty = sortedStudents.length === 0;
+
   return (
     <div className="student-table-wrapper">
       <table className="student-table">
         <thead>
-          <tr className="student-table-header">
+          <tr
+            className={`student-table-header${
+              isEmpty ? " student-table-header--muted" : ""
+            }`}
+          >
             {columns.map((column) => {
               const config = columnConfig[column];
               return (
@@ -496,79 +413,93 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
             <th></th>
           </tr>
         </thead>
-        <tbody>
-          {students.map((student, index) => (
-            <React.Fragment key={student.id}>
-              <tr
-                className="student-table-row"
-                onClick={() => onStudentClick?.(student)}
-              >
-                {columns.map((column) => (
-                  <td key={column} className="student-table-cell">
-                    {columnConfig[column].render(student)}
-                  </td>
-                ))}
-                <td className="student-table-cell student-table-actions">
-                  <ActionDropdown
-                    testId="banned-student-dropdown"
-                    items={[
-                      {
-                        label: "View profile",
-                        onClick: (e) => {
-                          e.stopPropagation();
-                          handleViewProfile(student);
-                        },
-                      },
-                      {
-                        label: "Send email",
-                        onClick: (e) => {
-                          e.stopPropagation();
-                          handleSendEmail(student);
-                        },
-                      },
-                      {
-                        label: "Flag user",
-                        icon: "flag-icon",
-                        onClick: (e) => {
-                          e.stopPropagation();
-                          handleFlagUser(student);
-                        },
-                      },
 
-                      {
-                        isDivider: true,
-                        label: "",
-                        onClick: () => {},
-                      },
-                      {
-                        label: "Deactivate user",
-                        variant: "danger",
-                        onClick: (e) => {
-                          e.stopPropagation();
-                          handleDeactivateUser(student);
+        <tbody>
+          {isEmpty ? (
+            <tr className="student-table-empty-row">
+              <td
+                className="student-table-empty-cell"
+                colSpan={columns.length + 1}
+              >
+                <NoStudentsFound message={emptyMessage} />
+              </td>
+            </tr>
+          ) : (
+            sortedStudents.map((student, index) => (
+              <React.Fragment key={student.id}>
+                <tr
+                  className={`student-table-row ${
+                    student.isFlagged ? "student-row-flagged" : ""
+                  }`}
+                  onClick={() => onStudentClick?.(student)}
+                >
+                  {columns.map((column) => (
+                    <td key={column} className="student-table-cell">
+                      {columnConfig[column].render(student)}
+                    </td>
+                  ))}
+                  <td className="student-table-cell student-table-actions">
+                    <ActionDropdown
+                      testId="banned-student-dropdown"
+                      items={[
+                        {
+                          label: "View profile",
+                          onClick: (e) => {
+                            e.stopPropagation();
+                            handleViewProfile(student);
+                          },
                         },
-                      },
-                      {
-                        label: "Unban user",
-                        variant: "danger",
-                        onClick: (e) => {
-                          e.stopPropagation();
-                          handleUnbanUser(student);
+                        {
+                          label: "Send email",
+                          onClick: (e) => {
+                            e.stopPropagation();
+                            handleSendEmail(student);
+                          },
                         },
-                      },
-                    ]}
-                  />
-                </td>
-              </tr>
-              {index < students.length - 1 && (
-                <tr className="student-divider-row">
-                  <td colSpan={columns.length + 1}>
-                    <Divider />
+                        {
+                          label: student.isFlagged ? "Unflag" : "Flag",
+                          icon: "flag-icon",
+                          variant: student.isFlagged ? "danger" : undefined,
+                          onClick: (e) => {
+                            e.stopPropagation();
+                            handleFlagUser(student);
+                          },
+                        },
+                        {
+                          isDivider: true,
+                          label: "",
+                          onClick: () => {},
+                        },
+                        {
+                          label: "Unban user",
+                          variant: "danger",
+                          onClick: (e) => {
+                            e.stopPropagation();
+                            handleUnbanUser(student);
+                          },
+                        },
+                        {
+                          label: "Deactivate user",
+                          variant: "danger",
+                          onClick: (e) => {
+                            e.stopPropagation();
+                            handleDeactivateUser(student);
+                          },
+                        },
+                      ]}
+                    />
                   </td>
                 </tr>
-              )}
-            </React.Fragment>
-          ))}
+                {index < sortedStudents.length - 1 && (
+                  <tr className="student-divider-row">
+                    <td colSpan={columns.length + 1}>
+                      <Divider />
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))
+          )}
         </tbody>
       </table>
 
@@ -578,10 +509,6 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
         onClose={handleCloseProfile}
         onBanUser={(student) => console.log("Ban user", student)}
         onDeactivateUser={(student) => console.log("Deactivate user", student)}
-        onUnbanUser={(student) => {
-          unbanMutation.mutate(student.id);
-          handleCloseProfile();
-        }}
       />
 
       <UnbanUserModal
@@ -608,7 +535,6 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
         <CustomToast
           message={toastMessage}
           onClose={() => setShowToast(false)}
-          duration={3000}
         />
       )}
     </div>

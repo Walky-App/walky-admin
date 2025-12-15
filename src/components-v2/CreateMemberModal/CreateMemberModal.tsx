@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import AssetIcon from "../AssetIcon/AssetIcon";
+import { useSchool, School } from "../../contexts/SchoolContext";
+import { useCampus, Campus } from "../../contexts/CampusContext";
 import "./CreateMemberModal.css";
 
 type RoleType = "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator";
@@ -32,6 +34,9 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
   onClose,
   onConfirm,
 }) => {
+  const { availableSchools, selectedSchool } = useSchool();
+  const { availableCampuses, selectedCampus } = useCampus();
+
   const [formData, setFormData] = useState<MemberFormData>({
     firstName: "",
     lastName: "",
@@ -69,10 +74,20 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
   });
 
   useEffect(() => {
+    if (!isOpen) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      school: prev.school || selectedSchool?.school_name || "",
+      campus: prev.campus || selectedCampus?.campus_name || "",
+    }));
+  }, [isOpen, selectedSchool, selectedCampus]);
+
+  useEffect(() => {
     if (isRoleDropdownOpen && roleButtonRef.current) {
       const rect = roleButtonRef.current.getBoundingClientRect();
       setRoleMenuPosition({
-        top: rect.bottom + window.scrollY + 4,
+        top: rect.bottom + window.scrollY + 8,
         left: rect.left + window.scrollX,
         width: rect.width,
       });
@@ -83,7 +98,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
     if (isSchoolDropdownOpen && schoolButtonRef.current) {
       const rect = schoolButtonRef.current.getBoundingClientRect();
       setSchoolMenuPosition({
-        top: rect.bottom + window.scrollY + 4,
+        top: rect.bottom + window.scrollY + 8,
         left: rect.left + window.scrollX,
         width: rect.width,
       });
@@ -94,7 +109,7 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
     if (isCampusDropdownOpen && campusButtonRef.current) {
       const rect = campusButtonRef.current.getBoundingClientRect();
       setCampusMenuPosition({
-        top: rect.bottom + window.scrollY + 4,
+        top: rect.bottom + window.scrollY + 8,
         left: rect.left + window.scrollX,
         width: rect.width,
       });
@@ -155,6 +170,23 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
   const handleRoleSelect = (role: RoleType) => {
     setFormData((prev) => ({ ...prev, role }));
     setIsRoleDropdownOpen(false);
+  };
+
+  const handleSchoolSelect = (school: School) => {
+    setFormData((prev) => ({
+      ...prev,
+      school: school.school_name || school.name || "",
+      campus: "",
+    }));
+    setIsSchoolDropdownOpen(false);
+  };
+
+  const handleCampusSelect = (campus: Campus) => {
+    setFormData((prev) => ({
+      ...prev,
+      campus: campus.campus_name || campus.name || "",
+    }));
+    setIsCampusDropdownOpen(false);
   };
 
   const handleCreate = () => {
@@ -310,26 +342,25 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
                           minWidth: `${schoolMenuPosition.width}px`,
                         }}
                       >
-                        <button
-                          data-testid="create-member-school-option-btn"
-                          className="create-member-option"
-                          onClick={() => {
-                            handleInputChange("school", "School 1");
-                            setIsSchoolDropdownOpen(false);
-                          }}
-                        >
-                          School 1
-                        </button>
-                        <button
-                          data-testid="create-member-school-option-btn"
-                          className="create-member-option"
-                          onClick={() => {
-                            handleInputChange("school", "School 2");
-                            setIsSchoolDropdownOpen(false);
-                          }}
-                        >
-                          School 2
-                        </button>
+                        {availableSchools.map((school) => (
+                          <button
+                            data-testid="create-member-school-option-btn"
+                            key={school._id || school.id}
+                            className="create-member-option"
+                            onClick={() => handleSchoolSelect(school)}
+                          >
+                            {school.school_name || school.name || "School"}
+                          </button>
+                        ))}
+                        {availableSchools.length === 0 && (
+                          <button
+                            data-testid="create-member-school-option-empty"
+                            className="create-member-option"
+                            disabled
+                          >
+                            No schools available
+                          </button>
+                        )}
                       </div>,
                       document.body
                     )}
@@ -363,26 +394,25 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
                           minWidth: `${campusMenuPosition.width}px`,
                         }}
                       >
-                        <button
-                          data-testid="create-member-campus-option-btn"
-                          className="create-member-option"
-                          onClick={() => {
-                            handleInputChange("campus", "Campus 1");
-                            setIsCampusDropdownOpen(false);
-                          }}
-                        >
-                          Campus 1
-                        </button>
-                        <button
-                          data-testid="create-member-campus-option-btn"
-                          className="create-member-option"
-                          onClick={() => {
-                            handleInputChange("campus", "Campus 2");
-                            setIsCampusDropdownOpen(false);
-                          }}
-                        >
-                          Campus 2
-                        </button>
+                        {availableCampuses.map((campus) => (
+                          <button
+                            data-testid="create-member-campus-option-btn"
+                            key={campus._id || campus.id}
+                            className="create-member-option"
+                            onClick={() => handleCampusSelect(campus)}
+                          >
+                            {campus.campus_name || campus.name || "Campus"}
+                          </button>
+                        ))}
+                        {availableCampuses.length === 0 && (
+                          <button
+                            data-testid="create-member-campus-option-empty"
+                            className="create-member-option"
+                            disabled
+                          >
+                            No campuses available
+                          </button>
+                        )}
                       </div>,
                       document.body
                     )}
