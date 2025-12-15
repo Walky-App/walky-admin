@@ -22,16 +22,14 @@ interface DeactivatedStudentTableProps {
   students: StudentData[];
   columns?: StudentTableColumn[];
   onStudentClick?: (student: StudentData) => void;
+  sortBy?: StudentTableColumn;
+  sortOrder?: "asc" | "desc";
+  onSortChange?: (field: StudentTableColumn, order: "asc" | "desc") => void;
 }
-
-type SortField = StudentTableColumn;
-type SortDirection = "asc" | "desc";
 
 export const DeactivatedStudentTable: React.FC<
   DeactivatedStudentTableProps
-> = ({ students, columns = ["userId", "name", "email"], onStudentClick }) => {
-  const [sortField, setSortField] = useState<SortField | null>(null);
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+> = ({ students, columns = ["userId", "name", "email"], onStudentClick, sortBy, sortOrder = "asc", onSortChange }) => {
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(
     null
   );
@@ -51,7 +49,11 @@ export const DeactivatedStudentTable: React.FC<
   const activateMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({
+        queryKey: ["students"],
+        refetchType: "all"
+      });
+      queryClient.invalidateQueries({ queryKey: ["studentStats"] });
       setToastMessage("User activated successfully");
       setShowToast(true);
     },
@@ -65,7 +67,10 @@ export const DeactivatedStudentTable: React.FC<
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       apiClient.api.adminV2StudentsFlagCreate(id, { reason: reason }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({
+        queryKey: ["students"],
+        refetchType: "all"
+      });
       setToastMessage("User flagged successfully");
       setShowToast(true);
     },
@@ -131,34 +136,15 @@ export const DeactivatedStudentTable: React.FC<
     setStudentToActivate(null);
   };
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+  const handleSort = (field: StudentTableColumn) => {
+    if (!onSortChange) return;
+
+    if (sortBy === field) {
+      onSortChange(field, sortOrder === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field);
-      setSortDirection("asc");
+      onSortChange(field, "asc");
     }
   };
-
-  const sortedStudents = React.useMemo(() => {
-    if (!sortField) return students;
-
-    return [...students].sort((a, b) => {
-      const aValue = a[sortField];
-      const bValue = b[sortField];
-
-      if (aValue === undefined || bValue === undefined) return 0;
-
-      let comparison = 0;
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        comparison = aValue.localeCompare(bValue);
-      } else if (typeof aValue === "number" && typeof bValue === "number") {
-        comparison = aValue - bValue;
-      }
-
-      return sortDirection === "asc" ? comparison : -comparison;
-    });
-  }, [students, sortField, sortDirection]);
 
   const columnConfig: Record<
     StudentTableColumn,
@@ -299,7 +285,7 @@ export const DeactivatedStudentTable: React.FC<
           </tr>
         </thead>
         <tbody>
-          {sortedStudents.map((student, index) => (
+          {students.map((student, index) => (
             <React.Fragment key={student.id}>
               <tr
                 className="student-table-row"
@@ -353,7 +339,7 @@ export const DeactivatedStudentTable: React.FC<
                   />
                 </td>
               </tr>
-              {index < sortedStudents.length - 1 && (
+              {index < students.length - 1 && (
                 <tr className="student-divider-row">
                   <td colSpan={columns.length + 1}>
                     <Divider />

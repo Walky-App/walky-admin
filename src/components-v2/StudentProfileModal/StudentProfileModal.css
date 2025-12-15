@@ -102,6 +102,16 @@
   gap: 16px;
   align-items: center;
   flex: 1;
+  min-width: 0;
+  max-width: calc(100% - 280px);
+}
+
+.profile-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
 }
 
 .profile-avatar-large {
@@ -143,12 +153,6 @@
   color: #ffffff;
 }
 
-.profile-user-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
 .profile-name {
   font-family: "Lato", sans-serif;
   font-size: 24px;
@@ -164,9 +168,14 @@
     align-items: flex-start;
   }
 
+  .profile-user-section {
+    max-width: 100%;
+  }
+
   .profile-action-buttons {
     width: 100%;
     justify-content: flex-start;
+    flex-wrap: wrap;
   }
 }
 
@@ -247,7 +256,8 @@
   display: flex;
   gap: 12px;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
   align-self: center;
 }
 
@@ -275,6 +285,11 @@
 
 .profile-btn-ban {
   background-color: #d53425;
+  color: #ffffff;
+}
+
+.profile-btn-unban {
+  background-color: #00c617;
   color: #ffffff;
 }
 

@@ -40,19 +40,19 @@ const StudentSafety: React.FC = () => {
       else if (type.includes("Events")) apiType = "event";
       else if (type.includes("People")) apiType = "user";
 
-      const res = (await apiClient.api.adminV2ReportsList({
+      const res = await apiClient.api.adminV2ReportsList({
         type: apiType,
         limit: 100,
         schoolId: selectedSchool?._id,
         campusId: selectedCampus?._id,
-        period: timePeriod,
-      } as any)) as any;
+        period: timePeriod as "all" | "week" | "month" | "year",
+      });
 
       const reports = res.data.data || [];
       const total = res.data.total || reports.length;
       setModalTotalCount(total);
 
-      const transformedReports = reports.map((r: any) => ({
+      const transformedReports = reports.map((r) => ({
         id: r.id,
         reportedItemName: r.description || "Unknown Item",
         reportId: r.reportedItemId || r.id,
@@ -102,10 +102,10 @@ const StudentSafety: React.FC = () => {
       }),
   });
 
-  const data = (apiData?.data || {}) as any;
+  const data = apiData?.data || { labels: [], subLabels: [], reportsData: [] };
   const chartLabels = data.labels || [];
   const chartSubLabels = data.subLabels;
-  const reportsData = data.reportsData || [];
+  const reportsData = (data.reportsData || []) as Array<{ [key: string]: number }>;
 
   if (isLoading) {
     return <DashboardSkeleton />;

@@ -73,6 +73,8 @@ export class Ambassadors<
       bio?: string;
       graduation_year?: number;
       major?: string;
+      /** User ID to create ambassador from existing user */
+      user_id?: string;
     },
     params: RequestParams = {},
   ) =>

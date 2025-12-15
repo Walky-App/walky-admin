@@ -61,7 +61,41 @@ const PopularFeatures: React.FC = () => {
       }),
   });
 
-  const data = (apiData?.data || {}) as any;
+  interface FeatureItem {
+    rank: number;
+    icon: string;
+    label: string;
+    iconBgColor?: string;
+  }
+  // Interest type matching CommonInterests component
+  interface Interest {
+    rank: number;
+    name: string;
+    students: number;
+    percentage: number;
+    barWidth: number;
+    rankColor: string;
+    rankBgColor: string;
+  }
+  // FieldOfStudy type matching TopFieldsOfStudy component
+  interface FieldOfStudy {
+    rank: number;
+    name: string;
+    students: number;
+    avgInteractions: number;
+    rankColor: string;
+    rankBgColor: string;
+  }
+  type PopularFeaturesData = {
+    topInterests?: FeatureItem[];
+    popularWaysToConnect?: FeatureItem[];
+    visitedPlaces?: FeatureItem[];
+    topInvitationCategories?: FeatureItem[];
+    mostEngaged?: FeatureItem[];
+    commonInterests?: Interest[];
+    topFieldsOfStudy?: FieldOfStudy[];
+  };
+  const data = (apiData?.data || {}) as PopularFeaturesData;
 
   const topInterests = data.topInterests || [];
   const popularWaysToConnect = data.popularWaysToConnect || [];
@@ -259,7 +293,7 @@ const PopularFeatures: React.FC = () => {
           setInterestsModalVisible(false);
         }}
         title={modalData.title}
-        interests={modalData.items.map((item: any) => ({
+        interests={modalData.items.map((item) => ({
           rank: item.rank,
           name: item.label || item.name,
           icon: item.icon || "",

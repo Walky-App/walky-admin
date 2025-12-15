@@ -5,6 +5,7 @@ import { StatusBadge } from "../../pages-v2/Campus/components/StatusBadge";
 import { CustomToast } from "../CustomToast/CustomToast";
 import { BanUserModal } from "../BanUserModal/BanUserModal";
 import { DeactivateUserModal } from "../DeactivateUserModal/DeactivateUserModal";
+import { UnbanUserModal } from "../UnbanUserModal/UnbanUserModal";
 import { CopyableId } from "../CopyableId/CopyableId";
 import { formatMemberSince } from "../../lib/utils/dateUtils";
 import "./StudentProfileModal.css";
@@ -71,6 +72,7 @@ interface StudentProfileModalProps {
     reason: string
   ) => void;
   onDeactivateUser?: (student: StudentProfileData) => void;
+  onUnbanUser?: (student: StudentProfileData) => void;
 }
 
 type HistoryTab = "ban" | "report" | "block";
@@ -81,12 +83,14 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   onClose,
   onBanUser,
   onDeactivateUser,
+  onUnbanUser,
 }) => {
   const [activeTab, setActiveTab] = useState<HistoryTab>("ban");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+  const [isUnbanModalOpen, setIsUnbanModalOpen] = useState(false);
 
   const formatEmail = (email: string) => {
     const MAX_LENGTH = 32;
@@ -136,9 +140,19 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
     setIsDeactivateModalOpen(false);
   };
 
+  const handleUnbanClick = () => {
+    setIsUnbanModalOpen(true);
+  };
+
+  const handleConfirmUnban = () => {
+    onUnbanUser?.(student);
+    setIsUnbanModalOpen(false);
+  };
+
   const handleModalClose = () => {
     setIsBanModalOpen(false);
     setIsDeactivateModalOpen(false);
+    setIsUnbanModalOpen(false);
     onClose();
   };
 
@@ -366,20 +380,32 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
               </div>
 
               <div className="profile-action-buttons">
-                <button
-                  data-testid="profile-deactivate-btn"
-                  className="profile-btn profile-btn-deactivate"
-                  onClick={handleDeactivateClick}
-                >
-                  Deactivate user
-                </button>
-                <button
-                  data-testid="profile-ban-btn"
-                  className="profile-btn profile-btn-ban"
-                  onClick={handleBanClick}
-                >
-                  Ban user
-                </button>
+                {student.status !== "banned" && (
+                  <button
+                    data-testid="profile-deactivate-btn"
+                    className="profile-btn profile-btn-deactivate"
+                    onClick={handleDeactivateClick}
+                  >
+                    Deactivate user
+                  </button>
+                )}
+                {student.status === "banned" ? (
+                  <button
+                    data-testid="profile-unban-btn"
+                    className="profile-btn profile-btn-unban"
+                    onClick={handleUnbanClick}
+                  >
+                    Unban user
+                  </button>
+                ) : (
+                  <button
+                    data-testid="profile-ban-btn"
+                    className="profile-btn profile-btn-ban"
+                    onClick={handleBanClick}
+                  >
+                    Ban user
+                  </button>
+                )}
               </div>
             </div>
 
@@ -530,6 +556,13 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
         visible={isDeactivateModalOpen}
         onClose={() => setIsDeactivateModalOpen(false)}
         onConfirm={handleConfirmDeactivate}
+        userName={student.name}
+      />
+
+      <UnbanUserModal
+        visible={isUnbanModalOpen}
+        onClose={() => setIsUnbanModalOpen(false)}
+        onConfirm={handleConfirmUnban}
         userName={student.name}
       />
     </>

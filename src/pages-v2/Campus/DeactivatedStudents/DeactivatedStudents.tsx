@@ -4,7 +4,7 @@ import { apiClient } from "../../../API";
 import { SearchInput, Pagination } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import { StatsCard } from "../components/StatsCard";
-import { StudentData } from "../components/StudentTable";
+import { StudentData, StudentTableColumn } from "../components/StudentTable";
 import { DeactivatedStudentTable } from "../components/DeactivatedStudentTable";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
@@ -14,18 +14,27 @@ import "./DeactivatedStudents.css";
 export const DeactivatedStudents: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<StudentTableColumn | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const exportRef = useRef<HTMLElement | null>(null);
   const entriesPerPage = 10;
 
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ["students", currentPage, searchQuery, "deactivated"],
+    queryKey: ["students", currentPage, searchQuery, "deactivated", sortBy, sortOrder],
     queryFn: () =>
       apiClient.api.adminV2StudentsList({
         page: currentPage,
         limit: entriesPerPage,
         search: searchQuery,
         status: "deactivated",
+        sortBy: sortBy as "name" | "email" | "memberSince" | "onlineLast" | "status" | undefined,
+        sortOrder,
       }),
   });
 
@@ -36,17 +45,17 @@ export const DeactivatedStudents: React.FC = () => {
 
   const isListLoading = isStudentsLoading;
 
-  const students = (studentsData?.data.data || []).map((student: any) => ({
-    id: student.id,
-    userId: student.userId,
-    name: student.name,
-    email: student.email,
-    status: student.status,
+  const students: StudentData[] = (studentsData?.data.data || []).map((student) => ({
+    id: student.id || "",
+    userId: student.userId || "",
+    name: student.name || "",
+    email: student.email || "",
+    status: (student.status as StudentData["status"]) || "deactivated",
     interests: student.interests || [],
     deactivatedDate: student.deactivatedDate,
     deactivatedBy: student.deactivatedBy,
     memberSince: formatMemberSince(student.memberSince),
-    onlineLast: student.onlineLast,
+    onlineLast: student.onlineLast || "",
     avatar: student.avatar,
   }));
 
@@ -59,28 +68,29 @@ export const DeactivatedStudents: React.FC = () => {
     console.log("Student clicked:", student);
   };
 
+  const handleSortChange = (field: StudentTableColumn, order: "asc" | "desc") => {
+    setSortBy(field);
+    setSortOrder(order);
+    setCurrentPage(1);
+  };
+
   return (
     <main className="deactivated-students-page" ref={exportRef}>
       <div className="deactivated-students-stats">
         <StatsCard
           title="Total deactivated students"
-          value={statsData?.data.totalStudents?.toString() || "0"}
+          value={studentsData?.data.total?.toString() || "0"}
           iconName="double-users-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
-          trend={{
-            value: "2.3%",
-            isPositive: false,
-            label: "from last month",
-          }}
         />
         <StatsCard
-          title="Deactivated this month"
-          value="12"
+          title="Permanent bans"
+          value={statsData?.data.totalPermanentBans?.toString() || "0"}
           iconName="lock-icon"
           iconBgColor="#FCE9E9"
           iconColor="#FF8082"
-          tooltip="Students who were deactivated in the current month"
+          tooltip="Students with permanent deactivation status"
           showTooltip={hoveredTooltip === "this-month"}
           onTooltipHover={(show) =>
             setHoveredTooltip(show ? "this-month" : null)
@@ -96,7 +106,7 @@ export const DeactivatedStudents: React.FC = () => {
             </h1>
             <SearchInput
               value={searchQuery}
-              onChange={setSearchQuery}
+              onChange={handleSearchChange}
               placeholder="Search"
               variant="primary"
             />
@@ -124,6 +134,9 @@ export const DeactivatedStudents: React.FC = () => {
               "deactivatedDate",
             ]}
             onStudentClick={handleStudentClick}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onSortChange={handleSortChange}
           />
         )}
 

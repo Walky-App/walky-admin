@@ -93,10 +93,10 @@ interface StudentTableProps {
   columns?: StudentTableColumn[];
   onStudentClick?: (student: StudentData) => void;
   onActionClick?: (student: StudentData) => void;
+  sortBy?: StudentTableColumn;
+  sortOrder?: "asc" | "desc";
+  onSortChange?: (field: StudentTableColumn, order: "asc" | "desc") => void;
 }
-
-type SortField = StudentTableColumn;
-type SortDirection = "asc" | "desc";
 
 export const StudentTable: React.FC<StudentTableProps> = ({
   students,
@@ -110,10 +110,11 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     "onlineLast",
   ],
   onStudentClick,
+  sortBy,
+  sortOrder = "asc",
+  onSortChange,
 }) => {
   const queryClient = useQueryClient();
-  const [sortField, setSortField] = useState<SortField | null>(null);
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(
     null
   );
@@ -131,11 +132,17 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
+      // Force immediate refetch by invalidating all student-related queries
+      queryClient.invalidateQueries({
+        queryKey: ["students"],
+        refetchType: "all"
+      });
+      queryClient.invalidateQueries({ queryKey: ["studentStats"] });
       setToastMessage("Student deactivated successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
       setDeactivateModalVisible(false);
+      setStudentToDeactivate(null);
     },
     onError: (error) => {
       console.error("Error deactivating student:", error);
@@ -148,16 +155,20 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   const banMutation = useMutation({
     mutationFn: (data: { id: string; duration: number; reason: string }) =>
       apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, {
-        lockDuration: data.duration,
         lockReason: data.reason,
         isLocked: true,
-      } as any),
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({
+        queryKey: ["students"],
+        refetchType: "all"
+      });
+      queryClient.invalidateQueries({ queryKey: ["studentStats"] });
       setToastMessage("Student banned successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
       setBanModalVisible(false);
+      setStudentToBan(null);
     },
     onError: (error) => {
       console.error("Error banning student:", error);
@@ -202,23 +213,78 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     },
   });
 
+  const unbanMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2StudentsUnbanCreate(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["students"],
+        refetchType: "all"
+      });
+      queryClient.invalidateQueries({ queryKey: ["studentStats"] });
+      setToastMessage("Student unbanned successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+    onError: (error) => {
+      console.error("Error unbanning student:", error);
+      setToastMessage("Error unbanning student");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+  });
+
   const handleViewProfile = async (student: StudentData) => {
     try {
-      const response = (await apiClient.api.adminV2StudentsDetail(
+      const response = await apiClient.api.adminV2StudentsDetail(
         student.id
-      )) as any;
+      );
       const details = response.data;
+
+      // Format lastLogin date nicely
+      const formatLastLogin = (dateStr?: string) => {
+        if (!dateStr) return "N/A";
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return "N/A";
+        return date.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        });
+      };
 
       // Merge details with existing student data or map completely
       const fullStudentData: StudentData = {
         ...student,
         areaOfStudy: details.areaOfStudy || "N/A",
-        lastLogin: details.lastLogin
-          ? new Date(details.lastLogin).toLocaleDateString()
-          : "N/A",
-        totalPeers: details.totalPeers || 0,
+        lastLogin: formatLastLogin(details.lastLogin),
+        totalPeers: details.totalPeers ?? details.peers ?? 0,
         bio: details.bio || "No bio provided",
-        // Map other fields as needed
+        interests: details.interests || student.interests || [],
+        status: (details.status as StudentData["status"]) || student.status,
+        banHistory: (details.banHistory || []).map((b) => ({
+          title: b.title || "",
+          duration: b.duration || "",
+          expiresIn: b.expiresIn,
+          reason: b.reason || "",
+          bannedDate: b.bannedDate || "",
+          bannedTime: b.bannedTime || "",
+          bannedBy: b.bannedBy || "",
+        })),
+        reportHistory: [],
+        blockedByUsers: (details.blockedByUsers || []).map((b) => ({
+          id: b.id || "",
+          name: b.name || "",
+          avatar: b.avatar,
+          date: b.date || "",
+          time: b.time || "",
+        })),
+        bannedBy: details.bannedBy,
+        bannedByEmail: details.bannedByEmail,
+        bannedDate: details.bannedDate,
+        bannedTime: details.bannedTime,
       };
 
       setSelectedStudent(fullStudentData);
@@ -329,27 +395,17 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     setStudentToBan(null);
   };
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+  const handleSort = (field: StudentTableColumn) => {
+    if (!onSortChange) return;
+
+    if (sortBy === field) {
+      // Toggle direction if same field
+      onSortChange(field, sortOrder === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field);
-      setSortDirection("asc");
+      // New field, start with ascending
+      onSortChange(field, "asc");
     }
   };
-
-  const sortedStudents = React.useMemo(() => {
-    if (!sortField) return students;
-
-    return [...students].sort((a, b) => {
-      const aValue = (a as any)[sortField];
-      const bValue = (b as any)[sortField];
-
-      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-      return 0;
-    });
-  }, [students, sortField, sortDirection]);
 
   const renderInterests = (interests?: string[]) => {
     if (!interests || interests.length === 0) return null;
@@ -507,7 +563,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         </thead>
 
         <tbody>
-          {sortedStudents.map((student, index) => (
+          {students.map((student, index) => (
             <React.Fragment key={student.id}>
               <tr
                 className={`student-table-row ${student.isFlagged ? "student-row-flagged" : ""
@@ -575,7 +631,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                   />
                 </td>
               </tr>
-              {index < sortedStudents.length - 1 && (
+              {index < students.length - 1 && (
                 <tr className="student-divider-row">
                   <td colSpan={columns.length + 1}>
                     <Divider />
@@ -607,6 +663,10 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         }}
         onDeactivateUser={(student) => {
           deleteMutation.mutate(student.id);
+          handleCloseProfile();
+        }}
+        onUnbanUser={(student) => {
+          unbanMutation.mutate(student.id);
           handleCloseProfile();
         }}
       />

@@ -125,29 +125,33 @@ export const SpacesInsights: React.FC = () => {
     queryFn: () => apiClient.api.adminV2SpacesInsightsList({ period: "all" }),
   });
 
+  // Type assertion for optional metadata fields not in generated types
+  type InsightsWithMetadata = { lastUpdated?: string; updatedAt?: string; metadata?: { lastUpdated?: string } };
+  const insightsDataExtended = insightsData?.data as InsightsWithMetadata | undefined;
+  const allTimeDataExtended = allTimeInsights?.data as InsightsWithMetadata | undefined;
   const lastUpdated =
-    (insightsData as any)?.data?.lastUpdated ||
-    (insightsData as any)?.data?.updatedAt ||
-    (insightsData as any)?.data?.metadata?.lastUpdated ||
-    (allTimeInsights as any)?.data?.lastUpdated ||
-    (allTimeInsights as any)?.data?.updatedAt ||
-    (allTimeInsights as any)?.data?.metadata?.lastUpdated;
+    insightsDataExtended?.lastUpdated ||
+    insightsDataExtended?.updatedAt ||
+    insightsDataExtended?.metadata?.lastUpdated ||
+    allTimeDataExtended?.lastUpdated ||
+    allTimeDataExtended?.updatedAt ||
+    allTimeDataExtended?.metadata?.lastUpdated;
   const categories: SpaceCategory[] = (
     insightsData?.data.popularCategories || []
-  ).map((category: any) => ({
-    name: category.name,
-    emoji: category.emoji,
+  ).map((category) => ({
+    name: category.name || "",
+    emoji: category.emoji || "",
     imageUrl: category.imageUrl,
-    spaces: category.spaces,
-    percentage: category.percentage,
+    spaces: category.spaces || 0,
+    percentage: category.percentage || 0,
   }));
 
   const topSpaces: SpaceItem[] = (insightsData?.data.topSpaces || []).map(
-    (space: any) => ({
-      rank: space.rank,
-      name: space.name,
+    (space) => ({
+      rank: space.rank || 0,
+      name: space.name || "",
       logo: space.logo || "",
-      members: space.members,
+      members: space.members || 0,
     })
   );
 

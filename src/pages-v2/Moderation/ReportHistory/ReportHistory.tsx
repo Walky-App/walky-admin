@@ -41,6 +41,11 @@ interface HistoryReportData {
 export const ReportHistory: React.FC = () => {
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] =
     useState<string>("Resolved,Dismissed");
@@ -101,7 +106,7 @@ export const ReportHistory: React.FC = () => {
     setLoading(true);
     try {
       // Fetch stats
-      const statsRes = (await apiClient.api.adminV2ReportsStatsList()) as any;
+      const statsRes = await apiClient.api.adminV2ReportsStatsList();
       setStats({
         total: statsRes.data.total || 0,
         resolved: statsRes.data.resolved || 0,
@@ -109,26 +114,26 @@ export const ReportHistory: React.FC = () => {
       });
 
       // Fetch reports
-      const reportsRes = (await apiClient.api.adminV2ReportsList({
+      const reportsRes = await apiClient.api.adminV2ReportsList({
         page: currentPage,
         limit: itemsPerPage,
         search: searchQuery,
         type: selectedTypes.length > 0 ? selectedTypes.join(",") : undefined,
         status: selectedStatus !== "all" ? selectedStatus : undefined,
-      } as any)) as any;
+      });
 
       const reports = reportsRes.data.data || [];
 
       // Transform API data to component format
-      const transformedReports = reports.map((r: any) => ({
-        id: r.id,
+      const transformedReports = reports.map((r) => ({
+        id: r.id || "",
         description: r.description || "No description",
         studentId: r.studentId || "Unknown",
-        reportDate: r.reportDate,
-        type: r.type as any,
+        reportDate: r.reportDate || "",
+        type: (r.type as HistoryReportData["type"]) || "User",
         reason: r.reason || "Unknown",
-        reasonTag: (r.reasonTag as any) || "Other",
-        status: r.status as any,
+        reasonTag: (r.reasonTag || "Other") as HistoryReportData["reasonTag"],
+        status: (r.status as HistoryReportData["status"]) || "Pending review",
       }));
 
       setHistoryReports(transformedReports);
@@ -166,7 +171,7 @@ export const ReportHistory: React.FC = () => {
       );
 
       // Refresh stats
-      const statsRes = (await apiClient.api.adminV2ReportsStatsList()) as any;
+      const statsRes = await apiClient.api.adminV2ReportsStatsList();
       setStats({
         total: statsRes.data.total || 0,
         resolved: statsRes.data.resolved || 0,
@@ -212,7 +217,7 @@ export const ReportHistory: React.FC = () => {
         // Save note first
         await apiClient.api.adminV2ReportsNoteCreate(
           pendingStatusChange.reportId,
-          { note } as any
+          { note }
         );
 
         // Then update status
@@ -241,7 +246,7 @@ export const ReportHistory: React.FC = () => {
     setReportDetails(null); // Reset previous details
 
     try {
-      const res = (await apiClient.api.adminV2ReportsDetail(report.id)) as any;
+      const res = await apiClient.api.adminV2ReportsDetail(report.id);
       setReportDetails(res.data);
     } catch (error) {
       console.error("Failed to fetch report details:", error);
@@ -502,7 +507,7 @@ export const ReportHistory: React.FC = () => {
             <div className="reports-filters">
               <SearchInput
                 value={searchQuery}
-                onChange={setSearchQuery}
+                onChange={handleSearchChange}
                 placeholder="Search"
                 variant="secondary"
                 className="bounce-search"

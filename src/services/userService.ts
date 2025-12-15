@@ -1,40 +1,5 @@
 import { apiClient } from "../API";
-
-export interface User {
-  _id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  avatar_url?: string;
-  is_active: boolean;
-  is_verified: boolean;
-  primary_role?: string;
-  school_id?: {
-    _id: string;
-    name: string;
-  };
-  campus_id?: {
-    _id: string;
-    campus_name: string;
-  };
-  created_at?: string;
-}
-
-export interface UserWithRoles extends User {
-  roles?: Array<{
-    role: string;
-    campus_id?: {
-      _id: string;
-      campus_name: string;
-    };
-    assigned_by: {
-      _id: string;
-      first_name: string;
-      last_name: string;
-    };
-    assigned_at: string;
-  }>;
-}
+import { User } from "../API/WalkyAPI";
 
 export interface UsersListParams {
   page?: number;
@@ -46,13 +11,21 @@ export interface UsersListParams {
 }
 
 export interface UsersListResponse {
-  users: UserWithRoles[];
+  users: User[];
   pagination: {
     page: number;
     limit: number;
     total: number;
     pages: number;
   };
+}
+
+// Type for API response pagination with optional fields
+interface ApiPagination {
+  page?: number;
+  limit?: number;
+  total?: number;
+  pages?: number;
 }
 
 export const userService = {
@@ -66,20 +39,20 @@ export const userService = {
         limit: params?.limit,
         search: params?.search,
         school_id: params?.school_id,
+        campus_id: params?.campus_id,
         role: params?.role,
-        // @ts-expect-error - campus_id is missing in generated type but supported by backend
-        campus_id: params?.campus_id
-      }) as any;
+      });
 
       console.log("✅ Users response:", response.data);
 
+      const apiPagination = response.data.pagination as ApiPagination | undefined;
       return {
         users: response.data.users || [],
-        pagination: response.data.pagination || {
-          page: 1,
-          limit: 20,
-          total: 0,
-          pages: 0,
+        pagination: {
+          page: apiPagination?.page ?? 1,
+          limit: apiPagination?.limit ?? 20,
+          total: apiPagination?.total ?? 0,
+          pages: apiPagination?.pages ?? 0,
         },
       };
     } catch (error) {
@@ -89,12 +62,20 @@ export const userService = {
   },
 
   // Search users by email or name
-  searchUsers: async (query: string): Promise<User[]> => {
+  searchUsers: async (query: string) => {
     try {
       console.log("🚀 Searching users with query:", query);
-      const response = await apiClient.api.adminUsersSearchList({ q: query }) as any;
+      const response = await apiClient.api.adminUsersSearchList({ q: query });
       console.log("✅ Search response:", response.data);
-      return response.data.users || [];
+      // Return search results with available fields
+      return (response.data.users || []).map((u) => ({
+        email: u.email || "",
+        _id: u._id,
+        first_name: u.first_name,
+        last_name: u.last_name,
+        avatar_url: u.avatar_url,
+        role: u.role,
+      }));
     } catch (error) {
       console.error("❌ Failed to search users:", error);
       throw error;
@@ -102,12 +83,12 @@ export const userService = {
   },
 
   // Get single user details
-  getUser: async (userId: string): Promise<UserWithRoles> => {
+  getUser: async (userId: string): Promise<User> => {
     try {
       console.log("🚀 Fetching user:", userId);
-      const response = await apiClient.api.adminUsersDetail(userId) as any;
+      const response = await apiClient.api.adminUsersDetail(userId);
       console.log("✅ User details response:", response.data);
-      return response.data.user;
+      return response.data.user as User;
     } catch (error) {
       console.error("❌ Failed to fetch user:", error);
       throw error;

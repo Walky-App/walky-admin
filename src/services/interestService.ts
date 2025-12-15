@@ -1,29 +1,50 @@
 import { apiClient } from "../API";
-import { Interest, CreateInterestDto, UpdateInterestDto } from "../types/interest";
+
+// Use the actual API response type instead of the Interest interface
+export type InterestResponse = {
+  _id?: string;
+  name?: string;
+  image_url?: string;
+  icon_url?: string;
+  is_active?: boolean;
+};
 
 export const interestService = {
   // Get all interests
-  async getAllInterests(): Promise<Interest[]> {
-    const response = await apiClient.api.interestsList() as any;
+  async getAllInterests(): Promise<InterestResponse[]> {
+    const response = await apiClient.api.interestsList();
     return response.data;
   },
 
   // Get a single interest by ID
-  async getInterestById(id: string): Promise<Interest> {
-    const response = await apiClient.api.interestsDetail(id) as any;
-    return response.data;
+  async getInterestById(id: string): Promise<InterestResponse | undefined> {
+    const response = await apiClient.api.interestsDetail(id);
+    return response.data as InterestResponse;
   },
 
   // Create a new interest
-  async createInterest(data: CreateInterestDto): Promise<Interest> {
-    const response = await apiClient.api.interestsCreate(data as any) as any;
-    return response.data;
+  async createInterest(data: {
+    name: string;
+    image_url: string;
+    icon_url: string;
+    is_active?: boolean;
+  }): Promise<InterestResponse | undefined> {
+    const response = await apiClient.api.interestsCreate(data);
+    return response.data.data;
   },
 
   // Update an interest
-  async updateInterest(id: string, data: UpdateInterestDto): Promise<Interest> {
-    const response = await apiClient.api.interestsUpdate(id, data) as any;
-    return response.data;
+  async updateInterest(
+    id: string,
+    data: {
+      name?: string;
+      image_url?: string;
+      icon_url?: string;
+      is_active?: boolean;
+    }
+  ): Promise<InterestResponse | undefined> {
+    const response = await apiClient.api.interestsUpdate(id, data);
+    return response.data.data;
   },
 
   // Delete an interest (soft delete)
@@ -32,11 +53,11 @@ export const interestService = {
   },
 
   // Upload image
-  async uploadImage(file: File): Promise<{ url: string }> {
+  async uploadImage(file: File): Promise<{ url?: string }> {
     const response = await apiClient.api.interestsUploadImageCreate({
       image: file,
-      type: "image" // Defaulting to "image" as it was not specified before
-    }) as any;
+      type: "image",
+    });
 
     return response.data;
   },

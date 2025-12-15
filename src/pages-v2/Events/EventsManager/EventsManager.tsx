@@ -13,6 +13,7 @@ import { EventCalendar } from "../components/EventCalendar/EventCalendar";
 import "./EventsManager.css";
 
 type ViewMode = "list" | "calendar";
+type EventSortField = "eventName" | "eventDate" | "attendeesCount";
 
 export const EventsManager: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("list");
@@ -21,32 +22,43 @@ export const EventsManager: React.FC = () => {
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState<EventSortField | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setSearchQuery(searchInput);
+      setCurrentPage(1); // Reset to first page when searching
     }, 500);
 
     return () => clearTimeout(timer);
   }, [searchInput]);
 
   const { data: eventsData, isLoading } = useQuery({
-    queryKey: ["events", currentPage, searchQuery, typeFilter, statusFilter],
+    queryKey: ["events", currentPage, searchQuery, typeFilter, statusFilter, sortBy, sortOrder],
     queryFn: () =>
       apiClient.api.adminV2EventsList({
         page: currentPage,
         limit: 10,
         search: searchQuery,
         type: typeFilter,
-        status: statusFilter,
+        status: statusFilter as "all" | "upcoming" | "ongoing" | "finished" | undefined,
+        sortBy,
+        sortOrder,
       }),
     placeholderData: keepPreviousData,
   });
 
+  const handleSortChange = (field: EventSortField, order: "asc" | "desc") => {
+    setSortBy(field);
+    setSortOrder(order);
+    setCurrentPage(1);
+  };
+
   const filteredEvents = (eventsData?.data.data || [])
-    .map((event: any) => {
-      const rawDateTime = event.date_and_time || event.dateAndTime || "";
+    .map((event) => {
+      const rawDateTime = event.start_date || "";
 
       const formatEventDateTime = (
         primary?: string,
@@ -97,21 +109,24 @@ export const EventsManager: React.FC = () => {
           : "upcoming";
 
       return {
-        id: event.id,
-        eventName: event.eventName,
-        organizer: event.organizer,
-        studentId: event.studentId,
+        id: event.id || "",
+        eventName: event.eventName || "",
+        organizer: {
+          name: event.organizer?.name || "",
+          avatar: event.organizer?.avatar || "",
+        },
+        studentId: event.studentId || "",
         eventDate,
         eventTime,
         eventDateRaw,
-        attendees: event.attendeesCount,
+        attendees: event.attendeesCount || 0,
         status: status as "upcoming" | "finished",
-        type: event.type,
-        isFlagged: event.isFlagged,
+        type: (event.type || "public") as "public" | "private",
+        isFlagged: event.isFlagged || false,
         flagReason: event.flagReason,
       };
     })
-    .filter((event: any) => {
+    .filter((event) => {
       if (statusFilter === "all") return true;
       return event.status === statusFilter;
     });
@@ -202,7 +217,12 @@ export const EventsManager: React.FC = () => {
               ) : (
                 <>
                   <div style={{ opacity: isEmpty ? 0.4 : 1 }}>
-                    <EventTable events={filteredEvents} />
+                    <EventTable
+                      events={filteredEvents}
+                      sortBy={sortBy}
+                      sortOrder={sortOrder}
+                      onSortChange={handleSortChange}
+                    />
                   </div>
                   {isEmpty && (
                     <NoData

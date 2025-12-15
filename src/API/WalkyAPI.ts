@@ -593,7 +593,7 @@ export interface Space {
    */
   howWeUseThisSpace?: string;
   /** URL to the space logo image */
-  logoUrl: string;
+  logoUrl?: string;
   /** URL to the space cover/banner image */
   coverImageUrl?: string;
   /**
@@ -1049,7 +1049,7 @@ export type RequestParams = Omit<
 export interface ApiConfig<SecurityDataType = unknown>
   extends Omit<AxiosRequestConfig, "data" | "cancelToken"> {
   securityWorker?: (
-    securityData: SecurityDataType | null
+    securityData: SecurityDataType | null,
   ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void;
   secure?: boolean;
   format?: ResponseType;
@@ -1091,7 +1091,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
   protected mergeRequestParams(
     params1: AxiosRequestConfig,
-    params2?: AxiosRequestConfig
+    params2?: AxiosRequestConfig,
   ): AxiosRequestConfig {
     const method = params1.method || (params2 && params2.method);
 
@@ -1132,7 +1132,7 @@ export class HttpClient<SecurityDataType = unknown> {
         const isFileType = formItem instanceof Blob || formItem instanceof File;
         formData.append(
           key,
-          isFileType ? formItem : this.stringifyFormItem(formItem)
+          isFileType ? formItem : this.stringifyFormItem(formItem),
         );
       }
 
@@ -1230,7 +1230,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by school ID (injected by middleware or user's school) */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -1267,7 +1267,7 @@ export class Api<SecurityDataType extends unknown> {
         metadata?: object;
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -1296,7 +1296,7 @@ export class Api<SecurityDataType extends unknown> {
      */
     adminAlertsDismissPartialUpdate: (
       alertId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -1326,7 +1326,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by school ID (injected by middleware or user's school) */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -1379,10 +1379,10 @@ export class Api<SecurityDataType extends unknown> {
     adminAnalyticsSocialHealthList: (
       query?: {
         /** @default "month" */
-        period?: "all" | "week" | "month";
+        period?: "all" | "week" | "month" | "7d" | "30d" | "90d";
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/social-health`,
@@ -1405,7 +1405,7 @@ export class Api<SecurityDataType extends unknown> {
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/wellbeing`,
@@ -1435,7 +1435,7 @@ export class Api<SecurityDataType extends unknown> {
         status?: "all" | "active" | "inactive";
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/students`,
@@ -1477,7 +1477,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Group results by month to get time-series data */
         groupBy?: "month";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         | {
@@ -1513,7 +1513,7 @@ export class Api<SecurityDataType extends unknown> {
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/walks/active`,
@@ -1536,7 +1536,7 @@ export class Api<SecurityDataType extends unknown> {
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/walks/pending`,
@@ -1559,7 +1559,7 @@ export class Api<SecurityDataType extends unknown> {
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/walks/completed`,
@@ -1582,7 +1582,7 @@ export class Api<SecurityDataType extends unknown> {
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/walks/cancelled`,
@@ -1608,7 +1608,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Get time-series data for specified timeframe */
         timeFrame?: "last6months" | "last12months" | "last30days";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         | {
@@ -1646,7 +1646,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Group results by month to get time-series data */
         groupBy?: "month";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         | {
@@ -1685,7 +1685,7 @@ export class Api<SecurityDataType extends unknown> {
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/walks/distribution`,
@@ -1710,7 +1710,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @default "month" */
         period?: "week" | "month" | "all";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/messaging`,
@@ -1735,7 +1735,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @default "month" */
         period?: "week" | "month" | "all";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/profile-views`,
@@ -1760,7 +1760,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @default "month" */
         period?: "week" | "month" | "all";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/engagement`,
@@ -1783,7 +1783,7 @@ export class Api<SecurityDataType extends unknown> {
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/session-analytics`,
@@ -1806,7 +1806,7 @@ export class Api<SecurityDataType extends unknown> {
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/user-lifecycle`,
@@ -1829,7 +1829,7 @@ export class Api<SecurityDataType extends unknown> {
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/social-graph`,
@@ -1852,7 +1852,7 @@ export class Api<SecurityDataType extends unknown> {
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/referrals`,
@@ -1877,7 +1877,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @default "month" */
         period?: "week" | "month" | "all";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/analytics/safety`,
@@ -1922,7 +1922,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by school (super admins only) */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/events`,
@@ -1982,7 +1982,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @format email */
         email?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/profile`,
@@ -2007,7 +2007,7 @@ export class Api<SecurityDataType extends unknown> {
         currentPassword: string;
         newPassword: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/profile/change-password`,
@@ -2032,7 +2032,7 @@ export class Api<SecurityDataType extends unknown> {
         emailNotifications?: boolean;
         pushNotifications?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/profile/notifications`,
@@ -2107,7 +2107,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         password: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/profile/delete`,
@@ -2134,7 +2134,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @default 15 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/spaces`,
@@ -2222,7 +2222,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         logoDefault?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/space-categories`,
@@ -2253,13 +2253,52 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by school */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          data?: {
+            _id?: string;
+            email?: string;
+            first_name?: string;
+            last_name?: string;
+            is_banned?: boolean;
+            /** @format date-time */
+            ban_date?: string;
+            /** @format date-time */
+            ban_expires_at?: string;
+            ban_reason?: string;
+            campus_id?: {
+              _id?: string;
+              campus_name?: string;
+            };
+            school_id?: {
+              _id?: string;
+              school_name?: string;
+            };
+            recentFailedAttempts?: {
+              /** @format date-time */
+              timestamp?: string;
+              ip_address?: string;
+              device_info?: string;
+            }[];
+            isExpired?: boolean;
+          }[];
+          pagination?: {
+            total?: number;
+            page?: number;
+            limit?: number;
+            pages?: number;
+          };
+        },
+        void
+      >({
         path: `/api/admin/locked-users`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -2283,14 +2322,26 @@ export class Api<SecurityDataType extends unknown> {
          */
         clearAttempts?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          message?: string;
+          data?: {
+            userId?: string;
+            email?: string;
+            attemptsCleared?: boolean;
+          };
+        },
+        void
+      >({
         path: `/api/admin/unlock-user/${userId}`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -2312,14 +2363,26 @@ export class Api<SecurityDataType extends unknown> {
         /** @default true */
         clearAttempts?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          message?: string;
+          data?: {
+            userId?: string;
+            email?: string;
+            success?: boolean;
+          }[];
+        },
+        void
+      >({
         path: `/api/admin/bulk-unlock-users`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -2337,7 +2400,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by school */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2385,14 +2448,26 @@ export class Api<SecurityDataType extends unknown> {
          */
         lockDurationHours?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          message?: string;
+          data?: {
+            userId?: string;
+            maxAttempts?: number;
+            lockDurationHours?: number;
+          };
+        },
+        void
+      >({
         path: `/api/admin/lock-settings/${userId}`,
         method: "PUT",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -2415,14 +2490,28 @@ export class Api<SecurityDataType extends unknown> {
         search?: string;
         school_id?: string;
         role?: string;
+        /** Filter by campus ID */
+        campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          users?: User[];
+          pagination?: {
+            page?: number;
+            limit?: number;
+            total?: number;
+            pages?: number;
+          };
+        },
+        void
+      >({
         path: `/api/admin/users`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -2440,13 +2529,26 @@ export class Api<SecurityDataType extends unknown> {
         /** Search query */
         q: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          users?: {
+            _id?: string;
+            first_name?: string;
+            last_name?: string;
+            email?: string;
+            avatar_url?: string;
+            role?: string;
+          }[];
+        },
+        void
+      >({
         path: `/api/admin/users/search`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -2460,10 +2562,16 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminUsersDetail: (userId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          user?: User;
+        },
+        void
+      >({
         path: `/api/admin/users/${userId}`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -2482,7 +2590,7 @@ export class Api<SecurityDataType extends unknown> {
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2519,7 +2627,7 @@ export class Api<SecurityDataType extends unknown> {
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2560,7 +2668,7 @@ export class Api<SecurityDataType extends unknown> {
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2595,7 +2703,7 @@ export class Api<SecurityDataType extends unknown> {
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2630,7 +2738,7 @@ export class Api<SecurityDataType extends unknown> {
         campusId?: string;
         sortBy?: "most_popular" | "least_popular";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2667,7 +2775,7 @@ export class Api<SecurityDataType extends unknown> {
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2699,7 +2807,7 @@ export class Api<SecurityDataType extends unknown> {
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2735,7 +2843,7 @@ export class Api<SecurityDataType extends unknown> {
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2768,7 +2876,7 @@ export class Api<SecurityDataType extends unknown> {
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2803,15 +2911,23 @@ export class Api<SecurityDataType extends unknown> {
         limit?: number;
         search?: string;
         type?: string;
+        /** Filter by event status (upcoming=future, ongoing=today, finished=past) */
+        status?: "all" | "upcoming" | "ongoing" | "finished";
+        /**
+         * IANA timezone name (e.g., America/New_York, Europe/London) for status filtering
+         * @default "UTC"
+         */
+        timezone?: string;
         /** @format date-time */
         startDate?: string;
         /** @format date-time */
         endDate?: string;
         campusId?: string;
         schoolId?: string;
-        status?: string;
+        sortBy?: "eventName" | "eventDate" | "attendeesCount" | "type";
+        sortOrder?: "asc" | "desc";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2825,10 +2941,21 @@ export class Api<SecurityDataType extends unknown> {
             studentId?: string;
             eventDate?: string;
             eventTime?: string;
-            attendees?: number;
+            /** @format date-time */
+            start_date?: string;
+            /** @format date-time */
+            end_date?: string;
+            attendeesCount?: number;
+            attendees?: object[];
             type?: string;
+            location?: string;
+            description?: string;
+            slots?: number;
+            image_url?: string;
             isFlagged?: boolean;
             flagReason?: string;
+            /** Event status based on date (upcoming=future, ongoing=today, finished=past) */
+            status?: "upcoming" | "ongoing" | "finished";
           }[];
           total?: number;
           page?: number;
@@ -2854,10 +2981,43 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2EventsDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.http.request<
+        {
+          id?: string;
+          _id?: string;
+          name?: string;
+          image_url?: string;
+          date_and_time?: string;
+          location?: string;
+          address?: string;
+          visibility?: string;
+          description?: string;
+          slots?: number;
+          spaceId?: string;
+          attendeesCount?: number;
+          organizer?: {
+            name?: string;
+            avatar?: string;
+            studentId?: string;
+            id?: string;
+            _id?: string;
+            avatar_url?: string;
+          };
+          participants?: {
+            user_id?: string;
+            name?: string;
+            avatar_url?: string;
+            status?: string;
+          }[];
+          isFlagged?: boolean;
+          flagReason?: string;
+        },
+        any
+      >({
         path: `/api/admin/v2/events/${id}`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -2892,8 +3052,10 @@ export class Api<SecurityDataType extends unknown> {
         page?: number;
         limit?: number;
         search?: string;
+        sortBy?: "ideaTitle" | "collaborated" | "creationDate";
+        sortOrder?: "asc" | "desc";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2935,10 +3097,35 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2IdeasDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.http.request<
+        {
+          id?: string;
+          title?: string;
+          description?: string;
+          createdAt?: string;
+          lookingFor?: string;
+          collaboratorsCount?: number;
+          creator?: {
+            name?: string;
+            avatar?: string;
+            studentId?: string;
+            email?: string;
+          };
+          collaborators?: {
+            user_id?: string;
+            name?: string;
+            avatar_url?: string;
+            status?: string;
+          }[];
+          isFlagged?: boolean;
+          flagReason?: string;
+        },
+        any
+      >({
         path: `/api/admin/v2/ideas/${id}`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -2977,8 +3164,12 @@ export class Api<SecurityDataType extends unknown> {
         status?: string;
         schoolId?: string;
         campusId?: string;
+        /** Filter by time period */
+        period?: "all" | "week" | "month" | "year";
+        sortBy?: "reportDate" | "type" | "status" | "reason";
+        sortOrder?: "asc" | "desc";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -2992,6 +3183,8 @@ export class Api<SecurityDataType extends unknown> {
             reasonTag?: string;
             status?: string;
             isFlagged?: boolean;
+            reportedItemId?: string;
+            reporterName?: string;
           }[];
           total?: number;
           page?: number;
@@ -3022,6 +3215,8 @@ export class Api<SecurityDataType extends unknown> {
           total?: number;
           pending?: number;
           underEvaluation?: number;
+          resolved?: number;
+          dismissed?: number;
         },
         any
       >({
@@ -3046,7 +3241,7 @@ export class Api<SecurityDataType extends unknown> {
         reportIds?: string[];
         status?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/reports/bulk-update`,
@@ -3101,7 +3296,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         status?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/reports/${id}/status`,
@@ -3126,7 +3321,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         note?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/reports/${id}/note`,
@@ -3152,7 +3347,7 @@ export class Api<SecurityDataType extends unknown> {
         reason?: string;
         duration?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/reports/${id}/ban-user`,
@@ -3178,7 +3373,7 @@ export class Api<SecurityDataType extends unknown> {
         lastName?: string;
         position?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/settings/profile`,
@@ -3203,7 +3398,7 @@ export class Api<SecurityDataType extends unknown> {
         currentPassword?: string;
         newPassword?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/settings/password`,
@@ -3244,7 +3439,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/settings/delete-account`,
@@ -3270,8 +3465,10 @@ export class Api<SecurityDataType extends unknown> {
         limit?: number;
         search?: string;
         category?: string;
+        sortBy?: "spaceName" | "members" | "creationDate" | "category";
+        sortOrder?: "asc" | "desc";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -3318,7 +3515,7 @@ export class Api<SecurityDataType extends unknown> {
       query?: {
         period?: "all" | "week" | "month";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -3389,6 +3586,14 @@ export class Api<SecurityDataType extends unknown> {
           createdAt?: string;
           isFlagged?: boolean;
           flagReason?: string;
+          about?: string;
+          chapter?: string;
+          contact?: string;
+          howWeUse?: string;
+          memberRange?: string;
+          yearEstablished?: number;
+          governingBody?: string;
+          primaryFocus?: string;
         },
         any
       >({
@@ -3408,11 +3613,19 @@ export class Api<SecurityDataType extends unknown> {
      * @request DELETE:/api/admin/v2/spaces/{id}
      * @secure
      */
-    adminV2SpacesDelete: (id: string, params: RequestParams = {}) =>
+    adminV2SpacesDelete: (
+      id: string,
+      data?: {
+        reason?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/spaces/${id}`,
         method: "DELETE",
+        body: data,
         secure: true,
+        type: ContentType.Json,
         ...params,
       }),
 
@@ -3431,8 +3644,10 @@ export class Api<SecurityDataType extends unknown> {
         limit?: number;
         search?: string;
         status?: "active" | "deactivated" | "banned" | "disengaged";
+        sortBy?: "name" | "email" | "memberSince" | "onlineLast" | "status";
+        sortOrder?: "asc" | "desc";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -3446,6 +3661,22 @@ export class Api<SecurityDataType extends unknown> {
             memberSince?: string;
             onlineLast?: string;
             isFlagged?: boolean;
+            avatar?: string;
+            deactivatedDate?: string;
+            deactivatedBy?: string;
+            bannedDate?: string;
+            bannedBy?: string;
+            bannedByEmail?: string;
+            bannedTime?: string;
+            reason?: string;
+            duration?: string;
+            totalPeers?: number;
+            peers?: number;
+            bio?: string;
+            studyMain?: string;
+            studySecondary?: string;
+            ignoredInvitations?: number;
+            reported?: boolean;
           }[];
           total?: number;
           page?: number;
@@ -3502,11 +3733,47 @@ export class Api<SecurityDataType extends unknown> {
           userId?: string;
           name?: string;
           email?: string;
+          avatar?: string;
           interests?: string[];
           status?: string;
           memberSince?: string;
           onlineLast?: string;
           isFlagged?: boolean;
+          phone?: string;
+          studyMain?: string;
+          studySecondary?: string;
+          graduationYear?: number;
+          areaOfStudy?: string;
+          lastLogin?: string;
+          bio?: string;
+          totalPeers?: number;
+          peers?: number;
+          bannedAt?: string;
+          bannedBy?: string;
+          bannedByEmail?: string;
+          bannedDate?: string;
+          bannedTime?: string;
+          banReason?: string;
+          deletedAt?: string;
+          deletedBy?: string;
+          deletionReason?: string;
+          banHistory?: {
+            title?: string;
+            duration?: string;
+            expiresIn?: string;
+            reason?: string;
+            bannedDate?: string;
+            bannedTime?: string;
+            bannedBy?: string;
+          }[];
+          blockedByUsers?: {
+            id?: string;
+            name?: string;
+            avatar?: string;
+            date?: string;
+            time?: string;
+            reason?: string;
+          }[];
         },
         any
       >({
@@ -3608,7 +3875,7 @@ export class Api<SecurityDataType extends unknown> {
         isLocked?: boolean;
         lockReason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/students/${id}/lock-settings`,
@@ -3628,7 +3895,13 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/admin/v2/campuses
      * @secure
      */
-    adminV2CampusesList: (params: RequestParams = {}) =>
+    adminV2CampusesList: (
+      query?: {
+        /** Filter campuses by school ID */
+        school_id?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.http.request<
         {
           id?: string;
@@ -3644,6 +3917,7 @@ export class Api<SecurityDataType extends unknown> {
       >({
         path: `/api/admin/v2/campuses`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -3707,7 +3981,7 @@ export class Api<SecurityDataType extends unknown> {
         search?: string;
         role?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -3755,7 +4029,7 @@ export class Api<SecurityDataType extends unknown> {
         role?: string;
         title?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/members`,
@@ -3797,7 +4071,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         role?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/members/${id}/role`,
@@ -3819,7 +4093,7 @@ export class Api<SecurityDataType extends unknown> {
      */
     adminV2MembersPasswordResetCreate: (
       id: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/members/${id}/password-reset`,
@@ -3842,7 +4116,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/events/${id}/flag`,
@@ -3884,7 +4158,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/ideas/${id}/flag`,
@@ -3926,7 +4200,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/spaces/${id}/flag`,
@@ -3968,7 +4242,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/v2/students/${id}/flag`,
@@ -4016,7 +4290,7 @@ export class Api<SecurityDataType extends unknown> {
         entityType?: "idea" | "event" | "space" | "user";
         details?: object;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/analytics/log`,
@@ -4124,7 +4398,7 @@ export class Api<SecurityDataType extends unknown> {
         password_confirmed?: string;
         role?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -4188,7 +4462,7 @@ export class Api<SecurityDataType extends unknown> {
         otp?: number;
         email?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -4269,13 +4543,29 @@ export class Api<SecurityDataType extends unknown> {
         email?: string;
         password?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          access_token?: string;
+          _id?: string;
+          email?: string;
+          first_name?: string;
+          last_name?: string;
+          role?: string;
+          school_id?: string;
+          campus_id?: string;
+          avatar_url?: string;
+          refresh_token?: string;
+          require_password_change?: boolean;
+        },
+        void
+      >({
         path: `/api/login`,
         method: "POST",
         body: data,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -4307,7 +4597,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         email?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/forgot-password`,
@@ -4333,7 +4623,7 @@ export class Api<SecurityDataType extends unknown> {
         password_confirmed?: string;
         otp?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/reset-password`,
@@ -4355,7 +4645,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         refresh_token?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -4390,7 +4680,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Secret from BOOTSTRAP_SECRET env variable */
         bootstrap_secret: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/bootstrap/super-admin`,
@@ -4438,7 +4728,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter campuses by school ID */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -4496,7 +4786,7 @@ export class Api<SecurityDataType extends unknown> {
         time_zone: string;
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -4550,7 +4840,7 @@ export class Api<SecurityDataType extends unknown> {
         time_zone?: string;
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -4687,7 +4977,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         period?: "7d" | "30d" | "90d";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/campus/${campusId}/metrics/social-health`,
@@ -4715,7 +5005,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         period?: "7d" | "30d" | "90d";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/campus/${campusId}/metrics/wellbeing`,
@@ -4736,7 +5026,7 @@ export class Api<SecurityDataType extends unknown> {
      */
     adminCampusMetricsKpisList: (
       campusId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/campus/${campusId}/metrics/kpis`,
@@ -4768,7 +5058,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/campus/${campusId}/metrics/activity-timeline`,
@@ -4798,7 +5088,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by severity level */
         severity?: "info" | "warning" | "critical";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/campus/${campusId}/alerts`,
@@ -4820,7 +5110,7 @@ export class Api<SecurityDataType extends unknown> {
     adminCampusAlertsMarkReadPartialUpdate: (
       campusId: string,
       alertId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/campus/${campusId}/alerts/${alertId}/mark-read`,
@@ -4840,7 +5130,7 @@ export class Api<SecurityDataType extends unknown> {
      */
     adminCampusAlertsMarkAllReadPartialUpdate: (
       campusId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/campus/${campusId}/alerts/mark-all-read`,
@@ -4868,14 +5158,32 @@ export class Api<SecurityDataType extends unknown> {
         /** Maximum number of API calls to use */
         maxApiCalls?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          message?: string;
+          data?: {
+            campus_id?: string;
+            sync_status?: "completed" | "failed" | "partial";
+            places_added?: number;
+            places_updated?: number;
+            places_removed?: number;
+            api_calls_used?: number;
+            sync_duration_ms?: number;
+            total_places_processed?: number;
+            errors?: string[];
+          };
+        },
+        void
+      >({
         path: `/api/admin/campus-sync/sync/${campusId}`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -4889,10 +5197,32 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminCampusSyncSyncAllCreate: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          message?: string;
+          data?: {
+            summary?: {
+              total?: number;
+              totalPlacesAdded?: number;
+              totalPlacesUpdated?: number;
+              totalPlacesRemoved?: number;
+            };
+            results?: {
+              campus_id?: string;
+              sync_status?: string;
+              places_added?: number;
+              places_updated?: number;
+              places_removed?: number;
+            }[];
+          };
+        },
+        void
+      >({
         path: `/api/admin/campus-sync/sync-all`,
         method: "POST",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -4922,13 +5252,45 @@ export class Api<SecurityDataType extends unknown> {
          */
         offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          data?: {
+            logs?: {
+              _id?: string;
+              campus_id?: {
+                _id?: string;
+                campus_name?: string;
+              };
+              /** @format date-time */
+              last_sync_date?: string;
+              places_added?: number;
+              places_updated?: number;
+              places_removed?: number;
+              api_calls_used?: number;
+              sync_status?: string;
+              sync_duration_ms?: number;
+              total_places_processed?: number;
+              error_message?: string;
+              /** @format date-time */
+              createdAt?: string;
+            }[];
+            pagination?: {
+              total?: number;
+              limit?: number;
+              offset?: number;
+            };
+          };
+        },
+        void
+      >({
         path: `/api/admin/campus-sync/logs`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -4942,10 +5304,32 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminCampusSyncCampusesList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          data?: {
+            _id?: string;
+            campus_name?: string;
+            coordinates?: object | null;
+            places_count?: number;
+            last_sync?: {
+              /** @format date-time */
+              date?: string;
+              status?: string;
+              places_added?: number;
+              places_updated?: number;
+              places_removed?: number;
+              api_calls_used?: number;
+            } | null;
+            has_coordinates?: boolean;
+          }[];
+        },
+        void
+      >({
         path: `/api/admin/campus-sync/campuses`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -4960,12 +5344,40 @@ export class Api<SecurityDataType extends unknown> {
      */
     adminCampusSyncCampusPreviewList: (
       campusId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          data?: {
+            campus_name?: string;
+            boundary?: object;
+            search_points?: {
+              lat?: number;
+              lng?: number;
+              radius?: number;
+            }[];
+            bounds?: {
+              north?: number;
+              south?: number;
+              east?: number;
+              west?: number;
+            };
+            center?: {
+              lat?: number;
+              lng?: number;
+            };
+            area_sqm?: number;
+            area_acres?: number;
+            search_points_count?: number;
+          };
+        },
+        void
+      >({
         path: `/api/admin/campus-sync/campus/${campusId}/preview`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -5000,7 +5412,7 @@ export class Api<SecurityDataType extends unknown> {
         /** The ID of the user to get or create a chat with */
         user_id: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -5191,7 +5603,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Type of deeplink */
         type: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -5230,7 +5642,7 @@ export class Api<SecurityDataType extends unknown> {
         /** User ID to track */
         userId: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -5298,7 +5710,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/discover/spaces`,
@@ -5325,7 +5737,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/discover/events`,
@@ -5352,7 +5764,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/discover/ideas`,
@@ -5393,7 +5805,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Two-digit graduation year suffix (e.g., 25) */
         classOf?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/discover/users`,
@@ -5510,7 +5922,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Optional array of participant user IDs */
         participants?: string[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -5553,7 +5965,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Include detailed participant information (id, avatar_url, name) instead of just user IDs */
         include_participant_details?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -5604,7 +6016,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Time frame to filter engagement data by. If omitted, all timeframes are returned in one response. */
         timeFrame?: "day" | "week" | "month" | "last6months" | "all";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         (
@@ -5670,7 +6082,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Optional. If provided, only returns the count for that filter. */
         filter?: "outdoor" | "indoor" | "public" | "private" | "total";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         | {
@@ -5722,7 +6134,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         include_past?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -5775,7 +6187,7 @@ export class Api<SecurityDataType extends unknown> {
         visibility?: "public" | "private";
         isCustom?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -5829,7 +6241,7 @@ export class Api<SecurityDataType extends unknown> {
         slots?: number;
         visibility?: "public" | "private";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -5962,7 +6374,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @format binary */
         eventImage?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -6040,7 +6452,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @default 100 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/events/profile/${type}`,
@@ -6071,7 +6483,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by deletion reason (optional) */
         deleteReason?: "user" | "admin" | "auto_cleanup";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/events/deleted`,
@@ -6095,7 +6507,7 @@ export class Api<SecurityDataType extends unknown> {
         receiver_id: string;
         event_id: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         EventInvite,
@@ -6134,7 +6546,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by event ID */
         event_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         EventInvite[],
@@ -6190,7 +6602,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         status: "accepted" | "rejected" | "cancelled";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         EventInvite,
@@ -6373,7 +6785,7 @@ export class Api<SecurityDataType extends unknown> {
         growth?: "monthly";
         groupBy?: "month";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/ideas/count`,
@@ -6415,7 +6827,7 @@ export class Api<SecurityDataType extends unknown> {
         description: string;
         looking_for: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/ideas`,
@@ -6612,7 +7024,7 @@ export class Api<SecurityDataType extends unknown> {
         description: string;
         looking_for: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/ideas/${ideaId}`,
@@ -6655,7 +7067,7 @@ export class Api<SecurityDataType extends unknown> {
         ideaId: string;
         description: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/ideas/report`,
@@ -6680,7 +7092,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         collaborate_id: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/ideas/${ideaId}/collaborate`,
@@ -6708,7 +7120,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @default 100 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/ideas/profile/${type}`,
@@ -6764,7 +7176,7 @@ export class Api<SecurityDataType extends unknown> {
         icon_url: string;
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -6835,7 +7247,7 @@ export class Api<SecurityDataType extends unknown> {
         icon_url?: string;
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -6976,7 +7388,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Type of image being uploaded */
         type: "image" | "icon";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -7030,7 +7442,7 @@ export class Api<SecurityDataType extends unknown> {
           order?: number;
         }[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/interest-groups`,
@@ -7079,7 +7491,7 @@ export class Api<SecurityDataType extends unknown> {
         }[];
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/interest-groups/${groupId}`,
@@ -7122,7 +7534,7 @@ export class Api<SecurityDataType extends unknown> {
         interestId: string;
         order: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/interest-groups/${groupId}/interests`,
@@ -7145,7 +7557,7 @@ export class Api<SecurityDataType extends unknown> {
     interestGroupsInterestsDelete: (
       groupId: string,
       interestId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/interest-groups/${groupId}/interests/${interestId}`,
@@ -7168,7 +7580,7 @@ export class Api<SecurityDataType extends unknown> {
         groupId?: string;
         order?: number;
       }[],
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/interest-groups/reorder`,
@@ -7194,7 +7606,7 @@ export class Api<SecurityDataType extends unknown> {
         interestId?: string;
         order?: number;
       }[],
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/interest-groups/${groupId}/reorder-interests`,
@@ -7251,7 +7663,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Type of invites to filter by */
         invite_type?: "real_time" | "event";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -7308,7 +7720,7 @@ export class Api<SecurityDataType extends unknown> {
           };
         };
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -7352,7 +7764,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by invite status */
         status?: "pending" | "accepted" | "rejected";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -7425,7 +7837,7 @@ export class Api<SecurityDataType extends unknown> {
         /** The response to the invite */
         response: "accepted" | "rejected" | "cancelled" | "expired";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -7530,7 +7942,7 @@ export class Api<SecurityDataType extends unknown> {
     locationRoomUserDetail: (
       roomId: string,
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/location/room/${roomId}/user/${userId}`,
@@ -7554,7 +7966,7 @@ export class Api<SecurityDataType extends unknown> {
         longitude: number;
         clientTimestamp?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/location/room/${roomId}/user/${userId}`,
@@ -7575,7 +7987,7 @@ export class Api<SecurityDataType extends unknown> {
     locationRoomUserDelete: (
       roomId: string,
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/location/room/${roomId}/user/${userId}`,
@@ -7631,7 +8043,7 @@ export class Api<SecurityDataType extends unknown> {
         longitude: number;
         clientTimestamp?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/location/explore/${roomId}/${userId}/${walkType}/${schoolId}`,
@@ -7656,7 +8068,7 @@ export class Api<SecurityDataType extends unknown> {
         longitude: number;
         clientTimestamp?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/location/background`,
@@ -7683,7 +8095,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         email: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -7718,7 +8130,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Deep link to return to after authentication */
         returnTo?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -7751,7 +8163,7 @@ export class Api<SecurityDataType extends unknown> {
         refresh_token?: string;
         error?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<any, void>({
         path: `/api/saml/mobile/callback`,
@@ -7800,7 +8212,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @default "direct" */
         typeOfRequest?: "direct" | "invite";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         PeerRequest,
@@ -7837,7 +8249,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by status */
         status?: "pending" | "accepted" | "rejected" | "cancelled";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         PeerRequest[],
@@ -7893,7 +8305,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         status: "accepted" | "rejected" | "cancelled";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         PeerRequest,
@@ -7990,7 +8402,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         response: "accepted" | "rejected";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/users/peers/response/${userId}`,
@@ -8114,6 +8526,31 @@ export class Api<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Peers
+     * @name UsersPeersUnblockCreate
+     * @summary Unblock a peer
+     * @request POST:/api/users/peers/unblock/{peer_id}
+     * @secure
+     */
+    usersPeersUnblockCreate: (peerId: string, params: RequestParams = {}) =>
+      this.http.request<
+        {
+          message?: string;
+        },
+        {
+          message?: string;
+        }
+      >({
+        path: `/api/users/peers/unblock/${peerId}`,
+        method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Peers
      * @name UsersPeersAddCreate
      * @summary Add a peer directly
      * @request POST:/api/users/peers/add
@@ -8124,7 +8561,7 @@ export class Api<SecurityDataType extends unknown> {
         /** MongoDB ObjectId of the peer to add */
         peerId: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -8161,7 +8598,7 @@ export class Api<SecurityDataType extends unknown> {
         /** ID of the peer to check status */
         user: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -8204,7 +8641,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         include_parents?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/places/${placeId}/hierarchy`,
@@ -8237,7 +8674,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/places/${placeId}/children`,
@@ -8266,7 +8703,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/places/containers`,
@@ -8298,7 +8735,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/places/${placeId}/search`,
@@ -8320,7 +8757,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by campus ID */
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/places/hierarchy/stats`,
@@ -8347,7 +8784,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         logo?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -8386,7 +8823,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         cover?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -8530,7 +8967,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         sort?: "name" | "rating";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -8607,7 +9044,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         sort?: "name" | "rating";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/places/school/${schoolId}`,
@@ -8645,7 +9082,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -8771,7 +9208,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter categories by campus (optional) - only categories with top-level places in the campus will be returned */
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -8831,7 +9268,7 @@ export class Api<SecurityDataType extends unknown> {
         /** ID of the item being checked */
         reported_item_id: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/reports/check`,
@@ -8857,7 +9294,7 @@ export class Api<SecurityDataType extends unknown> {
         reason: string;
         description?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/reports`,
@@ -8887,13 +9324,65 @@ export class Api<SecurityDataType extends unknown> {
         /** @default 20 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          reports?: {
+            _id?: string;
+            reported_by?: {
+              _id?: string;
+              first_name?: string;
+              last_name?: string;
+              email?: string;
+              campus_id?: string;
+            };
+            report_type?:
+              | "user"
+              | "event"
+              | "space"
+              | "idea"
+              | "message"
+              | "peers";
+            reported_item_id?: string;
+            reason?: string;
+            description?: string;
+            status?: "pending" | "under_review" | "resolved" | "dismissed";
+            reviewed_by?: {
+              _id?: string;
+              first_name?: string;
+              last_name?: string;
+            };
+            admin_notes?: string;
+            /** @format date-time */
+            resolved_at?: string;
+            school_id?: {
+              _id?: string;
+              name?: string;
+            };
+            campus_id?: {
+              _id?: string;
+              campus_name?: string;
+            };
+            /** @format date-time */
+            createdAt?: string;
+            /** @format date-time */
+            updatedAt?: string;
+          }[];
+          pagination?: {
+            page?: number;
+            limit?: number;
+            total?: number;
+            pages?: number;
+          };
+        },
+        void
+      >({
         path: `/api/admin/reports`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -8912,14 +9401,21 @@ export class Api<SecurityDataType extends unknown> {
         status: "pending" | "under_review" | "resolved" | "dismissed";
         admin_notes?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          message?: string;
+          report?: Report;
+        },
+        void
+      >({
         path: `/api/admin/reports/${reportId}/status`,
         method: "PATCH",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -8933,10 +9429,42 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminReportsDetail: (reportId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          report?: Report;
+          /** The reported item (user, event, space, idea, or message) */
+          reportedItem?: {
+            _id?: string;
+            first_name?: string;
+            last_name?: string;
+            email?: string;
+            avatar_url?: string;
+            profile_bio?: string;
+            is_banned?: boolean;
+            ban_reason?: string;
+            report_count?: number;
+          };
+          relatedReports?: {
+            _id?: string;
+            reason?: string;
+            description?: string;
+            status?: string;
+            /** @format date-time */
+            createdAt?: string;
+            reported_by?: {
+              _id?: string;
+              first_name?: string;
+              last_name?: string;
+            };
+          }[];
+          totalRelatedReports?: number;
+        },
+        void
+      >({
         path: `/api/admin/reports/${reportId}`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -8957,14 +9485,35 @@ export class Api<SecurityDataType extends unknown> {
         ban_reason?: string;
         resolve_related_reports?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          message?: string;
+          user?: {
+            _id?: string;
+            first_name?: string;
+            last_name?: string;
+            email?: string;
+            is_banned?: boolean;
+            /** @format date-time */
+            ban_date?: string;
+            ban_reason?: string;
+            ban_duration?: number;
+            /** @format date-time */
+            ban_expires_at?: string;
+          };
+          report?: Report;
+          resolved_reports_count?: number;
+        },
+        void
+      >({
         path: `/api/admin/reports/${reportId}/ban-user`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -8982,14 +9531,27 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         unban_reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          message?: string;
+          user?: {
+            _id?: string;
+            first_name?: string;
+            last_name?: string;
+            email?: string;
+            is_banned?: boolean;
+          };
+        },
+        void
+      >({
         path: `/api/admin/users/${userId}/unban`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -9012,13 +9574,51 @@ export class Api<SecurityDataType extends unknown> {
         search?: string;
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          users?: {
+            _id?: string;
+            first_name?: string;
+            last_name?: string;
+            email?: string;
+            avatar_url?: string;
+            /** @format date-time */
+            ban_date?: string;
+            ban_reason?: string;
+            ban_duration?: number;
+            /** @format date-time */
+            ban_expires_at?: string;
+            report_count?: number;
+            banned_by?: {
+              _id?: string;
+              first_name?: string;
+              last_name?: string;
+            };
+            school_id?: {
+              _id?: string;
+              name?: string;
+            };
+            campus_id?: {
+              _id?: string;
+              campus_name?: string;
+            };
+          }[];
+          pagination?: {
+            page?: number;
+            limit?: number;
+            total?: number;
+            pages?: number;
+          };
+        },
+        void
+      >({
         path: `/api/admin/users/banned`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -9054,14 +9654,21 @@ export class Api<SecurityDataType extends unknown> {
         action: "resolve" | "dismiss" | "under_review";
         admin_notes?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          message?: string;
+          updated_count?: number;
+        },
+        void
+      >({
         path: `/api/admin/reports/bulk`,
         method: "PATCH",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -9078,7 +9685,7 @@ export class Api<SecurityDataType extends unknown> {
         includeInactive?: "true" | "false";
         type?: "user" | "event" | "space" | "idea" | "message";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/report-reasons`,
@@ -9099,7 +9706,7 @@ export class Api<SecurityDataType extends unknown> {
       query?: {
         type?: "user" | "event" | "space" | "idea" | "message";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/report-reasons/active`,
@@ -9140,7 +9747,7 @@ export class Api<SecurityDataType extends unknown> {
         order?: number;
         isActive?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/report-reasons`,
@@ -9169,7 +9776,7 @@ export class Api<SecurityDataType extends unknown> {
         order?: number;
         isActive?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/report-reasons/${id}`,
@@ -9195,7 +9802,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Set to 'true' for permanent deletion */
         permanent?: "true" | "false";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/report-reasons/${id}`,
@@ -9221,7 +9828,7 @@ export class Api<SecurityDataType extends unknown> {
           order?: number;
         }[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/report-reasons/bulk-order`,
@@ -9260,7 +9867,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Required for school-scoped roles */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/users/${userId}/assign-role`,
@@ -9281,10 +9888,24 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminRolesList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          roles?: {
+            _id?: string;
+            name?: string;
+            display_name?: string;
+            description?: string;
+            scope?: "global" | "school" | "campus";
+            permissions?: string[];
+          }[];
+        },
+        void
+      >({
         path: `/api/admin/roles`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -9305,7 +9926,7 @@ export class Api<SecurityDataType extends unknown> {
         permissions?: string[];
         scope: "global" | "school" | "campus";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/roles`,
@@ -9326,10 +9947,24 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminPermissionsList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          permissions?: Record<
+            string,
+            {
+              action?: string;
+              code?: string;
+              description?: string;
+            }[]
+          >;
+        },
+        void
+      >({
         path: `/api/admin/permissions`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -9348,7 +9983,7 @@ export class Api<SecurityDataType extends unknown> {
         action: "create" | "read" | "update" | "delete" | "manage" | "assign";
         description: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/permissions`,
@@ -9378,7 +10013,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Optional school scope */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/users/${userId}/check-permission`,
@@ -9399,10 +10034,31 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminUsersRolesList: (userId: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.http.request<
+        {
+          success?: boolean;
+          user?: {
+            _id?: string;
+            first_name?: string;
+            last_name?: string;
+            email?: string;
+            primary_role?: string;
+            roles?: {
+              role?: string;
+              campus_id?: string;
+              school_id?: string;
+              assigned_by?: object;
+              /** @format date-time */
+              assigned_at?: string;
+            }[];
+          };
+        },
+        any
+      >({
         path: `/api/admin/users/${userId}/roles`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -9421,7 +10077,7 @@ export class Api<SecurityDataType extends unknown> {
         role: string;
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, any>({
         path: `/api/admin/users/${userId}/remove-role`,
@@ -9449,7 +10105,7 @@ export class Api<SecurityDataType extends unknown> {
         permissions?: string[];
         scope?: "global" | "school" | "campus";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/roles/${roleId}`,
@@ -9488,7 +10144,7 @@ export class Api<SecurityDataType extends unknown> {
      */
     adminPermissionsDelete: (
       permissionId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/permissions/${permissionId}`,
@@ -9509,7 +10165,7 @@ export class Api<SecurityDataType extends unknown> {
         school_name?: string;
         email_domain?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         void,
@@ -9535,7 +10191,15 @@ export class Api<SecurityDataType extends unknown> {
      */
     schoolList: (params: RequestParams = {}) =>
       this.http.request<
-        void,
+        {
+          _id?: string;
+          school_name?: string;
+          display_name?: string;
+          email_domain?: string;
+          logo_url?: string;
+          is_active?: boolean;
+          admins?: string[];
+        }[],
         {
           message?: string;
           /** Error details (only in development mode) */
@@ -9544,6 +10208,7 @@ export class Api<SecurityDataType extends unknown> {
       >({
         path: `/api/school`,
         method: "GET",
+        format: "json",
         ...params,
       }),
 
@@ -9588,7 +10253,7 @@ export class Api<SecurityDataType extends unknown> {
         disallowed_staff_emails?: string[];
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         void,
@@ -9615,7 +10280,7 @@ export class Api<SecurityDataType extends unknown> {
     schoolCampusCreate: (
       schoolId: string,
       campusId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/school/${schoolId}/campus/${campusId}`,
@@ -9633,7 +10298,7 @@ export class Api<SecurityDataType extends unknown> {
     schoolCampusDelete: (
       schoolId: string,
       campusId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/school/${schoolId}/campus/${campusId}`,
@@ -9683,7 +10348,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Optional campus ID to assign the user to */
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/school/${schoolId}/user/${userId}`,
@@ -9703,7 +10368,7 @@ export class Api<SecurityDataType extends unknown> {
     schoolUserDelete: (
       schoolId: string,
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/school/${schoolId}/user/${userId}`,
@@ -9731,7 +10396,7 @@ export class Api<SecurityDataType extends unknown> {
         contactEmail?: string;
         memberCountRange?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces`,
@@ -9766,7 +10431,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Admin only - view spaces from all campuses */
         allCampuses?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces`,
@@ -9812,7 +10477,7 @@ export class Api<SecurityDataType extends unknown> {
         category?: string;
         contactEmail?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces/${spaceId}`,
@@ -9855,7 +10520,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Space ID to exclude from check (for editing) */
         excludeSpaceId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces/check-name`,
@@ -9899,7 +10564,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @default 100 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces/profile/${type}`,
@@ -9981,7 +10646,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         logoDefault?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/space-categories/${id}`,
@@ -10025,7 +10690,7 @@ export class Api<SecurityDataType extends unknown> {
           order?: number;
         }[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/space-categories/reorder`,
@@ -10096,7 +10761,7 @@ export class Api<SecurityDataType extends unknown> {
         isCustom?: boolean;
         participants?: string[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces/${spaceId}/events`,
@@ -10126,7 +10791,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Include private events (requires member or owner access) */
         includePrivate?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces/${spaceId}/events`,
@@ -10156,7 +10821,7 @@ export class Api<SecurityDataType extends unknown> {
         slots?: number;
         visibility?: "public" | "private";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces/events/${eventId}`,
@@ -10213,7 +10878,7 @@ export class Api<SecurityDataType extends unknown> {
     spacesRequestsApproveCreate: (
       spaceId: string,
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces/${spaceId}/requests/${userId}/approve`,
@@ -10234,7 +10899,7 @@ export class Api<SecurityDataType extends unknown> {
     spacesRequestsRejectCreate: (
       spaceId: string,
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces/${spaceId}/requests/${userId}/reject`,
@@ -10260,7 +10925,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @default 100 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces/${spaceId}/requests`,
@@ -10287,7 +10952,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @default 100 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces/${spaceId}/members`,
@@ -10309,7 +10974,7 @@ export class Api<SecurityDataType extends unknown> {
     spacesMembersDelete: (
       spaceId: string,
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/spaces/${spaceId}/members/${userId}`,
@@ -10379,7 +11044,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         logo?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -10417,7 +11082,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         cover?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -10516,7 +11181,7 @@ export class Api<SecurityDataType extends unknown> {
         /** The ID of the selected user */
         selectedUserId: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/surprise/roll-end`,
@@ -10582,7 +11247,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         endDate?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/surprise/admin/stats`,
@@ -10620,7 +11285,7 @@ export class Api<SecurityDataType extends unknown> {
      */
     surpriseAdminResetDailyRollsCreate: (
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -10656,7 +11321,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by active status */
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/type-mappings`,
@@ -10682,7 +11347,7 @@ export class Api<SecurityDataType extends unknown> {
         description?: string;
         priority?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/type-mappings`,
@@ -10711,7 +11376,7 @@ export class Api<SecurityDataType extends unknown> {
         priority?: number;
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/admin/type-mappings/${id}`,
@@ -10894,7 +11559,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         count?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -11032,7 +11697,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Enable/disable event reminder notifications */
         event_reminders?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/api/users/notification-settings`,
@@ -11062,7 +11727,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -11136,7 +11801,7 @@ export class Api<SecurityDataType extends unknown> {
         receiver_location?: number[];
         place_image?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         WalkInvite,
@@ -11172,7 +11837,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Filter by status */
         status?: "pending" | "accepted" | "rejected" | "cancelled";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         WalkInvite[],
@@ -11228,7 +11893,7 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         status: "accepted" | "rejected" | "cancelled";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         WalkInvite,
@@ -11296,7 +11961,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Calculate monthly growth percentage */
         growth?: "monthly";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -11539,13 +12204,27 @@ export class Api<SecurityDataType extends unknown> {
          */
         order?: "asc" | "desc";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          data?: {
+            places?: any[];
+            pagination?: {
+              total?: number;
+              limit?: number;
+              offset?: number;
+            };
+          };
+        },
+        void
+      >({
         path: `/admin/places`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -11564,14 +12243,21 @@ export class Api<SecurityDataType extends unknown> {
         /** Array of app categories */
         app_categories: string[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          data?: any;
+        },
+        void
+      >({
         path: `/admin/places/${id}/categories`,
         method: "PUT",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -11593,7 +12279,7 @@ export class Api<SecurityDataType extends unknown> {
         include_details?: boolean;
         max_api_calls?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/sync/campus/${campusId}`,
@@ -11623,7 +12309,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/sync/status`,
@@ -11660,10 +12346,18 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placesRestoreCreate: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          message?: string;
+          data?: any;
+        },
+        void
+      >({
         path: `/admin/places/${id}/restore`,
         method: "POST",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -11715,7 +12409,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         force_resync?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -11768,7 +12462,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         concurrency?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -11864,13 +12558,35 @@ export class Api<SecurityDataType extends unknown> {
          */
         offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          data?: {
+            parent_place?: {
+              place_id?: string;
+              name?: string;
+              place_category?: string;
+            };
+            nested_places?: any[];
+            pagination?: {
+              total?: number;
+              limit?: number;
+              offset?: number;
+              has_more?: boolean;
+              current_page?: number;
+              total_pages?: number;
+            };
+          };
+        },
+        void
+      >({
         path: `/admin/places/${placeId}/nested`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -11890,7 +12606,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Campus ID (optional, for campus-specific popular places) */
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/places/popular`,
@@ -11918,7 +12634,7 @@ export class Api<SecurityDataType extends unknown> {
           order: number;
         }[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/places/popular`,
@@ -11962,7 +12678,7 @@ export class Api<SecurityDataType extends unknown> {
           order: number;
         }[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/places/popular/reorder`,
@@ -11987,7 +12703,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Return only active categories */
         active_only?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/app-categories`,
@@ -12016,7 +12732,7 @@ export class Api<SecurityDataType extends unknown> {
         google_types: string[];
         sort_order?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/app-categories`,
@@ -12047,7 +12763,7 @@ export class Api<SecurityDataType extends unknown> {
         sort_order?: number;
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/app-categories/${id}`,
@@ -12200,7 +12916,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/monitoring/alerts`,
@@ -12221,7 +12937,7 @@ export class Api<SecurityDataType extends unknown> {
      */
     monitoringAlertsAcknowledgeCreate: (
       alertId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/monitoring/alerts/${alertId}/acknowledge`,
@@ -12241,7 +12957,7 @@ export class Api<SecurityDataType extends unknown> {
      */
     monitoringAlertsResolveCreate: (
       alertId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/monitoring/alerts/${alertId}/resolve`,
@@ -12272,7 +12988,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/monitoring/errors`,
@@ -12301,7 +13017,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         days?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<string, void>({
         path: `/admin/monitoring/metrics/export`,
@@ -12327,13 +13043,29 @@ export class Api<SecurityDataType extends unknown> {
         /** Search in name and description */
         search?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          data?: {
+            _id?: string;
+            name?: string;
+            description?: string;
+            google_types?: string[];
+            is_active?: boolean;
+            places_count?: number;
+            createdAt?: string;
+            updatedAt?: string;
+          }[];
+        },
+        void
+      >({
         path: `/admin/place-types`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -12359,14 +13091,29 @@ export class Api<SecurityDataType extends unknown> {
         google_types: string[];
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          data?: {
+            _id?: string;
+            name?: string;
+            description?: string;
+            google_types?: string[];
+            is_active?: boolean;
+            createdAt?: string;
+            updatedAt?: string;
+          };
+        },
+        void
+      >({
         path: `/admin/place-types`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -12380,10 +13127,26 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placeTypesDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          data?: {
+            _id?: string;
+            name?: string;
+            description?: string;
+            google_types?: string[];
+            is_active?: boolean;
+            places_count?: number;
+            createdAt?: string;
+            updatedAt?: string;
+          };
+        },
+        void
+      >({
         path: `/admin/place-types/${id}`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -12410,14 +13173,29 @@ export class Api<SecurityDataType extends unknown> {
         google_types?: string[];
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          data?: {
+            _id?: string;
+            name?: string;
+            description?: string;
+            google_types?: string[];
+            is_active?: boolean;
+            createdAt?: string;
+            updatedAt?: string;
+          };
+        },
+        void
+      >({
         path: `/admin/place-types/${id}`,
         method: "PUT",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -12448,10 +13226,20 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placeTypesGoogleTypesList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.http.request<
+        {
+          success?: boolean;
+          data?: {
+            type?: string;
+            places_count?: number;
+          }[];
+        },
+        void
+      >({
         path: `/admin/place-types/google-types`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -12516,7 +13304,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/regions/campus/${campusId}/places`,
@@ -12547,7 +13335,7 @@ export class Api<SecurityDataType extends unknown> {
         /** @default 50 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/regions/nearby`,
@@ -12594,7 +13382,7 @@ export class Api<SecurityDataType extends unknown> {
         include_details?: boolean;
         max_api_calls?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/sync/trigger`,
@@ -12648,7 +13436,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/sync/logs`,
@@ -12727,7 +13515,7 @@ export class Api<SecurityDataType extends unknown> {
         retryFailedSyncs?: boolean;
         syncTimeoutMs?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/admin/sync/scheduler/config`,
@@ -12889,8 +13677,10 @@ export class Api<SecurityDataType extends unknown> {
         bio?: string;
         graduation_year?: number;
         major?: string;
+        /** User ID to create ambassador from existing user */
+        user_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -12973,7 +13763,7 @@ export class Api<SecurityDataType extends unknown> {
         graduation_year?: number;
         major?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -13117,7 +13907,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -13152,7 +13942,7 @@ export class Api<SecurityDataType extends unknown> {
         endDate: string;
         severity?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/audit/security-events`,
@@ -13180,7 +13970,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         days?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/audit/user-activity/${userId}`,
@@ -13208,7 +13998,7 @@ export class Api<SecurityDataType extends unknown> {
         endDate?: string;
         eventTypes?: string[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<void, void>({
         path: `/audit/export`,
@@ -13243,7 +14033,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Mobile platform */
         platform?: "ios" | "android";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<string, void>({
         path: `/auth/landing`,
@@ -13271,7 +14061,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Confirmation of new password */
         new_password_confirmed: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -13306,7 +14096,7 @@ export class Api<SecurityDataType extends unknown> {
         /** Password to validate */
         password: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {
@@ -13344,7 +14134,7 @@ export class Api<SecurityDataType extends unknown> {
          */
         period?: "month" | "week" | "day";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.http.request<
         {

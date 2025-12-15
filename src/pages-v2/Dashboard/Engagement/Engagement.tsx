@@ -83,7 +83,7 @@ const Engagement: React.FC = () => {
   const userEngagementData = engagementData?.data.userEngagement || [];
   const sessionDurationData = engagementData?.data.sessionDuration || [];
   const totalChatsData = engagementData?.data.totalChats || [];
-  const donutData = (engagementData?.data.donutData || []).map((item: any) => ({
+  const donutData = (engagementData?.data.donutData || []).map((item) => ({
     label: item.label || "",
     value: item.value || 0,
     percentage: item.percentage || "0%",
@@ -127,11 +127,6 @@ const Engagement: React.FC = () => {
               />
             }
             iconBgColor={theme.colors.iconPurpleBg}
-            trend={{
-              value: "8.5%",
-              direction: "up",
-              text: "from last month",
-            }}
           />
         </CCol>
         <CCol xs={12} sm={6} md={6} lg={3}>
@@ -142,11 +137,6 @@ const Engagement: React.FC = () => {
               <AssetIcon name="calendar-icon" color={theme.colors.iconOrange} />
             }
             iconBgColor="#ffded1"
-            trend={{
-              value: "1.3%",
-              direction: "down",
-              text: "Up from last month",
-            }}
           />
         </CCol>
         <CCol xs={12} sm={6} md={6} lg={3}>
@@ -155,11 +145,6 @@ const Engagement: React.FC = () => {
             value={dashboardStats?.data.totalSpaces?.toString() || "0"}
             icon={<AssetIcon name="space-icon" color={theme.colors.iconBlue} />}
             iconBgColor="#d9e3f7"
-            trend={{
-              value: "1.3%",
-              direction: "up",
-              text: "Up from last month",
-            }}
           />
         </CCol>
         <CCol xs={12} sm={6} md={6} lg={3}>
@@ -168,11 +153,6 @@ const Engagement: React.FC = () => {
             value={dashboardStats?.data.totalIdeas?.toString() || "0"}
             icon={<AssetIcon name="ideas-icons" color="#ffb830" />}
             iconBgColor="#fff3d6"
-            trend={{
-              value: "1.3%",
-              direction: "up",
-              text: "Up from last month",
-            }}
           />
         </CCol>
       </CRow>

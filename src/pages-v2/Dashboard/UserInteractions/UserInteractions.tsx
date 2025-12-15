@@ -33,10 +33,15 @@ const UserInteractions: React.FC = () => {
       }),
   });
 
-  const data = (apiData?.data || {}) as any;
+  interface InvitationData {
+    sent: number;
+    accepted: number;
+    ignored: number;
+  }
+  const data = apiData?.data || { labels: [], subLabels: [], invitationsData: [], ideasClicksData: [], eventsClicksData: [] };
   const chartLabels = data.labels || [];
   const chartSubLabels = data.subLabels;
-  const invitationsData = data.invitationsData || [];
+  const invitationsData = (data.invitationsData || []) as InvitationData[];
   const ideasClicksData = data.ideasClicksData || [];
   const eventsClicksData = data.eventsClicksData || [];
 

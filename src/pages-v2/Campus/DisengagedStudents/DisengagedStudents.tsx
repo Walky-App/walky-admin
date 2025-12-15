@@ -19,6 +19,7 @@ import { apiClient } from "../../../API";
 
 interface DisengagedStudent {
   id: string;
+  userId?: string;
   name: string;
   avatar?: string;
   peers: number;
@@ -31,6 +32,7 @@ interface DisengagedStudent {
   lastLogin?: string;
   areaOfStudy?: string;
   totalPeers?: number;
+  interests?: string[];
 }
 
 export const DisengagedStudents: React.FC = () => {
@@ -61,29 +63,68 @@ export const DisengagedStudents: React.FC = () => {
   const isLoading = isStudentsLoading || isStatsLoading;
 
   const students: DisengagedStudent[] = (studentsData?.data.data || []).map(
-    (student: any) => ({
-      id: student.id,
-      name: student.name,
+    (student) => ({
+      id: student.id || "",
+      userId: student.userId,
+      name: student.name || "",
       avatar: student.avatar,
-      peers: student.peers || 0,
+      peers: student.peers || student.totalPeers || 0,
       ignoredInvitations: student.ignoredInvitations || 0,
       memberSince: formatMemberSince(student.memberSince),
-      email: student.email,
+      email: student.email || "",
       reported: student.isFlagged || false,
       status: student.status,
       bio: student.bio,
-      lastLogin: student.lastLogin,
-      areaOfStudy: student.areaOfStudy,
+      lastLogin: student.onlineLast,
+      areaOfStudy: student.studyMain,
       totalPeers: student.totalPeers,
+      interests: student.interests || [],
     })
   );
   const handleSendOutreach = (student: DisengagedStudent) => {
     window.location.href = `mailto:${student.email}`;
   };
 
-  const handleStudentClick = (student: DisengagedStudent) => {
-    setSelectedStudent(student);
-    setProfileModalVisible(true);
+  const handleStudentClick = async (student: DisengagedStudent) => {
+    try {
+      const response = await apiClient.api.adminV2StudentsDetail(student.id);
+      const details = response.data;
+
+      // Format lastLogin date nicely
+      const formatLastLogin = (dateStr?: string) => {
+        if (!dateStr) return "N/A";
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return "N/A";
+        return date.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        });
+      };
+
+      // Merge details with existing student data
+      const fullStudentData: DisengagedStudent = {
+        ...student,
+        userId: details.userId || student.userId || student.id,
+        areaOfStudy: details.areaOfStudy || student.areaOfStudy || "N/A",
+        lastLogin: formatLastLogin(details.lastLogin || student.lastLogin),
+        totalPeers: details.totalPeers ?? details.peers ?? student.totalPeers ?? student.peers ?? 0,
+        bio: details.bio || student.bio || "No bio provided",
+        interests: details.interests || student.interests || [],
+        status: details.status || student.status,
+      };
+
+      setSelectedStudent(fullStudentData);
+      setProfileModalVisible(true);
+    } catch (error) {
+      console.error("Error fetching student details:", error);
+      // Fallback to basic data if API call fails
+      setSelectedStudent(student);
+      setProfileModalVisible(true);
+    }
   };
 
   const handleCloseProfile = () => {
@@ -101,11 +142,6 @@ export const DisengagedStudents: React.FC = () => {
           iconName="double-users-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
-          trend={{
-            value: "8.5%",
-            isPositive: true,
-            label: "from last month",
-          }}
         />
         <StatsCard
           title="Disengaged students"
@@ -114,11 +150,6 @@ export const DisengagedStudents: React.FC = () => {
           iconName="x-icon"
           iconBgColor="#FCE9E9"
           iconColor="#FF8082"
-          trend={{
-            value: "8.5%",
-            isPositive: false,
-            label: "from last month",
-          }}
         />
       </div>
 
@@ -257,19 +288,20 @@ export const DisengagedStudents: React.FC = () => {
         student={
           selectedStudent
             ? ({
-                userId: selectedStudent.id,
+                id: selectedStudent.id,
+                userId: selectedStudent.userId || selectedStudent.id,
                 name: selectedStudent.name,
                 email: selectedStudent.email,
                 avatar: selectedStudent.avatar,
-                status: (selectedStudent.status as any) || "disengaged",
-                interests: [],
+                status: selectedStudent.status || "disengaged",
+                interests: selectedStudent.interests || [],
                 memberSince: selectedStudent.memberSince,
                 lastLogin: selectedStudent.lastLogin || "N/A",
                 totalPeers:
                   selectedStudent.totalPeers ?? selectedStudent.peers ?? 0,
-                bio: selectedStudent.bio,
-                areaOfStudy: selectedStudent.areaOfStudy,
-              } as unknown as StudentProfileData)
+                bio: selectedStudent.bio || "No bio provided",
+                areaOfStudy: selectedStudent.areaOfStudy || "N/A",
+              } as StudentProfileData)
             : null
         }
         onClose={handleCloseProfile}

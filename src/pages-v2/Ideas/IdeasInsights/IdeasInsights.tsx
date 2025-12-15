@@ -38,15 +38,18 @@ export const IdeasInsights: React.FC = () => {
         const [totalRes, collaboratedRes, ideasRes] = await Promise.all([
           apiClient.api.adminAnalyticsIdeasCountList({
             type: "total",
-          } as any) as any,
+          }),
           apiClient.api.adminAnalyticsIdeasCountList({
             type: "collaborated",
-          } as any) as any,
-          apiClient.api.adminV2IdeasList({ limit: 100 } as any) as any,
+          }),
+          apiClient.api.adminV2IdeasList({ limit: 100 }),
         ]);
 
-        const total = totalRes.data.count || 0;
-        const collaborated = collaboratedRes.data.count || 0;
+        // Extract count from response - API returns different fields based on type
+        const totalData = totalRes.data as { totalIdeasCreated?: number; count?: number };
+        const collaboratedData = collaboratedRes.data as { collaboratedIdeasCount?: number; count?: number };
+        const total = totalData.totalIdeasCreated || totalData.count || 0;
+        const collaborated = collaboratedData.collaboratedIdeasCount || collaboratedData.count || 0;
 
         // Calculate conversion rate (collaborated / total) * 100
         const conversion =
@@ -58,53 +61,54 @@ export const IdeasInsights: React.FC = () => {
           conversionRate: conversion,
         });
 
+        // Type assertion for accessing optional metadata fields
+        const ideasData = ideasRes.data as { lastUpdated?: string; updatedAt?: string; metadata?: { lastUpdated?: string } };
         setLastUpdated(
-          (totalRes as any)?.data?.lastUpdated ||
-            (totalRes as any)?.data?.updatedAt ||
-            (collaboratedRes as any)?.data?.lastUpdated ||
-            (collaboratedRes as any)?.data?.updatedAt ||
-            (ideasRes as any)?.data?.lastUpdated ||
-            (ideasRes as any)?.data?.updatedAt ||
-            (ideasRes as any)?.data?.metadata?.lastUpdated
+          (totalData as { lastUpdated?: string }).lastUpdated ||
+            (totalData as { updatedAt?: string }).updatedAt ||
+            (collaboratedData as { lastUpdated?: string }).lastUpdated ||
+            (collaboratedData as { updatedAt?: string }).updatedAt ||
+            ideasData.lastUpdated ||
+            ideasData.updatedAt ||
+            ideasData.metadata?.lastUpdated
         );
 
         // Fetch popular ideas
         const allIdeas = ideasRes.data.data || [];
 
-        // Sort by collaborations (assuming there is a field for it, or we use participants count)
-        const normalizedIdeas = allIdeas
-          .map((idea: any) => {
-            const collaborations =
-              (Array.isArray(idea.participants)
-                ? idea.participants.length
-                : 0) ||
-              idea.participants_count ||
-              0;
+        // Type for extended idea data from API
+        type ExtendedIdea = {
+          id?: string;
+          ideaTitle?: string;
+          owner?: { name?: string; avatar?: string };
+          studentId?: string;
+          collaborated?: number;
+          creationDate?: string;
+          creationTime?: string;
+          isFlagged?: boolean;
+          flagReason?: string;
+        };
+
+        // Sort by collaborations
+        const normalizedIdeas = (allIdeas as ExtendedIdea[])
+          .map((idea) => {
+            const collaborations = idea.collaborated || 0;
 
             return {
               ...idea,
               collaborations,
-              ownerName:
-                idea.user?.name ||
-                idea.created_by?.name ||
-                idea.owner?.name ||
-                "Unknown",
-              ownerAvatar:
-                idea.user?.avatar ||
-                idea.user?.avatar_url ||
-                idea.created_by?.avatar_url ||
-                idea.owner?.avatar ||
-                "",
+              ownerName: idea.owner?.name || "Unknown",
+              ownerAvatar: idea.owner?.avatar || "",
             };
           })
-          .filter((idea: any) => idea.collaborations > 0);
+          .filter((idea) => idea.collaborations > 0);
 
         const sortedIdeas = normalizedIdeas
-          .sort((a: any, b: any) => b.collaborations - a.collaborations)
+          .sort((a, b) => b.collaborations - a.collaborations)
           .slice(0, 4)
-          .map((idea: any, index: number) => ({
+          .map((idea, index: number) => ({
             rank: index + 1,
-            title: idea.title,
+            title: idea.ideaTitle || "",
             owner: {
               name: idea.ownerName,
               avatar: idea.ownerAvatar,

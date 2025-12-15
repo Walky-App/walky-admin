@@ -1,37 +1,24 @@
-import { Campus, CampusFormData } from "../types/campus";
 import { apiClient } from "../API";
+import { Campus } from "../API/WalkyAPI";
 
-// Interface for backend campus response (may have _id instead of id)
-interface BackendCampusResponse extends Omit<Campus, "id"> {
-  _id?: string;
-  id?: string;
-}
+// Extended Campus type with id for frontend compatibility
+type CampusWithId = Campus & { id: string };
 
 export const campusService = {
-  getAll: async (): Promise<Campus[]> => {
+  getAll: async (): Promise<CampusWithId[]> => {
     try {
-      const response = await apiClient.api.campusesList() as any;
+      const response = await apiClient.api.campusesList();
 
       console.log("📋 Fetched campuses raw response:", response);
       console.log("📋 Response data type:", typeof response.data);
       console.log("📋 Response data:", response.data);
 
       // Handle different response structures
-      let campusArray: BackendCampusResponse[] = [];
+      let campusArray: Campus[] = [];
 
       if (response.data) {
-        // Check if response.data is already an array
-        if (Array.isArray(response.data)) {
-          campusArray = response.data;
-        } else if (response.data.data && Array.isArray(response.data.data)) {
-          // Handle nested structure like { data: [...] }
+        if (response.data.data && Array.isArray(response.data.data)) {
           campusArray = response.data.data;
-        } else if (
-          response.data.campuses &&
-          Array.isArray(response.data.campuses)
-        ) {
-          // Handle structure like { campuses: [...] }
-          campusArray = response.data.campuses;
         } else {
           console.warn("⚠️ Unexpected response structure:", response.data);
           return [];
@@ -40,10 +27,10 @@ export const campusService = {
 
       console.log("📋 Campus array to process:", campusArray);
 
-      // Map _id to id if backend returns MongoDB _id field
-      const campuses = campusArray.map((campus: BackendCampusResponse) => ({
+      // Map _id to id for frontend compatibility
+      const campuses = campusArray.map((campus) => ({
         ...campus,
-        id: campus.id || campus._id || "", // Use id if available, otherwise use _id, fallback to empty string
+        id: campus._id || "",
       }));
 
       console.log("📋 Processed campuses:", campuses);
@@ -56,7 +43,7 @@ export const campusService = {
         const axiosError = error as { response?: { status?: number } };
         if (axiosError.response?.status === 404) {
           console.log("📋 404 error - returning empty array");
-          return []; // Return empty array for no campuses found
+          return [];
         }
       }
 
@@ -64,31 +51,47 @@ export const campusService = {
     }
   },
 
-  create: async (data: CampusFormData): Promise<Campus> => {
+  create: async (data: {
+    campus_name: string;
+    campus_short_name?: string;
+    image_url?: string;
+    ambassador_ids?: string[];
+    phone_number: string;
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+    coordinates?: {
+      type?: "Polygon";
+      coordinates?: number[][][];
+    };
+    dawn_to_dusk?: string[];
+    time_zone: string;
+    is_active?: boolean;
+  }): Promise<CampusWithId> => {
     try {
-      const campusData = {
-        ...data,
-      };
-
       console.log(
         "📤 Sending campus data to backend:",
-        JSON.stringify(campusData, null, 2)
+        JSON.stringify(data, null, 2)
       );
 
-      const response = await apiClient.api.campusesCreate(campusData as any) as any;
+      const response = await apiClient.api.campusesCreate(data);
 
       console.log("✅ Campus created successfully:", response.data);
 
-      const campus = response.data.data || response.data;
+      const campus = response.data.data;
+
+      if (!campus) {
+        throw new Error("No campus data returned from API");
+      }
 
       return {
         ...campus,
-        id: campus.id || campus._id || "",
+        id: campus._id || "",
       };
     } catch (error) {
       console.error("❌ Failed to create campus:", error);
 
-      // Log detailed error information for 400 errors
       if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as {
           response?: {
@@ -110,7 +113,6 @@ export const campusService = {
           responseData: axiosError.response?.data,
         });
 
-        // Log the specific backend error message
         if (axiosError.response?.status === 400) {
           console.error(
             "💥 Backend validation error (400):",
@@ -125,15 +127,37 @@ export const campusService = {
 
   update: async (
     id: string,
-    data: Partial<CampusFormData>
-  ): Promise<Campus> => {
+    data: Partial<{
+      campus_name: string;
+      campus_short_name?: string;
+      image_url?: string;
+      ambassador_ids?: string[];
+      phone_number: string;
+      address: string;
+      city: string;
+      state: string;
+      zip: string;
+      coordinates?: {
+        type?: "Polygon";
+        coordinates?: number[][][];
+      };
+      dawn_to_dusk?: string[];
+      time_zone: string;
+      is_active?: boolean;
+    }>
+  ): Promise<CampusWithId> => {
     try {
-      const response = await apiClient.api.campusesUpdate(id, data as any) as any;
+      const response = await apiClient.api.campusesUpdate(id, data);
 
-      const campus = response.data.data || response.data;
+      const campus = response.data.data;
+
+      if (!campus) {
+        throw new Error("No campus data returned from API");
+      }
+
       return {
         ...campus,
-        id: campus.id || campus._id || "",
+        id: campus._id || "",
       };
     } catch (error) {
       console.error("Failed to update campus:", error);
@@ -151,7 +175,6 @@ export const campusService = {
     } catch (error) {
       console.error("❌ Failed to delete campus:", error);
 
-      // Log more details about the error
       if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as {
           response?: {

@@ -169,8 +169,9 @@ export const AdministratorSettings: React.FC = () => {
     }
   };
 
-  const accountCreatedDate = (user as any)?.createdAt ? new Date((user as any).createdAt).toLocaleDateString() : "N/A";
-  const lastLoginDate = (user as any)?.lastLogin ? new Date((user as any).lastLogin).toLocaleString() : "N/A";
+  const userExtended = user as { createdAt?: string; lastLogin?: string } | null;
+  const accountCreatedDate = userExtended?.createdAt ? new Date(userExtended.createdAt).toLocaleDateString() : "N/A";
+  const lastLoginDate = userExtended?.lastLogin ? new Date(userExtended.lastLogin).toLocaleString() : "N/A";
 
   console.log("Rendering AdministratorSettings", {
     activeTab,
