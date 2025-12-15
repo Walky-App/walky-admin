@@ -96,3 +96,12 @@
 [data-theme="dark"] .status-dropdown-item.active {
   background-color: #1a2840;
 }
+
+/* Accessibility: Focus-visible styles */
+.status-dropdown button:focus-visible,
+.status-dropdown select:focus-visible,
+.status-dropdown [role="button"]:focus-visible,
+.status-dropdown [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

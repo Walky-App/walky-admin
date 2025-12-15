@@ -289,3 +289,14 @@
 [data-theme="dark"] .calendar-view-placeholder {
   color: #b0b0b0;
 }
+
+/* Accessibility: Focus-visible styles */
+.events-manager button:focus-visible,
+.events-manager a:focus-visible,
+.events-manager input:focus-visible,
+.events-manager select:focus-visible,
+.events-manager [role="button"]:focus-visible,
+.events-manager [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

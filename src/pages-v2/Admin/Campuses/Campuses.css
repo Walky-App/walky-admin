@@ -563,3 +563,14 @@
     font-size: 13px;
   }
 }
+
+/* Accessibility: Focus-visible styles */
+.campuses-page button:focus-visible,
+.campuses-page a:focus-visible,
+.campuses-page input:focus-visible,
+.campuses-page select:focus-visible,
+.campuses-page [role="button"]:focus-visible,
+.campuses-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

@@ -570,3 +570,14 @@
 .reports-container.dark-mode .options-button:hover {
   opacity: 0.5;
 }
+
+/* Accessibility: Focus-visible styles */
+.report-history-page button:focus-visible,
+.report-history-page a:focus-visible,
+.report-history-page input:focus-visible,
+.report-history-page select:focus-visible,
+.report-history-page [role="button"]:focus-visible,
+.report-history-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

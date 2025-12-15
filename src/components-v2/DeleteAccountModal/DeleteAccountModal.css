@@ -126,3 +126,13 @@
 .delete-account-confirm-btn:hover {
   background: #b72a1f;
 }
+
+/* Accessibility: Focus-visible styles */
+.delete-account-modal-content button:focus-visible,
+.delete-account-modal-content a:focus-visible,
+.delete-account-modal-content input:focus-visible,
+.delete-account-modal-content [role="button"]:focus-visible,
+.delete-account-modal-content [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

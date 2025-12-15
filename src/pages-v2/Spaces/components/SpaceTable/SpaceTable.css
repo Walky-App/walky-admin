@@ -409,3 +409,14 @@
 [data-theme="dark"] .space-dropdown-item-delete {
   color: #ff6b6b;
 }
+
+/* Accessibility: Focus-visible styles */
+.space-table button:focus-visible,
+.space-table a:focus-visible,
+.space-table input:focus-visible,
+.space-table select:focus-visible,
+.space-table [role="button"]:focus-visible,
+.space-table [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

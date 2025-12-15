@@ -248,3 +248,12 @@
 [data-theme="dark"] .role-permissions-content::-webkit-scrollbar-thumb:hover {
   background: #5a5a5a;
 }
+
+/* Accessibility: Focus-visible styles */
+.role-permissions-modal-content button:focus-visible,
+.role-permissions-modal-content a:focus-visible,
+.role-permissions-modal-content [role="button"]:focus-visible,
+.role-permissions-modal-content [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

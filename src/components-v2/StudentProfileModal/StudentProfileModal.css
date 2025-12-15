@@ -883,3 +883,13 @@
 [data-theme="dark"] .report-id-text {
   color: #7b8fe8;
 }
+
+/* Accessibility: Focus-visible styles */
+.student-profile-modal-content button:focus-visible,
+.student-profile-modal-content a:focus-visible,
+.student-profile-modal-content input:focus-visible,
+.student-profile-modal-content [role="button"]:focus-visible,
+.student-profile-modal-content [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

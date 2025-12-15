@@ -243,3 +243,12 @@
   background: #f6f9ff;
   border-color: #546fd9;
 }
+
+/* Accessibility: Focus-visible styles */
+.scheduled-events-modal-content button:focus-visible,
+.scheduled-events-modal-content a:focus-visible,
+.scheduled-events-modal-content [role="button"]:focus-visible,
+.scheduled-events-modal-content [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}
