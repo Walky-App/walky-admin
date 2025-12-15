@@ -6,6 +6,7 @@ import {
   keepPreviousData,
 } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
+import { useDebounce } from "../../../hooks/useDebounce";
 import "./ReportSafety.css";
 import {
   AssetIcon,
@@ -151,6 +152,7 @@ export const ReportSafety: React.FC = () => {
   const { theme } = useTheme();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -182,7 +184,7 @@ export const ReportSafety: React.FC = () => {
     queryKey: [
       "reports",
       currentPage,
-      searchQuery,
+      debouncedSearchQuery,
       selectedTypes,
       selectedStatus,
     ],
@@ -190,7 +192,7 @@ export const ReportSafety: React.FC = () => {
       apiClient.api.adminV2ReportsList({
         page: currentPage,
         limit: 10,
-        search: searchQuery,
+        search: debouncedSearchQuery,
         type: selectedTypes.join(","),
         status: selectedStatus,
       }),

@@ -20,6 +20,7 @@ import {
 } from "../../../components-v2";
 import type { ReportType, ReportStatus } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import { useDebounce } from "../../../hooks/useDebounce";
 import { apiClient } from "../../../API";
 
 interface HistoryReportData {
@@ -41,6 +42,7 @@ interface HistoryReportData {
 export const ReportHistory: React.FC = () => {
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -117,7 +119,7 @@ export const ReportHistory: React.FC = () => {
       const reportsRes = await apiClient.api.adminV2ReportsList({
         page: currentPage,
         limit: itemsPerPage,
-        search: searchQuery,
+        search: debouncedSearchQuery,
         type: selectedTypes.length > 0 ? selectedTypes.join(",") : undefined,
         status: selectedStatus !== "all" ? selectedStatus : undefined,
       });
@@ -146,7 +148,7 @@ export const ReportHistory: React.FC = () => {
 
   useEffect(() => {
     fetchReports();
-  }, [currentPage, searchQuery, selectedTypes, selectedStatus]);
+  }, [currentPage, debouncedSearchQuery, selectedTypes, selectedStatus]);
 
   const handleStatusChange = async (reportId: string, newStatus: string) => {
     try {

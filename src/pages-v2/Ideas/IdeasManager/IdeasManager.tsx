@@ -5,11 +5,13 @@ import "./IdeasManager.css";
 import { IdeasTable } from "../components/IdeasTable/IdeasTable";
 import { IdeasTableSkeleton } from "../components/IdeasTableSkeleton/IdeasTableSkeleton";
 import { SearchInput, Pagination, NoData } from "../../../components-v2";
+import { useDebounce } from "../../../hooks/useDebounce";
 
 export type IdeaSortField = "ideaTitle" | "collaborated" | "creationDate";
 
 export const IdeasManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleSearchChange = (value: string) => {
@@ -20,12 +22,12 @@ export const IdeasManager: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const { data: ideasData, isLoading } = useQuery({
-    queryKey: ["ideas", currentPage, searchQuery, sortBy, sortOrder],
+    queryKey: ["ideas", currentPage, debouncedSearchQuery, sortBy, sortOrder],
     queryFn: () =>
       apiClient.api.adminV2IdeasList({
         page: currentPage,
         limit: 10,
-        search: searchQuery,
+        search: debouncedSearchQuery,
         sortBy,
         sortOrder,
       }),

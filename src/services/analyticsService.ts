@@ -13,6 +13,11 @@ import {
   MetricsPeriod,
 } from '../types/analytics'
 
+// API only accepts specific periods, 'all' means no period filter
+type ApiPeriod = '7d' | '30d' | '90d' | undefined
+const toApiPeriod = (period: MetricsPeriod): ApiPeriod =>
+  period === 'all' ? undefined : period
+
 export const analyticsService = {
   /**
    * Get social health metrics for a campus
@@ -24,7 +29,7 @@ export const analyticsService = {
     try {
       const response = await apiClient.api.adminCampusMetricsSocialHealthList(
         campusId,
-        { period }
+        { period: toApiPeriod(period) }
       )
       return response.data as unknown as SocialHealthMetrics
     } catch (error) {
@@ -43,7 +48,7 @@ export const analyticsService = {
     try {
       const response = await apiClient.api.adminCampusMetricsWellbeingList(
         campusId,
-        { period }
+        { period: toApiPeriod(period) }
       )
       return response.data as unknown as WellbeingMetrics
     } catch (error) {
@@ -76,7 +81,7 @@ export const analyticsService = {
     try {
       const response = await apiClient.api.adminCampusMetricsActivityTimelineList(
         campusId,
-        { period, limit }
+        { period: toApiPeriod(period), limit }
       )
       return ((response.data as unknown) as Array<Record<string, unknown>>).map((entry) => ({
         ...entry,
