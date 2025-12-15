@@ -115,8 +115,52 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
 
   const handleViewProfile = async (student: StudentData) => {
     try {
-      const response = await apiClient.api.adminV2StudentsDetail(student.id);
-      const details = response.data;
+      // Fetch student details and ban history in parallel
+      const [detailsResponse, banHistoryResponse] = await Promise.all([
+        apiClient.api.adminV2StudentsDetail(student.id),
+        apiClient.api.adminV2StudentsBanHistoryList(student.id).catch(() => ({ data: [] })),
+      ]);
+
+      const details = detailsResponse.data;
+      const banHistoryData = banHistoryResponse.data || [];
+
+      // Format ban history from the separate endpoint
+      const formattedBanHistory = banHistoryData.map((b) => {
+        const bannedDate = b.bannedAt ? new Date(b.bannedAt) : null;
+        return {
+          title: "Account Banned",
+          duration: "N/A",
+          expiresIn: undefined,
+          reason: b.reason || "No reason provided",
+          bannedDate: bannedDate
+            ? bannedDate.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })
+            : "",
+          bannedTime: bannedDate
+            ? bannedDate.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              })
+            : "",
+          bannedBy: b.bannedBy || "System",
+        };
+      });
+
+      // Use ban history from details if available, otherwise use the separate endpoint
+      const banHistory = details.banHistory && details.banHistory.length > 0
+        ? (details.banHistory || []).map((b) => ({
+            title: b.title || "Account Banned",
+            duration: b.duration || "N/A",
+            expiresIn: b.expiresIn,
+            reason: b.reason || "No reason provided",
+            bannedDate: b.bannedDate || "",
+            bannedTime: b.bannedTime || "",
+            bannedBy: b.bannedBy || "System",
+          }))
+        : formattedBanHistory;
 
       // Merge details with existing student data
       const fullStudentData: StudentData = {
@@ -139,16 +183,8 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
         bannedByEmail: details.bannedByEmail,
         bannedTime: details.bannedTime,
         reason: details.banReason,
-        duration: details.banHistory?.[0]?.duration,
-        banHistory: (details.banHistory || []).map((b) => ({
-          title: b.title || "",
-          duration: b.duration || "",
-          expiresIn: b.expiresIn,
-          reason: b.reason || "",
-          bannedDate: b.bannedDate || "",
-          bannedTime: b.bannedTime || "",
-          bannedBy: b.bannedBy || "",
-        })),
+        duration: details.banHistory?.[0]?.duration || banHistory[0]?.duration,
+        banHistory,
         blockedByUsers: (details.blockedByUsers || []).map((b) => ({
           id: b.id || "",
           name: b.name || "",
