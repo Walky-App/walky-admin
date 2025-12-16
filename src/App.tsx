@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import { useTheme } from "./hooks/useTheme";
+import { DeactivatedUserProvider } from "./contexts/DeactivatedUserContext";
 
 import V2Routes from "./routes/v2Routes";
 
@@ -27,7 +28,7 @@ function App() {
   }, [theme.isDark]);
 
   return (
-    <>
+    <DeactivatedUserProvider>
       <Toaster position="top-right" />
       <Routes>
         {/* Public routes */}
@@ -43,7 +44,7 @@ function App() {
         {/* V2 Layout Routes - New Design System (Default) */}
         <Route path="/*" element={<V2Routes />} />
       </Routes>
-    </>
+    </DeactivatedUserProvider>
   );
 }
 

@@ -2,12 +2,20 @@ import React, { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import SidebarV2 from "./SidebarV2/SidebarV2";
 import TopbarV2 from "./TopbarV2/TopbarV2";
+import DeactivatedUserModal from "../components-v2/DeactivatedUserModal/DeactivatedUserModal";
+import { useDeactivatedUser, registerDeactivatedSetter } from "../contexts/DeactivatedUserContext";
 import "./LayoutV2.css";
 
 const LayoutV2: React.FC = () => {
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
   const [sidebarVisible, setSidebarVisible] = useState(window.innerWidth > 992);
+  const { isDeactivated, setDeactivated, handleLogout } = useDeactivatedUser();
+
+  // Register the setter for use in API interceptor
+  useEffect(() => {
+    registerDeactivatedSetter(setDeactivated);
+  }, [setDeactivated]);
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
@@ -74,6 +82,9 @@ const LayoutV2: React.FC = () => {
           onClick={toggleSidebar}
         />
       )}
+
+      {/* Deactivated User Modal */}
+      <DeactivatedUserModal isOpen={isDeactivated} onLogout={handleLogout} />
     </div>
   );
 };

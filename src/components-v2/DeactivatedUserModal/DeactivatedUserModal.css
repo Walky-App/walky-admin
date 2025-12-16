@@ -1,0 +1,111 @@
+.deactivated-user-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.deactivated-user-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.2);
+  animation: deactivated-modal-appear 0.3s ease-out;
+}
+
+@keyframes deactivated-modal-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.deactivated-user-icon {
+  margin-bottom: 24px;
+  color: #e65100;
+}
+
+.deactivated-user-icon svg {
+  width: 64px;
+  height: 64px;
+}
+
+.deactivated-user-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.2;
+  color: #1d1b20;
+  margin: 0 0 16px 0;
+}
+
+.deactivated-user-message {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #5b6168;
+  margin: 0 0 12px 0;
+}
+
+.deactivated-user-submessage {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #8c9196;
+  margin: 0 0 32px 0;
+}
+
+.deactivated-user-logout-btn {
+  background: #dc3545;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 48px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.deactivated-user-logout-btn:hover {
+  background: #c82333;
+}
+
+.deactivated-user-logout-btn:active {
+  transform: scale(0.98);
+}
+
+/* Dark mode support */
+[data-theme="dark"] .deactivated-user-modal {
+  background: #2a2a2a;
+}
+
+[data-theme="dark"] .deactivated-user-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .deactivated-user-message {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .deactivated-user-submessage {
+  color: #808080;
+}
