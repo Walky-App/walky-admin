@@ -182,7 +182,7 @@ export const reportService = {
   removeUser: async (userId: string, reason: string, sendEmail = true) => {
     try {
       console.log("🚀 Removing user:", userId);
-      const response = await apiClient.http.request({
+      const response = await apiClient.request({
         path: `/api/admin/users/${userId}/remove`,
         method: "DELETE",
         body: { reason, sendEmail },

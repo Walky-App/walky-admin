@@ -11,6 +11,14 @@ export interface EventAttendee {
   status?: "confirmed" | "pending" | "declined";
 }
 
+export interface EventSpaceData {
+  id: string;
+  name: string;
+  logo?: string;
+  coverImage?: string;
+  description?: string;
+}
+
 export interface EventDetailsData {
   id: string;
   eventName: string;
@@ -30,6 +38,7 @@ export interface EventDetailsData {
   maxAttendees: number;
   isFlagged?: boolean;
   flagReason?: string;
+  space?: EventSpaceData | null;
 }
 
 interface EventDetailsModalProps {
@@ -135,32 +144,63 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                 </div>
               </div>
 
-              {/* Event Organizer */}
-              <div className="event-details-section">
-                <h3 className="event-details-section-title">Event organizer</h3>
-                <div className="event-details-organizer">
-                  <div className="event-organizer-avatar">
-                    {eventData.organizer.avatar ? (
-                      <img
-                        src={eventData.organizer.avatar}
-                        alt={organizerFirstName}
+              {/* Event Organizer - Only show if NOT from a space */}
+              {!eventData.space && (
+                <div className="event-details-section">
+                  <h3 className="event-details-section-title">Event organizer</h3>
+                  <div className="event-details-organizer">
+                    <div className="event-organizer-avatar">
+                      {eventData.organizer.avatar ? (
+                        <img
+                          src={eventData.organizer.avatar}
+                          alt={organizerFirstName}
+                        />
+                      ) : (
+                        <div className="event-organizer-avatar-placeholder">
+                          {organizerFirstName.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="event-organizer-info">
+                      <p className="event-organizer-name">{organizerFirstName}</p>
+                      <CopyableId
+                        id={eventData.organizer.studentId}
+                        label="Student ID"
+                        testId="event-organizer-copy"
                       />
-                    ) : (
-                      <div className="event-organizer-avatar-placeholder">
-                        {organizerFirstName.charAt(0)}
-                      </div>
-                    )}
-                  </div>
-                  <div className="event-organizer-info">
-                    <p className="event-organizer-name">{organizerFirstName}</p>
-                    <CopyableId
-                      id={eventData.organizer.studentId}
-                      label="Student ID"
-                      testId="event-organizer-copy"
-                    />
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* Space Section - Show if event is from a space */}
+              {eventData.space && (
+                <div className="event-details-section">
+                  <h3 className="event-details-section-title">From Space</h3>
+                  <div className="event-details-space">
+                    <div className="event-space-avatar">
+                      {eventData.space.logo || eventData.space.coverImage ? (
+                        <img
+                          src={eventData.space.logo || eventData.space.coverImage}
+                          alt={eventData.space.name}
+                        />
+                      ) : (
+                        <div className="event-space-avatar-placeholder">
+                          {eventData.space.name.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="event-space-info">
+                      <p className="event-space-name">{eventData.space.name}</p>
+                      <CopyableId
+                        id={eventData.space.id}
+                        label="Space ID"
+                        testId="event-space-copy"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Information */}
               <div className="event-details-section">

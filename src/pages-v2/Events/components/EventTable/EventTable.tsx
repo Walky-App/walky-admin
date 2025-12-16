@@ -160,6 +160,13 @@ export const EventTable: React.FC<EventTableProps> = ({
         participants?: Array<{ user_id?: string; name?: string; avatar_url?: string; status?: string }>;
         isFlagged?: boolean;
         flagReason?: string;
+        space?: {
+          id?: string;
+          name?: string;
+          logo?: string;
+          coverImage?: string;
+          description?: string;
+        } | null;
       };
       const details = response.data as EventDetails;
 
@@ -216,6 +223,13 @@ export const EventTable: React.FC<EventTableProps> = ({
         maxAttendees: details.slots || 0,
         isFlagged: details.isFlagged,
         flagReason: details.flagReason,
+        space: details.space ? {
+          id: details.space.id || "",
+          name: details.space.name || "",
+          logo: details.space.logo,
+          coverImage: details.space.coverImage,
+          description: details.space.description,
+        } : null,
       };
 
       setSelectedEvent(eventDetails);
@@ -314,12 +328,14 @@ export const EventTable: React.FC<EventTableProps> = ({
               <tr className={event.isFlagged ? "event-row-flagged" : ""}>
                 <td>
                   {event.isFlagged && (
-                    <AssetIcon
-                      name="flag-icon"
-                      size={16}
-                      color="#D53425"
-                      className="event-flag-icon"
-                    />
+                    <span title={event.flagReason || "Flagged"}>
+                      <AssetIcon
+                        name="flag-icon"
+                        size={16}
+                        color="#D53425"
+                        className="event-flag-icon"
+                      />
+                    </span>
                   )}
                   <div className="event-name-cell">
                     <span className="event-name">{event.eventName}</span>
@@ -375,17 +391,18 @@ export const EventTable: React.FC<EventTableProps> = ({
                     testId="event-dropdown"
                     title="Event details"
                     items={[
-                      {
-                        label: "Flag",
-                        icon: "flag-icon",
-                        onClick: (e) => {
-                          if (event.isFlagged) {
-                            handleUnflagEvent(event, e);
-                          } else {
-                            handleFlagEvent(event, e);
+                      event.isFlagged
+                        ? {
+                            label: "Unflag",
+                            icon: "flag-icon",
+                            variant: "danger",
+                            onClick: (e) => handleUnflagEvent(event, e),
                           }
-                        },
-                      },
+                        : {
+                            label: "Flag",
+                            icon: "flag-icon",
+                            onClick: (e) => handleFlagEvent(event, e),
+                          },
                       {
                         isDivider: true,
                         label: "",

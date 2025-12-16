@@ -11,6 +11,7 @@
  */
 
 import {
+  Ambassador,
   Campus,
   Chat,
   Error,
@@ -1349,6 +1350,151 @@ export class Api<
       method: "GET",
       secure: true,
       format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags AdminAmbassadors
+   * @name AdminAmbassadorsList
+   * @summary Get all ambassadors
+   * @request GET:/api/admin/ambassadors
+   * @secure
+   */
+  adminAmbassadorsList = (params: RequestParams = {}) =>
+    this.request<
+      {
+        success?: boolean;
+        message?: string;
+        data?: Ambassador[];
+        count?: number;
+      },
+      void
+    >({
+      path: `/api/admin/ambassadors`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags AdminAmbassadors
+   * @name AdminAmbassadorsCreate
+   * @summary Create a new ambassador
+   * @request POST:/api/admin/ambassadors
+   * @secure
+   */
+  adminAmbassadorsCreate = (
+    data: {
+      name: string;
+      email: string;
+      phone?: string;
+      student_id?: string;
+      campuses_id?: string[];
+      school_id?: string;
+      is_active?: boolean;
+      profile_image_url?: string;
+      bio?: string;
+      graduation_year?: number;
+      major?: string;
+      user_id?: string;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<void, void>({
+      path: `/api/admin/ambassadors`,
+      method: "POST",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags AdminAmbassadors
+   * @name AdminAmbassadorsDetail
+   * @summary Get ambassador by ID
+   * @request GET:/api/admin/ambassadors/{id}
+   * @secure
+   */
+  adminAmbassadorsDetail = (id: string, params: RequestParams = {}) =>
+    this.request<void, void>({
+      path: `/api/admin/ambassadors/${id}`,
+      method: "GET",
+      secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags AdminAmbassadors
+   * @name AdminAmbassadorsUpdate
+   * @summary Update an ambassador
+   * @request PUT:/api/admin/ambassadors/{id}
+   * @secure
+   */
+  adminAmbassadorsUpdate = (
+    id: string,
+    data: {
+      name?: string;
+      email?: string;
+      phone?: string;
+      student_id?: string;
+      campuses_id?: string[];
+      campus_name?: string;
+      school_id?: string;
+      is_active?: boolean;
+      profile_image_url?: string;
+      bio?: string;
+      graduation_year?: number;
+      major?: string;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<void, void>({
+      path: `/api/admin/ambassadors/${id}`,
+      method: "PUT",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags AdminAmbassadors
+   * @name AdminAmbassadorsDelete
+   * @summary Delete an ambassador
+   * @request DELETE:/api/admin/ambassadors/{id}
+   * @secure
+   */
+  adminAmbassadorsDelete = (id: string, params: RequestParams = {}) =>
+    this.request<void, void>({
+      path: `/api/admin/ambassadors/${id}`,
+      method: "DELETE",
+      secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags AdminAmbassadors
+   * @name AdminAmbassadorsCampusDetail
+   * @summary Get ambassadors by campus ID
+   * @request GET:/api/admin/ambassadors/campus/{campusId}
+   * @secure
+   */
+  adminAmbassadorsCampusDetail = (
+    campusId: string,
+    params: RequestParams = {},
+  ) =>
+    this.request<void, void>({
+      path: `/api/admin/ambassadors/campus/${campusId}`,
+      method: "GET",
+      secure: true,
       ...params,
     });
   /**

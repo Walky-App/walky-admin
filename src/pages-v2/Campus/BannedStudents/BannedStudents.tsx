@@ -74,6 +74,7 @@ export const BannedStudents: React.FC = () => {
     memberSince?: string;
     onlineLast?: string;
     isFlagged?: boolean;
+    flagReason?: string;
     avatar?: string;
     bannedDate?: string;
     bannedBy?: string;
@@ -146,6 +147,8 @@ export const BannedStudents: React.FC = () => {
         time: bu.time || "",
       })),
       reportHistory: student.reportHistory as StudentData["reportHistory"],
+      isFlagged: student.isFlagged,
+      flagReason: student.flagReason,
     };
   });
 

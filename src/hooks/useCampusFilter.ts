@@ -12,8 +12,8 @@ export const useCampusFilter = () => {
 
   useEffect(() => {
     // Add request interceptor
-    const requestInterceptor = apiClient.http.instance.interceptors.request.use(
-      (config) => {
+    const requestInterceptor = apiClient.instance.interceptors.request.use(
+      (config: any) => {
         // Only add campus_id if a campus is selected
         if (campusId) {
           // Add to params for GET requests
@@ -35,14 +35,14 @@ export const useCampusFilter = () => {
         }
         return config;
       },
-      (error) => {
+      (error: any) => {
         return Promise.reject(error);
       }
     );
 
     // Cleanup interceptor on unmount or when campus ID changes
     return () => {
-      apiClient.http.instance.interceptors.request.eject(requestInterceptor);
+      apiClient.instance.interceptors.request.eject(requestInterceptor);
     };
   }, [campusId]); // Use campusId instead of selectedCampus object
 

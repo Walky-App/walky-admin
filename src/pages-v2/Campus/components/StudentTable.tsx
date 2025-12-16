@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CTooltip } from "@coreui/react";
 import { apiClient } from "../../../API";
+import { useAuth } from "../../../hooks/useAuth";
 import { getFirstName } from "../../../lib/utils/nameUtils";
 import {
   AssetIcon,
@@ -30,6 +32,7 @@ export interface StudentData {
   memberSince: string;
   onlineLast: string;
   isFlagged?: boolean;
+  flagReason?: string;
   // Profile fields
   areaOfStudy?: string;
   lastLogin?: string;
@@ -120,6 +123,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   onSortChange,
   emptyMessage = "No students found",
 }) => {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(
     null
@@ -165,6 +169,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       apiClient.api.adminV2StudentsLockSettingsUpdate(data.id, {
         lockReason: data.reason,
         isLocked: true,
+        lockDuration: data.duration,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -353,7 +358,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         lastLogin: formatLastLogin(details.lastLogin),
         totalPeers: details.totalPeers ?? details.peers ?? 0,
         bio: details.bio || "No bio provided",
-        interests: details.interests || student.interests || [],
+        interests: details.interests?.length ? details.interests : (student.interests || []),
         status: (details.status as StudentData["status"]) || student.status,
         banHistory,
         reportHistory: [],
@@ -400,30 +405,19 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   };
 
   const handleFlagUser = (student: StudentData) => {
-    // Check if user has opted out of the modal
-    const shouldSkip =
-      localStorage.getItem("walky-admin-flag-user-hide-message") === "true";
-
-    if (shouldSkip) {
-      // Skip modal and flag directly
-      handleConfirmFlag(student);
-    } else {
-      setStudentToFlag(student);
-      setFlagModalVisible(true);
-    }
+    setStudentToFlag(student);
+    setFlagModalVisible(true);
   };
 
-  const handleConfirmFlag = (student?: StudentData) => {
-    const studentToProcess = student || studentToFlag;
-    if (!studentToProcess) return;
+  const handleConfirmFlag = (reason: string) => {
+    if (!studentToFlag) return;
 
-    // Use a default reason or capture it from the modal if FlagUserModal supports it
-    // Assuming FlagUserModal might not pass reason back in onConfirm based on current usage
-    // If FlagUserModal doesn't support reason, we might need to update it or just send a default
     flagMutation.mutate({
-      id: studentToProcess.id,
-      reason: "Flagged by admin",
+      id: studentToFlag.id,
+      reason: reason || `Flagged by ${user?.email || "admin"}`,
     });
+    setFlagModalVisible(false);
+    setStudentToFlag(null);
   };
 
   const handleUnflagUser = (student: StudentData) => {
@@ -558,9 +552,14 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       render: (student) => (
         <>
           {Boolean(student.isFlagged) && (
-            <div className="student-flag-icon">
-              <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
-            </div>
+            <CTooltip
+              content={student.flagReason || "Flagged"}
+              placement="top"
+            >
+              <div className="student-flag-icon">
+                <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
+              </div>
+            </CTooltip>
           )}
           <div className="student-info">
             <div className="student-avatar">
@@ -802,7 +801,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       <FlagUserModal
         visible={flagModalVisible}
         onClose={handleCloseFlagModal}
-        onConfirm={() => handleConfirmFlag()}
+        onConfirm={handleConfirmFlag}
       />
 
       <DeactivateUserModal

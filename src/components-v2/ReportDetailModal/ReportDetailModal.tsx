@@ -60,6 +60,7 @@ interface ReportDetailModalProps {
       };
       // Space
       space?: {
+        id?: string;
         image: string;
         title: string;
         description: string;
@@ -106,6 +107,12 @@ interface ReportDetailModalProps {
         blockedOn: string;
       }>;
     };
+
+    // Admin notes
+    notes?: Array<{
+      note: string;
+      date: string;
+    }>;
   };
   onStatusChange?: (newStatus: ReportStatus) => void;
   onNoteRequired?: (newStatus: ReportStatus) => void;
@@ -115,6 +122,7 @@ interface ReportDetailModalProps {
     reason: string,
     resolveReports: boolean
   ) => void;
+  onSpaceClick?: (spaceId: string) => void;
   isLoading?: boolean;
 }
 
@@ -127,6 +135,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
   onNoteRequired,
   onDeactivateUser,
   onBanUser,
+  onSpaceClick,
   isLoading,
 }) => {
   const [activeTab, setActiveTab] = useState<SafetyTab>("ban");
@@ -252,7 +261,15 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
           <div className="rdm-content-container rdm-dual-content">
             <div className="rdm-space-section">
               <h4 className="rdm-subsection-title">Space details</h4>
-              <div className="rdm-space-card">
+              <div
+                className={`rdm-space-card ${onSpaceClick && content.space.id ? "rdm-clickable" : ""}`}
+                onClick={() => {
+                  if (onSpaceClick && content.space?.id) {
+                    onSpaceClick(content.space.id);
+                  }
+                }}
+                style={{ cursor: onSpaceClick && content.space.id ? "pointer" : "default" }}
+              >
                 <img
                   src={content.space.image}
                   alt="Space"
@@ -951,6 +968,20 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                     <span className="rdm-label">Description:</span>{" "}
                     {reportData.description}
                   </p>
+
+                  {reportData.notes && reportData.notes.length > 0 && (
+                    <div className="rdm-admin-notes">
+                      <span className="rdm-label">Admin notes:</span>
+                      {reportData.notes.map((noteItem, index) => (
+                        <div key={index} className="rdm-note-item">
+                          <p className="rdm-note-text">{noteItem.note}</p>
+                          <span className="rdm-note-date">
+                            {formatDateTime(noteItem.date)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   <div className="rdm-reporting-user">
                     <span className="rdm-label">Reporting user:</span>

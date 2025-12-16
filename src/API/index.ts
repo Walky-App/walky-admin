@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Api, HttpClient } from "./WalkyAPI";
+import { Api } from "./WalkyAPI";
 
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? "https://staging.walkyapp.com/api",
@@ -54,14 +54,19 @@ API.interceptors.response.use(
 );
 
 // Initialize OpenAPI Client
+// Note: Swagger paths are mixed - admin routes include /api prefix, others don't
+// Remove /api from baseURL so:
+// - Admin routes (/api/admin/...) work as-is
+// - Legacy routes (/ambassadors, etc.) hit the legacy router at root
 const baseURL = import.meta.env.VITE_API_BASE_URL ?? "https://staging.walkyapp.com/api";
-const httpClient = new HttpClient({
-  // Remove /api suffix because generated client paths already include /api
+
+// Api class now extends HttpClient directly, so pass config to Api constructor
+export const apiClient = new Api({
   baseURL: baseURL.replace(/\/api\/?$/, ""),
 });
 
-// Apply the same interceptors to the HttpClient's axios instance
-httpClient.instance.interceptors.request.use((config) => {
+// Apply interceptors to the Api's axios instance
+apiClient.instance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -71,7 +76,7 @@ httpClient.instance.interceptors.request.use((config) => {
   return config;
 });
 
-httpClient.instance.interceptors.response.use(
+apiClient.instance.interceptors.response.use(
   (response) => {
     console.log(
       "✅ API Response:",
@@ -104,7 +109,5 @@ httpClient.instance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export const apiClient = new Api(httpClient);
 
 export default API;
