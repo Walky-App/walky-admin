@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CModal, CModalBody } from "@coreui/react";
 import AssetIcon from "../../components-v2/AssetIcon/AssetIcon";
 import AssetImage from "../../components-v2/AssetImage/AssetImage";
 import "./LoginV2.css";
@@ -12,6 +13,7 @@ const LoginV2: React.FC = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showDeactivatedModal, setShowDeactivatedModal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,6 +77,13 @@ const LoginV2: React.FC = () => {
       window.location.href = "/";
     } catch (err: any) {
       console.error("Login failed:", err);
+
+      // Check if user is deactivated
+      if (err?.response?.data?.code === "USER_DEACTIVATED") {
+        setShowDeactivatedModal(true);
+        return;
+      }
+
       setError(err?.response?.data?.message || "Invalid email or password.");
     } finally {
       setIsLoading(false);
@@ -177,6 +186,40 @@ const LoginV2: React.FC = () => {
           data-testid="login-decoration-image"
         />
       </div>
+
+      {/* Deactivated User Modal */}
+      <CModal
+        visible={showDeactivatedModal}
+        onClose={() => setShowDeactivatedModal(false)}
+        alignment="center"
+        className="deactivated-user-modal"
+        data-testid="deactivated-user-modal"
+      >
+        <CModalBody className="deactivated-modal-body">
+          <div className="deactivated-modal-content">
+            <div className="deactivated-modal-icon">
+              <AssetIcon name="tooltip-icon" size={48} color="#dc3545" />
+            </div>
+            <h2 className="deactivated-modal-title">Account Deactivated</h2>
+            <p className="deactivated-modal-message">
+              Your account has been deactivated. Please contact Walky admin for assistance.
+            </p>
+            <a
+              href="mailto:support@walkyapp.com"
+              className="deactivated-modal-contact-link"
+            >
+              support@walkyapp.com
+            </a>
+            <button
+              data-testid="deactivated-modal-close-btn"
+              className="deactivated-modal-close-btn"
+              onClick={() => setShowDeactivatedModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </CModalBody>
+      </CModal>
     </main>
   );
 };

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Api } from "./WalkyAPI";
+import { triggerDeactivatedModal } from "../contexts/DeactivatedUserContext";
 
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? "https://staging.walkyapp.com/api",
@@ -47,6 +48,11 @@ API.interceptors.response.use(
       if (window.location.pathname !== "/login") {
         window.location.href = "/login";
       }
+    }
+
+    // Handle 403 Forbidden errors - user deactivated
+    if (error.response?.status === 403) {
+      triggerDeactivatedModal();
     }
 
     return Promise.reject(error);
@@ -104,6 +110,11 @@ apiClient.instance.interceptors.response.use(
       if (window.location.pathname !== "/login") {
         window.location.href = "/login";
       }
+    }
+
+    // Handle 403 Forbidden errors - user deactivated
+    if (error.response?.status === 403) {
+      triggerDeactivatedModal();
     }
 
     return Promise.reject(error);

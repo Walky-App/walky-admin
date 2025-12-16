@@ -16,6 +16,7 @@ export type { BanUserModalProps } from "./BanUserModal";
 export { CustomToast } from "./CustomToast";
 export { DeactivateUserModal } from "./DeactivateUserModal";
 export type { DeactivateUserModalProps } from "./DeactivateUserModal";
+export { DeactivatedUserModal } from "./DeactivatedUserModal";
 export { DeleteAmbassadorModal } from "./DeleteAmbassadorModal";
 export { DeleteModal } from "./DeleteModal";
 export type { DeleteModalType } from "./DeleteModal";
