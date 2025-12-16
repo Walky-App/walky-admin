@@ -14,6 +14,22 @@ import "./AdministratorSettings.css";
 
 type TabType = "personal" | "security" | "notifications" | "danger";
 
+// Extended user profile type with additional fields from API
+interface UserProfile {
+  _id?: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  role?: string;
+  avatar_url?: string;
+  position?: string;
+  createdAt?: string;
+  lastLogin?: string;
+  emailNotifications?: boolean;
+  securityAlerts?: boolean;
+  twoFactorEnabled?: boolean;
+}
+
 export const AdministratorSettings: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -24,12 +40,55 @@ export const AdministratorSettings: React.FC = () => {
   const [pendingNavigation, setPendingNavigation] = useState<
     string | number | null
   >(null);
+  const [profileData, setProfileData] = useState<UserProfile | null>(null);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
   // Modal states
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
   const [showLogoutAllModal, setShowLogoutAllModal] = useState(false);
 
-  console.log("AdministratorSettings component loaded", { user, activeTab });
+  // Fetch profile data on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setIsLoadingProfile(true);
+        const response = await apiClient.api.adminProfileList();
+        const data = response.data as unknown as UserProfile;
+        setProfileData(data);
+        // Update form data with fetched profile
+        setFormData({
+          firstName: data.first_name || "",
+          lastName: data.last_name || "",
+          position: data.position || "",
+          email: data.email || "",
+        });
+        // Update notification settings from profile
+        setNotificationData({
+          emailNotifications: data.emailNotifications ?? false,
+          securityAlerts: data.securityAlerts ?? false,
+        });
+        // Update security settings
+        setSecurityData(prev => ({
+          ...prev,
+          twoFactorEnabled: data.twoFactorEnabled ?? false,
+        }));
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        // Fall back to user from auth context
+        setFormData({
+          firstName: user?.first_name || "",
+          lastName: user?.last_name || "",
+          position: "",
+          email: user?.email || "",
+        });
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+    fetchProfile();
+  }, [user]);
+
+  console.log("AdministratorSettings component loaded", { user, profileData, activeTab });
 
   // Form state - Personal Info
   const [formData, setFormData] = useState({
@@ -76,11 +135,26 @@ export const AdministratorSettings: React.FC = () => {
     setSecurityData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleNotificationChange = (
+  const handleNotificationChange = async (
     field: keyof typeof notificationData,
     value: boolean
   ) => {
+    // Optimistically update local state
     setNotificationData((prev) => ({ ...prev, [field]: value }));
+
+    try {
+      // Save to API
+      await apiClient.api.adminProfileNotificationsUpdate({
+        emailNotifications: field === "emailNotifications" ? value : notificationData.emailNotifications,
+        pushNotifications: field === "securityAlerts" ? value : notificationData.securityAlerts,
+      });
+      toast.success("Notification settings saved");
+    } catch (error) {
+      console.error("Error saving notification settings:", error);
+      // Revert on error
+      setNotificationData((prev) => ({ ...prev, [field]: !value }));
+      toast.error("Failed to save notification settings");
+    }
   };
 
   // ... (imports)
@@ -120,10 +194,18 @@ export const AdministratorSettings: React.FC = () => {
 
   const handleConfirmLogoutAll = async () => {
     try {
-      await apiClient.api.adminV2SettingsLogoutAllCreate();
+      const response = await apiClient.api.adminV2SettingsLogoutAllCreate();
+
+      // Update tokens for current session to stay logged in
+      if (response.data.accessToken) {
+        localStorage.setItem("token", response.data.accessToken);
+      }
+      if (response.data.refreshToken) {
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+      }
+
       setShowLogoutAllModal(false);
-      toast.success("Logged out from all devices");
-      // Optional: Redirect to login or logout current session as well
+      toast.success("Logged out from all other devices");
     } catch (error) {
       console.error("Error logging out all devices:", error);
       toast.error("Failed to logout all devices");
@@ -169,9 +251,25 @@ export const AdministratorSettings: React.FC = () => {
     }
   };
 
-  const userExtended = user as { createdAt?: string; lastLogin?: string } | null;
-  const accountCreatedDate = userExtended?.createdAt ? new Date(userExtended.createdAt).toLocaleDateString() : "N/A";
-  const lastLoginDate = userExtended?.lastLogin ? new Date(userExtended.lastLogin).toLocaleString() : "N/A";
+  // Use profileData for dates if available, fall back to user
+  const accountCreatedDate = profileData?.createdAt
+    ? new Date(profileData.createdAt).toLocaleDateString()
+    : "N/A";
+  const lastLoginDate = profileData?.lastLogin
+    ? new Date(profileData.lastLogin).toLocaleString()
+    : "N/A";
+
+  // Get role display name
+  const getRoleDisplayName = (role?: string) => {
+    switch (role) {
+      case "super_admin": return "Walky Admin";
+      case "school_admin": return "School Admin";
+      case "campus_admin": return "Campus Admin";
+      case "moderator": return "Moderator";
+      default: return role || "Admin";
+    }
+  };
+  const roleDisplayName = getRoleDisplayName(profileData?.role || user?.role);
 
   console.log("Rendering AdministratorSettings", {
     activeTab,
@@ -247,15 +345,15 @@ export const AdministratorSettings: React.FC = () => {
             <div className="account-info">
               <div className="info-row">
                 <span className="info-label">Role:</span>
-                <span className="info-value">Walky Admin</span>
+                <span className="info-value">{roleDisplayName}</span>
               </div>
               <div className="info-row">
                 <span className="info-label">Account created:</span>
-                <span className="info-value">{accountCreatedDate}</span>
+                <span className="info-value">{isLoadingProfile ? "Loading..." : accountCreatedDate}</span>
               </div>
               <div className="info-row">
                 <span className="info-label">Last login:</span>
-                <span className="info-value">{lastLoginDate}</span>
+                <span className="info-value">{isLoadingProfile ? "Loading..." : lastLoginDate}</span>
               </div>
             </div>
 
@@ -268,10 +366,11 @@ export const AdministratorSettings: React.FC = () => {
                 <div className="profile-picture">
                   <img
                     src={
+                      profileData?.avatar_url ||
                       user?.avatar_url ||
                       "https://ui-avatars.com/api/?name=" +
                       encodeURIComponent(
-                        user?.first_name + " " + user?.last_name
+                        (profileData?.first_name || user?.first_name || "") + " " + (profileData?.last_name || user?.last_name || "")
                       ) +
                       "&background=546fd9&color=fff"
                     }

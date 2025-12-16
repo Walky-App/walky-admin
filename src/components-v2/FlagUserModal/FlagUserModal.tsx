@@ -6,7 +6,7 @@ import "./FlagUserModal.css";
 export interface FlagUserModalProps {
   visible: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (reason: string) => void;
 }
 
 const STORAGE_KEY = "walky-admin-flag-user-hide-message";
@@ -17,6 +17,7 @@ export const FlagUserModal: React.FC<FlagUserModalProps> = ({
   onConfirm,
 }) => {
   const [dontShowAgain, setDontShowAgain] = useState(false);
+  const [reason, setReason] = useState("");
 
   useEffect(() => {
     // Load preference on mount
@@ -26,11 +27,18 @@ export const FlagUserModal: React.FC<FlagUserModalProps> = ({
     }
   }, []);
 
+  useEffect(() => {
+    // Reset reason when modal opens
+    if (visible) {
+      setReason("");
+    }
+  }, [visible]);
+
   const handleConfirm = () => {
     if (dontShowAgain) {
       localStorage.setItem(STORAGE_KEY, "true");
     }
-    onConfirm();
+    onConfirm(reason);
   };
 
   const handleCancel = () => {
@@ -74,6 +82,21 @@ export const FlagUserModal: React.FC<FlagUserModalProps> = ({
                 this action will be visible to other administrators. This helps
                 the team keep track of important cases.
               </p>
+            </div>
+
+            {/* Reason textarea */}
+            <div className="flag-modal-reason-container">
+              <label className="flag-modal-reason-label">
+                Reason for flagging
+              </label>
+              <textarea
+                data-testid="flag-modal-reason"
+                className="flag-modal-reason-input"
+                placeholder="Enter the reason for flagging this user..."
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                rows={3}
+              />
             </div>
 
             {/* Checkbox */}

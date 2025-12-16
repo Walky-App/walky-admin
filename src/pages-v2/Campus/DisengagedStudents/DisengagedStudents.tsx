@@ -41,7 +41,7 @@ export const DisengagedStudents: React.FC = () => {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage] = useState("");
-  const [currentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const entriesPerPage = 10;
 
   const exportRef = useRef<HTMLElement | null>(null);
@@ -277,7 +277,7 @@ export const DisengagedStudents: React.FC = () => {
               )}
               totalEntries={studentsData?.data.total || 0}
               entriesPerPage={entriesPerPage}
-              onPageChange={() => {}}
+              onPageChange={setCurrentPage}
             />
           </div>
         )}

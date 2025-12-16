@@ -77,6 +77,40 @@
   white-space: pre-wrap;
 }
 
+/* Reason Container */
+.flag-modal-reason-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v2-spacing-8);
+}
+
+.flag-modal-reason-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--v2-neutral-black);
+}
+
+.flag-modal-reason-input {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  padding: var(--v2-spacing-12);
+  border: 1px solid var(--v2-border-dark);
+  border-radius: var(--v2-radius-md);
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  transition: border-color var(--v2-transition-fast);
+}
+
+.flag-modal-reason-input:focus {
+  border-color: var(--v2-primary-purple-main);
+}
+
+.flag-modal-reason-input::placeholder {
+  color: var(--v2-text-muted);
+}
+
 /* Checkbox Container */
 .flag-modal-checkbox-container {
   display: flex;

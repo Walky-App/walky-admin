@@ -139,7 +139,11 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
                           {hoveredBar?.weekIndex === weekIndex &&
                             hoveredBar?.barKey === legendItem.key && (
                               <div
-                                className="stacked-bar-tooltip"
+                                className={`stacked-bar-tooltip${
+                                  weekIndex >= data.length - 2
+                                    ? " stacked-bar-tooltip--left"
+                                    : ""
+                                }`}
                                 style={{
                                   backgroundColor: theme.colors.tooltipBg,
                                   color: theme.colors.tooltipText,

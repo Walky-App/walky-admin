@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CTooltip } from "@coreui/react";
 import { apiClient } from "../../../API";
 import {
   ActionDropdown,
@@ -166,9 +167,9 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     setFlagModalVisible(true);
   };
 
-  const handleConfirmFlag = () => {
+  const handleConfirmFlag = (reason: string) => {
     if (!studentToFlag) return;
-    flagMutation.mutate({ id: studentToFlag.id, reason: "Flagged by admin" });
+    flagMutation.mutate({ id: studentToFlag.id, reason: reason || "Flagged by admin" });
     setFlagModalVisible(false);
     setStudentToFlag(null);
   };
@@ -292,9 +293,14 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
       render: (student) => (
         <>
           {Boolean(student.isFlagged) && (
-            <div className="student-flag-icon">
-              <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
-            </div>
+            <CTooltip
+              content={student.flagReason || "Flagged"}
+              placement="top"
+            >
+              <div className="student-flag-icon">
+                <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
+              </div>
+            </CTooltip>
           )}
           <div className="student-info">
             <div className="student-avatar">

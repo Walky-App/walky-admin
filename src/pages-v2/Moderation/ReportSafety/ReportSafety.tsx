@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   keepPreviousData,
   useMutation,
@@ -41,6 +42,7 @@ interface ReportData {
 
 const ReportSafety: React.FC = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -69,6 +71,7 @@ const ReportSafety: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const {
     data: reportsData,
@@ -82,6 +85,7 @@ const ReportSafety: React.FC = () => {
       debouncedSearchQuery,
       selectedTypes,
       selectedStatus,
+      sortOrder,
     ],
     queryFn: () =>
       apiClient.api.adminV2ReportsList({
@@ -90,6 +94,8 @@ const ReportSafety: React.FC = () => {
         search: debouncedSearchQuery,
         type: selectedTypes.join(","),
         status: selectedStatus,
+        sortBy: "reportDate",
+        sortOrder: sortOrder,
       }),
     placeholderData: keepPreviousData,
   });
@@ -206,41 +212,76 @@ const ReportSafety: React.FC = () => {
     await apiClient.api.adminV2ReportsStatusPartialUpdate(reportId, {
       status: newStatus,
     });
+
+    // Update local state if this is the selected report
+    if (selectedReport && selectedReport.id === reportId) {
+      setSelectedReport({
+        ...selectedReport,
+        status: newStatus,
+      });
+    }
+
     refetch();
   };
 
   const handleNoteRequired = (reportId: string, newStatus: string) => {
     setShouldReopenDetailsAfterNote(isDetailModalOpen);
+    // Close detail modal first, then open note modal after a brief delay
+    // to prevent overlay issues
     if (isDetailModalOpen) {
       setIsDetailModalOpen(false);
     }
 
     setPendingStatusChange({ reportId, newStatus });
-    setIsNoteModalOpen(true);
+    // Use setTimeout to ensure detail modal is fully closed before opening note modal
+    setTimeout(() => {
+      setIsNoteModalOpen(true);
+    }, 100);
   };
 
   const handleNoteConfirm = async (note: string) => {
     if (pendingStatusChange) {
+      const currentPendingChange = pendingStatusChange;
+
+      // Clear pending state first to prevent handleNoteClose from reopening detail modal
+      setPendingStatusChange(null);
+      setShouldReopenDetailsAfterNote(false);
+
       await apiClient.api.adminV2ReportsNoteCreate(
-        pendingStatusChange.reportId,
+        currentPendingChange.reportId,
         { note }
       );
       await handleStatusChange(
-        pendingStatusChange.reportId,
-        pendingStatusChange.newStatus
+        currentPendingChange.reportId,
+        currentPendingChange.newStatus
       );
-      setPendingStatusChange(null);
+
+      // Show success message
+      const statusMessage = currentPendingChange.newStatus === "Resolved"
+        ? "Report resolved successfully"
+        : "Report dismissed successfully";
+      setToastMessage(statusMessage);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+
+      // Clean up - close everything after successful resolution
+      setSelectedReport(null);
+      setSelectedReportDetails(null);
     }
   };
 
   const handleNoteClose = () => {
     setIsNoteModalOpen(false);
-    setPendingStatusChange(null);
 
-    if (shouldReopenDetailsAfterNote && selectedReport) {
-      setIsDetailModalOpen(true);
+    // Only reopen detail modal if user cancelled (didn't confirm)
+    // pendingStatusChange will still exist if user cancelled
+    if (shouldReopenDetailsAfterNote && selectedReport && pendingStatusChange) {
+      setTimeout(() => {
+        setIsDetailModalOpen(true);
+      }, 100);
     }
 
+    setPendingStatusChange(null);
     setShouldReopenDetailsAfterNote(false);
   };
 
@@ -455,11 +496,11 @@ const ReportSafety: React.FC = () => {
                   setCurrentPage(1);
                 }}
                 options={[
-                  { value: "User", label: "User" },
-                  { value: "Message", label: "Message" },
-                  { value: "Event", label: "Event" },
-                  { value: "Idea", label: "Idea" },
-                  { value: "Space", label: "Space" },
+                  { value: "user", label: "User" },
+                  { value: "message", label: "Message" },
+                  { value: "event", label: "Event" },
+                  { value: "idea", label: "Idea" },
+                  { value: "space", label: "Space" },
                 ]}
                 placeholder="Filter by type"
                 icon="mod-filter-icon"
@@ -523,6 +564,8 @@ const ReportSafety: React.FC = () => {
             formatDate={formatReportDateParts}
             actionTestId="report-options"
             getStatusTestId={(row) => `status-dropdown-${row.id}`}
+            sortOrder={sortOrder}
+            onSort={() => setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
           />
         </div>
       </div>
@@ -548,7 +591,14 @@ const ReportSafety: React.FC = () => {
       {selectedReport &&
         selectedReportDetails &&
         (() => {
-          const mappedType = mapReportType(selectedReport.type);
+          // Check if this is an event from a space
+          const isEventFromSpace =
+            selectedReport.type?.toLowerCase() === "event" &&
+            selectedReportDetails.content?.isFromSpace;
+
+          const mappedType = isEventFromSpace
+            ? "Event of Space" as ReportType
+            : mapReportType(selectedReport.type);
 
           return (
             <ReportDetailModal
@@ -587,7 +637,7 @@ const ReportSafety: React.FC = () => {
                 },
                 content: {
                   event:
-                    mappedType === "Event"
+                    mappedType === "Event" || mappedType === "Event of Space"
                       ? {
                           image: selectedReportDetails.content?.image_url,
                           date: selectedReportDetails.content?.date,
@@ -613,12 +663,22 @@ const ReportSafety: React.FC = () => {
                   space:
                     mappedType === "Space"
                       ? {
+                          id: selectedReportDetails.content?.id,
                           title: selectedReportDetails.content?.name,
                           description:
                             selectedReportDetails.content?.description,
                           image: selectedReportDetails.content?.image_url,
                           category: "Other",
                           memberCount: "0",
+                        }
+                      : mappedType === "Event of Space" && selectedReportDetails.content?.space
+                      ? {
+                          id: selectedReportDetails.content.space.id,
+                          title: selectedReportDetails.content.space.name,
+                          description: selectedReportDetails.content.space.description,
+                          image: selectedReportDetails.content.space.image,
+                          category: selectedReportDetails.content.space.category || "Space",
+                          memberCount: selectedReportDetails.content.space.memberCount || "0 members",
                         }
                       : undefined,
                 },
@@ -628,6 +688,7 @@ const ReportSafety: React.FC = () => {
                   reportHistory: [],
                   blockHistory: [],
                 },
+                notes: selectedReportDetails.notes || [],
               }}
               onStatusChange={(newStatus) => {
                 if (selectedReport) {
@@ -648,6 +709,10 @@ const ReportSafety: React.FC = () => {
                   setIsDetailModalOpen(false);
                   setIsBanModalOpen(true);
                 }
+              }}
+              onSpaceClick={(spaceId) => {
+                setIsDetailModalOpen(false);
+                navigate(`/spaces?spaceId=${spaceId}`);
               }}
             />
           );

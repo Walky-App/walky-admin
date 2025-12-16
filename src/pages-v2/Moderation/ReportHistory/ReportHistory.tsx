@@ -27,6 +27,7 @@ interface HistoryReportData {
   description: string;
   studentId: string;
   reportDate: string;
+  resolvedAt: string | null;
   type: string;
   reasonTag: string;
   status: string;
@@ -106,6 +107,7 @@ const ReportHistory: React.FC = () => {
         description: report.description,
         studentId: report.studentId,
         reportDate: report.reportDate,
+        resolvedAt: report.resolvedAt || null,
         type: report.type,
         reasonTag: report.reasonTag,
         status: report.status,
@@ -120,6 +122,7 @@ const ReportHistory: React.FC = () => {
         description: report.description,
         studentId: report.studentId,
         reportDate: report.reportDate,
+        resolvedAt: report.resolvedAt,
         type: report.type,
         reasonTag: report.reasonTag,
         status: report.status,
@@ -293,17 +296,17 @@ const ReportHistory: React.FC = () => {
   const renderTableSkeletonRows = () => (
     <>
       <tr>
-        <td colSpan={6}>
+        <td colSpan={7}>
           <SkeletonLoader height="64px" />
         </td>
       </tr>
       <tr>
-        <td colSpan={6}>
+        <td colSpan={7}>
           <SkeletonLoader height="64px" />
         </td>
       </tr>
       <tr>
-        <td colSpan={6}>
+        <td colSpan={7}>
           <SkeletonLoader height="64px" />
         </td>
       </tr>
@@ -449,6 +452,7 @@ const ReportHistory: React.FC = () => {
             formatDate={formatReportDateParts}
             actionTestId="report-history-options"
             getStatusTestId={(row) => `status-dropdown-${row.id}`}
+            showResolutionDate={true}
           />
         </div>
       </div>
@@ -603,6 +607,7 @@ const ReportHistory: React.FC = () => {
               reportHistory: [],
               blockHistory: [],
             },
+            notes: reportDetails?.notes || [],
           }}
           isLoading={detailsLoading}
           onStatusChange={(newStatus) => {

@@ -58,6 +58,7 @@ export const ActiveStudents: React.FC = () => {
     memberSince: formatMemberSince(student.memberSince),
     onlineLast: student.onlineLast || "",
     isFlagged: student.isFlagged,
+    flagReason: (student as any).flagReason,
   }));
 
   const totalPages = Math.ceil(

@@ -85,6 +85,13 @@ export const EventsInsights: React.FC = () => {
         participants?: Array<{ user_id?: string; _id?: string; name?: string; avatar_url?: string; status?: string }>;
         isFlagged?: boolean;
         flagReason?: string;
+        space?: {
+          id?: string;
+          name?: string;
+          logo?: string;
+          coverImage?: string;
+          description?: string;
+        } | null;
       };
       const event = res.data as EventDetails;
 
@@ -123,6 +130,13 @@ export const EventsInsights: React.FC = () => {
         maxAttendees: event.slots || 0,
         isFlagged: event.isFlagged || false,
         flagReason: event.flagReason || "",
+        space: event.space ? {
+          id: event.space.id || "",
+          name: event.space.name || "",
+          logo: event.space.logo,
+          coverImage: event.space.coverImage,
+          description: event.space.description,
+        } : null,
       };
 
       setSelectedEvent(eventDetails);

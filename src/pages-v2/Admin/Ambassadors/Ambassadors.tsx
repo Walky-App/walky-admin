@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   AssetIcon,
   DeleteAmbassadorModal,
@@ -20,9 +20,14 @@ interface AmbassadorData {
   avatar: string;
   major: string;
   ambassadorSince: string;
+  ambassadorSinceRaw: string; // Raw date for sorting
   memberSince: string;
-  status: "Active" | "Inactive";
+  memberSinceRaw: string; // Raw date for sorting
+  status: "Active" | "Inactive" | "Deactivated";
 }
+
+type SortField = "name" | "ambassadorSince" | "memberSince" | "status";
+type SortDirection = "asc" | "desc";
 
 interface Student {
   id: string;
@@ -44,6 +49,10 @@ export const Ambassadors: React.FC = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Sorting state
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+
   // Ambassadors state
   const [ambassadors, setAmbassadors] = useState<AmbassadorData[]>([]);
 
@@ -51,7 +60,7 @@ export const Ambassadors: React.FC = () => {
     setLoading(true);
     try {
       // Note: Backend doesn't support pagination, fetches all ambassadors
-      const res = await apiClient.ambassadors.ambassadorsList();
+      const res = await apiClient.api.adminAmbassadorsList();
 
       const data = res.data.data || [];
 
@@ -64,11 +73,20 @@ export const Ambassadors: React.FC = () => {
         major?: string;
         createdAt?: string;
         is_active?: boolean;
+        user_is_active?: boolean; // User's active status (deactivated student)
       };
 
       const transformedAmbassadors: AmbassadorData[] = (data as ExtendedAmbassador[]).map((a) => {
         const formattedAmbassadorSince = formatMemberSince(a.createdAt);
         const formattedMemberSince = formatMemberSince(a.createdAt);
+
+        // Determine status: if user is deactivated, show "Deactivated", otherwise use ambassador's is_active
+        let status: "Active" | "Inactive" | "Deactivated" = "Active";
+        if (a.user_is_active === false) {
+          status = "Deactivated";
+        } else if (a.is_active === false) {
+          status = "Inactive";
+        }
 
         return {
           id: a._id || "",
@@ -80,9 +98,11 @@ export const Ambassadors: React.FC = () => {
             formattedAmbassadorSince === "N/A"
               ? "Unknown"
               : formattedAmbassadorSince,
+          ambassadorSinceRaw: a.createdAt || "",
           memberSince:
             formattedMemberSince === "N/A" ? "Unknown" : formattedMemberSince,
-          status: (a.is_active ? "Active" : "Inactive") as "Active" | "Inactive",
+          memberSinceRaw: a.createdAt || "",
+          status,
         };
       });
 
@@ -116,7 +136,7 @@ export const Ambassadors: React.FC = () => {
       // Add each selected student as ambassador
       await Promise.all(
         selectedStudents.map((student) =>
-          apiClient.ambassadors.ambassadorsCreate({
+          apiClient.api.adminAmbassadorsCreate({
             name: student.name || "",
             email: student.email || "",
             user_id: student.id,
@@ -154,7 +174,7 @@ export const Ambassadors: React.FC = () => {
   const confirmDeleteAmbassador = async () => {
     if (ambassadorToDelete) {
       try {
-        await apiClient.ambassadors.ambassadorsDelete(ambassadorToDelete.id);
+        await apiClient.api.adminAmbassadorsDelete(ambassadorToDelete.id);
         console.log("Deleting ambassador:", ambassadorToDelete.id);
         setToastMessage("Ambassador deleted successfully");
         setShowToast(true);
@@ -177,6 +197,44 @@ export const Ambassadors: React.FC = () => {
   const activeAmbassadors = ambassadors.filter(
     (a) => a.status === "Active"
   ).length;
+
+  // Handle sort column click
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  // Sort ambassadors
+  const sortedAmbassadors = useMemo(() => {
+    if (!sortField) return ambassadors;
+
+    return [...ambassadors].sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortField) {
+        case "name":
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case "ambassadorSince":
+          comparison = a.ambassadorSinceRaw.localeCompare(b.ambassadorSinceRaw);
+          break;
+        case "memberSince":
+          comparison = a.memberSinceRaw.localeCompare(b.memberSinceRaw);
+          break;
+        case "status":
+          comparison = a.status.localeCompare(b.status);
+          break;
+        default:
+          return 0;
+      }
+
+      return sortDirection === "asc" ? comparison : -comparison;
+    });
+  }, [ambassadors, sortField, sortDirection]);
 
   const renderSkeletonRows = () =>
     Array.from({ length: 6 }).map((_, index) => (
@@ -258,7 +316,10 @@ export const Ambassadors: React.FC = () => {
                 <th>
                   <span>Student ID</span>
                 </th>
-                <th>
+                <th
+                  onClick={() => handleSort("name")}
+                  style={{ cursor: "pointer" }}
+                >
                   <div className="ambassador-header">
                     <span>Ambassador</span>
                     <AssetIcon name="swap-arrows-icon" size={24} />
@@ -267,19 +328,28 @@ export const Ambassadors: React.FC = () => {
                 <th>
                   <span>Major</span>
                 </th>
-                <th>
+                <th
+                  onClick={() => handleSort("ambassadorSince")}
+                  style={{ cursor: "pointer" }}
+                >
                   <div className="ambassador-header">
                     <span>Ambassador since</span>
                     <AssetIcon name="swap-arrows-icon" size={24} />
                   </div>
                 </th>
-                <th>
+                <th
+                  onClick={() => handleSort("memberSince")}
+                  style={{ cursor: "pointer" }}
+                >
                   <div className="ambassador-header">
                     <span>Member since</span>
                     <AssetIcon name="swap-arrows-icon" size={24} />
                   </div>
                 </th>
-                <th>
+                <th
+                  onClick={() => handleSort("status")}
+                  style={{ cursor: "pointer" }}
+                >
                   <div className="ambassador-header">
                     <span>Status</span>
                     <AssetIcon name="swap-arrows-icon" size={24} />
@@ -291,7 +361,7 @@ export const Ambassadors: React.FC = () => {
             <tbody>
               {loading ? (
                 renderSkeletonRows()
-              ) : ambassadors.length === 0 ? (
+              ) : sortedAmbassadors.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}
@@ -301,7 +371,7 @@ export const Ambassadors: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                ambassadors.map((ambassador, index) => (
+                sortedAmbassadors.map((ambassador, index) => (
                   <React.Fragment key={ambassador.id}>
                     <tr className="ambassador-row">
                       {/* Student ID Column */}
@@ -365,7 +435,7 @@ export const Ambassadors: React.FC = () => {
                         </button>
                       </td>
                     </tr>
-                    {index < ambassadors.length - 1 && (
+                    {index < sortedAmbassadors.length - 1 && (
                       <tr className="ambassador-divider-row">
                         <td colSpan={7}>
                           <Divider />
@@ -382,8 +452,8 @@ export const Ambassadors: React.FC = () => {
         {/* Pagination */}
         <Pagination
           currentPage={currentPage}
-          totalPages={Math.ceil(ambassadors.length / 10)}
-          totalEntries={ambassadors.length}
+          totalPages={Math.ceil(sortedAmbassadors.length / 10)}
+          totalEntries={sortedAmbassadors.length}
           entriesPerPage={10}
           onPageChange={setCurrentPage}
         />

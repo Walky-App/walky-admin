@@ -299,6 +299,11 @@
   color: #676d70;
 }
 
+.status-badge.deactivated {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
 /* Actions */
 .ambassador-actions {
   text-align: center;

@@ -319,12 +319,14 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
               <tr className={space.isFlagged ? "space-row-flagged" : ""}>
                 <td>
                   {space.isFlagged && (
-                    <AssetIcon
-                      name="flag-icon"
-                      size={16}
-                      color="#D53425"
-                      className="space-flag-icon"
-                    />
+                    <span title={space.flagReason || "Flagged"}>
+                      <AssetIcon
+                        name="flag-icon"
+                        size={16}
+                        color="#D53425"
+                        className="space-flag-icon"
+                      />
+                    </span>
                   )}
                   <div className="space-name-cell">
                     <span className="space-name">{space.spaceName}</span>

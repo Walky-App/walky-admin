@@ -286,12 +286,14 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
                 <tr className={idea.isFlagged ? "idea-row-flagged" : ""}>
                   <td>
                     {idea.isFlagged && (
-                      <AssetIcon
-                        name="flag-icon"
-                        size={16}
-                        color="#D53425"
-                        className="idea-flag-icon"
-                      />
+                      <span title={idea.flagReason || "Flagged"}>
+                        <AssetIcon
+                          name="flag-icon"
+                          size={16}
+                          color="#D53425"
+                          className="idea-flag-icon"
+                        />
+                      </span>
                     )}
                     <div className="idea-title-cell">
                       <span className="ideas-table-idea-title">

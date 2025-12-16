@@ -40,6 +40,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
         search: searchQuery,
         role: "student",
         limit: 20,
+        exactMatch: true, // Only return exact first name or last name matches
       });
 
       const data = res.data.data || [];
@@ -54,6 +55,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
         avatar?: string;
         avatar_url?: string;
       };
+
       const students: Student[] = (data as ExtendedMember[]).map((user) => ({
         id: user.id || user._id || "",
         name: user.name || `${user.first_name || ""} ${user.last_name || ""}`.trim() || "Unknown",
@@ -114,7 +116,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
         <div className="add-ambassador-modal-header">
           <h2 className="add-ambassador-modal-title">New Ambassador</h2>
           <p className="add-ambassador-modal-subtitle">
-            Select the students you want to make ambassadors from your list.
+            Search by exact full name (e.g. "John Smith") to find students.
           </p>
         </div>
 
@@ -125,7 +127,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
               value={searchQuery}
               onChange={setSearchQuery}
               onSearch={handleSearch}
-              placeholder="Search"
+              placeholder="Enter full name (e.g. John Smith)"
               testId="add-ambassador-search"
             />
             <button

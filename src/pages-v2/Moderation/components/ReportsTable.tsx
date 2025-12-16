@@ -14,6 +14,7 @@ export type ReportRow = {
   description: string;
   studentId: string;
   reportDate: string;
+  resolvedAt?: string | null;
   type: string;
   reasonTag: string;
   status: string;
@@ -44,6 +45,9 @@ interface ReportsTableProps {
   statusTestIdPrefix?: string;
   getStatusTestId?: (row: ReportRow) => string;
   hideDividerWhenFlagged?: boolean;
+  sortOrder?: "asc" | "desc";
+  onSort?: () => void;
+  showResolutionDate?: boolean;
 }
 
 export const ReportsTable: React.FC<ReportsTableProps> = ({
@@ -67,7 +71,11 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
   statusTestIdPrefix = "report",
   getStatusTestId,
   hideDividerWhenFlagged = false,
+  sortOrder,
+  onSort,
+  showResolutionDate = false,
 }) => {
+  const columnCount = showResolutionDate ? 7 : 6;
   return (
     <div className="reports-table-wrapper">
       <table className="reports-table">
@@ -79,13 +87,30 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
           <tr>
             <th>Report description</th>
             <th>
-              <div className="sortable-header">
+              <div
+                className="sortable-header"
+                onClick={onSort}
+                style={{ cursor: onSort ? "pointer" : "default" }}
+                role="button"
+                tabIndex={onSort ? 0 : undefined}
+                onKeyDown={(e) => {
+                  if (onSort && (e.key === "Enter" || e.key === " ")) {
+                    e.preventDefault();
+                    onSort();
+                  }
+                }}
+              >
                 Report date
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1d1b20" />
+                <AssetIcon
+                  name={sortOrder === "asc" ? "arrow-up" : "arrow-down"}
+                  size={16}
+                  color="#1d1b20"
+                />
               </div>
             </th>
             <th>Type</th>
             <th>Reason</th>
+            {showResolutionDate && <th>Resolution date</th>}
             <th>Status</th>
             <th></th>
           </tr>
@@ -98,7 +123,7 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
           ) : rows.length === 0 ? (
             <tr>
               <td
-                colSpan={6}
+                colSpan={columnCount}
                 style={{
                   padding: emptyState.padding || "32px 24px",
                   textAlign: "center",
@@ -172,6 +197,29 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
                         ))}
                       </div>
                     </td>
+                    {showResolutionDate && (
+                      <td className="report-date">
+                        {report.resolvedAt ? (
+                          (() => {
+                            const resolvedDate = formatDate
+                              ? formatDate(report.resolvedAt)
+                              : { date: report.resolvedAt, time: null };
+                            return resolvedDate.time ? (
+                              <div className="report-date-cell">
+                                <div>{resolvedDate.date}</div>
+                                <div className="report-time">
+                                  {resolvedDate.time}
+                                </div>
+                              </div>
+                            ) : (
+                              resolvedDate.date
+                            );
+                          })()
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                    )}
                     <td>
                       <StatusDropdown
                         value={report.status}
@@ -216,7 +264,7 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
                   {index < rows.length - 1 &&
                     !(hideDividerWhenFlagged && report.isFlagged) && (
                       <tr className="report-divider-row">
-                        <td colSpan={5}>
+                        <td colSpan={columnCount - 1}>
                           <Divider />
                         </td>
                       </tr>

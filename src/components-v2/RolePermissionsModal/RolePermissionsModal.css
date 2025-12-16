@@ -21,7 +21,7 @@
   width: 100%;
   max-width: 521px;
   max-height: 90vh;
-  overflow: hidden;
+  overflow-y: auto;
   position: relative;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
   display: flex;

@@ -24,6 +24,7 @@ export interface StudentProfileData {
   bio?: string;
   interests?: string[];
   isFlagged?: boolean;
+  flagReason?: string;
   // Ban specific info
   bannedBy?: string;
   bannedByEmail?: string;
@@ -108,6 +109,13 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
       domainPart.length > 16 ? domainPart.slice(-16) : domainPart;
 
     return `${trimmedLocal}...${trimmedDomain}`;
+  };
+
+  // Format text by replacing underscores with spaces and capitalizing first letter
+  const formatDisplayText = (text: string) => {
+    if (!text) return text;
+    const formatted = text.replace(/_/g, " ");
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1).toLowerCase();
   };
 
   if (!student) return null;
@@ -219,9 +227,9 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
             <div key={idx} className="report-history-item">
               <div className="report-history-status-badge">
                 <span
-                  className={`report-status-text ${report.status.toLowerCase()}`}
+                  className={`report-status-text ${report.status.toLowerCase().replace(/_/g, "-")}`}
                 >
-                  {report.status}
+                  {formatDisplayText(report.status)}
                 </span>
               </div>
 
@@ -247,7 +255,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
               <div className="report-history-row">
                 <span className="report-history-label">Reason</span>
                 <div className="report-reason-badge">
-                  <span className="report-reason-text">{report.reason}</span>
+                  <span className="report-reason-text">{formatDisplayText(report.reason)}</span>
                 </div>
               </div>
 
@@ -337,7 +345,10 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
               <div className="profile-user-section">
                 <div className="profile-avatar-large">
                   {Boolean(student.isFlagged) && (
-                    <div className="profile-flag-icon">
+                    <div
+                      className="profile-flag-icon"
+                      title={student.flagReason || "Flagged"}
+                    >
                       <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
                     </div>
                   )}
@@ -450,9 +461,9 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 </span>
               </div>
 
-              {student.interests && student.interests.length > 0 && (
-                <div className="profile-interests-section">
-                  <span className="profile-detail-label">Interests:</span>
+              <div className="profile-interests-section">
+                <span className="profile-detail-label">Interests:</span>
+                {student.interests && student.interests.length > 0 ? (
                   <div className="profile-interests-list">
                     {student.interests.map((interest, idx) => (
                       <div key={idx} className="profile-interest-chip">
@@ -460,8 +471,10 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <span className="profile-detail-value">No interests</span>
+                )}
+              </div>
             </div>
 
             {student.status === "banned" && (

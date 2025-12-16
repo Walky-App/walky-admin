@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import { Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import { useTheme } from "./hooks/useTheme";
 
@@ -26,20 +27,23 @@ function App() {
   }, [theme.isDark]);
 
   return (
-    <Routes>
-      {/* Public routes */}
-      <Route path="/login" element={<LoginV2 />} />
+    <>
+      <Toaster position="top-right" />
+      <Routes>
+        {/* Public routes */}
+        <Route path="/login" element={<LoginV2 />} />
 
-      {/* V2 Auth Routes */}
-      <Route path="/recover-password" element={<RecoverPasswordV2 />} />
-      <Route path="/force-password-change" element={<ForcePasswordChange />} />
+        {/* V2 Auth Routes */}
+        <Route path="/recover-password" element={<RecoverPasswordV2 />} />
+        <Route path="/force-password-change" element={<ForcePasswordChange />} />
 
-      {/* Redirect old /v2/* paths to new root paths */}
-      <Route path="/v2/*" element={<V2RedirectHandler />} />
+        {/* Redirect old /v2/* paths to new root paths */}
+        <Route path="/v2/*" element={<V2RedirectHandler />} />
 
-      {/* V2 Layout Routes - New Design System (Default) */}
-      <Route path="/*" element={<V2Routes />} />
-    </Routes>
+        {/* V2 Layout Routes - New Design System (Default) */}
+        <Route path="/*" element={<V2Routes />} />
+      </Routes>
+    </>
   );
 }
 
