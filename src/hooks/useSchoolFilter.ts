@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { useSchool } from '../contexts/SchoolContext';
-import { apiClient } from '../API';
+import { useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSchool } from "../contexts/SchoolContext";
+import { apiClient } from "../API";
 
 /**
  * Hook to automatically add school_id to API requests and refetch data when school changes
@@ -16,26 +16,38 @@ export const useSchoolFilter = () => {
 
   useEffect(() => {
     // Add request interceptor
-    const requestInterceptor = apiClient.instance.interceptors.request.use(
+    const requestInterceptor = apiClient.http.instance.interceptors.request.use(
       (config: any) => {
         // Only add school_id if a school is selected
         if (schoolId) {
           // Add to params for GET requests
-          if (config.method === 'get') {
+          if (config.method === "get") {
             config.params = {
               ...config.params,
               school_id: schoolId,
             };
-            console.log('📤 Adding school_id to GET request:', config.url, 'school_id:', schoolId);
+            console.log(
+              "📤 Adding school_id to GET request:",
+              config.url,
+              "school_id:",
+              schoolId,
+            );
           }
           // Add to data for POST/PUT/PATCH requests if it's a JSON payload
-          else if (['post', 'put', 'patch'].includes(config.method || '')) {
-            if (config.data && typeof config.data === 'object') {
+          else if (["post", "put", "patch"].includes(config.method || "")) {
+            if (config.data && typeof config.data === "object") {
               config.data = {
                 ...config.data,
                 school_id: schoolId,
               };
-              console.log('📤 Adding school_id to', config.method?.toUpperCase(), 'request:', config.url, 'school_id:', schoolId);
+              console.log(
+                "📤 Adding school_id to",
+                config.method?.toUpperCase(),
+                "request:",
+                config.url,
+                "school_id:",
+                schoolId,
+              );
             }
           }
         }
@@ -43,18 +55,25 @@ export const useSchoolFilter = () => {
       },
       (error: any) => {
         return Promise.reject(error);
-      }
+      },
     );
 
     // Check if school changed (not initial mount)
-    const schoolChanged = previousSchoolIdRef.current !== undefined && previousSchoolIdRef.current !== schoolId;
+    const schoolChanged =
+      previousSchoolIdRef.current !== undefined &&
+      previousSchoolIdRef.current !== schoolId;
 
     if (schoolChanged) {
-      console.log('🔄 School changed from', previousSchoolIdRef.current, 'to', schoolId);
+      console.log(
+        "🔄 School changed from",
+        previousSchoolIdRef.current,
+        "to",
+        schoolId,
+      );
 
       // Invalidate React Query queries (for pages using React Query)
       queryClient.invalidateQueries();
-      queryClient.refetchQueries({ type: 'active' });
+      queryClient.refetchQueries({ type: "active" });
 
       // Note: Dashboard and other pages using useEffect dependencies will refetch automatically
       // when their components detect the selectedSchool change
@@ -65,7 +84,7 @@ export const useSchoolFilter = () => {
 
     // Cleanup interceptor on unmount or when school ID changes
     return () => {
-      apiClient.instance.interceptors.request.eject(requestInterceptor);
+      apiClient.http.instance.interceptors.request.eject(requestInterceptor);
     };
   }, [schoolId, queryClient]);
 

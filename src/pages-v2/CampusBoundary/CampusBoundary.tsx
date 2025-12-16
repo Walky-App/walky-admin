@@ -57,14 +57,14 @@ const CampusBoundary = ({
   };
 
   const [boundaryData, setBoundaryData] = useState<CampusBoundaryData | null>(
-    initialBoundaryData
+    initialBoundaryData,
   );
   const [hasBeenCleared, setHasBeenCleared] = useState(false);
 
   const polygonRef = useRef<google.maps.Polygon | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const drawingManagerRef = useRef<google.maps.drawing.DrawingManager | null>(
-    null
+    null,
   );
   const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
 
@@ -110,7 +110,7 @@ const CampusBoundary = ({
         !hasBeenCleared
       ) {
         const pathCoords = boundaryData.geometry.coordinates[0].map(
-          ([lng, lat]) => ({ lat, lng })
+          ([lng, lat]) => ({ lat, lng }),
         );
 
         const polygon = new window.google.maps.Polygon({
@@ -133,17 +133,17 @@ const CampusBoundary = ({
           window.google.maps.event.addListener(
             polygon.getPath(),
             "set_at",
-            () => updateBoundaryFromPolygon()
+            () => updateBoundaryFromPolygon(),
           );
           window.google.maps.event.addListener(
             polygon.getPath(),
             "insert_at",
-            () => updateBoundaryFromPolygon()
+            () => updateBoundaryFromPolygon(),
           );
           window.google.maps.event.addListener(
             polygon.getPath(),
             "remove_at",
-            () => updateBoundaryFromPolygon()
+            () => updateBoundaryFromPolygon(),
           );
         }
 
@@ -171,7 +171,7 @@ const CampusBoundary = ({
       readOnly,
       onBoundaryChange,
       onValidityChange,
-    ]
+    ],
   );
 
   const handleZoom = (delta: number) => {
@@ -196,7 +196,7 @@ const CampusBoundary = ({
         }
       });
     },
-    []
+    [],
   );
 
   const onPolygonComplete = useCallback(
@@ -262,27 +262,27 @@ const CampusBoundary = ({
       window.google.maps.event.addListener(
         polygon.getPath(),
         "set_at",
-        updateFromEdit
+        updateFromEdit,
       );
       window.google.maps.event.addListener(
         polygon.getPath(),
         "insert_at",
-        updateFromEdit
+        updateFromEdit,
       );
       window.google.maps.event.addListener(
         polygon.getPath(),
         "remove_at",
-        updateFromEdit
+        updateFromEdit,
       );
     },
-    [onBoundaryChange, onValidityChange]
+    [onBoundaryChange, onValidityChange],
   );
 
   const onDrawingManagerLoad = useCallback(
     (drawingManager: google.maps.drawing.DrawingManager) => {
       drawingManagerRef.current = drawingManager;
     },
-    []
+    [],
   );
 
   const handleClearBoundary = () => {
@@ -310,7 +310,7 @@ const CampusBoundary = ({
       window.google.maps
     ) {
       drawingManagerRef.current.setDrawingMode(
-        google.maps.drawing.OverlayType.POLYGON
+        google.maps.drawing.OverlayType.POLYGON,
       );
     }
   };
@@ -323,7 +323,7 @@ const CampusBoundary = ({
       window.google.maps
     ) {
       drawingManagerRef.current.setDrawingMode(
-        google.maps.drawing.OverlayType.POLYGON
+        google.maps.drawing.OverlayType.POLYGON,
       );
     }
   };
@@ -569,6 +569,7 @@ const CampusBoundary = ({
                     >
                       <button
                         type="button"
+                        data-testid="map-zoom-in-btn"
                         onClick={() => handleZoom(1)}
                         aria-label="Zoom in"
                         style={{
@@ -591,6 +592,7 @@ const CampusBoundary = ({
                       </button>
                       <button
                         type="button"
+                        data-testid="map-zoom-out-btn"
                         onClick={() => handleZoom(-1)}
                         aria-label="Zoom out"
                         style={{

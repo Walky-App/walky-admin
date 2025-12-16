@@ -23,7 +23,7 @@ export const ActiveStudents: React.FC = () => {
   };
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<StudentTableColumn | undefined>(
-    undefined
+    undefined,
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const exportRef = useRef<HTMLElement | null>(null);
@@ -73,17 +73,12 @@ export const ActiveStudents: React.FC = () => {
     } as const;
   };
 
-  // todo @olkeksii type endpoint
   const totalStudentsTrend = buildTrend(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    statsData?.data.totalStudentsFromLastMonth ?? 0
+    (statsData?.data as any)?.totalStudentsFromLastMonth ?? 0,
   );
 
   const studentsWithAccessTrend = buildTrend(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    statsData?.data.studentsWithAppAccessFromLastMonth ?? 0
+    (statsData?.data as any)?.studentsWithAppAccessFromLastMonth ?? 0,
   );
 
   const students: StudentData[] = (studentsData?.data.data || []).map(
@@ -99,11 +94,11 @@ export const ActiveStudents: React.FC = () => {
       onlineLast: student.onlineLast || "",
       isFlagged: student.isFlagged,
       flagReason: (student as any).flagReason,
-    })
+    }),
   );
 
   const totalPages = Math.ceil(
-    (studentsData?.data.total || 0) / entriesPerPage
+    (studentsData?.data.total || 0) / entriesPerPage,
   );
   const paginatedStudents = students; // API already returns paginated data
 
@@ -117,7 +112,7 @@ export const ActiveStudents: React.FC = () => {
 
   const handleSortChange = (
     field: StudentTableColumn,
-    order: "asc" | "desc"
+    order: "asc" | "desc",
   ) => {
     setSortBy(field);
     setSortOrder(order);
@@ -143,10 +138,10 @@ export const ActiveStudents: React.FC = () => {
           iconColor="#00C617"
           tooltip="These students have active access and are not banned or deactivated"
           showTooltip={hoveredTooltip === "app-access"}
-          trend={studentsWithAccessTrend}
           onTooltipHover={(show) =>
             setHoveredTooltip(show ? "app-access" : null)
           }
+          trend={studentsWithAccessTrend}
         />
       </div>
 

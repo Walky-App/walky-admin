@@ -62,39 +62,19 @@ export const DisengagedStudents: React.FC = () => {
 
   const isLoading = isStudentsLoading || isStatsLoading;
 
-  const parseChange = (value?: number | string | null) => {
-    if (value === undefined || value === null) return undefined;
-    if (typeof value === "number")
-      return Number.isFinite(value) ? value : undefined;
-    const parsed = parseFloat(value);
-    return Number.isFinite(parsed) ? parsed : undefined;
-  };
-
   const buildTrend = (change?: number) => {
-    const safeChange = change ?? 0;
+    if (change === undefined) return undefined;
     return {
-      value: `${Math.abs(safeChange).toFixed(1)}%`,
-      isPositive: safeChange >= 0,
+      value: `+${change}`,
+      isPositive: true,
       label: "from last month",
     } as const;
   };
 
-  const stats = (statsData?.data || {}) as Record<string, unknown>;
-  const totalStudentsChange = parseChange(
-    (stats["totalStudentsChangePercentage"] as number | string | null) ??
-      (stats["totalStudentsChange"] as number | string | null) ??
-      (stats["totalStudentsTrend"] as number | string | null) ??
-      (stats["totalStudentsMoM"] as number | string | null)
+  const totalStudentsTrend = buildTrend(
+    statsData?.data.totalStudentsFromLastMonth,
   );
-  const disengagedChange = parseChange(
-    (stats["disengagedStudentsChangePercentage"] as number | string | null) ??
-      (stats["disengagedStudentsChange"] as number | string | null) ??
-      (stats["disengagedStudentsTrend"] as number | string | null) ??
-      (stats["disengagedStudentsMoM"] as number | string | null)
-  );
-
-  const totalStudentsTrend = buildTrend(totalStudentsChange);
-  const disengagedTrend = buildTrend(disengagedChange);
+  const disengagedTrend = undefined; // API doesn't provide disengaged change
 
   const students: DisengagedStudent[] = (studentsData?.data.data || []).map(
     (student) => ({
@@ -113,7 +93,7 @@ export const DisengagedStudents: React.FC = () => {
       areaOfStudy: student.studyMain,
       totalPeers: student.totalPeers,
       interests: student.interests || [],
-    })
+    }),
   );
   const handleSendOutreach = (student: DisengagedStudent) => {
     window.location.href = `mailto:${student.email}`;
@@ -314,7 +294,7 @@ export const DisengagedStudents: React.FC = () => {
             <Pagination
               currentPage={currentPage}
               totalPages={Math.ceil(
-                (studentsData?.data.total || 0) / entriesPerPage
+                (studentsData?.data.total || 0) / entriesPerPage,
               )}
               totalEntries={studentsData?.data.total || 0}
               entriesPerPage={entriesPerPage}

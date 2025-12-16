@@ -65,13 +65,13 @@ export const reportService = {
     data: {
       status: "pending" | "under_review" | "resolved" | "dismissed";
       admin_notes?: string;
-    }
+    },
   ) => {
     try {
       console.log("🚀 Updating report status:", reportId, data);
       const response = await apiClient.api.adminReportsStatusPartialUpdate(
         reportId,
-        data
+        data,
       );
       console.log("✅ Update status response:", response.data);
       return response.data.report;
@@ -88,13 +88,13 @@ export const reportService = {
       ban_duration?: number;
       ban_reason?: string;
       resolve_related_reports?: boolean;
-    }
+    },
   ) => {
     try {
       console.log("🚀 Banning user from report:", reportId, data);
       const response = await apiClient.api.adminReportsBanUserCreate(
         reportId,
-        data
+        data,
       );
       console.log("✅ Ban user response:", response.data);
       return response.data;
@@ -155,7 +155,7 @@ export const reportService = {
       console.log("🚀 Unbanning user:", userId, data);
       const response = await apiClient.api.adminUsersUnbanCreate(
         userId,
-        data || {}
+        data || {},
       );
       console.log("✅ Unban response:", response.data);
       return response.data;
@@ -182,7 +182,7 @@ export const reportService = {
   removeUser: async (userId: string, reason: string, sendEmail = true) => {
     try {
       console.log("🚀 Removing user:", userId);
-      const response = await apiClient.request({
+      const response = await apiClient.http.request({
         path: `/api/admin/users/${userId}/remove`,
         method: "DELETE",
         body: { reason, sendEmail },
