@@ -130,10 +130,10 @@ const StudentSafety: React.FC = () => {
           : "N/A",
         reportedBy:
           r.reporterName ||
-          r.reporter?.name ||
-          r.reporter?.fullName ||
-          r.reporter?.full_name ||
-          r.reporter ||
+          (r as any).reporter?.name ||
+          (r as any).reporter?.fullName ||
+          (r as any).reporter?.full_name ||
+          (r as any).reporter ||
           "Unknown",
         status: formatStatusLabel(r.status || "resolved"),
       }));
