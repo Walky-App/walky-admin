@@ -16,7 +16,7 @@ import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
 const mapTimePeriodToApi = (
-  period: "all-time" | "week" | "month"
+  period: "all-time" | "week" | "month",
 ): "all" | "week" | "month" | "year" => {
   if (period === "all-time") return "all";
   return period;
@@ -109,7 +109,7 @@ const StudentSafety: React.FC = () => {
       });
 
       const reports = (res.data.data || []).filter((r: any) =>
-        isWithinPeriod(r.reportDate, timePeriod)
+        isWithinPeriod(r.reportDate, timePeriod),
       );
 
       setModalTotalCount(reports.length);
@@ -251,8 +251,8 @@ const StudentSafety: React.FC = () => {
           timePeriod === "month"
             ? "this month"
             : timePeriod === "week"
-            ? "this week"
-            : "all time"
+              ? "this week"
+              : "all time"
         }
         loading={modalLoading}
       />

@@ -80,7 +80,7 @@ export const Campuses: React.FC = () => {
         sumLng: acc.sumLng + lng,
         sumLat: acc.sumLat + lat,
       }),
-      { sumLng: 0, sumLat: 0 }
+      { sumLng: 0, sumLat: 0 },
     );
     return { lng: sumLng / coords.length, lat: sumLat / coords.length };
   };
@@ -102,7 +102,7 @@ export const Campuses: React.FC = () => {
         strokeColor="#FF9500"
         backgroundColor="#eef0f1"
         mapBackgroundUrl={buildStaticMapUrl(
-          campus.boundaryData?.geometry?.coordinates?.[0]
+          campus.boundaryData?.geometry?.coordinates?.[0],
         )}
         fallbackText={getInitials(campus.name)}
         showBackground={true}
@@ -316,6 +316,7 @@ export const Campuses: React.FC = () => {
           >
             <button
               type="button"
+              data-testid="close-boundary-preview-btn"
               onClick={() => setAvatarModalOpen(false)}
               aria-label="Close boundary preview"
               style={{

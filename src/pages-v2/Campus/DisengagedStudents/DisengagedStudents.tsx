@@ -71,7 +71,9 @@ export const DisengagedStudents: React.FC = () => {
     } as const;
   };
 
-  const totalStudentsTrend = buildTrend(statsData?.data.totalStudentsFromLastMonth);
+  const totalStudentsTrend = buildTrend(
+    statsData?.data.totalStudentsFromLastMonth,
+  );
   const disengagedTrend = undefined; // API doesn't provide disengaged change
 
   const students: DisengagedStudent[] = (studentsData?.data.data || []).map(
