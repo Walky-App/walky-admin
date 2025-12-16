@@ -26,11 +26,12 @@
   border-radius: 14px 14px 0 0;
 }
 
+/* Let the inner list own scrolling to avoid double scrollbars */
 .report-details-modal .modal-body {
   padding: 0 32px 16px 32px !important;
   background-color: #ffffff;
-  overflow-y: auto;
-  max-height: 500px;
+  overflow: visible;
+  max-height: none;
 }
 
 /* Custom Footer outside body - FIXED AT BOTTOM */
@@ -106,7 +107,6 @@
 /* Reports List Container */
 .reports-list-container {
   margin-bottom: 0;
-  padding: 0 32px 16px 32px;
 }
 
 .reports-list {
@@ -143,6 +143,22 @@
   gap: 12px;
   position: relative;
   background-color: #f9f9f9;
+}
+
+.report-item.skeleton {
+  pointer-events: none;
+}
+
+.skeleton-line-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.skeleton-badge {
+  top: 20px;
+  right: 24px;
 }
 
 /* Status Badge */

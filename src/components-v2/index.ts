@@ -42,6 +42,8 @@ export type { IdeaDetailsData, IdeaCollaborator } from "./IdeaDetailsModal";
 export { LastUpdated } from "./LastUpdated";
 export { NoData } from "./NoData";
 export type { NoDataProps, NoDataType } from "./NoData";
+export { BoundaryAvatar } from "./BoundaryAvatar";
+export type { BoundaryAvatarProps } from "./BoundaryAvatar";
 export { Pagination } from "./Pagination/Pagination";
 export { ReportDetailsModal } from "./ReportDetailsModal";
 export { ReportDetailModal } from "./ReportDetailModal";

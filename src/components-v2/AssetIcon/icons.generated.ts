@@ -4,6 +4,7 @@ import arrowLargeLeftIcon from '../../assets-v2/svg/arrow-large-left-icon.svg?re
 import arrowUp from '../../assets-v2/svg/arrow-up.svg?react';
 import braannedStudentsIcon from '../../assets-v2/svg/braanned-students-icon.svg?react';
 import calendarIcon from '../../assets-v2/svg/calendar-icon.svg?react';
+import cameraIcon from '../../assets-v2/svg/camera-icon.svg?react';
 import campusIcon from '../../assets-v2/svg/campus-icon.svg?react';
 import chatIcon from '../../assets-v2/svg/chat-icon.svg?react';
 import checkCopyIcon from '../../assets-v2/svg/check-copy-icon.svg?react';
@@ -47,6 +48,7 @@ import spaceIcon from '../../assets-v2/svg/space-icon.svg?react';
 import statsIcon from '../../assets-v2/svg/stats-icon.svg?react';
 import studentBehaviorIcon from '../../assets-v2/svg/student-behavior-icon.svg?react';
 import swapArrowsIcon from '../../assets-v2/svg/swap-arrows-icon.svg?react';
+import syncIcon from '../../assets-v2/svg/sync-icon.svg?react';
 import tableIcon from '../../assets-v2/svg/table-icon.svg?react';
 import tooltipIcon from '../../assets-v2/svg/tooltip-icon.svg?react';
 import topFieldsStudyIcon from '../../assets-v2/svg/top-fields-study-icon.svg?react';
@@ -67,6 +69,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'arrow-up': arrowUp,
   'braanned-students-icon': braannedStudentsIcon,
   'calendar-icon': calendarIcon,
+  'camera-icon': cameraIcon,
   'campus-icon': campusIcon,
   'chat-icon': chatIcon,
   'check-copy-icon': checkCopyIcon,
@@ -110,6 +113,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'stats-icon': statsIcon,
   'student-behavior-icon': studentBehaviorIcon,
   'swap-arrows-icon': swapArrowsIcon,
+  'sync-icon': syncIcon,
   'table-icon': tableIcon,
   'tooltip-icon': tooltipIcon,
   'top-fields-study-icon': topFieldsStudyIcon,

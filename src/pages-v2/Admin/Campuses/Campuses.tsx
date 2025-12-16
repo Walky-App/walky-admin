@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { CModal, CModalBody } from "@coreui/react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import "./Campuses.css";
 import {
   AssetIcon,
+  BoundaryAvatar,
   CopyableId,
   Divider,
   Pagination,
@@ -41,6 +43,10 @@ export const Campuses: React.FC = () => {
   const [searchQuery, _setSearchQuery] = useState("");
   const [expandedCampusId, setExpandedCampusId] = useState<string | null>(null);
   const [currentPage] = useState(1);
+  const [avatarModalOpen, setAvatarModalOpen] = useState(false);
+  const [avatarModalCoords, setAvatarModalCoords] = useState<
+    number[][] | undefined
+  >();
 
   const { data: campusesData, isLoading } = useQuery({
     queryKey: ["campuses"],
@@ -66,6 +72,50 @@ export const Campuses: React.FC = () => {
   });
 
   const totalCampuses = campuses.length;
+
+  const getCentroid = (coords?: number[][]) => {
+    if (!coords || coords.length === 0) return null;
+    const { sumLng, sumLat } = coords.reduce(
+      (acc, [lng, lat]) => ({
+        sumLng: acc.sumLng + lng,
+        sumLat: acc.sumLat + lat,
+      }),
+      { sumLng: 0, sumLat: 0 }
+    );
+    return { lng: sumLng / coords.length, lat: sumLat / coords.length };
+  };
+
+  const buildStaticMapUrl = (coords?: number[][]) => {
+    const centroid = getCentroid(coords);
+    if (!centroid) return undefined;
+    const size = 200; // px
+    const zoom = 15;
+    return `https://staticmap.openstreetmap.de/staticmap.php?center=${centroid.lat},${centroid.lng}&zoom=${zoom}&size=${size}x${size}`;
+  };
+
+  const renderAvatar = (campus: CampusData) => {
+    return (
+      <BoundaryAvatar
+        coordinates={campus.boundaryData?.geometry?.coordinates?.[0]}
+        size={52}
+        fillColor="#546FD9"
+        strokeColor="#FF9500"
+        backgroundColor="#eef0f1"
+        mapBackgroundUrl={buildStaticMapUrl(
+          campus.boundaryData?.geometry?.coordinates?.[0]
+        )}
+        fallbackText={getInitials(campus.name)}
+        showBackground={true}
+        padding={10}
+        className={campus.boundaryData ? "campus-avatar-clickable" : ""}
+        onClick={() => {
+          if (!campus.boundaryData) return;
+          setAvatarModalCoords(campus.boundaryData.geometry?.coordinates?.[0]);
+          setAvatarModalOpen(true);
+        }}
+      />
+    );
+  };
 
   const renderSkeletonRows = () =>
     Array.from({ length: 6 }).map((_, index) => (
@@ -155,17 +205,7 @@ export const Campuses: React.FC = () => {
                         {/* Campus Column with Avatar and Dropdown */}
                         <td className="campus-cell">
                           <div className="campus-info">
-                            {campus.imageUrl ? (
-                              <img
-                                src={campus.imageUrl}
-                                alt={campus.name}
-                                className="campus-avatar"
-                              />
-                            ) : (
-                              <div className="campus-avatar-placeholder">
-                                {getInitials(campus.name)}
-                              </div>
-                            )}
+                            {renderAvatar(campus)}
                             <div className="campus-dropdown">
                               <button
                                 data-testid="campus-dropdown-btn"
@@ -174,12 +214,13 @@ export const Campuses: React.FC = () => {
                               >
                                 <AssetIcon
                                   name="arrow-down"
-                                  size={10}
+                                  size={20}
                                   className={`chevron-icon ${
                                     expandedCampusId === campus.id
                                       ? "expanded"
                                       : ""
                                   }`}
+                                  color="#1D1B20"
                                 />
                                 <span className="campus-name">
                                   {campus.name}
@@ -222,7 +263,11 @@ export const Campuses: React.FC = () => {
                             title="Sync places"
                             aria-label="Sync places for campus"
                           >
-                            <AssetIcon name="swap-arrows-icon" size={16} />
+                            <AssetIcon
+                              name="sync-icon"
+                              size={18}
+                              color="#1D1B20"
+                            />
                           </button>
                         </td>
                       </tr>
@@ -255,6 +300,63 @@ export const Campuses: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        <CModal
+          visible={avatarModalOpen}
+          alignment="center"
+          onClose={() => setAvatarModalOpen(false)}
+          backdrop="static"
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              padding: "12px 16px 0 16px",
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setAvatarModalOpen(false)}
+              aria-label="Close boundary preview"
+              style={{
+                border: "none",
+                background: "transparent",
+                cursor: "pointer",
+                fontSize: 18,
+                lineHeight: 1,
+                color: "#5b6168",
+              }}
+            >
+              ×
+            </button>
+          </div>
+          <CModalBody
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              padding: "0 20px 24px 20px",
+            }}
+          >
+            <div
+              style={{
+                maxWidth: 360,
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <BoundaryAvatar
+                coordinates={avatarModalCoords}
+                size={220}
+                fillColor="#546FD9"
+                strokeColor="#FF9500"
+                backgroundColor="#eef0f1"
+                padding={14}
+                showBackground={true}
+              />
+            </div>
+          </CModalBody>
+        </CModal>
 
         {/* Pagination */}
         <Pagination

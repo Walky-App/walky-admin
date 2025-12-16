@@ -23,7 +23,6 @@ export const CopyableId: React.FC<CopyableIdProps> = ({
   variant = "primary",
   size = "medium",
   iconSize = 16,
-  iconColor = "#6366F1",
   showToast = false,
   toastMessage = "ID copied to clipboard",
   className = "",
@@ -114,10 +113,10 @@ export const CopyableId: React.FC<CopyableIdProps> = ({
             <AssetIcon
               name="check-copy-icon"
               size={iconSize}
-              color={iconColor}
+              color={"#ACB6BA"}
             />
           ) : (
-            <AssetIcon name="copy-icon" size={iconSize} color={iconColor} />
+            <AssetIcon name="copy-icon" size={iconSize} color={"#ACB6BA"} />
           )}
         </button>
 

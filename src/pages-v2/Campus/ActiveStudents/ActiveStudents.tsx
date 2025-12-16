@@ -64,44 +64,27 @@ export const ActiveStudents: React.FC = () => {
   });
 
   const isLoading = isStudentsLoading || isStatsLoading;
-
-  const parseChange = (value?: number | string | null) => {
-    if (value === undefined || value === null) return undefined;
-    if (typeof value === "number")
-      return Number.isFinite(value) ? value : undefined;
-
-    const parsed = parseFloat(value);
-    return Number.isFinite(parsed) ? parsed : undefined;
-  };
-
-  const buildTrend = (change?: number) => {
-    const safeChange = change ?? 0;
+  const buildTrend = (change?: number | null) => {
+    const safeChange = Number.isFinite(change ?? NaN) ? (change as number) : 0;
     return {
-      value: `${Math.abs(safeChange).toFixed(1)}%`,
+      value: `${Math.abs(safeChange)}`,
       isPositive: safeChange >= 0,
       label: "from last month",
     } as const;
   };
 
-  const stats = (statsData?.data || {}) as Record<string, unknown>;
-  const totalStudentsChange = parseChange(
-    (stats["totalStudentsChangePercentage"] as number | string | null) ??
-      (stats["totalStudentsChange"] as number | string | null) ??
-      (stats["totalStudentsTrend"] as number | string | null) ??
-      (stats["totalStudentsMoM"] as number | string | null)
-  );
-  const studentsWithAccessChange = parseChange(
-    (stats["studentsWithAppAccessChangePercentage"] as
-      | number
-      | string
-      | null) ??
-      (stats["studentsWithAppAccessChange"] as number | string | null) ??
-      (stats["studentsWithAppAccessTrend"] as number | string | null) ??
-      (stats["studentsWithAppAccessMoM"] as number | string | null)
+  // todo @olkeksii type endpoint
+  const totalStudentsTrend = buildTrend(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    statsData?.data.totalStudentsFromLastMonth ?? 0
   );
 
-  const totalStudentsTrend = buildTrend(totalStudentsChange);
-  const studentsWithAccessTrend = buildTrend(studentsWithAccessChange);
+  const studentsWithAccessTrend = buildTrend(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    statsData?.data.studentsWithAppAccessFromLastMonth ?? 0
+  );
 
   const students: StudentData[] = (studentsData?.data.data || []).map(
     (student) => ({

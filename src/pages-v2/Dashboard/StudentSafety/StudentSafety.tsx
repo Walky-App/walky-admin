@@ -15,6 +15,64 @@ import { useDashboard } from "../../../contexts/DashboardContext";
 import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
+const mapTimePeriodToApi = (
+  period: "all-time" | "week" | "month"
+): "all" | "week" | "month" | "year" => {
+  if (period === "all-time") return "all";
+  return period;
+};
+
+const isWithinPeriod = (dateValue?: string, period?: string) => {
+  if (!dateValue) return false;
+
+  const parsed = new Date(dateValue);
+  if (Number.isNaN(parsed.getTime())) return true;
+
+  if (period === "month") {
+    const now = new Date();
+    return (
+      parsed.getUTCFullYear() === now.getUTCFullYear() &&
+      parsed.getUTCMonth() === now.getUTCMonth()
+    );
+  }
+
+  if (period === "week") {
+    const now = new Date();
+    const start = new Date(now);
+    start.setUTCDate(now.getUTCDate() - ((now.getUTCDay() + 6) % 7));
+    start.setUTCHours(0, 0, 0, 0);
+
+    const end = new Date(start);
+    end.setUTCDate(start.getUTCDate() + 7);
+
+    return parsed >= start && parsed < end;
+  }
+
+  return true;
+};
+
+const formatReasonLabel = (value?: string) => {
+  if (!value) return "Other";
+
+  return value
+    .replace(/_/g, " ")
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+const formatStatusLabel = (value?: string) => {
+  if (!value) return "Resolved";
+
+  const cleaned = value.replace(/_/g, " ").trim();
+  return cleaned
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
 const StudentSafety: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
@@ -40,24 +98,28 @@ const StudentSafety: React.FC = () => {
       else if (type.includes("Events")) apiType = "event";
       else if (type.includes("People")) apiType = "user";
 
+      const apiPeriod = mapTimePeriodToApi(timePeriod);
+
       const res = await apiClient.api.adminV2ReportsList({
         type: apiType,
         limit: 100,
         schoolId: selectedSchool?._id,
         campusId: selectedCampus?._id,
-        period: timePeriod as "all" | "week" | "month" | "year",
+        period: apiPeriod,
       });
 
-      const reports = res.data.data || [];
-      const total = res.data.total || reports.length;
-      setModalTotalCount(total);
+      const reports = (res.data.data || []).filter((r: any) =>
+        isWithinPeriod(r.reportDate, timePeriod)
+      );
+
+      setModalTotalCount(reports.length);
 
       const transformedReports = reports.map((r) => ({
         id: r.id,
         reportedItemName: r.description || "Unknown Item",
         reportId: r.reportedItemId || r.id,
-        reason: r.reason || "Other",
-        reasonTag: r.reasonTag || r.reason || "Other",
+        reason: formatReasonLabel(r.reason || r.reasonTag),
+        reasonTag: formatReasonLabel(r.reasonTag || r.reason || "Other"),
         description: r.description || "",
         reportedOn: r.reportDate
           ? new Date(r.reportDate).toLocaleDateString("en-US", {
@@ -66,8 +128,14 @@ const StudentSafety: React.FC = () => {
               year: "numeric",
             })
           : "N/A",
-        reportedBy: r.reporterName || "Unknown",
-        status: (r.status || "resolved").toLowerCase().replace(/ /g, "_"),
+        reportedBy:
+          r.reporterName ||
+          r.reporter?.name ||
+          r.reporter?.fullName ||
+          r.reporter?.full_name ||
+          r.reporter ||
+          "Unknown",
+        status: formatStatusLabel(r.status || "resolved"),
       }));
 
       setModalReports(transformedReports);
@@ -105,7 +173,9 @@ const StudentSafety: React.FC = () => {
   const data = apiData?.data || { labels: [], subLabels: [], reportsData: [] };
   const chartLabels = data.labels || [];
   const chartSubLabels = data.subLabels;
-  const reportsData = (data.reportsData || []) as Array<{ [key: string]: number }>;
+  const reportsData = (data.reportsData || []) as Array<{
+    [key: string]: number;
+  }>;
 
   if (isLoading) {
     return <DashboardSkeleton />;

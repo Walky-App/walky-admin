@@ -137,6 +137,10 @@
   vertical-align: middle;
 }
 
+.table-header-row--muted th {
+  opacity: 0.4;
+}
+
 .ambassadors-table th:first-child {
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
@@ -285,29 +289,32 @@
   text-align: left;
 }
 
-.status-badge {
-  display: inline-block;
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: "Lato", sans-serif;
-  font-size: 14px;
   font-weight: 700;
   line-height: 1;
-  padding: 4px 18px;
   border-radius: 14px;
+  letter-spacing: -0.01em;
 }
 
-.status-badge.active {
-  background-color: #edffed;
-  color: #18682c;
+.status-chip-compact {
+  font-size: 12px;
+  padding: 4px 10px;
+  min-height: 24px;
 }
 
-.status-badge.inactive {
-  background-color: #f4f5f7;
-  color: #676d70;
+.status-chip-regular {
+  font-size: 14px;
+  padding: 6px 12px;
+  min-height: 28px;
 }
 
-.status-badge.deactivated {
-  background-color: #fff3e0;
-  color: #e65100;
+.empty-state-cell {
+  text-align: center;
+  padding: 32px 20px;
 }
 
 /* Actions */
