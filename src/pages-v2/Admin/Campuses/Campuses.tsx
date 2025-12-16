@@ -47,18 +47,16 @@ export const Campuses: React.FC = () => {
     queryFn: () => apiClient.api.adminV2CampusesList(),
   });
 
-  const campuses: CampusData[] = (campusesData?.data || []).map(
-    (campus) => ({
-      id: campus.id || "",
-      name: campus.name || "",
-      campusId: campus.id || "", // Using ID as campusId for display
-      location: campus.location || "",
-      address: campus.address || "",
-      status: (campus.status || "Active") as "Active" | "Inactive",
-      imageUrl: campus.imageUrl || "",
-      boundaryData: campus.boundaryData as CampusData["boundaryData"],
-    })
-  );
+  const campuses: CampusData[] = (campusesData?.data || []).map((campus) => ({
+    id: campus.id || "",
+    name: campus.name || "",
+    campusId: campus.id || "", // Using ID as campusId for display
+    location: campus.location || "",
+    address: campus.address || "",
+    status: (campus.status || "Active") as "Active" | "Inactive",
+    imageUrl: campus.imageUrl || "",
+    boundaryData: campus.boundaryData as CampusData["boundaryData"],
+  }));
 
   const filteredCampuses = campuses.filter((campus) => {
     const matchesSearch = campus.name
@@ -147,6 +145,7 @@ export const Campuses: React.FC = () => {
                 <th className="table-header">Sync places</th>
               </tr>
             </thead>
+            <div className="content-space-divider" />
             <tbody>
               {isLoading
                 ? renderSkeletonRows()

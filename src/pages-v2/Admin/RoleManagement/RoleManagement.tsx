@@ -134,7 +134,10 @@ export const RoleManagement: React.FC = () => {
           invitationStatus: (member.invitationStatus ||
             "Pending") as MemberData["invitationStatus"],
           lastActive:
-            member.lastActive || member.last_active || member.last_login || null,
+            member.lastActive ||
+            member.last_active ||
+            member.last_login ||
+            null,
         };
       }),
     [membersData]
@@ -329,6 +332,7 @@ export const RoleManagement: React.FC = () => {
                 <th></th>
               </tr>
             </thead>
+            <div className="content-space-divider" />
             <tbody>
               {isLoading ? (
                 renderSkeletonRows()

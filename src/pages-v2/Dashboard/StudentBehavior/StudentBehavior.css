@@ -318,7 +318,7 @@
   line-height: var(--v2-line-height-normal);
   margin: 0;
   max-width: 100%;
-  color: var(--v2-text-muted);
+  color: #5b6168;
 }
 
 /* Responsive */

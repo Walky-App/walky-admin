@@ -1,5 +1,6 @@
 /* Campuses Page Styles */
 .campuses-page {
+  padding-bottom: 85px;
 }
 
 /* Page Header */
@@ -40,6 +41,7 @@
   border: 1px solid #eef0f1;
   border-radius: 14px;
   padding: 32px 27px;
+  box-shadow: 0px 1px 8px 0px rgba(84, 111, 217, 0.1);
 }
 
 /* Directory Info */
@@ -74,6 +76,10 @@
 .campuses-table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.content-space-divider {
+  height: 18px;
 }
 
 /* Table Header */

@@ -18,7 +18,6 @@ export const DeactivatedStudents: React.FC = () => {
     setSearchQuery(value);
     setCurrentPage(1); // Reset to first page when searching
   };
-  const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<StudentTableColumn | undefined>(
     undefined
   );
@@ -58,6 +57,40 @@ export const DeactivatedStudents: React.FC = () => {
   });
 
   const isListLoading = isStudentsLoading;
+
+  const parseChange = (value?: number | string | null) => {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value === "number")
+      return Number.isFinite(value) ? value : undefined;
+    const parsed = parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  };
+
+  const buildTrend = (change?: number) => {
+    const safeChange = change ?? 0;
+    return {
+      value: `${Math.abs(safeChange).toFixed(1)}%`,
+      isPositive: safeChange >= 0,
+      label: "from last month",
+    } as const;
+  };
+
+  const stats = (statsData?.data || {}) as Record<string, unknown>;
+  const totalDeactivatedChange = parseChange(
+    (stats["totalDeactivatedChangePercentage"] as number | string | null) ??
+      (stats["totalDeactivatedChange"] as number | string | null) ??
+      (stats["totalDeactivatedTrend"] as number | string | null) ??
+      (stats["totalDeactivatedMoM"] as number | string | null)
+  );
+  const permanentBansChange = parseChange(
+    (stats["totalPermanentBansChangePercentage"] as number | string | null) ??
+      (stats["totalPermanentBansChange"] as number | string | null) ??
+      (stats["totalPermanentBansTrend"] as number | string | null) ??
+      (stats["totalPermanentBansMoM"] as number | string | null)
+  );
+
+  const totalDeactivatedTrend = buildTrend(totalDeactivatedChange);
+  const permanentBansTrend = buildTrend(permanentBansChange);
 
   const students: StudentData[] = (studentsData?.data.data || []).map(
     (student) => ({
@@ -102,6 +135,7 @@ export const DeactivatedStudents: React.FC = () => {
           iconName="double-users-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
+          trend={totalDeactivatedTrend}
         />
         <StatsCard
           title="Permanent bans"
@@ -109,11 +143,7 @@ export const DeactivatedStudents: React.FC = () => {
           iconName="lock-icon"
           iconBgColor="#FCE9E9"
           iconColor="#FF8082"
-          tooltip="Students with permanent deactivation status"
-          showTooltip={hoveredTooltip === "this-month"}
-          onTooltipHover={(show) =>
-            setHoveredTooltip(show ? "this-month" : null)
-          }
+          trend={permanentBansTrend}
         />
       </div>
 

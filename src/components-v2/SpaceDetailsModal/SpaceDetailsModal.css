@@ -506,21 +506,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
-  transform: rotate(270deg);
   transition: transform 0.2s;
 }
 
 .space-event-chevron-icon {
-  font-size: 24px;
-  color: #1d1b20;
   line-height: 1;
 }
 
 .space-event-card:hover .space-event-chevron {
-  transform: rotate(270deg) translateX(-2px);
+  transform: translateX(-2px);
 }
 
 /* More Details Tab */

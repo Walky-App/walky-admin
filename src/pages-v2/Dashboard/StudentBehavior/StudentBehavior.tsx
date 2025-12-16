@@ -62,8 +62,11 @@ const StudentBehavior: React.FC = () => {
   });
 
   const data = apiData?.data || { metricCards: [], completionMetrics: [] };
-  const metricCards: MetricCard[] = (data as { metricCards?: MetricCard[] }).metricCards || [];
-  const completionMetrics: CompletionMetric[] = (data as { completionMetrics?: CompletionMetric[] }).completionMetrics || [];
+  const metricCards: MetricCard[] =
+    (data as { metricCards?: MetricCard[] }).metricCards || [];
+  const completionMetrics: CompletionMetric[] =
+    (data as { completionMetrics?: CompletionMetric[] }).completionMetrics ||
+    [];
 
   if (isLoading) {
     return <DashboardSkeleton />;

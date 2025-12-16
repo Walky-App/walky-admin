@@ -455,19 +455,19 @@ const ReportHistory: React.FC = () => {
             showResolutionDate={true}
           />
         </div>
-      </div>
 
-      {totalEntries > 0 && (
-        <div className="pagination-wrapper">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalEntries={totalEntries}
-            entriesPerPage={itemsPerPage}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      )}
+        {totalEntries > 0 && (
+          <div className="pagination-wrapper">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalEntries={totalEntries}
+              entriesPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
+      </div>
 
       <WriteNoteModal
         isOpen={isNoteModalOpen}

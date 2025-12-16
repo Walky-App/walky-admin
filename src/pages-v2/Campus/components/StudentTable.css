@@ -7,8 +7,8 @@
 
 .student-table {
   width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
+  border-collapse: separate;
+  border-spacing: 0 4px;
   position: relative;
   z-index: 1;
 }

@@ -257,9 +257,10 @@ const ReportSafety: React.FC = () => {
       );
 
       // Show success message
-      const statusMessage = currentPendingChange.newStatus === "Resolved"
-        ? "Report resolved successfully"
-        : "Report dismissed successfully";
+      const statusMessage =
+        currentPendingChange.newStatus === "Resolved"
+          ? "Report resolved successfully"
+          : "Report dismissed successfully";
       setToastMessage(statusMessage);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -565,22 +566,23 @@ const ReportSafety: React.FC = () => {
             actionTestId="report-options"
             getStatusTestId={(row) => `status-dropdown-${row.id}`}
             sortOrder={sortOrder}
-            onSort={() => setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
+            onSort={() =>
+              setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+            }
           />
         </div>
+        {totalEntries > 0 && (
+          <div className="pagination-wrapper">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalEntries={totalEntries}
+              entriesPerPage={10}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
       </div>
-
-      {totalEntries > 0 && (
-        <div className="pagination-wrapper">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalEntries={totalEntries}
-            entriesPerPage={10}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      )}
 
       <WriteNoteModal
         isOpen={isNoteModalOpen}
@@ -597,7 +599,7 @@ const ReportSafety: React.FC = () => {
             selectedReportDetails.content?.isFromSpace;
 
           const mappedType = isEventFromSpace
-            ? "Event of Space" as ReportType
+            ? ("Event of Space" as ReportType)
             : mapReportType(selectedReport.type);
 
           return (
@@ -671,14 +673,20 @@ const ReportSafety: React.FC = () => {
                           category: "Other",
                           memberCount: "0",
                         }
-                      : mappedType === "Event of Space" && selectedReportDetails.content?.space
+                      : mappedType === "Event of Space" &&
+                        selectedReportDetails.content?.space
                       ? {
                           id: selectedReportDetails.content.space.id,
                           title: selectedReportDetails.content.space.name,
-                          description: selectedReportDetails.content.space.description,
+                          description:
+                            selectedReportDetails.content.space.description,
                           image: selectedReportDetails.content.space.image,
-                          category: selectedReportDetails.content.space.category || "Space",
-                          memberCount: selectedReportDetails.content.space.memberCount || "0 members",
+                          category:
+                            selectedReportDetails.content.space.category ||
+                            "Space",
+                          memberCount:
+                            selectedReportDetails.content.space.memberCount ||
+                            "0 members",
                         }
                       : undefined,
                 },
