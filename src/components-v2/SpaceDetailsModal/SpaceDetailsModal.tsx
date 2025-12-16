@@ -360,9 +360,12 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
                               className="space-event-chevron"
                               aria-label="View event details"
                             >
-                              <span className="space-event-chevron-icon">
-                                ›
-                              </span>
+                              <AssetIcon
+                                name="right-arrow-icon"
+                                size={16}
+                                color="#546FD9"
+                                className="space-event-chevron-icon"
+                              />
                             </button>
                           </div>
                         ))

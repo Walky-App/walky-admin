@@ -63,6 +63,40 @@ export const BannedStudents: React.FC = () => {
 
   const isLoading = isStudentsLoading;
 
+  const parseChange = (value?: number | string | null) => {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value === "number")
+      return Number.isFinite(value) ? value : undefined;
+    const parsed = parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  };
+
+  const buildTrend = (change?: number) => {
+    const safeChange = change ?? 0;
+    return {
+      value: `${Math.abs(safeChange).toFixed(1)}%`,
+      isPositive: safeChange >= 0,
+      label: "from last month",
+    } as const;
+  };
+
+  const stats = (statsData?.data || {}) as Record<string, unknown>;
+  const totalBannedChange = parseChange(
+    (stats["totalBannedChangePercentage"] as number | string | null) ??
+      (stats["totalBannedChange"] as number | string | null) ??
+      (stats["totalBannedTrend"] as number | string | null) ??
+      (stats["totalBannedMoM"] as number | string | null)
+  );
+  const permanentBansChange = parseChange(
+    (stats["totalPermanentBansChangePercentage"] as number | string | null) ??
+      (stats["totalPermanentBansChange"] as number | string | null) ??
+      (stats["totalPermanentBansTrend"] as number | string | null) ??
+      (stats["totalPermanentBansMoM"] as number | string | null)
+  );
+
+  const totalBannedTrend = buildTrend(totalBannedChange);
+  const permanentBansTrend = buildTrend(permanentBansChange);
+
   // Extended type for additional fields that may come from API
   type ExtendedStudent = {
     id?: string;
@@ -179,6 +213,7 @@ export const BannedStudents: React.FC = () => {
           iconName="double-users-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
+          trend={totalBannedTrend}
         />
         <StatsCard
           title="Permanent bans"
@@ -188,6 +223,7 @@ export const BannedStudents: React.FC = () => {
           iconColor="#F69B39"
           tooltip="Students with permanent ban status"
           showTooltip={hoveredTooltip === "permanent-bans"}
+          trend={permanentBansTrend}
           onTooltipHover={(show) =>
             setHoveredTooltip(show ? "permanent-bans" : null)
           }

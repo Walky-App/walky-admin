@@ -65,7 +65,6 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedIdea, setSelectedIdea] = useState<IdeaData | null>(null);
 
-
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2IdeasDelete(id),
     onSuccess: () => {
@@ -138,7 +137,11 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
         creator?: { name?: string; avatar?: string; studentId?: string };
         description?: string;
         lookingFor?: string;
-        collaborators?: Array<{ user_id?: string; name?: string; avatar_url?: string }>;
+        collaborators?: Array<{
+          user_id?: string;
+          name?: string;
+          avatar_url?: string;
+        }>;
         isFlagged?: boolean;
         flagReason?: string;
       };
@@ -373,9 +376,9 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
                     />
                   </td>
                 </tr>
-                {index < ideas.length - 1 && !idea.isFlagged && (
+                {index < ideas.length - 1 && (
                   <tr className="idea-divider-row">
-                    <td colSpan={7}>
+                    <td colSpan={6}>
                       <Divider />
                     </td>
                   </tr>

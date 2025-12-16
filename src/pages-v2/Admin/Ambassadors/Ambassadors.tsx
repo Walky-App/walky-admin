@@ -76,7 +76,9 @@ export const Ambassadors: React.FC = () => {
         user_is_active?: boolean; // User's active status (deactivated student)
       };
 
-      const transformedAmbassadors: AmbassadorData[] = (data as ExtendedAmbassador[]).map((a) => {
+      const transformedAmbassadors: AmbassadorData[] = (
+        data as ExtendedAmbassador[]
+      ).map((a) => {
         const formattedAmbassadorSince = formatMemberSince(a.createdAt);
         const formattedMemberSince = formatMemberSince(a.createdAt);
 
@@ -358,6 +360,7 @@ export const Ambassadors: React.FC = () => {
                 <th></th>
               </tr>
             </thead>
+            <div className="content-space-divider" />
             <tbody>
               {loading ? (
                 renderSkeletonRows()

@@ -40,6 +40,7 @@ import popularEmojiIcon from '../../assets-v2/svg/popular-emoji-icon.svg?react';
 import priviteEventIcon from '../../assets-v2/svg/privite-event-icon.svg?react';
 import publicEventIcon from '../../assets-v2/svg/public-event-icon.svg?react';
 import redFlagIcon from '../../assets-v2/svg/red-flag-icon.svg?react';
+import rightArrowIcon from '../../assets-v2/svg/right-arrow-icon.svg?react';
 import schoolIcon from '../../assets-v2/svg/school-icon.svg?react';
 import searchIcon from '../../assets-v2/svg/search-icon.svg?react';
 import spaceIcon from '../../assets-v2/svg/space-icon.svg?react';
@@ -102,6 +103,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'privite-event-icon': priviteEventIcon,
   'public-event-icon': publicEventIcon,
   'red-flag-icon': redFlagIcon,
+  'right-arrow-icon': rightArrowIcon,
   'school-icon': schoolIcon,
   'search-icon': searchIcon,
   'space-icon': spaceIcon,

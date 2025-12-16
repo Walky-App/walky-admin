@@ -156,8 +156,19 @@ export const EventTable: React.FC<EventTableProps> = ({
         description?: string;
         slots?: number;
         spaceId?: string;
-        organizer?: { name?: string; id?: string; _id?: string; avatar?: string; avatar_url?: string };
-        participants?: Array<{ user_id?: string; name?: string; avatar_url?: string; status?: string }>;
+        organizer?: {
+          name?: string;
+          id?: string;
+          _id?: string;
+          avatar?: string;
+          avatar_url?: string;
+        };
+        participants?: Array<{
+          user_id?: string;
+          name?: string;
+          avatar_url?: string;
+          status?: string;
+        }>;
         isFlagged?: boolean;
         flagReason?: string;
         space?: {
@@ -178,7 +189,6 @@ export const EventTable: React.FC<EventTableProps> = ({
             month: "long",
             day: "numeric",
             year: "numeric",
-            timeZone: "UTC",
           }).format(dateObj as Date)
         : details.eventDate || "";
 
@@ -187,7 +197,6 @@ export const EventTable: React.FC<EventTableProps> = ({
             hour: "2-digit",
             minute: "2-digit",
             hour12: true,
-            timeZone: "UTC",
           }).format(dateObj as Date)
         : details.eventTime || details.event_time || "";
 
@@ -223,13 +232,15 @@ export const EventTable: React.FC<EventTableProps> = ({
         maxAttendees: details.slots || 0,
         isFlagged: details.isFlagged,
         flagReason: details.flagReason,
-        space: details.space ? {
-          id: details.space.id || "",
-          name: details.space.name || "",
-          logo: details.space.logo,
-          coverImage: details.space.coverImage,
-          description: details.space.description,
-        } : null,
+        space: details.space
+          ? {
+              id: details.space.id || "",
+              name: details.space.name || "",
+              logo: details.space.logo,
+              coverImage: details.space.coverImage,
+              description: details.space.description,
+            }
+          : null,
       };
 
       setSelectedEvent(eventDetails);
@@ -322,6 +333,8 @@ export const EventTable: React.FC<EventTableProps> = ({
           </tr>
         </thead>
 
+        <div className="content-space-divider" />
+
         <tbody>
           {events.map((event, index) => (
             <React.Fragment key={event.id}>
@@ -338,7 +351,9 @@ export const EventTable: React.FC<EventTableProps> = ({
                     </span>
                   )}
                   <div className="event-name-cell">
-                    <span className="event-name">{event.eventName}</span>
+                    <span className="event-name" title={event.eventName}>
+                      {event.eventName}
+                    </span>
                   </div>
                 </td>
                 <td>
@@ -423,9 +438,9 @@ export const EventTable: React.FC<EventTableProps> = ({
                   />
                 </td>
               </tr>
-              {index < events.length - 1 && !event.isFlagged && (
+              {index < events.length - 1 && (
                 <tr className="event-divider-row">
-                  <td colSpan={7}>
+                  <td colSpan={8}>
                     <Divider />
                   </td>
                 </tr>

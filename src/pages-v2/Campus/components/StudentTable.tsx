@@ -358,7 +358,9 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         lastLogin: formatLastLogin(details.lastLogin),
         totalPeers: details.totalPeers ?? details.peers ?? 0,
         bio: details.bio || "No bio provided",
-        interests: details.interests?.length ? details.interests : (student.interests || []),
+        interests: details.interests?.length
+          ? details.interests
+          : student.interests || [],
         status: (details.status as StudentData["status"]) || student.status,
         banHistory,
         reportHistory: [],
@@ -552,10 +554,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       render: (student) => (
         <>
           {Boolean(student.isFlagged) && (
-            <CTooltip
-              content={student.flagReason || "Flagged"}
-              placement="top"
-            >
+            <CTooltip content={student.flagReason || "Flagged"} placement="top">
               <div className="student-flag-icon">
                 <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
               </div>
@@ -676,6 +675,8 @@ export const StudentTable: React.FC<StudentTableProps> = ({
             <th></th>
           </tr>
         </thead>
+
+        <div className="content-space-divider" />
 
         <tbody>
           {isEmpty ? (

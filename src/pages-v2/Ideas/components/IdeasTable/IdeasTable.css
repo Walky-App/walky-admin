@@ -7,16 +7,18 @@
 .ideas-table {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0; /* add subtle vertical breathing room between rows */
+  border-spacing: 0 4px;
 }
 
-.ideas-table thead {
-  background-color: #ebf0fa;
+.ideas-table thead tr {
+  background-color: #f1f4f9;
+  height: 53px;
   border-radius: 12px;
 }
 
 .ideas-table thead tr th {
-  padding: 13.5px 0;
+  padding: 16px;
+  padding-bottom: 18px;
   text-align: left;
   font-family: "Lato", sans-serif;
   font-weight: 700;
@@ -61,7 +63,7 @@
 .ideas-table tbody tr.idea-row-flagged {
   background-color: #fff3f2;
   border-bottom: none;
-  box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
 }
 
 .ideas-table tbody tr.idea-row-flagged td {
@@ -81,7 +83,7 @@
 }
 
 .ideas-table tbody td {
-  padding: 12px 0;
+  padding: 12px 16px;
   font-family: "Lato", sans-serif;
   font-weight: 600;
   font-size: 14px;
@@ -106,6 +108,8 @@
   gap: 8px;
   position: relative;
   z-index: 1;
+  max-width: 240px;
+  min-width: 240px;
 }
 
 .idea-flag-icon {
@@ -120,7 +124,7 @@
 
 .ideas-table-idea-title {
   display: block;
-  max-width: 230px;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

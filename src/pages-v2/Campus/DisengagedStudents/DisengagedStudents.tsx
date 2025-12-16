@@ -62,6 +62,40 @@ export const DisengagedStudents: React.FC = () => {
 
   const isLoading = isStudentsLoading || isStatsLoading;
 
+  const parseChange = (value?: number | string | null) => {
+    if (value === undefined || value === null) return undefined;
+    if (typeof value === "number")
+      return Number.isFinite(value) ? value : undefined;
+    const parsed = parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  };
+
+  const buildTrend = (change?: number) => {
+    const safeChange = change ?? 0;
+    return {
+      value: `${Math.abs(safeChange).toFixed(1)}%`,
+      isPositive: safeChange >= 0,
+      label: "from last month",
+    } as const;
+  };
+
+  const stats = (statsData?.data || {}) as Record<string, unknown>;
+  const totalStudentsChange = parseChange(
+    (stats["totalStudentsChangePercentage"] as number | string | null) ??
+      (stats["totalStudentsChange"] as number | string | null) ??
+      (stats["totalStudentsTrend"] as number | string | null) ??
+      (stats["totalStudentsMoM"] as number | string | null)
+  );
+  const disengagedChange = parseChange(
+    (stats["disengagedStudentsChangePercentage"] as number | string | null) ??
+      (stats["disengagedStudentsChange"] as number | string | null) ??
+      (stats["disengagedStudentsTrend"] as number | string | null) ??
+      (stats["disengagedStudentsMoM"] as number | string | null)
+  );
+
+  const totalStudentsTrend = buildTrend(totalStudentsChange);
+  const disengagedTrend = buildTrend(disengagedChange);
+
   const students: DisengagedStudent[] = (studentsData?.data.data || []).map(
     (student) => ({
       id: student.id || "",
@@ -111,7 +145,12 @@ export const DisengagedStudents: React.FC = () => {
         userId: details.userId || student.userId || student.id,
         areaOfStudy: details.areaOfStudy || student.areaOfStudy || "N/A",
         lastLogin: formatLastLogin(details.lastLogin || student.lastLogin),
-        totalPeers: details.totalPeers ?? details.peers ?? student.totalPeers ?? student.peers ?? 0,
+        totalPeers:
+          details.totalPeers ??
+          details.peers ??
+          student.totalPeers ??
+          student.peers ??
+          0,
         bio: details.bio || student.bio || "No bio provided",
         interests: details.interests || student.interests || [],
         status: details.status || student.status,
@@ -142,6 +181,7 @@ export const DisengagedStudents: React.FC = () => {
           iconName="double-users-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"
+          trend={totalStudentsTrend}
         />
         <StatsCard
           title="Disengaged students"
@@ -150,6 +190,7 @@ export const DisengagedStudents: React.FC = () => {
           iconName="x-icon"
           iconBgColor="#FCE9E9"
           iconColor="#FF8082"
+          trend={disengagedTrend}
         />
       </div>
 

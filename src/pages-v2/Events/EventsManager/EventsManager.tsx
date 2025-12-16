@@ -38,14 +38,27 @@ export const EventsManager: React.FC = () => {
   }, [searchInput]);
 
   const { data: eventsData, isLoading } = useQuery({
-    queryKey: ["events", currentPage, debouncedSearchQuery, typeFilter, statusFilter, sortBy, sortOrder],
+    queryKey: [
+      "events",
+      currentPage,
+      debouncedSearchQuery,
+      typeFilter,
+      statusFilter,
+      sortBy,
+      sortOrder,
+    ],
     queryFn: () =>
       apiClient.api.adminV2EventsList({
         page: currentPage,
         limit: 10,
         search: debouncedSearchQuery,
         type: typeFilter,
-        status: statusFilter as "all" | "upcoming" | "ongoing" | "finished" | undefined,
+        status: statusFilter as
+          | "all"
+          | "upcoming"
+          | "ongoing"
+          | "finished"
+          | undefined,
         sortBy,
         sortOrder,
       }),

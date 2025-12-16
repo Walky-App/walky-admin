@@ -1,4 +1,5 @@
 .ideas-manager-container {
+  padding-bottom: 85px;
 }
 
 .ideas-manager-header {
@@ -8,7 +9,7 @@
 .ideas-manager-title-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .ideas-manager-title {
@@ -42,7 +43,9 @@
   background: #ffffff;
   border: 1px solid #eef0f1;
   border-radius: 16px;
-  padding: 49px 23px 24px;
+  padding: 32px 26px 26px 26px;
+
+  box-shadow: 0px 1px 8px 0px rgba(84, 111, 217, 0.1);
 }
 
 .ideas-manager-list-header {

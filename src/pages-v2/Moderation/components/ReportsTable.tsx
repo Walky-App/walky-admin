@@ -115,6 +115,8 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
             <th></th>
           </tr>
         </thead>
+        <div className="content-space-divider" />
+
         <tbody>
           {loading ? (
             renderSkeletonRows ? (
@@ -199,25 +201,23 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
                     </td>
                     {showResolutionDate && (
                       <td className="report-date">
-                        {report.resolvedAt ? (
-                          (() => {
-                            const resolvedDate = formatDate
-                              ? formatDate(report.resolvedAt)
-                              : { date: report.resolvedAt, time: null };
-                            return resolvedDate.time ? (
-                              <div className="report-date-cell">
-                                <div>{resolvedDate.date}</div>
-                                <div className="report-time">
-                                  {resolvedDate.time}
+                        {report.resolvedAt
+                          ? (() => {
+                              const resolvedDate = formatDate
+                                ? formatDate(report.resolvedAt)
+                                : { date: report.resolvedAt, time: null };
+                              return resolvedDate.time ? (
+                                <div className="report-date-cell">
+                                  <div>{resolvedDate.date}</div>
+                                  <div className="report-time">
+                                    {resolvedDate.time}
+                                  </div>
                                 </div>
-                              </div>
-                            ) : (
-                              resolvedDate.date
-                            );
-                          })()
-                        ) : (
-                          "-"
-                        )}
+                              ) : (
+                                resolvedDate.date
+                              );
+                            })()
+                          : "-"}
                       </td>
                     )}
                     <td>

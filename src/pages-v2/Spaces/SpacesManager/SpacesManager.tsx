@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import {
-  AssetIcon,
   SearchInput,
   Pagination,
   NoData,
+  FilterDropdown,
 } from "../../../components-v2";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { SpaceTable } from "../components/SpaceTable/SpaceTable";
@@ -30,10 +30,8 @@ export const SpacesManager: React.FC = () => {
     setSearchQuery(value);
     setCurrentPage(1); // Reset to first page when searching
   };
-  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SpaceSortField | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Fetch categories dynamically
   const { data: categoriesData } = useQuery({
@@ -45,43 +43,42 @@ export const SpacesManager: React.FC = () => {
   const categories: SpaceCategory[] = React.useMemo(() => {
     // Handle different response structures: { data: [...] } or { data: { data: [...] } }
     // Note: API returns void but actually sends array data
-    const responseData = categoriesData?.data as SpaceCategory[] | { data?: SpaceCategory[] } | undefined;
+    const responseData = categoriesData?.data as
+      | SpaceCategory[]
+      | { data?: SpaceCategory[] }
+      | undefined;
     const cats: SpaceCategory[] = Array.isArray(responseData)
       ? responseData
       : Array.isArray(responseData?.data)
-        ? responseData.data
-        : [];
+      ? responseData.data
+      : [];
     return [...cats].sort((a, b) => a.name.localeCompare(b.name));
   }, [categoriesData]);
 
   // Helper to convert category name to slug (e.g., "Club Sports" -> "club-sports")
-  const toSlug = (name: string) => name.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and");
+  const toSlug = (name: string) =>
+    name.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and");
 
-  // Helper to get display name from current filter
-  const getFilterDisplayName = () => {
-    if (categoryFilter === "all") return "All categories";
-    const cat = categories.find((c) => toSlug(c.name) === categoryFilter);
-    return cat?.name || categoryFilter;
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setCategoryDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const categoryOptions = React.useMemo(
+    () => [
+      { value: "all", label: "All categories" },
+      ...categories.map((cat) => ({
+        value: toSlug(cat.name),
+        label: cat.name,
+      })),
+    ],
+    [categories]
+  );
 
   const { data: spacesData, isLoading } = useQuery({
-    queryKey: ["spaces", currentPage, debouncedSearchQuery, categoryFilter, sortBy, sortOrder],
+    queryKey: [
+      "spaces",
+      currentPage,
+      debouncedSearchQuery,
+      categoryFilter,
+      sortBy,
+      sortOrder,
+    ],
     queryFn: () =>
       apiClient.api.adminV2SpacesList({
         page: currentPage,
@@ -169,47 +166,18 @@ export const SpacesManager: React.FC = () => {
               variant="secondary"
             />
 
-            <div className="category-filter-dropdown" ref={dropdownRef}>
-              <button
-                data-testid="category-filter-btn"
-                className="category-filter-button"
-                onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
-              >
-                <span>{getFilterDisplayName()}</span>
-                <AssetIcon name="arrow-down" size={10} color="#5B6168" />
-              </button>
-              {categoryDropdownOpen && (
-                <div className="category-dropdown-menu">
-                  <div
-                    className={`category-dropdown-item ${
-                      categoryFilter === "all" ? "active" : ""
-                    }`}
-                    onClick={() => {
-                      setCategoryFilter("all");
-                      setCategoryDropdownOpen(false);
-                    }}
-                  >
-                    All categories
-                  </div>
-                  {categories.map((cat) => (
-                    <React.Fragment key={cat._id}>
-                      <div className="category-dropdown-divider" />
-                      <div
-                        className={`category-dropdown-item ${
-                          categoryFilter === toSlug(cat.name) ? "active" : ""
-                        }`}
-                        onClick={() => {
-                          setCategoryFilter(toSlug(cat.name));
-                          setCategoryDropdownOpen(false);
-                        }}
-                      >
-                        {cat.name}
-                      </div>
-                    </React.Fragment>
-                  ))}
-                </div>
-              )}
-            </div>
+            <FilterDropdown
+              value={categoryFilter}
+              onChange={(val) => {
+                setCategoryFilter(val);
+                setCurrentPage(1);
+              }}
+              options={categoryOptions}
+              placeholder="All categories"
+              width="200px"
+              testId="category-filter"
+              ariaLabel="Filter by category"
+            />
           </div>
         </div>
 

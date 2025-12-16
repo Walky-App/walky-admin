@@ -1,5 +1,7 @@
 .events-manager-container {
   min-height: 100vh;
+
+  padding-bottom: 85px;
 }
 
 .events-manager-header {
