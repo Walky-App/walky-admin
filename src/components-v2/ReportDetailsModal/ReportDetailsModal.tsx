@@ -1,6 +1,15 @@
 import React from "react";
 import { CModal, CModalHeader, CModalBody, CButton } from "@coreui/react";
 import { CopyableId } from "../CopyableId";
+import SkeletonLoader from "../SkeletonLoader/SkeletonLoader";
+import {
+  formatChipLabel,
+  getUserReasonChipStyle,
+  getEventReasonChipStyle,
+  getIdeaReasonChipStyle,
+  getSpaceReasonChipStyle,
+  getStatusChipStyle,
+} from "../utils/chipStyles";
 import { useTheme } from "../../hooks/useTheme";
 import "./ReportDetailsModal.css";
 
@@ -13,7 +22,7 @@ interface Report {
   description: string;
   reportedOn: string;
   reportedBy: string;
-  status: "pending" | "reviewed" | "resolved";
+  status: string;
 }
 
 interface ReportDetailsModalProps {
@@ -37,34 +46,12 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
 }) => {
   const { theme } = useTheme();
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "#ebb129";
-      case "reviewed":
-        return "#4379ee";
-      case "resolved":
-        return "#00c943";
-      default:
-        return "#676d70";
-    }
-  };
-
-  const getReasonTagColor = (reason: string) => {
-    const lowerReason = reason.toLowerCase();
-    if (lowerReason.includes("harassment") || lowerReason.includes("threats")) {
-      return { bg: "#ffe9f5", text: "#ba0066" };
-    }
-    if (
-      lowerReason.includes("intellectual") ||
-      lowerReason.includes("property")
-    ) {
-      return { bg: "#fff3d6", text: "#8f5400" };
-    }
-    if (lowerReason.includes("spam")) {
-      return { bg: "#ffe9e9", text: "#ba0000" };
-    }
-    return { bg: "#f4f5f7", text: "#676d70" };
+  const getReasonStyleByType = (reason: string) => {
+    const type = reportType.toLowerCase();
+    if (type.includes("event")) return getEventReasonChipStyle(reason);
+    if (type.includes("idea")) return getIdeaReasonChipStyle(reason);
+    if (type.includes("space")) return getSpaceReasonChipStyle(reason);
+    return getUserReasonChipStyle(reason);
   };
 
   return (
@@ -91,15 +78,64 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
           backgroundColor: theme.colors.cardBg,
         }}
       >
-        {/* Reports List */}
         <div className="reports-list-container">
           <div className="reports-list">
             {loading ? (
-              <div style={{ textAlign: "center", padding: "20px", color: theme.colors.textMuted }}>
-                Loading...
-              </div>
+              <>
+                {[1, 2, 3].map((idx) => (
+                  <div
+                    key={`report-skeleton-${idx}`}
+                    className="report-item skeleton"
+                    style={{
+                      backgroundColor: theme.colors.cardBg,
+                      borderColor: theme.colors.borderColor,
+                    }}
+                  >
+                    <div className="report-status-badge skeleton-badge">
+                      <SkeletonLoader
+                        width="110px"
+                        height="20px"
+                        borderRadius="999px"
+                      />
+                    </div>
+
+                    <div className="skeleton-line-group">
+                      <SkeletonLoader width="140px" height="14px" />
+                      <SkeletonLoader width="220px" height="18px" />
+                    </div>
+
+                    <div className="skeleton-line-group">
+                      <SkeletonLoader width="110px" height="14px" />
+                      <SkeletonLoader
+                        width="150px"
+                        height="22px"
+                        borderRadius="10px"
+                      />
+                    </div>
+
+                    <div className="skeleton-line-group">
+                      <SkeletonLoader width="120px" height="14px" />
+                      <SkeletonLoader
+                        width="100%"
+                        height="42px"
+                        borderRadius="10px"
+                      />
+                    </div>
+
+                    <div className="report-footer">
+                      <SkeletonLoader width="45%" height="12px" />
+                    </div>
+                  </div>
+                ))}
+              </>
             ) : reports.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "20px", color: theme.colors.textMuted }}>
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "20px",
+                  color: theme.colors.textMuted,
+                }}
+              >
                 No reports found
               </div>
             ) : (
@@ -112,19 +148,22 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                     borderColor: theme.colors.borderColor,
                   }}
                 >
-                  {/* Status Badge */}
-                  <div
-                    className="report-status-badge"
-                    style={{
-                      backgroundColor: `${getStatusColor(report.status)}20`,
-                      color: getStatusColor(report.status),
-                    }}
-                  >
-                    {report.status.charAt(0).toUpperCase() +
-                      report.status.slice(1)}
-                  </div>
+                  {(() => {
+                    const statusStyle = getStatusChipStyle(report.status);
+                    return (
+                      <div
+                        className="report-status-badge"
+                        style={{
+                          backgroundColor: statusStyle.bg,
+                          color: statusStyle.text,
+                          padding: statusStyle.padding || undefined,
+                        }}
+                      >
+                        {statusStyle.label}
+                      </div>
+                    );
+                  })()}
 
-                  {/* Reported Item */}
                   <div className="report-field">
                     <span
                       className="report-field-label"
@@ -141,7 +180,6 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                     </a>
                   </div>
 
-                  {/* Report ID */}
                   <div className="report-field">
                     <span
                       className="report-field-label"
@@ -152,15 +190,14 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                     <CopyableId
                       id={report.reportId}
                       label="Report ID"
-                      variant="secondary"
+                      variant="primary"
                       size="small"
                       iconSize={14}
-                      iconColor="#321FDB"
+                      iconColor="#6366F1"
                       testId="copy-report-id"
                     />
                   </div>
 
-                  {/* Reason */}
                   <div className="report-field">
                     <span
                       className="report-field-label"
@@ -168,18 +205,26 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                     >
                       Reason
                     </span>
-                    <span
-                      className="reason-tag"
-                      style={{
-                        backgroundColor: getReasonTagColor(report.reasonTag).bg,
-                        color: getReasonTagColor(report.reasonTag).text,
-                      }}
-                    >
-                      {report.reasonTag}
-                    </span>
+                    {(() => {
+                      const reasonStyle = getReasonStyleByType(
+                        report.reasonTag
+                      );
+                      return (
+                        <span
+                          className="reason-tag"
+                          style={{
+                            backgroundColor: reasonStyle.bg,
+                            color: reasonStyle.text,
+                            padding: reasonStyle.padding || undefined,
+                          }}
+                        >
+                          {reasonStyle.label ||
+                            formatChipLabel(report.reasonTag)}
+                        </span>
+                      );
+                    })()}
                   </div>
 
-                  {/* Description */}
                   <div className="report-field">
                     <span
                       className="report-field-label"
@@ -195,7 +240,6 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                     </p>
                   </div>
 
-                  {/* Reported On */}
                   <div className="report-footer">
                     <p
                       className="report-footer-text"
@@ -211,7 +255,6 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
         </div>
       </CModalBody>
 
-      {/* Footer outside body */}
       <div className="custom-modal-footer">
         <CButton
           color="light"

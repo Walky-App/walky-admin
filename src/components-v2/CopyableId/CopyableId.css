@@ -17,7 +17,7 @@
   font-family: "Lato", sans-serif;
   font-size: 14px;
   font-weight: 600;
-  color: #6366F1;
+  color: #6366f1;
   line-height: 1;
 }
 
@@ -31,6 +31,7 @@
   background: none;
   cursor: pointer;
   transition: opacity 0.2s;
+  color: #6366f1;
 }
 
 .copyable-id-copy-btn:hover {
@@ -38,9 +39,15 @@
 }
 
 .copyable-id-copy-btn:focus-visible {
-  outline: 2px solid #6366F1;
+  outline: 2px solid #6366f1;
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+.copyable-id-copy-btn svg {
+  color: inherit;
+  fill: currentColor;
+  stroke: currentColor;
 }
 
 /* Tooltip */

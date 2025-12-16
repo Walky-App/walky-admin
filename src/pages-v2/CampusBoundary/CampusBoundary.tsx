@@ -22,11 +22,6 @@ declare global {
   }
 }
 
-const center = {
-  lat: 40.7128,
-  lng: -74.006,
-};
-
 interface GeoJSONPolygon {
   type: string;
   coordinates: number[][][];
@@ -56,7 +51,7 @@ const CampusBoundary = ({
   // Dynamic map container style based on readOnly prop
   const mapContainerStyle = {
     width: "100%",
-    height: readOnly ? "800px" : "500px",
+    height: readOnly ? "650px" : "560px",
     borderRadius: "8px",
     overflow: "hidden",
   };
@@ -178,6 +173,14 @@ const CampusBoundary = ({
       onValidityChange,
     ]
   );
+
+  const handleZoom = (delta: number) => {
+    const map = mapRef.current;
+    if (!map) return;
+    const currentZoom = map.getZoom() ?? 13;
+    const nextZoom = Math.min(21, Math.max(1, currentZoom + delta));
+    map.setZoom(nextZoom);
+  };
 
   const onSearchBoxLoad = useCallback(
     (searchBox: google.maps.places.SearchBox) => {
@@ -429,127 +432,188 @@ const CampusBoundary = ({
                     </div>
                   </div>
                 )}
-                <GoogleMap
-                  mapContainerStyle={mapContainerStyle}
-                  center={center}
-                  zoom={13}
-                  options={{
-                    mapTypeControl: true,
-                    streetViewControl: false,
-                    fullscreenControl: true,
-                    styles: theme.isDark
-                      ? [
-                          {
-                            elementType: "geometry",
-                            stylers: [{ color: "#242f3e" }],
+                <div style={{ position: "relative" }}>
+                  <GoogleMap
+                    mapContainerStyle={mapContainerStyle}
+                    options={{
+                      mapTypeControl: true,
+                      streetViewControl: false,
+                      fullscreenControl: true,
+                      gestureHandling: "greedy",
+                      styles: theme.isDark
+                        ? [
+                            {
+                              elementType: "geometry",
+                              stylers: [{ color: "#242f3e" }],
+                            },
+                            {
+                              elementType: "labels.text.stroke",
+                              stylers: [{ color: "#242f3e" }],
+                            },
+                            {
+                              elementType: "labels.text.fill",
+                              stylers: [{ color: "#746855" }],
+                            },
+                            {
+                              featureType: "administrative.locality",
+                              elementType: "labels.text.fill",
+                              stylers: [{ color: "#d59563" }],
+                            },
+                            {
+                              featureType: "poi",
+                              elementType: "labels.text.fill",
+                              stylers: [{ color: "#d59563" }],
+                            },
+                            {
+                              featureType: "poi.park",
+                              elementType: "geometry",
+                              stylers: [{ color: "#263c3f" }],
+                            },
+                            {
+                              featureType: "poi.park",
+                              elementType: "labels.text.fill",
+                              stylers: [{ color: "#6b9a76" }],
+                            },
+                            {
+                              featureType: "road",
+                              elementType: "geometry",
+                              stylers: [{ color: "#38414e" }],
+                            },
+                            {
+                              featureType: "road",
+                              elementType: "geometry.stroke",
+                              stylers: [{ color: "#212a37" }],
+                            },
+                            {
+                              featureType: "road",
+                              elementType: "labels.text.fill",
+                              stylers: [{ color: "#9ca5b3" }],
+                            },
+                            {
+                              featureType: "road.highway",
+                              elementType: "geometry",
+                              stylers: [{ color: "#746855" }],
+                            },
+                            {
+                              featureType: "road.highway",
+                              elementType: "geometry.stroke",
+                              stylers: [{ color: "#1f2835" }],
+                            },
+                            {
+                              featureType: "road.highway",
+                              elementType: "labels.text.fill",
+                              stylers: [{ color: "#f3d19c" }],
+                            },
+                            {
+                              featureType: "transit",
+                              elementType: "geometry",
+                              stylers: [{ color: "#2f3948" }],
+                            },
+                            {
+                              featureType: "transit.station",
+                              elementType: "labels.text.fill",
+                              stylers: [{ color: "#d59563" }],
+                            },
+                            {
+                              featureType: "water",
+                              elementType: "geometry",
+                              stylers: [{ color: "#17263c" }],
+                            },
+                            {
+                              featureType: "water",
+                              elementType: "labels.text.fill",
+                              stylers: [{ color: "#515c6d" }],
+                            },
+                            {
+                              featureType: "water",
+                              elementType: "labels.text.stroke",
+                              stylers: [{ color: "#17263c" }],
+                            },
+                          ]
+                        : [],
+                    }}
+                    onLoad={onMapLoad}
+                  >
+                    {!readOnly && (
+                      <DrawingManager
+                        onLoad={onDrawingManagerLoad}
+                        options={{
+                          drawingControl: false,
+                          polygonOptions: {
+                            fillColor: theme.isDark ? "#1e90ff" : "#3388ff",
+                            fillOpacity: 0.2,
+                            strokeWeight: 2,
+                            strokeColor: theme.isDark ? "#1e90ff" : "#3388ff",
+                            clickable: true,
+                            editable: true,
+                            zIndex: 1,
                           },
-                          {
-                            elementType: "labels.text.stroke",
-                            stylers: [{ color: "#242f3e" }],
-                          },
-                          {
-                            elementType: "labels.text.fill",
-                            stylers: [{ color: "#746855" }],
-                          },
-                          {
-                            featureType: "administrative.locality",
-                            elementType: "labels.text.fill",
-                            stylers: [{ color: "#d59563" }],
-                          },
-                          {
-                            featureType: "poi",
-                            elementType: "labels.text.fill",
-                            stylers: [{ color: "#d59563" }],
-                          },
-                          {
-                            featureType: "poi.park",
-                            elementType: "geometry",
-                            stylers: [{ color: "#263c3f" }],
-                          },
-                          {
-                            featureType: "poi.park",
-                            elementType: "labels.text.fill",
-                            stylers: [{ color: "#6b9a76" }],
-                          },
-                          {
-                            featureType: "road",
-                            elementType: "geometry",
-                            stylers: [{ color: "#38414e" }],
-                          },
-                          {
-                            featureType: "road",
-                            elementType: "geometry.stroke",
-                            stylers: [{ color: "#212a37" }],
-                          },
-                          {
-                            featureType: "road",
-                            elementType: "labels.text.fill",
-                            stylers: [{ color: "#9ca5b3" }],
-                          },
-                          {
-                            featureType: "road.highway",
-                            elementType: "geometry",
-                            stylers: [{ color: "#746855" }],
-                          },
-                          {
-                            featureType: "road.highway",
-                            elementType: "geometry.stroke",
-                            stylers: [{ color: "#1f2835" }],
-                          },
-                          {
-                            featureType: "road.highway",
-                            elementType: "labels.text.fill",
-                            stylers: [{ color: "#f3d19c" }],
-                          },
-                          {
-                            featureType: "transit",
-                            elementType: "geometry",
-                            stylers: [{ color: "#2f3948" }],
-                          },
-                          {
-                            featureType: "transit.station",
-                            elementType: "labels.text.fill",
-                            stylers: [{ color: "#d59563" }],
-                          },
-                          {
-                            featureType: "water",
-                            elementType: "geometry",
-                            stylers: [{ color: "#17263c" }],
-                          },
-                          {
-                            featureType: "water",
-                            elementType: "labels.text.fill",
-                            stylers: [{ color: "#515c6d" }],
-                          },
-                          {
-                            featureType: "water",
-                            elementType: "labels.text.stroke",
-                            stylers: [{ color: "#17263c" }],
-                          },
-                        ]
-                      : [],
-                  }}
-                  onLoad={onMapLoad}
-                >
-                  {!readOnly && (
-                    <DrawingManager
-                      onLoad={onDrawingManagerLoad}
-                      options={{
-                        drawingControl: false,
-                        polygonOptions: {
-                          fillColor: theme.isDark ? "#1e90ff" : "#3388ff",
-                          fillOpacity: 0.2,
-                          strokeWeight: 2,
-                          strokeColor: theme.isDark ? "#1e90ff" : "#3388ff",
-                          clickable: true,
-                          editable: true,
-                          zIndex: 1,
-                        },
+                        }}
+                        onPolygonComplete={onPolygonComplete}
+                      />
+                    )}
+                  </GoogleMap>
+
+                  {isLoaded && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: 16,
+                        right: 16,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 10,
+                        zIndex: 2,
                       }}
-                      onPolygonComplete={onPolygonComplete}
-                    />
+                      aria-label="Map zoom controls"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => handleZoom(1)}
+                        aria-label="Zoom in"
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 10,
+                          border: `1px solid ${theme.colors.borderColor}`,
+                          backgroundColor: theme.isDark ? "#2d2f36" : "#fff",
+                          color: theme.colors.bodyColor,
+                          boxShadow: "0 4px 10px rgba(0,0,0,0.12)",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 18,
+                          lineHeight: 1,
+                        }}
+                      >
+                        +
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleZoom(-1)}
+                        aria-label="Zoom out"
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 10,
+                          border: `1px solid ${theme.colors.borderColor}`,
+                          backgroundColor: theme.isDark ? "#2d2f36" : "#fff",
+                          color: theme.colors.bodyColor,
+                          boxShadow: "0 4px 10px rgba(0,0,0,0.12)",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 18,
+                          lineHeight: 1,
+                        }}
+                      >
+                        -
+                      </button>
+                    </div>
                   )}
-                </GoogleMap>
+                </div>
               </>
             )}
           </div>

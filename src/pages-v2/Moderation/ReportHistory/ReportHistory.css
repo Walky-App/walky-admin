@@ -357,6 +357,11 @@
   margin: 0;
   cursor: pointer;
   transition: opacity 0.2s;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .report-description:hover {

@@ -6,8 +6,10 @@ import {
   CustomToast,
   Divider,
   Pagination,
+  NoData,
 } from "../../../components-v2";
 import { CopyableId } from "../../../components-v2/CopyableId";
+import { getStatusChipStyle } from "../../../components-v2/utils/chipStyles";
 import "./Ambassadors.css";
 import { useTheme } from "../../../hooks/useTheme";
 import { apiClient } from "../../../API";
@@ -209,8 +211,6 @@ export const Ambassadors: React.FC = () => {
       setSortDirection("asc");
     }
   };
-
-  // Sort ambassadors
   const sortedAmbassadors = useMemo(() => {
     if (!sortField) return ambassadors;
 
@@ -284,7 +284,7 @@ export const Ambassadors: React.FC = () => {
     <main className="ambassadors-page">
       {/* Page Header */}
       <div className="page-header">
-        <h1 className="page-title">Ambassador directory</h1>
+        <h1 className="page-title">Ambassador Management</h1>
         <p className="page-subtitle">
           Manage campus ambassadors and student representatives
         </p>
@@ -314,7 +314,13 @@ export const Ambassadors: React.FC = () => {
         <div className="ambassadors-table-wrapper">
           <table className="ambassadors-table">
             <thead>
-              <tr className="table-header-row">
+              <tr
+                className={`table-header-row${
+                  !loading && sortedAmbassadors.length === 0
+                    ? " table-header-row--muted"
+                    : ""
+                }`}
+              >
                 <th>
                   <span>Student ID</span>
                 </th>
@@ -366,11 +372,11 @@ export const Ambassadors: React.FC = () => {
                 renderSkeletonRows()
               ) : sortedAmbassadors.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={7}
-                    style={{ textAlign: "center", padding: "20px" }}
-                  >
-                    No ambassadors found
+                  <td colSpan={7} className="empty-state-cell">
+                    <NoData
+                      message="No ambassadors found"
+                      iconName="double-users-icon"
+                    />
                   </td>
                 </tr>
               ) : (
@@ -419,11 +425,28 @@ export const Ambassadors: React.FC = () => {
 
                       {/* Status Column */}
                       <td className="ambassador-status">
-                        <span
-                          className={`status-badge ${ambassador.status.toLowerCase()}`}
-                        >
-                          {ambassador.status}
-                        </span>
+                        {(() => {
+                          const statusStyle = getStatusChipStyle(
+                            ambassador.status
+                          );
+                          const sizeClass =
+                            statusStyle.size === "compact"
+                              ? "status-chip-compact"
+                              : "status-chip-regular";
+
+                          return (
+                            <span
+                              className={`status-chip ${sizeClass}`}
+                              style={{
+                                backgroundColor: statusStyle.bg,
+                                color: statusStyle.text,
+                                padding: statusStyle.padding,
+                              }}
+                            >
+                              {statusStyle.label}
+                            </span>
+                          );
+                        })()}
                       </td>
 
                       {/* Actions Column */}
@@ -453,13 +476,15 @@ export const Ambassadors: React.FC = () => {
         </div>
 
         {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(sortedAmbassadors.length / 10)}
-          totalEntries={sortedAmbassadors.length}
-          entriesPerPage={10}
-          onPageChange={setCurrentPage}
-        />
+        {!loading && sortedAmbassadors.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(sortedAmbassadors.length / 10)}
+            totalEntries={sortedAmbassadors.length}
+            entriesPerPage={10}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
 
       {/* Add Ambassador Modal */}

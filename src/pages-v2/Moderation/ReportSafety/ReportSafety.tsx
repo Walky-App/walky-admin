@@ -66,12 +66,23 @@ const ReportSafety: React.FC = () => {
   const [selectedReport, setSelectedReport] = useState<ReportData | null>(null);
   const [selectedReportDetails, setSelectedReportDetails] = useState<any>(null);
   const [isFlagModalOpen, setIsFlagModalOpen] = useState(false);
+  const [flagModalType, setFlagModalType] = useState<
+    "event" | "idea" | "space" | "user"
+  >("event");
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  const normalizeFlagType = (value?: string) => {
+    const t = (value || "").toLowerCase();
+    if (t.includes("user") || t.includes("student")) return "user" as const;
+    if (t.includes("idea")) return "idea" as const;
+    if (t.includes("space")) return "space" as const;
+    return "event" as const;
+  };
 
   const {
     data: reportsData,
@@ -558,6 +569,7 @@ const ReportSafety: React.FC = () => {
               const matched = reports.find((r) => r.id === row.id);
               if (matched) {
                 setSelectedReport(matched);
+                setFlagModalType(normalizeFlagType(matched.type));
                 setIsFlagModalOpen(true);
               }
             }}
@@ -602,6 +614,36 @@ const ReportSafety: React.FC = () => {
             ? ("Event of Space" as ReportType)
             : mapReportType(selectedReport.type);
 
+          const reporter = selectedReportDetails.reporter || {};
+          const reporterName =
+            reporter.name ||
+            reporter.fullName ||
+            reporter.full_name ||
+            reporter.username ||
+            reporter.email ||
+            selectedReportDetails.reportedBy ||
+            selectedReportDetails.reported_by ||
+            selectedReportDetails.reported_by_name ||
+            selectedReportDetails.reported_by_email ||
+            "Unknown";
+
+          const reporterId =
+            reporter.id ||
+            reporter.userId ||
+            reporter.user_id ||
+            selectedReportDetails.reporterId ||
+            selectedReportDetails.reportedById ||
+            selectedReportDetails.reported_by_id ||
+            "N/A";
+
+          const reporterAvatar =
+            reporter.avatar ||
+            reporter.profileImage ||
+            reporter.profile_image ||
+            reporter.photo ||
+            reporter.picture ||
+            "";
+
           return (
             <ReportDetailModal
               isOpen={isDetailModalOpen}
@@ -633,9 +675,9 @@ const ReportSafety: React.FC = () => {
                 contentId: selectedReport.id,
                 description: selectedReport.description,
                 reportingUser: {
-                  name: selectedReportDetails.reporter?.name || "Unknown",
-                  id: selectedReportDetails.reporter?.id || "N/A",
-                  avatar: selectedReportDetails.reporter?.avatar,
+                  name: reporterName,
+                  id: reporterId,
+                  avatar: reporterAvatar,
                 },
                 content: {
                   event:
@@ -777,13 +819,13 @@ const ReportSafety: React.FC = () => {
           if (selectedReport && selectedReport.reportedItemId) {
             flagMutation.mutate({
               id: selectedReport.reportedItemId,
-              type: selectedReport.type,
+              type: flagModalType,
               reason,
             });
           }
         }}
         itemName={selectedReport?.description || ""}
-        type="event"
+        type={flagModalType}
       />
 
       {showToast && (

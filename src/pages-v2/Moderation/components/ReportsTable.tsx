@@ -8,6 +8,15 @@ import {
   StatusDropdown,
 } from "../../../components-v2";
 import { ReportStatus, IconName } from "../../../components-v2";
+import {
+  formatChipLabel,
+  getReasonChipStyle,
+  getUserReasonChipStyle,
+  getEventReasonChipStyle,
+  getIdeaReasonChipStyle,
+  getSpaceReasonChipStyle,
+} from "../../../components-v2/utils/chipStyles";
+import { getReportTypeIcon } from "../../../components-v2/utils/reportTypeIcon";
 
 export type ReportRow = {
   id: string;
@@ -59,7 +68,7 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
   onStatusChange,
   onNoteRequired,
   onFlag,
-  getReasonColor,
+  getReasonColor: _getReasonColor,
   formatDate,
   statusOptions = [
     "Pending review",
@@ -76,6 +85,17 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
   showResolutionDate = false,
 }) => {
   const columnCount = showResolutionDate ? 7 : 6;
+
+  const getReasonStyleByType = (reason: string, type: string) => {
+    const normalizedType = type.toLowerCase();
+    if (normalizedType.includes("event"))
+      return getEventReasonChipStyle(reason);
+    if (normalizedType.includes("idea")) return getIdeaReasonChipStyle(reason);
+    if (normalizedType.includes("space"))
+      return getSpaceReasonChipStyle(reason);
+    return getUserReasonChipStyle(reason);
+  };
+
   return (
     <div className="reports-table-wrapper">
       <table className="reports-table">
@@ -141,7 +161,6 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
             </tr>
           ) : (
             rows.map((report, index) => {
-              const reasonColors = getReasonColor(report.reasonTag);
               const formattedDate = formatDate
                 ? formatDate(report.reportDate)
                 : { date: report.reportDate, time: null };
@@ -161,8 +180,8 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
                           <CopyableId
                             id={report.studentId}
                             label="Student ID"
-                            variant="secondary"
-                            iconColor="#ACB6BA"
+                            variant="primary"
+                            iconColor="#6366F1"
                             testId="copy-student-id"
                           />
                         </div>
@@ -180,24 +199,35 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
                         formattedDate.date
                       )}
                     </td>
-                    <td className="report-type">{report.type}</td>
-                    <td>
-                      <div
-                        className="reason-badge"
-                        style={{
-                          background: reasonColors.bg,
-                          color: reasonColors.text,
-                        }}
-                      >
-                        {report.reasonTag.split("/").map((line, idx) => (
-                          <span key={`${report.id}-reason-${idx}`}>
-                            {line}
-                            {idx === 0 &&
-                              report.reasonTag.includes("/") &&
-                              " /"}
-                          </span>
-                        ))}
+                    <td className="report-type">
+                      <div className="report-type-cell">
+                        <AssetIcon
+                          name={getReportTypeIcon(report.type)}
+                          size={20}
+                          color="#1D1B20"
+                        />
                       </div>
+                    </td>
+                    <td>
+                      {(() => {
+                        const style =
+                          getReasonStyleByType(report.reasonTag, report.type) ||
+                          getReasonChipStyle(report.reasonTag);
+                        const label =
+                          style.label || formatChipLabel(report.reasonTag);
+                        return (
+                          <div
+                            className="reason-badge"
+                            style={{
+                              background: style.bg,
+                              color: style.text,
+                              padding: style.padding || "10px",
+                            }}
+                          >
+                            <span>{label}</span>
+                          </div>
+                        );
+                      })()}
                     </td>
                     {showResolutionDate && (
                       <td className="report-date">

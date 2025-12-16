@@ -12,6 +12,7 @@ import {
   ActionDropdown,
   FilterDropdown,
   Pagination,
+  CustomToast,
   NoData,
 } from "../../../components-v2";
 import {
@@ -70,6 +71,8 @@ export const RoleManagement: React.FC = () => {
     useState(false);
   const [isCreateMemberModalOpen, setIsCreateMemberModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<MemberData | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const { data: membersData, isLoading } = useQuery({
     queryKey: ["members", currentPage, searchQuery, roleFilter],
@@ -171,10 +174,14 @@ export const RoleManagement: React.FC = () => {
     try {
       await apiClient.api.adminV2MembersDelete(selectedMember.id);
       toast.success("Member removed");
+      setToastMessage("Member removed");
+      setShowToast(true);
       queryClient.invalidateQueries({ queryKey: ["members"] });
     } catch (error) {
       console.error("Failed to remove member:", error);
       toast.error("Failed to remove member");
+      setToastMessage("Failed to remove member");
+      setShowToast(true);
     }
     setIsRemoveMemberModalOpen(false);
   };
@@ -192,10 +199,14 @@ export const RoleManagement: React.FC = () => {
         role: newRole,
       });
       toast.success("Role updated");
+      setToastMessage("Role updated");
+      setShowToast(true);
       queryClient.invalidateQueries({ queryKey: ["members"] });
     } catch (error) {
       console.error("Failed to change role:", error);
       toast.error("Failed to change role");
+      setToastMessage("Failed to change role");
+      setShowToast(true);
     }
     setIsChangeRoleModalOpen(false);
   };
@@ -229,10 +240,14 @@ export const RoleManagement: React.FC = () => {
         title: memberData.role || "Administrator",
       });
       toast.success("Member created successfully");
+      setToastMessage("Member created successfully");
+      setShowToast(true);
       queryClient.invalidateQueries({ queryKey: ["members"] });
     } catch (error) {
       console.error("Failed to create member:", error);
       toast.error("Failed to create member");
+      setToastMessage("Failed to create member");
+      setShowToast(true);
     }
     setIsCreateMemberModalOpen(false);
   };
@@ -502,6 +517,13 @@ export const RoleManagement: React.FC = () => {
         onClose={() => setIsCreateMemberModalOpen(false)}
         onConfirm={handleConfirmCreateMember}
       />
+
+      {showToast && (
+        <CustomToast
+          message={toastMessage}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </main>
   );
 };

@@ -6,6 +6,14 @@ import { NoData } from "../NoData/NoData";
 import { CopyableId } from "../CopyableId/CopyableId";
 import { StatusDropdown } from "../StatusDropdown/StatusDropdown";
 import SkeletonLoader from "../SkeletonLoader/SkeletonLoader";
+import {
+  formatChipLabel,
+  getReasonChipStyle,
+  getUserReasonChipStyle,
+  getEventReasonChipStyle,
+  getIdeaReasonChipStyle,
+  getSpaceReasonChipStyle,
+} from "../utils/chipStyles";
 
 export type ReportType =
   | "Event"
@@ -174,18 +182,27 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     return `${datePart} | ${timePart}`;
   };
 
-  const renderReasonChip = (
-    reason: string,
-    color: "red" | "purple" | "orange"
-  ) => {
-    const colorClasses = {
-      red: "rdm-reason-chip-red",
-      purple: "rdm-reason-chip-purple",
-      orange: "rdm-reason-chip-orange",
-    };
+  const getReasonStyleByType = (reason: string) => {
+    const type = reportType.toLowerCase();
+    if (type.includes("event")) return getEventReasonChipStyle(reason);
+    if (type.includes("idea")) return getIdeaReasonChipStyle(reason);
+    if (type.includes("space")) return getSpaceReasonChipStyle(reason);
+    return getUserReasonChipStyle(reason);
+  };
 
+  const renderReasonChip = (reason: string, _reasonColor: string) => {
+    const style = getReasonStyleByType(reason) || getReasonChipStyle(reason);
     return (
-      <div className={`rdm-reason-chip ${colorClasses[color]}`}>{reason}</div>
+      <div
+        className="rdm-reason-chip"
+        style={{
+          backgroundColor: style.bg,
+          color: style.text,
+          padding: style.padding || undefined,
+        }}
+      >
+        {style.label || formatChipLabel(reason)}
+      </div>
     );
   };
 
@@ -224,6 +241,15 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     }, 2000);
   };
 
+  const getInitials = (value?: string) => {
+    if (!value) return "?";
+    const parts = value.trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return "?";
+    const first = parts[0][0] || "";
+    const last = parts.length > 1 ? parts[parts.length - 1][0] || "" : "";
+    return `${first}${last}`.toUpperCase();
+  };
+
   const renderContentDetails = () => {
     const { content } = reportData;
 
@@ -248,6 +274,12 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                   <span>{content.event.location}</span>
                 </div>
               </div>
+              <AssetIcon
+                name="right-arrow-icon"
+                size={16}
+                color="#546FD9"
+                className="space-event-chevron-icon"
+              />
             </div>
           </div>
         </div>
@@ -262,13 +294,18 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
             <div className="rdm-space-section">
               <h4 className="rdm-subsection-title">Space details</h4>
               <div
-                className={`rdm-space-card ${onSpaceClick && content.space.id ? "rdm-clickable" : ""}`}
+                className={`rdm-space-card ${
+                  onSpaceClick && content.space.id ? "rdm-clickable" : ""
+                }`}
                 onClick={() => {
                   if (onSpaceClick && content.space?.id) {
                     onSpaceClick(content.space.id);
                   }
                 }}
-                style={{ cursor: onSpaceClick && content.space.id ? "pointer" : "default" }}
+                style={{
+                  cursor:
+                    onSpaceClick && content.space.id ? "pointer" : "default",
+                }}
               >
                 <img
                   src={content.space.image}
@@ -287,9 +324,10 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                   </div>
                 </div>
                 <AssetIcon
-                  name="arrow-large-left-icon"
+                  name="right-arrow-icon"
                   size={16}
-                  className="rdm-chevron-icon"
+                  color="#546FD9"
+                  className="space-event-chevron-icon"
                 />
               </div>
             </div>
@@ -315,9 +353,10 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                   </div>
                 </div>
                 <AssetIcon
-                  name="arrow-large-left-icon"
+                  name="right-arrow-icon"
                   size={16}
-                  className="rdm-chevron-icon"
+                  color="#546FD9"
+                  className="space-event-chevron-icon"
                 />
               </div>
             </div>
@@ -349,9 +388,10 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                 </div>
               </div>
               <AssetIcon
-                name="arrow-large-left-icon"
+                name="right-arrow-icon"
                 size={16}
-                className="rdm-chevron-icon"
+                color="#546FD9"
+                className="space-event-chevron-icon"
               />
             </div>
           </div>
@@ -368,9 +408,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
               <div className="rdm-idea-bar"></div>
               <div className="rdm-idea-content">
                 <div className="rdm-idea-header">
-                  <div className="rdm-idea-title-section">
-                    <h4 className="rdm-idea-title">{content.idea.title}</h4>
-                  </div>
+                  <h4 className="rdm-idea-title">{content.idea.title}</h4>
                   <div className="rdm-idea-author">
                     <div className="rdm-idea-by-text">
                       <span className="rdm-idea-by-label">Idea by</span>
@@ -378,14 +416,20 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                         {content.idea.ideaBy}
                       </span>
                     </div>
-                    <img
-                      src={content.idea.avatar}
-                      alt={content.idea.ideaBy}
-                      className="rdm-idea-author-avatar"
-                    />
+                    {content.idea.avatar ? (
+                      <img
+                        src={content.idea.avatar}
+                        alt={content.idea.ideaBy}
+                        className="rdm-idea-author-avatar"
+                      />
+                    ) : (
+                      <div className="rdm-idea-avatar-fallback">
+                        {getInitials(content.idea.ideaBy)}
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="rdm-idea-tag-section">
+                <div className="rdm-idea-tagline">
                   <div className="rdm-idea-tag">{content.idea.tag}</div>
                   <p className="rdm-idea-description">
                     {content.idea.description}
@@ -905,6 +949,29 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                         <span>{userStatusMessage}</span>
                       </div>
                     )}
+                    <div className="rdm-action-descriptions">
+                      <div className="rdm-action-description-line">
+                        <AssetIcon name="tooltip-icon" size={16} />
+                        <span>
+                          <span className="rdm-action-desc-title">
+                            Deactivate:
+                          </span>{" "}
+                          <span className="rdm-action-desc-text">
+                            The user no longer has access.
+                          </span>
+                        </span>
+                      </div>
+                      <div className="rdm-action-description-line">
+                        <AssetIcon name="tooltip-icon" size={16} />
+                        <span>
+                          <span className="rdm-action-desc-title">Ban:</span>{" "}
+                          <span className="rdm-action-desc-text">
+                            Blocks the user’s access for a limited period of
+                            time.
+                          </span>
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

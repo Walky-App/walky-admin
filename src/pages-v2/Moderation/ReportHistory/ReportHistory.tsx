@@ -64,6 +64,14 @@ const ReportHistory: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  const normalizeFlagType = (value?: string) => {
+    const t = (value || "").toLowerCase();
+    if (t.includes("user") || t.includes("student")) return "user" as const;
+    if (t.includes("idea")) return "idea" as const;
+    if (t.includes("space")) return "space" as const;
+    return "event" as const;
+  };
+
   const {
     data: reportsData,
     isLoading,
@@ -139,9 +147,37 @@ const ReportHistory: React.FC = () => {
     dismissed: statsData?.data.dismissed || 0,
   };
 
+  const formatBanDate = (value?: string) => {
+    if (!value) return "Unknown date";
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return parsed.toLocaleString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const mapBanHistory = (banHistory: any[] = []) =>
+    banHistory.map((ban) => {
+      const bannedAt =
+        ban.banned_at || ban.bannedAt || ban.date || ban.timestamp;
+
+      return {
+        duration: ban.duration || ban.length || "—",
+        reason: ban.reason || "Not provided",
+        bannedOn: formatBanDate(bannedAt),
+        bannedBy: ban.banned_by || ban.bannedBy || ban.admin || "Unknown",
+        expiresIn: ban.expires_in || ban.expiresIn,
+      };
+    });
+
   const handleStatusChange = async (reportId: string, newStatus: string) => {
+    const apiStatus = newStatus === "Reopen" ? "Under evaluation" : newStatus;
     await apiClient.api.adminV2ReportsStatusPartialUpdate(reportId, {
-      status: newStatus,
+      status: apiStatus,
     });
     refetch();
     refetchStats();
@@ -409,11 +445,11 @@ const ReportHistory: React.FC = () => {
                 value={selectedStatus}
                 onChange={setSelectedStatus}
                 options={[
-                  { value: "Resolved,Dismissed", label: "All history" },
+                  { value: "Resolved,Dismissed", label: "All status" },
                   { value: "Resolved", label: "Resolved" },
                   { value: "Dismissed", label: "Dismissed" },
                 ]}
-                placeholder="All history"
+                placeholder="All status"
                 testId="status-filter"
                 ariaLabel="Filter by status"
               />
@@ -435,6 +471,7 @@ const ReportHistory: React.FC = () => {
               iconSize: 28,
               padding: "32px 24px",
             }}
+            statusOptions={["Reopen"]}
             onRowClick={(row) => {
               const matched = historyReports.find((r) => r.id === row.id);
               if (matched) handleViewReportDetails(matched);
@@ -475,161 +512,208 @@ const ReportHistory: React.FC = () => {
         onConfirm={handleNoteConfirm}
       />
 
-      {selectedReport && isDetailModalOpen && (
-        <ReportDetailModal
-          isOpen={isDetailModalOpen}
-          onClose={() => {
-            setIsDetailModalOpen(false);
-            setSelectedReport(null);
-            setReportDetails(null);
-          }}
-          reportType={mapReportType(selectedReport.type)}
-          reportData={{
-            associatedUser: {
-              name: reportDetails?.reportedUser?.name || "Unknown",
-              id:
-                reportDetails?.reportedUser?.id ||
-                selectedReport.studentId ||
-                "N/A",
-              avatar: reportDetails?.reportedUser?.avatar || "",
-              email:
-                reportDetails?.reportedUser?.email ||
-                reportDetails?.reportedUser?.emailAddress ||
-                reportDetails?.reportedUser?.mail ||
-                "",
-              isBanned: reportDetails?.reportedUser?.isBanned || false,
-              isDeactivated:
-                reportDetails?.reportedUser?.isDeactivated || false,
-            },
-            status: selectedReport.status as ReportStatus,
-            reason: selectedReport.reasonTag,
-            reasonColor: "red",
-            reportDate: selectedReport.reportDate,
-            contentId: selectedReport.id,
-            description: selectedReport.description,
-            reportingUser: {
-              name: reportDetails?.reporter?.name || "Unknown",
-              id: reportDetails?.reporter?.id || "N/A",
-              avatar: reportDetails?.reporter?.avatar || "",
-            },
-            content: (() => {
-              const content = reportDetails?.content || {};
-              const imageCandidate =
-                content.image_url ||
-                content.imageUrl ||
-                content.image ||
-                content.coverImage ||
-                content.cover_image ||
-                "";
+      {selectedReport &&
+        isDetailModalOpen &&
+        (() => {
+          const reporter = reportDetails?.reporter || {};
+          const reporterName =
+            reporter.name ||
+            reporter.fullName ||
+            reporter.full_name ||
+            reporter.username ||
+            reporter.email ||
+            reportDetails?.reportedBy ||
+            reportDetails?.reported_by ||
+            reportDetails?.reported_by_name ||
+            reportDetails?.reported_by_email ||
+            "Unknown";
 
-              const mappedType = mapReportType(selectedReport.type);
+          const reporterId =
+            reporter.id ||
+            reporter.userId ||
+            reporter.user_id ||
+            reportDetails?.reporterId ||
+            reportDetails?.reportedById ||
+            reportDetails?.reported_by_id ||
+            "N/A";
 
-              const eventContent =
-                mappedType === "Event" || mappedType === "Event of Space"
-                  ? {
-                      image: imageCandidate,
-                      date:
-                        content.date ||
-                        content.startDate ||
-                        content.start_time ||
-                        content.createdAt,
-                      title: content.name || content.title || "",
-                      location:
-                        content.location ||
-                        content.address ||
-                        content.place ||
-                        "",
-                    }
-                  : undefined;
+          const reporterAvatar =
+            reporter.avatar ||
+            reporter.profileImage ||
+            reporter.profile_image ||
+            reporter.photo ||
+            reporter.picture ||
+            "";
 
-              const spaceContent =
-                mappedType === "Space" || mappedType === "Event of Space"
-                  ? {
-                      title:
-                        content.space?.name ||
-                        content.space_name ||
-                        content.spaceName ||
-                        content.name ||
-                        "",
-                      description:
-                        content.space?.description ||
-                        content.space_description ||
-                        content.description ||
-                        "",
-                      image:
-                        content.space?.image_url ||
-                        content.space?.imageUrl ||
-                        content.space?.image ||
-                        content.space_image_url ||
-                        content.spaceImageUrl ||
-                        content.spaceImage ||
-                        imageCandidate ||
-                        "",
-                      category:
-                        content.space?.category || content.category || "Other",
-                      memberCount: String(
-                        content.space?.memberCount ||
-                          content.space_member_count ||
-                          content.memberCount ||
-                          "0"
-                      ),
-                    }
-                  : undefined;
+          return (
+            <ReportDetailModal
+              isOpen={isDetailModalOpen}
+              onClose={() => {
+                setIsDetailModalOpen(false);
+                setSelectedReport(null);
+                setReportDetails(null);
+              }}
+              reportType={mapReportType(selectedReport.type)}
+              reportData={{
+                associatedUser: {
+                  name: reportDetails?.reportedUser?.name || "Unknown",
+                  id:
+                    reportDetails?.reportedUser?.id ||
+                    selectedReport.studentId ||
+                    "N/A",
+                  avatar: reportDetails?.reportedUser?.avatar || "",
+                  email:
+                    reportDetails?.reportedUser?.email ||
+                    reportDetails?.reportedUser?.emailAddress ||
+                    reportDetails?.reportedUser?.mail ||
+                    "",
+                  isBanned: reportDetails?.reportedUser?.isBanned || false,
+                  isDeactivated:
+                    reportDetails?.reportedUser?.isDeactivated || false,
+                },
+                status: selectedReport.status as ReportStatus,
+                reason: selectedReport.reasonTag,
+                reasonColor: "red",
+                reportDate: selectedReport.reportDate,
+                contentId: selectedReport.id,
+                description: selectedReport.description,
+                reportingUser: {
+                  name: reporterName,
+                  id: reporterId,
+                  avatar: reporterAvatar,
+                },
+                content: (() => {
+                  const content = reportDetails?.content || {};
+                  const imageCandidate =
+                    content.image_url ||
+                    content.imageUrl ||
+                    content.image ||
+                    content.coverImage ||
+                    content.cover_image ||
+                    "";
 
-              const ideaContent =
-                mappedType === "Idea"
-                  ? {
-                      title: content.title,
-                      tag: content.looking_for || content.tag || "N/A",
-                      description: content.description,
-                      ideaBy: reportDetails?.reportedUser?.name || "Unknown",
-                      avatar: reportDetails?.reportedUser?.avatar || "",
-                    }
-                  : undefined;
+                  const mappedType = mapReportType(selectedReport.type);
 
-              const messageContent =
-                mappedType === "Message"
-                  ? {
-                      text: content.text,
-                      timestamp: content.timestamp || content.createdAt,
-                    }
-                  : undefined;
+                  const eventContent =
+                    mappedType === "Event" || mappedType === "Event of Space"
+                      ? {
+                          image: imageCandidate,
+                          date:
+                            content.date ||
+                            content.startDate ||
+                            content.start_time ||
+                            content.createdAt,
+                          title: content.name || content.title || "",
+                          location:
+                            content.location ||
+                            content.address ||
+                            content.place ||
+                            "",
+                        }
+                      : undefined;
 
-              return {
-                event: eventContent,
-                space: spaceContent,
-                idea: ideaContent,
-                message: messageContent,
-              };
-            })(),
-            safetyRecord: {
-              banHistory: reportDetails?.reportedUser?.banHistory || [],
-              reportHistory: [],
-              blockHistory: [],
-            },
-            notes: reportDetails?.notes || [],
-          }}
-          isLoading={detailsLoading}
-          onStatusChange={(newStatus) => {
-            if (selectedReport) {
-              handleStatusChange(selectedReport.id, newStatus);
-            }
-          }}
-          onNoteRequired={(newStatus) => {
-            if (selectedReport) {
-              handleNoteRequired(selectedReport.id, newStatus);
-            }
-          }}
-          onDeactivateUser={() => {
-            setIsDetailModalOpen(false);
-            setIsDeactivateModalOpen(true);
-          }}
-          onBanUser={() => {
-            setIsDetailModalOpen(false);
-            setIsBanModalOpen(true);
-          }}
-        />
-      )}
+                  const spaceContent =
+                    mappedType === "Space" || mappedType === "Event of Space"
+                      ? {
+                          title:
+                            content.space?.name ||
+                            content.space_name ||
+                            content.spaceName ||
+                            content.name ||
+                            "",
+                          description:
+                            content.space?.description ||
+                            content.space_description ||
+                            content.description ||
+                            "",
+                          image:
+                            content.space?.image_url ||
+                            content.space?.imageUrl ||
+                            content.space?.image ||
+                            content.space_image_url ||
+                            content.spaceImageUrl ||
+                            content.spaceImage ||
+                            imageCandidate ||
+                            "",
+                          category:
+                            content.space?.category ||
+                            content.category ||
+                            "Other",
+                          memberCount: String(
+                            content.space?.memberCount ||
+                              content.space_member_count ||
+                              content.memberCount ||
+                              "0"
+                          ),
+                        }
+                      : undefined;
+
+                  const ideaContent =
+                    mappedType === "Idea"
+                      ? {
+                          title: content.title,
+                          tag: content.looking_for || content.tag || "N/A",
+                          description: content.description,
+                          ideaBy:
+                            reportDetails?.reportedUser?.name || "Unknown",
+                          avatar: reportDetails?.reportedUser?.avatar || "",
+                        }
+                      : undefined;
+
+                  const messageContent =
+                    mappedType === "Message"
+                      ? {
+                          text:
+                            content.message?.text ||
+                            content.text ||
+                            content.message_text ||
+                            "",
+                          timestamp:
+                            content.message?.timestamp ||
+                            content.timestamp ||
+                            content.message_timestamp ||
+                            content.createdAt,
+                        }
+                      : undefined;
+
+                  return {
+                    event: eventContent,
+                    space: spaceContent,
+                    idea: ideaContent,
+                    message: messageContent,
+                  };
+                })(),
+                safetyRecord: {
+                  banHistory: mapBanHistory(
+                    reportDetails?.reportedUser?.banHistory || []
+                  ),
+                  reportHistory: [],
+                  blockHistory: [],
+                },
+                notes: reportDetails?.notes || [],
+              }}
+              isLoading={detailsLoading}
+              onStatusChange={(newStatus) => {
+                if (selectedReport) {
+                  handleStatusChange(selectedReport.id, newStatus);
+                }
+              }}
+              onNoteRequired={(newStatus) => {
+                if (selectedReport) {
+                  handleNoteRequired(selectedReport.id, newStatus);
+                }
+              }}
+              onDeactivateUser={() => {
+                setIsDetailModalOpen(false);
+                setIsDeactivateModalOpen(true);
+              }}
+              onBanUser={() => {
+                setIsDetailModalOpen(false);
+                setIsBanModalOpen(true);
+              }}
+            />
+          );
+        })()}
 
       <FlagModal
         isOpen={isFlagModalOpen}
@@ -643,7 +727,7 @@ const ReportHistory: React.FC = () => {
           }
         }}
         itemName={selectedReport?.description || ""}
-        type="event"
+        type={normalizeFlagType(selectedReport?.type)}
       />
 
       {selectedReport && reportDetails && (

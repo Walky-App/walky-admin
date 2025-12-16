@@ -68,7 +68,7 @@ export const AdministratorSettings: React.FC = () => {
           securityAlerts: data.securityAlerts ?? false,
         });
         // Update security settings
-        setSecurityData(prev => ({
+        setSecurityData((prev) => ({
           ...prev,
           twoFactorEnabled: data.twoFactorEnabled ?? false,
         }));
@@ -88,7 +88,11 @@ export const AdministratorSettings: React.FC = () => {
     fetchProfile();
   }, [user]);
 
-  console.log("AdministratorSettings component loaded", { user, profileData, activeTab });
+  console.log("AdministratorSettings component loaded", {
+    user,
+    profileData,
+    activeTab,
+  });
 
   // Form state - Personal Info
   const [formData, setFormData] = useState({
@@ -145,8 +149,12 @@ export const AdministratorSettings: React.FC = () => {
     try {
       // Save to API
       await apiClient.api.adminProfileNotificationsUpdate({
-        emailNotifications: field === "emailNotifications" ? value : notificationData.emailNotifications,
-        pushNotifications: field === "securityAlerts" ? value : notificationData.securityAlerts,
+        emailNotifications:
+          field === "emailNotifications"
+            ? value
+            : notificationData.emailNotifications,
+        pushNotifications:
+          field === "securityAlerts" ? value : notificationData.securityAlerts,
       });
       toast.success("Notification settings saved");
     } catch (error) {
@@ -181,7 +189,12 @@ export const AdministratorSettings: React.FC = () => {
         newPassword: securityData.newPassword,
       });
       toast.success("Password updated successfully");
-      setSecurityData(prev => ({ ...prev, currentPassword: "", newPassword: "", confirmPassword: "" }));
+      setSecurityData((prev) => ({
+        ...prev,
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      }));
     } catch (error) {
       console.error("Error changing password:", error);
       toast.error("Failed to update password");
@@ -218,7 +231,9 @@ export const AdministratorSettings: React.FC = () => {
 
   const handleConfirmDeleteAccount = async () => {
     try {
-      await apiClient.api.adminV2SettingsDeleteAccountCreate({ reason: deleteReason });
+      await apiClient.api.adminV2SettingsDeleteAccountCreate({
+        reason: deleteReason,
+      });
       setShowDeleteAccountModal(false);
       toast.success("Account deletion requested");
     } catch (error) {
@@ -262,11 +277,16 @@ export const AdministratorSettings: React.FC = () => {
   // Get role display name
   const getRoleDisplayName = (role?: string) => {
     switch (role) {
-      case "super_admin": return "Walky Admin";
-      case "school_admin": return "School Admin";
-      case "campus_admin": return "Campus Admin";
-      case "moderator": return "Moderator";
-      default: return role || "Admin";
+      case "super_admin":
+        return "Walky Admin";
+      case "school_admin":
+        return "School Admin";
+      case "campus_admin":
+        return "Campus Admin";
+      case "moderator":
+        return "Moderator";
+      default:
+        return role || "Admin";
     }
   };
   const roleDisplayName = getRoleDisplayName(profileData?.role || user?.role);
@@ -278,8 +298,9 @@ export const AdministratorSettings: React.FC = () => {
 
   return (
     <main
-      className={`administrator-settings-page ${theme.isDark ? "dark-mode" : ""
-        }`}
+      className={`administrator-settings-page ${
+        theme.isDark ? "dark-mode" : ""
+      }`}
     >
       {/* Header */}
       <div className="settings-header">
@@ -319,8 +340,9 @@ export const AdministratorSettings: React.FC = () => {
         </button>
         <button
           data-testid="tab-notifications"
-          className={`settings-tab ${activeTab === "notifications" ? "active" : ""
-            }`}
+          className={`settings-tab ${
+            activeTab === "notifications" ? "active" : ""
+          }`}
           onClick={() => setActiveTab("notifications")}
         >
           Notification Preferences
@@ -349,11 +371,15 @@ export const AdministratorSettings: React.FC = () => {
               </div>
               <div className="info-row">
                 <span className="info-label">Account created:</span>
-                <span className="info-value">{isLoadingProfile ? "Loading..." : accountCreatedDate}</span>
+                <span className="info-value">
+                  {isLoadingProfile ? "Loading..." : accountCreatedDate}
+                </span>
               </div>
               <div className="info-row">
                 <span className="info-label">Last login:</span>
-                <span className="info-value">{isLoadingProfile ? "Loading..." : lastLoginDate}</span>
+                <span className="info-value">
+                  {isLoadingProfile ? "Loading..." : lastLoginDate}
+                </span>
               </div>
             </div>
 
@@ -369,10 +395,12 @@ export const AdministratorSettings: React.FC = () => {
                       profileData?.avatar_url ||
                       user?.avatar_url ||
                       "https://ui-avatars.com/api/?name=" +
-                      encodeURIComponent(
-                        (profileData?.first_name || user?.first_name || "") + " " + (profileData?.last_name || user?.last_name || "")
-                      ) +
-                      "&background=546fd9&color=fff"
+                        encodeURIComponent(
+                          (profileData?.first_name || user?.first_name || "") +
+                            " " +
+                            (profileData?.last_name || user?.last_name || "")
+                        ) +
+                        "&background=546fd9&color=fff"
                     }
                     alt="Profile"
                   />
@@ -381,7 +409,12 @@ export const AdministratorSettings: React.FC = () => {
                     data-testid="profile-picture-edit-btn"
                     aria-label="Edit profile picture"
                   >
-                    <AssetIcon name="copy-icon" size={24} />
+                    <AssetIcon
+                      name="camera-icon"
+                      size={22}
+                      className="profile-picture-edit-icon"
+                      aria-hidden="true"
+                    />
                   </button>
                 </div>
               </div>

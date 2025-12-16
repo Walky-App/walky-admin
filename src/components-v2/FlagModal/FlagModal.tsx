@@ -3,7 +3,7 @@ import { CModal, CModalBody } from "@coreui/react";
 import "./FlagModal.css";
 import { AssetIcon } from "../../components-v2";
 
-export type FlagModalType = "event" | "space" | "idea";
+export type FlagModalType = "event" | "space" | "idea" | "user";
 
 interface FlagModalProps {
   isOpen: boolean;
@@ -27,6 +27,7 @@ export const FlagModal: React.FC<FlagModalProps> = ({
     event: "Event",
     space: "Space",
     idea: "Idea",
+    user: "User",
   };
 
   const typeLabel = typeLabels[type];

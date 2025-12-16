@@ -227,7 +227,9 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
             <div key={idx} className="report-history-item">
               <div className="report-history-status-badge">
                 <span
-                  className={`report-status-text ${report.status.toLowerCase().replace(/_/g, "-")}`}
+                  className={`report-status-text ${report.status
+                    .toLowerCase()
+                    .replace(/_/g, "-")}`}
                 >
                   {formatDisplayText(report.status)}
                 </span>
@@ -255,7 +257,9 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
               <div className="report-history-row">
                 <span className="report-history-label">Reason</span>
                 <div className="report-reason-badge">
-                  <span className="report-reason-text">{formatDisplayText(report.reason)}</span>
+                  <span className="report-reason-text">
+                    {formatDisplayText(report.reason)}
+                  </span>
                 </div>
               </div>
 
