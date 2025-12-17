@@ -1,7 +1,7 @@
 // Permission system for role-based access control
 // Based on the permission matrix for Walky Admin, School Admin, Campus Admin, and Moderator roles
 
-export type RoleName = 'super_admin' | 'school_admin' | 'campus_admin' | 'moderator';
+export type RoleName = 'super_admin' | 'school_admin' | 'campus_admin' | 'moderator' | 'walky_internal';
 
 export type PermissionAction = 'read' | 'create' | 'update' | 'delete' | 'export' | 'manage';
 
@@ -262,6 +262,40 @@ export const permissionMatrix: PermissionMatrix = {
     campuses: noPermissions,
     ambassadors: noPermissions,
     role_management: noPermissions,
+  },
+
+  // Walky Internal - Read-only visibility for Walky employees (analytics, monitoring, support)
+  // No create, update, delete, export, or manage permissions
+  walky_internal: {
+    // Dashboard - Read only, no export
+    engagement: readOnly,
+    popular_features: readOnly,
+    user_interactions: readOnly,
+    community: readOnly,
+    student_safety: readOnly,
+    student_behavior: readOnly,
+    // Campus - Manage Students - Read only for active, no access to banned/deactivated/disengaged
+    active_students: readOnly,
+    banned_students: noPermissions,
+    inactive_students: noPermissions,
+    disengaged_students: noPermissions,
+    reported_content: noPermissions,
+    // Events - Read only
+    events_manager: readOnly,
+    events_insights: readOnly,
+    // Spaces - Read only
+    spaces_manager: readOnly,
+    spaces_insights: readOnly,
+    // Ideas - Read only
+    ideas_manager: readOnly,
+    ideas_insights: readOnly,
+    // Moderation/Reports - Read only (observation for audits, no enforcement actions)
+    report_safety: readOnly,
+    report_history: readOnly,
+    // Admin - No access to campuses/ambassadors, read-only for role management
+    campuses: noPermissions,
+    ambassadors: noPermissions,
+    role_management: readOnly,
   },
 };
 

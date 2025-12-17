@@ -1639,6 +1639,8 @@ export class Api<
       query?: {
         school_id?: string;
         type?: "total" | "active" | "inactive" | "collaborated";
+        /** Filter by time period */
+        period?: "week" | "month";
         /** Group results by month to get time-series data */
         groupBy?: "month";
       },
@@ -1661,6 +1663,48 @@ export class Api<
         void
       >({
         path: `/api/admin/analytics/ideas/count`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns time-based metrics for ideas including time to first collaborator and average response time
+     *
+     * @tags Admin - Analytics
+     * @name AdminAnalyticsIdeasTimeMetricsList
+     * @summary Get time-based metrics for ideas
+     * @request GET:/api/admin/analytics/ideas/time-metrics
+     * @secure
+     */
+    adminAnalyticsIdeasTimeMetricsList: (
+      query?: {
+        /** Filter by time period */
+        period?: "week" | "month";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          timeToFirstCollaborator: {
+            value: number;
+            unit: string;
+            trend: number;
+            trendDirection: "up" | "down";
+          };
+          avgResponseTime: {
+            value: number;
+            unit: string;
+            trend: number;
+            trendDirection: "up" | "down";
+          };
+          lastUpdated?: string;
+        },
+        void
+      >({
+        path: `/api/admin/analytics/ideas/time-metrics`,
         method: "GET",
         query: query,
         secure: true,
@@ -3202,6 +3246,8 @@ export class Api<
         search?: string;
         sortBy?: "ideaTitle" | "collaborated" | "creationDate";
         sortOrder?: "asc" | "desc";
+        /** Filter by time period */
+        period?: "week" | "month";
       },
       params: RequestParams = {}
     ) =>

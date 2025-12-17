@@ -11,7 +11,8 @@ export type RoleName =
   | "viewer"
   | "student"
   | "faculty"
-  | "parent";
+  | "parent"
+  | "walky_internal";
 
 export interface Role {
   _id?: string;

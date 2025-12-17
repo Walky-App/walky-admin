@@ -77,7 +77,7 @@ const Engagement: React.FC = () => {
     ],
     queryFn: () =>
       apiClient.api.adminV2DashboardStatsList({
-        period: timePeriod,
+        period: timePeriod as "week" | "month" | "all-time",
         schoolId: selectedSchool?._id,
         campusId: selectedCampus?._id,
       }),
@@ -85,6 +85,18 @@ const Engagement: React.FC = () => {
   });
 
   const isLoading = isEngagementLoading || isRetentionLoading || isStatsLoading;
+
+  // Helper to format trend data for StatsCard
+  const formatTrend = (changeData: { changePercentage?: string; changeDirection?: string } | undefined) => {
+    if (!changeData || changeData.changePercentage === "N/A" || timePeriod === "all-time") {
+      return undefined;
+    }
+    return {
+      value: changeData.changePercentage || "0%",
+      direction: (changeData.changeDirection === "up" ? "up" : "down") as "up" | "down",
+      text: "from last period",
+    };
+  };
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -139,6 +151,7 @@ const Engagement: React.FC = () => {
               />
             }
             iconBgColor={theme.colors.iconPurpleBg}
+            trend={formatTrend((dashboardStats?.data as any)?.usersChange)}
           />
         </CCol>
         <CCol xs={12} sm={6} md={6} lg={3}>
@@ -149,6 +162,7 @@ const Engagement: React.FC = () => {
               <AssetIcon name="calendar-icon" color={theme.colors.iconOrange} />
             }
             iconBgColor="#ffded1"
+            trend={formatTrend((dashboardStats?.data as any)?.eventsChange)}
           />
         </CCol>
         <CCol xs={12} sm={6} md={6} lg={3}>
@@ -157,6 +171,7 @@ const Engagement: React.FC = () => {
             value={dashboardStats?.data.totalSpaces?.toString() || "0"}
             icon={<AssetIcon name="space-icon" color={theme.colors.iconBlue} />}
             iconBgColor="#d9e3f7"
+            trend={formatTrend((dashboardStats?.data as any)?.spacesChange)}
           />
         </CCol>
         <CCol xs={12} sm={6} md={6} lg={3}>
@@ -165,6 +180,7 @@ const Engagement: React.FC = () => {
             value={dashboardStats?.data.totalIdeas?.toString() || "0"}
             icon={<AssetIcon name="ideas-icons" color="#ffb830" />}
             iconBgColor="#fff3d6"
+            trend={formatTrend((dashboardStats?.data as any)?.ideasChange)}
           />
         </CCol>
       </CRow>
@@ -237,7 +253,7 @@ const Engagement: React.FC = () => {
           <CRow className="charts-row">
             <CCol xs={12} lg={6}>
               <LineChart
-                title="Total active users"
+                title="Engaged users"
                 data={userEngagementData}
                 labels={chartLabels}
                 subLabels={chartSubLabels}
