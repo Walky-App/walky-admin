@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import html2pdf from "html2pdf.js";
 import { AssetIcon } from "../AssetIcon/AssetIcon";
 import { useTheme } from "../../hooks/useTheme";
 import "./ExportButton.css";
@@ -12,55 +11,31 @@ interface ExportButtonProps {
 
 export const ExportButton: React.FC<ExportButtonProps> = ({
   onClick,
-  captureRef,
-  filename,
+  captureRef: _captureRef,
+  filename: _filename,
 }) => {
   const { theme } = useTheme();
   const [isExporting, setIsExporting] = useState(false);
 
-  const defaultExport = useCallback(async () => {
-    const element =
-      captureRef?.current ||
-      (document.querySelector("main") as HTMLElement | null);
-    if (!element) return;
-
+  const defaultExport = useCallback(() => {
     setIsExporting(true);
-    try {
-      const elementWidth = element.scrollWidth;
-      const elementHeight = element.scrollHeight;
-      const maxScale = 1.4;
-      const fitScale = Math.min(
-        maxScale,
-        1400 / elementWidth,
-        900 / elementHeight,
-        1
-      );
-      const margin = 8;
-      const format: [number, number] = [
-        elementWidth * fitScale + margin * 2,
-        elementHeight * fitScale + margin * 2,
-      ];
 
-      const options = {
-        margin,
-        filename: `${filename || "export"}.pdf`,
-        image: { type: "jpeg" as const, quality: 0.98 },
-        html2canvas: {
-          scale: fitScale,
-          useCORS: true,
-          logging: false,
-          backgroundColor: "#ffffff",
-          windowWidth: elementWidth,
-        },
-        jsPDF: { unit: "px", format, orientation: "landscape" as const },
-        pagebreak: { mode: ["avoid-all"] },
-      };
+    const finish = () => setIsExporting(false);
 
-      await html2pdf().set(options).from(element).save();
-    } finally {
-      setIsExporting(false);
-    }
-  }, [captureRef, filename]);
+    const handleAfterPrint = () => {
+      finish();
+      window.removeEventListener("afterprint", handleAfterPrint);
+    };
+
+    window.addEventListener("afterprint", handleAfterPrint);
+
+    // Trigger native print; fallback timeout to clear state if afterprint is not fired
+    window.print();
+    setTimeout(() => {
+      window.removeEventListener("afterprint", handleAfterPrint);
+      finish();
+    }, 1500);
+  }, []);
 
   const handleClick = onClick || defaultExport;
 

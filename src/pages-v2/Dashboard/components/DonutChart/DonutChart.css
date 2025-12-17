@@ -156,3 +156,35 @@
     font-size: 12px;
   }
 }
+
+@media print {
+  .donut-chart-container {
+    height: auto;
+    min-height: 260px;
+    padding: 16px;
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    page-break-inside: avoid;
+  }
+
+  .donut-chart-title {
+    font-size: 18px;
+  }
+
+  .donut-chart-content {
+    flex-direction: row;
+    gap: 16px;
+    padding: 0;
+  }
+
+  .donut-chart-wrapper {
+    width: 200px;
+    height: 200px;
+  }
+
+  .legend-text,
+  .legend-percentage {
+    font-size: 12px;
+  }
+}

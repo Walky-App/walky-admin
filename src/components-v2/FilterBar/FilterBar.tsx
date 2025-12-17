@@ -84,12 +84,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             <TimeSelector selected={timePeriod} onChange={onTimePeriodChange} />
           </div>
           {calculatedDateRange && (
-            <span
-              className="filter-bar-date-range"
-              style={{ color: theme.colors.textMuted }}
-            >
-              {calculatedDateRange}
-            </span>
+            <span className="filter-bar-date-range">{calculatedDateRange}</span>
           )}
         </div>
       </div>

@@ -1,4 +1,4 @@
-.time-selector {
+.ts-time-selector {
   display: flex;
   align-items: center;
   gap: 0;
@@ -6,21 +6,18 @@
   border: 1px solid var(--time-selector-border, #d1d5db);
   border-radius: 8px;
   overflow: hidden;
-  min-height: 34px;
 }
 
-.time-option {
+.ts-time-option {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 7px 14px;
   min-width: 86px;
-  height: 100%;
+  height: 36px;
   border: none;
   font-family: "Lato", sans-serif;
   font-weight: 600;
   font-size: 14px;
-  line-height: 20px;
   cursor: pointer;
   transition: all 0.2s ease;
   background: var(--time-selector-bg, #ffffff);
@@ -28,27 +25,61 @@
   color: var(--time-selector-text, #4b5563);
 }
 
-.time-option + .time-option {
+.ts-time-option.first {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.ts-time-option.last {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.ts-time-option + .ts-time-option {
   border-left: 1px solid var(--time-selector-border, #d1d5db);
 }
 
-.time-option:hover {
+.ts-time-option:hover {
   background: var(--time-selector-hover-bg, #f3f4f6);
 }
 
-.time-option.selected {
+.ts-time-option.selected {
   background: var(--time-selector-selected-bg, #526ac9);
   color: var(--time-selector-selected-text, #ffffff);
   box-shadow: none;
 }
 
 /* Acessibilidade: foco visível para navegação por teclado */
-.time-option:focus-visible {
+.ts-time-option:focus-visible {
   outline: 2px solid #546fd9;
   outline-offset: 2px;
   z-index: 1;
 }
 
-.time-option:focus:not(:focus-visible) {
+.ts-time-option:focus:not(:focus-visible) {
   outline: none;
+}
+
+@media print {
+  .ts-time-selector {
+    gap: 0;
+    border-radius: 4px;
+  }
+
+  .ts-time-option {
+    min-width: 52px;
+    height: 24px;
+    font-size: 11px;
+    padding: 0 6px;
+  }
+
+  .ts-time-option.first {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+
+  .ts-time-option.last {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
 }

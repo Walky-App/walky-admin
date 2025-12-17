@@ -26,35 +26,33 @@ export const StatsCard: React.FC<StatsCardProps> = ({
 
   return (
     <div
-      className="stats-card"
+      className="st-stats-card"
       style={{
         backgroundColor: theme.colors.cardBg,
         borderColor: theme.colors.borderColor,
         color: theme.colors.bodyColor,
       }}
     >
-      <div className="stats-card-header">
-        <p
-          className="stats-card-title"
-          style={{ color: theme.colors.textMuted }}
-        >
-          {title}
-        </p>
+      <div className="st-stats-card-header">
+        <p className="st-stats-card-title">{title}</p>
         <div
-          className="stats-icon-container"
+          className="st-stats-icon-container"
           style={{ backgroundColor: iconBgColor }}
         >
           {icon}
         </div>
       </div>
 
-      <p className="stats-card-value" style={{ color: theme.colors.bodyColor }}>
+      <p
+        className="st-stats-card-value"
+        style={{ color: theme.colors.bodyColor }}
+      >
         {value}
       </p>
 
       {trend && (
-        <div className="stats-change-container">
-          <div className={`trend-icon trend-${trend.direction}`}>
+        <div className="st-stats-change-container">
+          <div className={`st-trend-icon st-trend-${trend.direction}`}>
             <AssetIcon
               name={
                 trend.direction === "up" ? "trend-up-icon" : "trend-down-icon"
@@ -63,16 +61,18 @@ export const StatsCard: React.FC<StatsCardProps> = ({
               color={trend.direction === "up" ? "#18682c" : "#d53425"}
             />
           </div>
-          <p className="stats-change-text">
+          <p className="st-stats-change-text">
             <span
-              className={trend.direction === "up" ? "trend-up" : "trend-down"}
+              className={
+                trend.direction === "up" ? "st-trend-up" : "st-trend-down"
+              }
               style={{
                 color: trend.direction === "up" ? "#18682c" : "#d53425",
               }}
             >
               {trend.value}
             </span>{" "}
-            <span style={{ color: theme.colors.textMuted }}>{trend.text}</span>
+            <span style={{ color: "5b6168" }}>{trend.text}</span>
           </p>
         </div>
       )}

@@ -1,5 +1,4 @@
 import React from "react";
-import { useTheme } from "../../../../hooks/useTheme";
 import "./TimeSelector.css";
 
 type TimePeriod = "all-time" | "week" | "month";
@@ -13,8 +12,6 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
   selected,
   onChange,
 }) => {
-  const { theme } = useTheme();
-
   const options: { value: TimePeriod; label: string }[] = [
     { value: "all-time", label: "All time" },
     { value: "week", label: "Week" },
@@ -23,7 +20,7 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
 
   return (
     <div
-      className="time-selector"
+      className="ts-time-selector"
       role="tablist"
       aria-label="Time period selector"
     >
@@ -39,17 +36,10 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
             role="tab"
             aria-selected={isSelected}
             aria-label={`${option.label} period`}
-            className={`time-option ${isFirst ? "first" : ""} ${
+            className={`ts-time-option ${isFirst ? "first" : ""} ${
               isLast ? "last" : ""
             } ${isSelected ? "selected" : ""}`}
             onClick={() => onChange(option.value)}
-            style={{
-              backgroundColor: isSelected
-                ? theme.colors.primary
-                : "transparent",
-              color: isSelected ? theme.colors.white : theme.colors.textMuted,
-              borderColor: theme.colors.borderColor,
-            }}
           >
             {option.label}
           </button>
