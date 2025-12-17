@@ -9,6 +9,7 @@ export interface StatusDropdownProps {
   onNoteRequired?: (value: string, note: string) => void;
   options: string[];
   testId?: string;
+  disabled?: boolean;
 }
 
 export const StatusDropdown: React.FC<StatusDropdownProps> = ({
@@ -17,6 +18,7 @@ export const StatusDropdown: React.FC<StatusDropdownProps> = ({
   onNoteRequired,
   options,
   testId = "status-dropdown",
+  disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -61,6 +63,7 @@ export const StatusDropdown: React.FC<StatusDropdownProps> = ({
 
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (disabled) return;
     setIsOpen(!isOpen);
   };
 
@@ -81,7 +84,7 @@ export const StatusDropdown: React.FC<StatusDropdownProps> = ({
     <div className="status-dropdown-wrapper">
       <div
         ref={toggleRef}
-        className="status-dropdown-cell"
+        className={`status-dropdown-cell${disabled ? " status-dropdown-cell--disabled" : ""}`}
         onClick={handleToggle}
         data-testid={testId}
       >

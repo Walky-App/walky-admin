@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CTooltip } from "@coreui/react";
 import { apiClient } from "../../../API";
+import { usePermissions } from "../../../hooks/usePermissions";
 import {
   ActionDropdown,
   AssetIcon,
@@ -51,6 +52,11 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
   onSortChange,
   emptyMessage = "No students found",
 }) => {
+  const { canUpdate } = usePermissions();
+
+  // Permission check for banned student actions (unban, deactivate)
+  const canModifyBannedStudents = canUpdate("banned_students");
+
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(
@@ -74,7 +80,12 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
   const deactivateMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
+      // Invalidate all student queries to refresh all student lists
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) && query.queryKey[0] === "students",
+      });
+      queryClient.invalidateQueries({ queryKey: ["studentStats"] });
       setToastMessage("User deactivated successfully");
       setShowToast(true);
     },
@@ -87,7 +98,12 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
   const unbanMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsUnbanCreate(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
+      // Invalidate all student queries to refresh both active and banned lists
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) && query.queryKey[0] === "students",
+      });
+      queryClient.invalidateQueries({ queryKey: ["studentStats"] });
       setToastMessage("User unbanned successfully");
       setShowToast(true);
     },
@@ -101,7 +117,11 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       apiClient.api.adminV2StudentsFlagCreate(id, { reason }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
+      // Invalidate all student queries
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) && query.queryKey[0] === "students",
+      });
       setToastMessage("User flagged successfully");
       setShowToast(true);
     },
@@ -462,36 +482,46 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
                             handleSendEmail(student);
                           },
                         },
-                        {
-                          label: student.isFlagged ? "Unflag" : "Flag",
-                          icon: "flag-icon",
-                          variant: student.isFlagged ? "danger" : undefined,
-                          onClick: (e) => {
-                            e.stopPropagation();
-                            handleFlagUser(student);
-                          },
-                        },
-                        {
-                          isDivider: true,
-                          label: "",
-                          onClick: () => {},
-                        },
-                        {
-                          label: "Unban user",
-                          variant: "danger",
-                          onClick: (e) => {
-                            e.stopPropagation();
-                            handleUnbanUser(student);
-                          },
-                        },
-                        {
-                          label: "Deactivate user",
-                          variant: "danger",
-                          onClick: (e) => {
-                            e.stopPropagation();
-                            handleDeactivateUser(student);
-                          },
-                        },
+                        ...(canModifyBannedStudents
+                          ? [
+                              {
+                                label: student.isFlagged ? "Unflag" : "Flag",
+                                icon: "flag-icon" as const,
+                                variant: student.isFlagged
+                                  ? ("danger" as const)
+                                  : undefined,
+                                onClick: (e: React.MouseEvent) => {
+                                  e.stopPropagation();
+                                  handleFlagUser(student);
+                                },
+                              },
+                            ]
+                          : []),
+                        ...(canModifyBannedStudents
+                          ? [
+                              {
+                                isDivider: true,
+                                label: "",
+                                onClick: () => {},
+                              },
+                              {
+                                label: "Unban user",
+                                variant: "danger" as const,
+                                onClick: (e: React.MouseEvent) => {
+                                  e.stopPropagation();
+                                  handleUnbanUser(student);
+                                },
+                              },
+                              {
+                                label: "Deactivate user",
+                                variant: "danger" as const,
+                                onClick: (e: React.MouseEvent) => {
+                                  e.stopPropagation();
+                                  handleDeactivateUser(student);
+                                },
+                              },
+                            ]
+                          : []),
                       ]}
                     />
                   </td>

@@ -5,6 +5,7 @@ import { apiClient } from "../../../API";
 import API from "../../../API";
 import { AssetIcon, FilterBar, LastUpdated } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import { usePermissions } from "../../../hooks/usePermissions";
 import { CRow, CCol } from "@coreui/react";
 import "./StudentBehavior.css";
 
@@ -36,9 +37,13 @@ const StudentBehavior: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
   const { timePeriod, setTimePeriod } = useDashboard();
+  const { canExport } = usePermissions();
   const [hoveredTooltip, setHoveredTooltip] = useState<number | null>(null);
   const exportRef = useRef<HTMLElement | null>(null);
   void API; // keep API import referenced
+
+  // Check if user can export student behavior data
+  const showExport = canExport("student_behavior");
 
   const comparisonCopy: Record<string, string> = {
     week: "from last week",
@@ -84,6 +89,7 @@ const StudentBehavior: React.FC = () => {
         onTimePeriodChange={setTimePeriod}
         exportTargetRef={exportRef}
         exportFileName={`student_behavior_${timePeriod}`}
+        showExport={showExport}
       />
 
       {/* Header Section */}

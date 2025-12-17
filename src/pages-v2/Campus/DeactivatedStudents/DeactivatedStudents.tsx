@@ -8,11 +8,16 @@ import { StudentData, StudentTableColumn } from "../components/StudentTable";
 import { DeactivatedStudentTable } from "../components/DeactivatedStudentTable";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";
+import { usePermissions } from "../../../hooks/usePermissions";
 import "./DeactivatedStudents.css";
 
 export const DeactivatedStudents: React.FC = () => {
+  const { canExport } = usePermissions();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Check permissions for this page
+  const showExport = canExport("inactive_students");
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -160,10 +165,12 @@ export const DeactivatedStudents: React.FC = () => {
               variant="primary"
             />
           </div>
-          <ExportButton
-            captureRef={exportRef}
-            filename="deactivated_students"
-          />
+          {showExport && (
+            <ExportButton
+              captureRef={exportRef}
+              filename="deactivated_students"
+            />
+          )}
         </div>
 
         {isListLoading ? (

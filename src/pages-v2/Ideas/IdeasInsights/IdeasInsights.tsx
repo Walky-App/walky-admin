@@ -3,6 +3,7 @@ import "./IdeasInsights.css";
 import { AssetIcon, ExportButton, LastUpdated } from "../../../components-v2";
 import { NoIdeasFound } from "../components/NoIdeasFound/NoIdeasFound";
 import { apiClient } from "../../../API";
+import { usePermissions } from "../../../hooks/usePermissions";
 
 interface PopularIdea {
   rank: number;
@@ -15,12 +16,16 @@ interface PopularIdea {
 }
 
 export const IdeasInsights: React.FC = () => {
+  const { canExport } = usePermissions();
   const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
     "month"
   );
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
   const exportRef = useRef<HTMLElement | null>(null);
+
+  // Check permissions for this page
+  const showExport = canExport("ideas_insights");
 
   const [stats, setStats] = useState({
     totalIdeas: 0,
@@ -131,7 +136,9 @@ export const IdeasInsights: React.FC = () => {
     <main className="ideas-insights-page" ref={exportRef}>
       {/* Header with Export Button */}
       <div className="insights-header">
-        <ExportButton captureRef={exportRef} filename="ideas_insights" />
+        {showExport && (
+          <ExportButton captureRef={exportRef} filename="ideas_insights" />
+        )}
       </div>
 
       {/* Top 3 Stats Cards */}

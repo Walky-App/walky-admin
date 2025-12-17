@@ -57,6 +57,8 @@ interface ReportsTableProps {
   sortOrder?: "asc" | "desc";
   onSort?: () => void;
   showResolutionDate?: boolean;
+  canChangeStatus?: boolean;
+  canFlag?: boolean;
 }
 
 export const ReportsTable: React.FC<ReportsTableProps> = ({
@@ -83,6 +85,8 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
   sortOrder,
   onSort,
   showResolutionDate = false,
+  canChangeStatus = true,
+  canFlag = true,
 }) => {
   const columnCount = showResolutionDate ? 7 : 6;
 
@@ -265,6 +269,7 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
                             ? getStatusTestId(report)
                             : `${statusTestIdPrefix}-status-dropdown-${report.id}`
                         }
+                        disabled={!canChangeStatus}
                       />
                     </td>
                     <td>
@@ -278,15 +283,19 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
                               onRowClick(report);
                             },
                           },
-                          {
-                            label: "Flag",
-                            icon: "flag-icon",
-                            iconSize: 18,
-                            onClick: (e) => {
-                              e.stopPropagation();
-                              onFlag(report);
-                            },
-                          },
+                          ...(canFlag
+                            ? [
+                                {
+                                  label: "Flag",
+                                  icon: "flag-icon" as const,
+                                  iconSize: 18,
+                                  onClick: (e: React.MouseEvent) => {
+                                    e.stopPropagation();
+                                    onFlag(report);
+                                  },
+                                },
+                              ]
+                            : []),
                         ]}
                       />
                     </td>

@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CTooltip } from "@coreui/react";
 import { apiClient } from "../../../API";
 import { useAuth } from "../../../hooks/useAuth";
+import { usePermissions } from "../../../hooks/usePermissions";
 import { getFirstName } from "../../../lib/utils/nameUtils";
 import {
   AssetIcon,
@@ -124,7 +125,12 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   emptyMessage = "No students found",
 }) => {
   const { user } = useAuth();
+  const { canUpdate } = usePermissions();
   const queryClient = useQueryClient();
+
+  // Permission check for student actions (ban, deactivate)
+  const canModifyStudents = canUpdate("active_students");
+
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(
     null
   );
@@ -144,10 +150,10 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
     onSuccess: () => {
-      // Force immediate refetch by invalidating all student-related queries
+      // Invalidate all student queries to refresh all student lists
       queryClient.invalidateQueries({
-        queryKey: ["students"],
-        refetchType: "all",
+        predicate: (query) =>
+          Array.isArray(query.queryKey) && query.queryKey[0] === "students",
       });
       queryClient.invalidateQueries({ queryKey: ["studentStats"] });
       setToastMessage("Student deactivated successfully");
@@ -172,9 +178,10 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         lockDuration: data.duration,
       }),
     onSuccess: () => {
+      // Invalidate all student queries to refresh both active and banned lists
       queryClient.invalidateQueries({
-        queryKey: ["students"],
-        refetchType: "all",
+        predicate: (query) =>
+          Array.isArray(query.queryKey) && query.queryKey[0] === "students",
       });
       queryClient.invalidateQueries({ queryKey: ["studentStats"] });
       setToastMessage("Student banned successfully");
@@ -229,9 +236,10 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   const unbanMutation = useMutation({
     mutationFn: (id: string) => apiClient.api.adminV2StudentsUnbanCreate(id),
     onSuccess: () => {
+      // Invalidate all student queries to refresh both active and banned lists
       queryClient.invalidateQueries({
-        queryKey: ["students"],
-        refetchType: "all",
+        predicate: (query) =>
+          Array.isArray(query.queryKey) && query.queryKey[0] === "students",
       });
       queryClient.invalidateQueries({ queryKey: ["studentStats"] });
       setToastMessage("Student unbanned successfully");
@@ -458,13 +466,18 @@ export const StudentTable: React.FC<StudentTableProps> = ({
   ) => {
     if (!studentToBan) return;
 
-    // Convert duration string to number (days) if needed, or handle logic
-    // For now assuming duration is string like "7 days", need to parse or map
-    let durationDays = 0;
-    if (duration.includes("24 hours")) durationDays = 1;
-    else if (duration.includes("7 days")) durationDays = 7;
-    else if (duration.includes("30 days")) durationDays = 30;
-    else if (duration.includes("Permanent")) durationDays = 36500; // 100 years
+    // Convert duration string to number of days
+    // Modal sends: "1 Day", "3 Days", "7 Days", "14 Days", "30 Days", "90 Days"
+    const durationMap: Record<string, number> = {
+      "1 Day": 1,
+      "3 Days": 3,
+      "7 Days": 7,
+      "14 Days": 14,
+      "30 Days": 30,
+      "90 Days": 90,
+      "Permanent": 36500,
+    };
+    const durationDays = durationMap[duration] || parseInt(duration) || 7;
 
     banMutation.mutate({ id: studentToBan.id, duration: durationDays, reason });
   };
@@ -720,40 +733,50 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                             handleSendEmail(student);
                           },
                         },
-                        {
-                          label: student.isFlagged ? "Unflag" : "Flag",
-                          icon: "flag-icon",
-                          variant: student.isFlagged ? "danger" : undefined,
-                          onClick: (e) => {
-                            e.stopPropagation();
-                            if (student.isFlagged) {
-                              handleUnflagUser(student);
-                            } else {
-                              handleFlagUser(student);
-                            }
-                          },
-                        },
-                        {
-                          isDivider: true,
-                          label: "",
-                          onClick: () => {},
-                        },
-                        {
-                          label: "Ban user",
-                          variant: "danger",
-                          onClick: (e) => {
-                            e.stopPropagation();
-                            handleBanUser(student);
-                          },
-                        },
-                        {
-                          label: "Deactivate user",
-                          variant: "danger",
-                          onClick: (e) => {
-                            e.stopPropagation();
-                            handleDeactivateUser(student);
-                          },
-                        },
+                        ...(canModifyStudents
+                          ? [
+                              {
+                                label: student.isFlagged ? "Unflag" : "Flag",
+                                icon: "flag-icon" as const,
+                                variant: student.isFlagged
+                                  ? ("danger" as const)
+                                  : undefined,
+                                onClick: (e: React.MouseEvent) => {
+                                  e.stopPropagation();
+                                  if (student.isFlagged) {
+                                    handleUnflagUser(student);
+                                  } else {
+                                    handleFlagUser(student);
+                                  }
+                                },
+                              },
+                            ]
+                          : []),
+                        ...(canModifyStudents
+                          ? [
+                              {
+                                isDivider: true,
+                                label: "",
+                                onClick: () => {},
+                              },
+                              {
+                                label: "Ban user",
+                                variant: "danger" as const,
+                                onClick: (e: React.MouseEvent) => {
+                                  e.stopPropagation();
+                                  handleBanUser(student);
+                                },
+                              },
+                              {
+                                label: "Deactivate user",
+                                variant: "danger" as const,
+                                onClick: (e: React.MouseEvent) => {
+                                  e.stopPropagation();
+                                  handleDeactivateUser(student);
+                                },
+                              },
+                            ]
+                          : []),
                       ]}
                     />
                   </td>
@@ -776,11 +799,17 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         student={selectedStudent as StudentProfileData | null}
         onClose={handleCloseProfile}
         onBanUser={(student, duration, reason) => {
-          let durationDays = 0;
-          if (duration.includes("24 hours")) durationDays = 1;
-          else if (duration.includes("7 days")) durationDays = 7;
-          else if (duration.includes("30 days")) durationDays = 30;
-          else if (duration.includes("Permanent")) durationDays = 36500;
+          // Convert duration string to number of days
+          const durationMap: Record<string, number> = {
+            "1 Day": 1,
+            "3 Days": 3,
+            "7 Days": 7,
+            "14 Days": 14,
+            "30 Days": 30,
+            "90 Days": 90,
+            "Permanent": 36500,
+          };
+          const durationDays = durationMap[duration] || parseInt(duration) || 7;
 
           banMutation.mutate({
             id: student.id,

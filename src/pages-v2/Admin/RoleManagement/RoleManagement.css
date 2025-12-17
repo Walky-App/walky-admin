@@ -245,6 +245,43 @@
   gap: 4px;
 }
 
+/* Sortable Headers */
+.sortable-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1d1b20;
+  transition: color 0.2s ease;
+}
+
+.sortable-header:hover {
+  color: #526ac9;
+}
+
+.sortable-header.active {
+  color: #526ac9;
+}
+
+.sortable-header .sort-icon {
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+}
+
+.sortable-header:hover .sort-icon {
+  opacity: 0.6;
+}
+
+.sortable-header .sort-icon.active {
+  opacity: 1;
+}
+
 /* Table Rows */
 .members-table tbody tr {
   height: 73px;
@@ -422,6 +459,23 @@
 .status-badge.expired {
   background: #ffe5e4;
   color: #a4181a;
+}
+
+.status-badge.deactivated {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+/* Deactivated member row */
+.member-row.deactivated {
+  opacity: 0.6;
+}
+
+.member-row.deactivated .member-name::after {
+  content: " (Deactivated)";
+  font-size: 11px;
+  font-weight: 400;
+  color: #e65100;
 }
 
 .member-last-active {

@@ -5,6 +5,7 @@ import { CRow, CCol } from "@coreui/react";
 import { AssetIcon, FilterBar, LastUpdated } from "../../../components-v2";
 import { DashboardSkeleton, LineChart } from "../components";
 import { BarChart } from "./components/BarChart";
+import { usePermissions } from "../../../hooks/usePermissions";
 import "./UserInteractions.css";
 
 import { useDashboard } from "../../../contexts/DashboardContext";
@@ -15,6 +16,10 @@ const UserInteractions: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
   const { timePeriod, setTimePeriod } = useDashboard();
+  const { canExport } = usePermissions();
+
+  // Check if user can export user interactions data
+  const showExport = canExport("user_interactions");
 
   // ... (inside component)
 
@@ -70,6 +75,7 @@ const UserInteractions: React.FC = () => {
         onTimePeriodChange={setTimePeriod}
         exportTargetRef={exportRef}
         exportFileName={`user_interactions_${timePeriod}`}
+        showExport={showExport}
       />
 
       {/* Header Section */}

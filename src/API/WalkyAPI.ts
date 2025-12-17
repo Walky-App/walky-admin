@@ -1196,13 +1196,9 @@ export class HttpClient<SecurityDataType = unknown> {
  *
  * REST API for Walky App
  */
-export class Api<SecurityDataType extends unknown> {
-  http: HttpClient<SecurityDataType>;
-
-  constructor(http: HttpClient<SecurityDataType>) {
-    this.http = http;
-  }
-
+export class Api<
+  SecurityDataType extends unknown,
+> extends HttpClient<SecurityDataType> {
   api = {
     /**
      * @description Retrieves a list of alerts filtered by school, campus, and active status
@@ -1232,7 +1228,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           alerts?: object[];
           total?: number;
@@ -1269,7 +1265,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           alert?: object;
@@ -1298,7 +1294,7 @@ export class Api<SecurityDataType extends unknown> {
       alertId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           alert?: object;
@@ -1328,7 +1324,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           total?: number;
           bySeverity?: Record<string, number>;
@@ -1354,7 +1350,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminAlertsDelete: (alertId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
         },
@@ -1384,7 +1380,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/social-health`,
         method: "GET",
         query: query,
@@ -1407,7 +1403,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/wellbeing`,
         method: "GET",
         query: query,
@@ -1437,7 +1433,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/students`,
         method: "GET",
         query: query,
@@ -1455,7 +1451,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminAnalyticsActivitiesKpisList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/activities/kpis`,
         method: "GET",
         secure: true,
@@ -1479,7 +1475,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         | {
             totalWalksCreated?: number;
           }
@@ -1515,7 +1511,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/walks/active`,
         method: "GET",
         query: query,
@@ -1538,7 +1534,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/walks/pending`,
         method: "GET",
         query: query,
@@ -1561,7 +1557,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/walks/completed`,
         method: "GET",
         query: query,
@@ -1584,7 +1580,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/walks/cancelled`,
         method: "GET",
         query: query,
@@ -1610,7 +1606,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         | {
             count?: number;
           }
@@ -1648,7 +1644,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         | {
             totalIdeasCreated?: number;
             activeIdeasCount?: number;
@@ -1687,7 +1683,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/walks/distribution`,
         method: "GET",
         query: query,
@@ -1712,7 +1708,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/messaging`,
         method: "GET",
         query: query,
@@ -1737,7 +1733,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/profile-views`,
         method: "GET",
         query: query,
@@ -1762,7 +1758,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/engagement`,
         method: "GET",
         query: query,
@@ -1785,7 +1781,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/session-analytics`,
         method: "GET",
         query: query,
@@ -1808,7 +1804,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/user-lifecycle`,
         method: "GET",
         query: query,
@@ -1831,7 +1827,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/social-graph`,
         method: "GET",
         query: query,
@@ -1854,7 +1850,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/referrals`,
         method: "GET",
         query: query,
@@ -1879,7 +1875,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/safety`,
         method: "GET",
         query: query,
@@ -1897,7 +1893,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminAnalyticsHealthList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/analytics/health`,
         method: "GET",
         secure: true,
@@ -1924,7 +1920,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/events`,
         method: "GET",
         query: query,
@@ -1942,7 +1938,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminEventsDetail: (eventId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/events/${eventId}`,
         method: "GET",
         secure: true,
@@ -1959,7 +1955,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminProfileList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/profile`,
         method: "GET",
         secure: true,
@@ -1984,7 +1980,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/profile`,
         method: "PUT",
         body: data,
@@ -2009,7 +2005,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/profile/change-password`,
         method: "POST",
         body: data,
@@ -2034,7 +2030,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/profile/notifications`,
         method: "PUT",
         body: data,
@@ -2053,7 +2049,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminProfile2FaEnableCreate: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/profile/2fa/enable`,
         method: "POST",
         secure: true,
@@ -2070,7 +2066,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminProfile2FaDisableCreate: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/profile/2fa/disable`,
         method: "POST",
         secure: true,
@@ -2087,7 +2083,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminProfileLogoutAllCreate: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/profile/logout-all`,
         method: "POST",
         secure: true,
@@ -2109,7 +2105,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/profile/delete`,
         method: "DELETE",
         body: data,
@@ -2136,7 +2132,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/spaces`,
         method: "GET",
         query: query,
@@ -2154,7 +2150,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminSpacesDetail: (spaceId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/spaces/${spaceId}`,
         method: "GET",
         secure: true,
@@ -2171,7 +2167,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminSpaceCategoriesList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/space-categories`,
         method: "GET",
         secure: true,
@@ -2224,7 +2220,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/space-categories`,
         method: "POST",
         body: data,
@@ -2255,7 +2251,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -2324,7 +2320,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -2365,7 +2361,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -2402,7 +2398,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -2450,7 +2446,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -2495,7 +2491,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           users?: User[];
           pagination?: {
@@ -2531,7 +2527,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           users?: {
             _id?: string;
@@ -2562,7 +2558,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminUsersDetail: (userId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           user?: User;
         },
@@ -2585,7 +2581,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminAmbassadorsList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -2627,7 +2623,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/ambassadors`,
         method: "POST",
         body: data,
@@ -2646,7 +2642,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminAmbassadorsDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/ambassadors/${id}`,
         method: "GET",
         secure: true,
@@ -2680,7 +2676,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/ambassadors/${id}`,
         method: "PUT",
         body: data,
@@ -2699,7 +2695,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminAmbassadorsDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/ambassadors/${id}`,
         method: "DELETE",
         secure: true,
@@ -2719,7 +2715,7 @@ export class Api<SecurityDataType extends unknown> {
       campusId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/ambassadors/campus/${campusId}`,
         method: "GET",
         secure: true,
@@ -2743,7 +2739,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           labels?: string[];
           subLabels?: string[];
@@ -2780,7 +2776,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           labels?: string[];
           subLabels?: string[];
@@ -2821,7 +2817,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           labels?: string[];
           subLabels?: string[];
@@ -2856,7 +2852,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           totalUsers?: number;
           totalActiveEvents?: number;
@@ -2891,7 +2887,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           topInterests?: object[];
           popularWaysToConnect?: object[];
@@ -2928,7 +2924,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           metricCards?: object[];
           completionMetrics?: object[];
@@ -2960,7 +2956,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           stats?: object;
           expandReachData?: any[];
@@ -2996,7 +2992,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           labels?: string[];
           subLabels?: string[];
@@ -3029,7 +3025,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           labels?: string[];
           subLabels?: string[];
@@ -3080,7 +3076,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           data?: {
             id?: string;
@@ -3132,7 +3128,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2EventsDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           id?: string;
           _id?: string;
@@ -3182,7 +3178,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2EventsDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/events/${id}`,
         method: "DELETE",
         secure: true,
@@ -3208,7 +3204,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           data?: {
             id?: string;
@@ -3248,7 +3244,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2IdeasDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           id?: string;
           title?: string;
@@ -3290,7 +3286,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2IdeasDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/ideas/${id}`,
         method: "DELETE",
         secure: true,
@@ -3322,7 +3318,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           data?: {
             id?: string;
@@ -3361,7 +3357,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2ReportsStatsList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           total?: number;
           pending?: number;
@@ -3394,7 +3390,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/reports/bulk-update`,
         method: "PUT",
         body: data,
@@ -3413,7 +3409,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2ReportsDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           id?: string;
           description?: string;
@@ -3449,7 +3445,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/reports/${id}/status`,
         method: "PATCH",
         body: data,
@@ -3474,7 +3470,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/reports/${id}/note`,
         method: "POST",
         body: data,
@@ -3500,7 +3496,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/reports/${id}/ban-user`,
         method: "POST",
         body: data,
@@ -3526,7 +3522,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/settings/profile`,
         method: "PUT",
         body: data,
@@ -3551,7 +3547,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/settings/password`,
         method: "PUT",
         body: data,
@@ -3570,7 +3566,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2SettingsLogoutAllCreate: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** @example "Logged out from all other devices" */
           message?: string;
@@ -3603,7 +3599,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/settings/delete-account`,
         method: "POST",
         body: data,
@@ -3632,7 +3628,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           data?: {
             id?: string;
@@ -3679,7 +3675,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           totalSpaces?: number;
           totalMembers?: number;
@@ -3717,7 +3713,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2SpacesDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           id?: string;
           name?: string;
@@ -3782,7 +3778,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/spaces/${id}`,
         method: "DELETE",
         body: data,
@@ -3811,7 +3807,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           data?: {
             id?: string;
@@ -3864,7 +3860,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2StudentsStatsList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** Total number of students */
           totalStudents?: number;
@@ -3898,7 +3894,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2StudentsDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           id?: string;
           userId?: string;
@@ -3965,9 +3961,26 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2StudentsDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/students/${id}`,
         method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags AdminV2
+     * @name AdminV2StudentsActivateCreate
+     * @summary Activate student (reactivate deactivated user)
+     * @request POST:/api/admin/v2/students/{id}/activate
+     * @secure
+     */
+    adminV2StudentsActivateCreate: (id: string, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/admin/v2/students/${id}/activate`,
+        method: "POST",
         secure: true,
         ...params,
       }),
@@ -3982,7 +3995,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2StudentsUnlockCreate: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/students/${id}/unlock`,
         method: "POST",
         secure: true,
@@ -3999,7 +4012,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2StudentsUnbanCreate: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/students/${id}/unban`,
         method: "POST",
         secure: true,
@@ -4016,7 +4029,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2StudentsBanHistoryList: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           bannedAt?: string;
           reason?: string;
@@ -4050,7 +4063,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/students/${id}/lock-settings`,
         method: "PUT",
         body: data,
@@ -4075,7 +4088,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           id?: string;
           name?: string;
@@ -4106,7 +4119,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2SchoolsList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           id?: string;
           name?: string;
@@ -4131,7 +4144,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2MeList: (params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/me`,
         method: "GET",
         secure: true,
@@ -4155,10 +4168,14 @@ export class Api<SecurityDataType extends unknown> {
         role?: string;
         /** If true, search will match exact first name or last name only */
         exactMatch?: boolean;
+        /** Sort by field */
+        sortBy?: string;
+        /** Sort order */
+        sortOrder?: "asc" | "desc";
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           data?: {
             id?: string;
@@ -4206,7 +4223,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/members`,
         method: "POST",
         body: data,
@@ -4225,10 +4242,35 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2MembersDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/members/${id}`,
         method: "DELETE",
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags AdminV2
+     * @name AdminV2MembersStatusPartialUpdate
+     * @summary Activate or deactivate a member
+     * @request PATCH:/api/admin/v2/members/{id}/status
+     * @secure
+     */
+    adminV2MembersStatusPartialUpdate: (
+      id: string,
+      data: {
+        isActive?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<void, any>({
+        path: `/api/admin/v2/members/${id}/status`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         ...params,
       }),
 
@@ -4248,7 +4290,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/members/${id}/role`,
         method: "PATCH",
         body: data,
@@ -4270,7 +4312,7 @@ export class Api<SecurityDataType extends unknown> {
       id: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/members/${id}/password-reset`,
         method: "POST",
         secure: true,
@@ -4293,7 +4335,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/events/${id}/flag`,
         method: "POST",
         body: data,
@@ -4312,7 +4354,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2EventsUnflagCreate: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/events/${id}/unflag`,
         method: "POST",
         secure: true,
@@ -4335,7 +4377,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/ideas/${id}/flag`,
         method: "POST",
         body: data,
@@ -4354,7 +4396,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2IdeasUnflagCreate: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/ideas/${id}/unflag`,
         method: "POST",
         secure: true,
@@ -4377,7 +4419,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/spaces/${id}/flag`,
         method: "POST",
         body: data,
@@ -4396,7 +4438,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2SpacesUnflagCreate: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/spaces/${id}/unflag`,
         method: "POST",
         secure: true,
@@ -4419,7 +4461,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/students/${id}/flag`,
         method: "POST",
         body: data,
@@ -4438,7 +4480,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminV2StudentsUnflagCreate: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/v2/students/${id}/unflag`,
         method: "POST",
         secure: true,
@@ -4467,7 +4509,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/analytics/log`,
         method: "POST",
         body: data,
@@ -4485,7 +4527,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/app-downloads
      */
     appDownloadsList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           totalDownloads?: number;
           totalActiveUsers?: number;
@@ -4509,7 +4551,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/app-downloads/appstore
      */
     appDownloadsAppstoreList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           downloads?: number;
           activeUsers?: number;
@@ -4539,7 +4581,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/app-downloads/playstore
      */
     appDownloadsPlaystoreList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           downloads?: number;
           activeUsers?: number;
@@ -4575,7 +4617,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           user?: {
             access_token?: string;
@@ -4639,7 +4681,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           user?: {
             access_token?: string;
@@ -4699,7 +4741,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     resendOtpCreate: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/resend-otp`,
         method: "POST",
         secure: true,
@@ -4720,7 +4762,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           access_token?: string;
           _id?: string;
@@ -4753,7 +4795,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     logoutCreate: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/logout`,
         method: "POST",
         secure: true,
@@ -4774,7 +4816,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/forgot-password`,
         method: "POST",
         body: data,
@@ -4800,7 +4842,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/reset-password`,
         method: "POST",
         body: data,
@@ -4822,7 +4864,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           access_token?: string;
           refresh_token?: string;
@@ -4857,7 +4899,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/bootstrap/super-admin`,
         method: "POST",
         body: data,
@@ -4874,7 +4916,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/bootstrap/status
      */
     bootstrapStatusList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           bootstrap_enabled?: boolean;
           super_admin_exists?: boolean;
@@ -4905,7 +4947,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -4963,7 +5005,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -5017,7 +5059,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -5056,7 +5098,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     campusesDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         Campus,
         | {
             error?: string;
@@ -5082,7 +5124,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     campusesDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -5118,7 +5160,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     campusesDisablePartialUpdate: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         Campus,
         | {
             error?: string;
@@ -5154,7 +5196,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -5228,7 +5270,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -5279,7 +5321,7 @@ export class Api<SecurityDataType extends unknown> {
       campusId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -5327,7 +5369,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/campus/${campusId}/metrics/activity-timeline`,
         method: "GET",
         query: query,
@@ -5357,7 +5399,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/campus/${campusId}/alerts`,
         method: "GET",
         query: query,
@@ -5379,7 +5421,7 @@ export class Api<SecurityDataType extends unknown> {
       alertId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/campus/${campusId}/alerts/${alertId}/mark-read`,
         method: "PATCH",
         secure: true,
@@ -5399,7 +5441,7 @@ export class Api<SecurityDataType extends unknown> {
       campusId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/campus/${campusId}/alerts/mark-all-read`,
         method: "PATCH",
         secure: true,
@@ -5427,7 +5469,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -5464,7 +5506,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminCampusSyncSyncAllCreate: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -5521,7 +5563,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -5571,7 +5613,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminCampusSyncCampusesList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -5613,7 +5655,7 @@ export class Api<SecurityDataType extends unknown> {
       campusId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -5658,7 +5700,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminCampusSyncSchedulerStatusList: (params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/campus-sync/scheduler/status`,
         method: "GET",
         secure: true,
@@ -5681,7 +5723,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           /** @example "Chat retrieved successfully" */
           message?: string;
@@ -5710,7 +5752,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     chatsList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** @example "Chats retrieved successfully" */
           message?: string;
@@ -5739,7 +5781,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     chatsPartialUpdate: (chatId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** @example "Chat marked as read" */
           message?: string;
@@ -5767,7 +5809,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     chatsDetail: (chatId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** @example "Messages retrieved successfully" */
           message?: string;
@@ -5796,7 +5838,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     chatsSuggestionsDetail: (userId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** @example "Suggestions retrieved successfully" */
           message?: string;
@@ -5831,7 +5873,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     countersList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: {
@@ -5872,7 +5914,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           /** The shortened deeplink URL */
           link?: string;
@@ -5911,7 +5953,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           /** The shortened deeplink URL */
           link?: string;
@@ -5940,7 +5982,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     deeplinksLastByIpList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** Current user ID */
           userId?: string;
@@ -5979,7 +6021,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/discover/spaces`,
         method: "GET",
         query: query,
@@ -6006,7 +6048,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/discover/events`,
         method: "GET",
         query: query,
@@ -6033,7 +6075,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/discover/ideas`,
         method: "GET",
         query: query,
@@ -6074,7 +6116,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/discover/users`,
         method: "GET",
         query: query,
@@ -6092,7 +6134,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     discoverSurpriseList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           summary?: {
             /** Total number of filter types */
@@ -6191,7 +6233,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: Event;
@@ -6234,7 +6276,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: (
@@ -6285,7 +6327,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         (
           | {
               timeFrame?: string;
@@ -6351,7 +6393,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         | {
             filter?: string;
             count?: number;
@@ -6403,7 +6445,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: Event;
@@ -6456,7 +6498,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: Event;
@@ -6510,7 +6552,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: Event;
@@ -6547,7 +6589,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     eventsJoinPartialUpdate: (eventId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         Event,
         void | {
           message?: string;
@@ -6574,7 +6616,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     eventsLeavePartialUpdate: (eventId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         Event,
         void | {
           message?: string;
@@ -6601,7 +6643,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     eventsInviteCreate: (eventId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: Event;
@@ -6643,7 +6685,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: {
@@ -6683,7 +6725,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     eventsCronReminderCreate: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
         },
@@ -6721,7 +6763,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/events/profile/${type}`,
         method: "GET",
         query: query,
@@ -6752,7 +6794,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/events/deleted`,
         method: "GET",
         query: query,
@@ -6776,7 +6818,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         EventInvite,
         | {
             message?: string;
@@ -6815,7 +6857,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         EventInvite[],
         {
           message?: string;
@@ -6839,7 +6881,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     eventInvitesDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         EventInvite,
         | {
             errors?: object[];
@@ -6871,7 +6913,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         EventInvite,
         | {
             message?: string;
@@ -6900,7 +6942,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     eventInvitesDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
         },
@@ -6927,7 +6969,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/health
      */
     healthList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           status?: "healthy" | "degraded" | "unhealthy";
           /** @format date-time */
@@ -6993,7 +7035,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     helpersFixWalkTypesCreate: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           /** @format date-time */
@@ -7023,7 +7065,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     helpersPushDetail: (targetId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** @example "Push notification sent successfully" */
           message?: string;
@@ -7054,7 +7096,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/count`,
         method: "GET",
         query: query,
@@ -7072,7 +7114,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ideasList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas`,
         method: "GET",
         secure: true,
@@ -7096,7 +7138,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas`,
         method: "POST",
         body: data,
@@ -7115,7 +7157,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ideasActiveList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/active`,
         method: "GET",
         secure: true,
@@ -7132,7 +7174,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ideasInactiveList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/inactive`,
         method: "GET",
         secure: true,
@@ -7149,7 +7191,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ideasCountTotalList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/count/total`,
         method: "GET",
         secure: true,
@@ -7166,7 +7208,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ideasCountActiveList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/count/active`,
         method: "GET",
         secure: true,
@@ -7183,7 +7225,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ideasCountInactiveList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/count/inactive`,
         method: "GET",
         secure: true,
@@ -7200,7 +7242,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ideasCountCollaboratedList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/count/collaborated`,
         method: "GET",
         secure: true,
@@ -7217,7 +7259,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ideasGrowthMonthlyList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/growth/monthly`,
         method: "GET",
         secure: true,
@@ -7234,7 +7276,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ideasByMonthList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/by-month`,
         method: "GET",
         secure: true,
@@ -7251,7 +7293,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ideasCollaboratedList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/collaborated`,
         method: "GET",
         secure: true,
@@ -7268,7 +7310,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ideasDetail: (ideaId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/${ideaId}`,
         method: "GET",
         secure: true,
@@ -7293,7 +7335,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/${ideaId}`,
         method: "PUT",
         body: data,
@@ -7312,7 +7354,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ideasDelete: (ideaId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/${ideaId}`,
         method: "DELETE",
         secure: true,
@@ -7336,7 +7378,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/report`,
         method: "POST",
         body: data,
@@ -7361,7 +7403,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/${ideaId}/collaborate`,
         method: "POST",
         body: data,
@@ -7389,7 +7431,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/ideas/profile/${type}`,
         method: "GET",
         query: query,
@@ -7407,7 +7449,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     interestsList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           _id?: string;
           name?: string;
@@ -7445,7 +7487,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: Interest;
@@ -7477,7 +7519,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     interestsDetail: (interestId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         Interest,
         | {
             errors?: object[];
@@ -7516,7 +7558,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: Interest;
@@ -7551,7 +7593,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     interestsDelete: (interestId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
         },
@@ -7583,7 +7625,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     interestsGroupedList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** Group name */
           name?: string;
@@ -7618,7 +7660,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     interestsGroupDetail: (groupName: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           _id?: string;
           name?: string;
@@ -7657,7 +7699,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           /** URL of the uploaded image */
           url?: string;
@@ -7683,7 +7725,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     interestGroupsList: (params: RequestParams = {}) =>
-      this.http.request<any[], void>({
+      this.request<any[], void>({
         path: `/api/interest-groups`,
         method: "GET",
         secure: true,
@@ -7711,7 +7753,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/interest-groups`,
         method: "POST",
         body: data,
@@ -7730,7 +7772,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     interestGroupsDetail: (groupId: string, params: RequestParams = {}) =>
-      this.http.request<any, void>({
+      this.request<any, void>({
         path: `/api/interest-groups/${groupId}`,
         method: "GET",
         secure: true,
@@ -7760,7 +7802,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/interest-groups/${groupId}`,
         method: "PUT",
         body: data,
@@ -7779,7 +7821,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     interestGroupsDelete: (groupId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/interest-groups/${groupId}`,
         method: "DELETE",
         secure: true,
@@ -7803,7 +7845,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/interest-groups/${groupId}/interests`,
         method: "POST",
         body: data,
@@ -7826,7 +7868,7 @@ export class Api<SecurityDataType extends unknown> {
       interestId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/interest-groups/${groupId}/interests/${interestId}`,
         method: "DELETE",
         secure: true,
@@ -7849,7 +7891,7 @@ export class Api<SecurityDataType extends unknown> {
       }[],
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/interest-groups/reorder`,
         method: "PUT",
         body: data,
@@ -7875,7 +7917,7 @@ export class Api<SecurityDataType extends unknown> {
       }[],
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/interest-groups/${groupId}/reorder-interests`,
         method: "PUT",
         body: data,
@@ -7894,7 +7936,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     invitesPendingDetail: (userId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           /** The invite object (if found) */
@@ -7932,7 +7974,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: object[];
@@ -7989,7 +8031,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           /** The created invite object */
@@ -8033,7 +8075,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: object[];
@@ -8065,7 +8107,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     invitesDetail: (inviteId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** Success message (note typo in implementation) */
           messgae?: string;
@@ -8106,7 +8148,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           /** Success message (note possible typo 'messgae' in some responses) */
           message?: string;
@@ -8143,7 +8185,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     languagesList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           languages?: {
             language?: string;
@@ -8169,7 +8211,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     languagesCountList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** @example {"English":50,"Spanish":30} */
           languageCounts?: Record<string, number>;
@@ -8192,7 +8234,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/location/room/{roomId}/members
      */
     locationRoomMembersList: (roomId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/location/room/${roomId}/members`,
         method: "GET",
         ...params,
@@ -8211,7 +8253,7 @@ export class Api<SecurityDataType extends unknown> {
       userId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/location/room/${roomId}/user/${userId}`,
         method: "GET",
         ...params,
@@ -8235,7 +8277,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/location/room/${roomId}/user/${userId}`,
         method: "POST",
         body: data,
@@ -8256,7 +8298,7 @@ export class Api<SecurityDataType extends unknown> {
       userId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/location/room/${roomId}/user/${userId}`,
         method: "DELETE",
         ...params,
@@ -8271,7 +8313,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/location/user/{userId}/rooms
      */
     locationUserRoomsList: (userId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/location/user/${userId}/rooms`,
         method: "GET",
         ...params,
@@ -8286,7 +8328,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request DELETE:/api/location/user/{userId}/rooms
      */
     locationUserRoomsDelete: (userId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/location/user/${userId}/rooms`,
         method: "DELETE",
         ...params,
@@ -8312,7 +8354,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/location/explore/${roomId}/${userId}/${walkType}/${schoolId}`,
         method: "POST",
         body: data,
@@ -8337,7 +8379,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/location/background`,
         method: "POST",
         body: data,
@@ -8364,7 +8406,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           samlEnabled?: boolean;
           universityId?: string;
@@ -8399,7 +8441,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           loginUrl?: string;
           sessionToken?: string;
@@ -8432,7 +8474,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<any, void>({
+      this.request<any, void>({
         path: `/api/saml/mobile/callback`,
         method: "GET",
         query: query,
@@ -8448,7 +8490,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/saml/mobile/universities
      */
     samlMobileUniversitiesList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           universities?: {
             id?: string;
@@ -8481,7 +8523,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         PeerRequest,
         | {
             message?: string;
@@ -8518,7 +8560,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         PeerRequest[],
         {
           message?: string;
@@ -8542,7 +8584,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     peerRequestsDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         PeerRequest,
         | {
             errors?: object[];
@@ -8574,7 +8616,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         PeerRequest,
         | {
             message?: string;
@@ -8603,7 +8645,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     peerRequestsDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
         },
@@ -8631,7 +8673,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersPeersList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/users/peers`,
         method: "GET",
         secure: true,
@@ -8648,7 +8690,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersPeersInviteCreate: (userId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/users/peers/invite/${userId}`,
         method: "POST",
         secure: true,
@@ -8671,7 +8713,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/users/peers/response/${userId}`,
         method: "POST",
         body: data,
@@ -8690,7 +8732,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersPendingPeersList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: {
@@ -8724,7 +8766,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersPeersStudentAmbassadorCreate: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
         },
@@ -8749,7 +8791,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersPeersRemoveCreate: (peerId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
         },
@@ -8774,7 +8816,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersPeersBlockCreate: (peerId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
         },
@@ -8799,7 +8841,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersPeersUnblockCreate: (peerId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
         },
@@ -8830,7 +8872,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
         },
@@ -8867,7 +8909,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: {
@@ -8910,7 +8952,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/places/${placeId}/hierarchy`,
         method: "GET",
         query: query,
@@ -8943,7 +8985,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/places/${placeId}/children`,
         method: "GET",
         query: query,
@@ -8972,7 +9014,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/places/containers`,
         method: "GET",
         query: query,
@@ -9004,7 +9046,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/places/${placeId}/search`,
         method: "GET",
         query: query,
@@ -9026,7 +9068,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/places/hierarchy/stats`,
         method: "GET",
         query: query,
@@ -9053,7 +9095,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: {
@@ -9092,7 +9134,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: {
@@ -9121,7 +9163,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placesRemoveLogoDelete: (placeId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/places/${placeId}/remove-logo`,
         method: "DELETE",
         secure: true,
@@ -9138,7 +9180,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placesRemoveCoverDelete: (placeId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/places/${placeId}/remove-cover`,
         method: "DELETE",
         secure: true,
@@ -9155,7 +9197,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminSyncProdToStagingTriggerCreate: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -9179,7 +9221,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminSyncProdToStagingStatusList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           enabled?: boolean;
@@ -9236,7 +9278,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -9313,7 +9355,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/places/school/${schoolId}`,
         method: "GET",
         query: query,
@@ -9351,7 +9393,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -9403,7 +9445,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/places/{placeId}
      */
     placesDetail: (placeId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -9477,7 +9519,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -9513,7 +9555,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/places/debug/photos/{campusId}
      */
     placesDebugPhotosDetail: (campusId: string, params: RequestParams = {}) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/places/debug/photos/${campusId}`,
         method: "GET",
         ...params,
@@ -9537,7 +9579,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/reports/check`,
         method: "GET",
         query: query,
@@ -9563,7 +9605,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/reports`,
         method: "POST",
         body: data,
@@ -9593,7 +9635,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           reports?: {
             _id?: string;
@@ -9670,7 +9712,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           report?: Report;
@@ -9696,7 +9738,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminReportsDetail: (reportId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           report?: Report;
           /** The reported item (user, event, space, idea, or message) */
@@ -9754,7 +9796,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           user?: {
@@ -9800,7 +9842,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           user?: {
@@ -9843,7 +9885,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           users?: {
             _id?: string;
@@ -9899,7 +9941,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminUsersBanHistoryList: (userId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/users/${userId}/ban-history`,
         method: "GET",
         secure: true,
@@ -9923,7 +9965,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           updated_count?: number;
@@ -9954,7 +9996,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/report-reasons`,
         method: "GET",
         query: query,
@@ -9975,7 +10017,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/report-reasons/active`,
         method: "GET",
         query: query,
@@ -9991,7 +10033,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/report-reasons/{id}
      */
     reportReasonsDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/report-reasons/${id}`,
         method: "GET",
         ...params,
@@ -10016,7 +10058,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/report-reasons`,
         method: "POST",
         body: data,
@@ -10045,7 +10087,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/report-reasons/${id}`,
         method: "PUT",
         body: data,
@@ -10071,7 +10113,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/report-reasons/${id}`,
         method: "DELETE",
         query: query,
@@ -10097,7 +10139,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/report-reasons/bulk-order`,
         method: "PATCH",
         body: data,
@@ -10136,7 +10178,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/users/${userId}/assign-role`,
         method: "POST",
         body: data,
@@ -10155,7 +10197,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminRolesList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           roles?: {
@@ -10195,7 +10237,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/roles`,
         method: "POST",
         body: data,
@@ -10214,7 +10256,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminPermissionsList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           permissions?: Record<
@@ -10252,7 +10294,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/permissions`,
         method: "POST",
         body: data,
@@ -10282,7 +10324,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/users/${userId}/check-permission`,
         method: "POST",
         body: data,
@@ -10301,7 +10343,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminUsersRolesList: (userId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           user?: {
@@ -10346,7 +10388,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.request<void, any>({
         path: `/api/admin/users/${userId}/remove-role`,
         method: "DELETE",
         body: data,
@@ -10374,7 +10416,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/roles/${roleId}`,
         method: "PUT",
         body: data,
@@ -10393,7 +10435,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminRolesDelete: (roleId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/roles/${roleId}`,
         method: "DELETE",
         secure: true,
@@ -10413,7 +10455,7 @@ export class Api<SecurityDataType extends unknown> {
       permissionId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/permissions/${permissionId}`,
         method: "DELETE",
         secure: true,
@@ -10434,7 +10476,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         void,
         void | {
           message?: string;
@@ -10457,7 +10499,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/school
      */
     schoolList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           _id?: string;
           school_name?: string;
@@ -10487,7 +10529,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/school/{school_id}
      */
     schoolDetail: (schoolId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         void,
         void | {
           message?: string;
@@ -10522,7 +10564,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         void,
         void | {
           message?: string;
@@ -10549,7 +10591,7 @@ export class Api<SecurityDataType extends unknown> {
       campusId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/school/${schoolId}/campus/${campusId}`,
         method: "POST",
         ...params,
@@ -10567,7 +10609,7 @@ export class Api<SecurityDataType extends unknown> {
       campusId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/school/${schoolId}/campus/${campusId}`,
         method: "DELETE",
         ...params,
@@ -10581,7 +10623,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/school/{school_id}/campuses
      */
     schoolCampusesList: (schoolId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/school/${schoolId}/campuses`,
         method: "GET",
         ...params,
@@ -10595,7 +10637,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/school/{school_id}/users
      */
     schoolUsersList: (schoolId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/school/${schoolId}/users`,
         method: "GET",
         ...params,
@@ -10617,7 +10659,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/school/${schoolId}/user/${userId}`,
         method: "POST",
         body: data,
@@ -10637,7 +10679,7 @@ export class Api<SecurityDataType extends unknown> {
       userId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/school/${schoolId}/user/${userId}`,
         method: "DELETE",
         ...params,
@@ -10665,7 +10707,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces`,
         method: "POST",
         body: data,
@@ -10700,7 +10742,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces`,
         method: "GET",
         query: query,
@@ -10718,7 +10760,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     spacesDetail: (spaceId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}`,
         method: "GET",
         secure: true,
@@ -10746,7 +10788,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}`,
         method: "PUT",
         body: data,
@@ -10765,7 +10807,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     spacesDelete: (spaceId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}`,
         method: "DELETE",
         secure: true,
@@ -10789,7 +10831,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/check-name`,
         method: "GET",
         query: query,
@@ -10807,7 +10849,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     spacesRestoreCreate: (spaceId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}/restore`,
         method: "POST",
         secure: true,
@@ -10833,7 +10875,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/profile/${type}`,
         method: "GET",
         query: query,
@@ -10850,7 +10892,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/space-categories
      */
     spaceCategoriesList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/space-categories`,
         method: "GET",
         ...params,
@@ -10865,7 +10907,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/space-categories/{id}
      */
     spaceCategoriesDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/space-categories/${id}`,
         method: "GET",
         ...params,
@@ -10915,7 +10957,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/space-categories/${id}`,
         method: "PUT",
         body: data,
@@ -10934,7 +10976,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminSpaceCategoriesDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/space-categories/${id}`,
         method: "DELETE",
         secure: true,
@@ -10959,7 +11001,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/space-categories/reorder`,
         method: "POST",
         body: data,
@@ -10977,7 +11019,7 @@ export class Api<SecurityDataType extends unknown> {
      * @request GET:/api/space-categories/with-spaces
      */
     spaceCategoriesWithSpacesList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/space-categories/with-spaces`,
         method: "GET",
         ...params,
@@ -10994,7 +11036,7 @@ export class Api<SecurityDataType extends unknown> {
      * @duplicate
      */
     spaceCategoriesWithSpacesList2: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/space-categories/${id}/with-spaces`,
         method: "GET",
         ...params,
@@ -11030,7 +11072,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}/events`,
         method: "POST",
         body: data,
@@ -11060,7 +11102,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}/events`,
         method: "GET",
         query: query,
@@ -11090,7 +11132,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/events/${eventId}`,
         method: "PUT",
         body: data,
@@ -11109,7 +11151,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     spacesEventsDelete: (eventId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/events/${eventId}`,
         method: "DELETE",
         secure: true,
@@ -11126,7 +11168,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     spacesJoinCreate: (spaceId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}/join`,
         method: "POST",
         secure: true,
@@ -11147,7 +11189,7 @@ export class Api<SecurityDataType extends unknown> {
       userId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}/requests/${userId}/approve`,
         method: "POST",
         secure: true,
@@ -11168,7 +11210,7 @@ export class Api<SecurityDataType extends unknown> {
       userId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}/requests/${userId}/reject`,
         method: "POST",
         secure: true,
@@ -11194,7 +11236,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}/requests`,
         method: "GET",
         query: query,
@@ -11221,7 +11263,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}/members`,
         method: "GET",
         query: query,
@@ -11243,7 +11285,7 @@ export class Api<SecurityDataType extends unknown> {
       userId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}/members/${userId}`,
         method: "DELETE",
         secure: true,
@@ -11260,7 +11302,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     spacesLeaveCreate: (spaceId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}/leave`,
         method: "POST",
         secure: true,
@@ -11277,7 +11319,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     spacesMembershipStatusList: (spaceId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           spaceId?: string;
           membershipStatus?: "none" | "requested" | "joined";
@@ -11313,7 +11355,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: {
@@ -11351,7 +11393,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
           data?: {
@@ -11379,7 +11421,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     spacesRemoveLogoDelete: (spaceId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}/remove-logo`,
         method: "DELETE",
         secure: true,
@@ -11396,7 +11438,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     spacesRemoveCoverDelete: (spaceId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/spaces/${spaceId}/remove-cover`,
         method: "DELETE",
         secure: true,
@@ -11413,7 +11455,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     surpriseRollStartCreate: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -11450,7 +11492,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/surprise/roll-end`,
         method: "POST",
         body: data,
@@ -11469,7 +11511,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     surpriseMyStatsList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -11516,7 +11558,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/surprise/admin/stats`,
         method: "GET",
         query: query,
@@ -11534,7 +11576,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     surpriseAdminUserDetail: (userId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/surprise/admin/user/${userId}`,
         method: "GET",
         secure: true,
@@ -11554,7 +11596,7 @@ export class Api<SecurityDataType extends unknown> {
       userId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -11590,7 +11632,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/type-mappings`,
         method: "GET",
         query: query,
@@ -11616,7 +11658,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/type-mappings`,
         method: "POST",
         body: data,
@@ -11645,7 +11687,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/type-mappings/${id}`,
         method: "PUT",
         body: data,
@@ -11664,7 +11706,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminTypeMappingsDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/type-mappings/${id}`,
         method: "DELETE",
         secure: true,
@@ -11681,7 +11723,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminTypeMappingsGoogleTypesList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/type-mappings/google-types`,
         method: "GET",
         secure: true,
@@ -11698,7 +11740,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminTypeMappingsStatsList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/type-mappings/stats`,
         method: "GET",
         secure: true,
@@ -11715,7 +11757,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     adminTypeMappingsAppCategoriesList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/admin/type-mappings/app-categories`,
         method: "GET",
         secure: true,
@@ -11732,7 +11774,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersList: (params: RequestParams = {}) =>
-      this.http.request<User[], Error>({
+      this.request<User[], Error>({
         path: `/api/users`,
         method: "GET",
         secure: true,
@@ -11750,7 +11792,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersDetail: (userId: string, params: RequestParams = {}) =>
-      this.http.request<User, Error>({
+      this.request<User, Error>({
         path: `/api/users/${userId}`,
         method: "GET",
         secure: true,
@@ -11768,7 +11810,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersUpdate: (userId: string, data: User, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** @example "User updated successfully" */
           message?: string;
@@ -11795,7 +11837,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersDelete: (userId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** @example "User deleted successfully" */
           message?: string;
@@ -11828,7 +11870,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           /** @example "Unread notifications count updated successfully" */
           message?: string;
@@ -11859,7 +11901,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersCampusList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           users?: {
             _id?: string;
@@ -11903,7 +11945,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersGroupedList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** All users available for walk */
           walk?: any[];
@@ -11943,7 +11985,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersNotificationSettingsList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/users/notification-settings`,
         method: "GET",
         secure: true,
@@ -11966,7 +12008,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/api/users/notification-settings`,
         method: "PUT",
         body: data,
@@ -11996,7 +12038,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           /** Random users for walk */
           walk?: any[];
@@ -12035,7 +12077,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     usersGroupDetail: (groupName: string, params: RequestParams = {}) =>
-      this.http.request<User[], void>({
+      this.request<User[], void>({
         path: `/api/users/group/${groupName}`,
         method: "GET",
         secure: true,
@@ -12070,7 +12112,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         WalkInvite,
         | {
             errors?: object[];
@@ -12106,7 +12148,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         WalkInvite[],
         {
           message?: string;
@@ -12130,7 +12172,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     walkInvitesDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         WalkInvite,
         | {
             errors?: object[];
@@ -12162,7 +12204,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         WalkInvite,
         | {
             message?: string;
@@ -12191,7 +12233,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     walkInvitesDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           message?: string;
         },
@@ -12230,7 +12272,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           /** Breakdown of walks */
           monthlyData?: {
@@ -12279,7 +12321,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     walksRealtimeActiveList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** Current number of active walks in the system */
           active_count: number;
@@ -12307,7 +12349,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     walksRealtimePendingList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** Current number of pending walks in the system */
           pending_count: number;
@@ -12335,7 +12377,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     walksRealtimeCompletedList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** Current number of completed walks in the system */
           completed_count: number;
@@ -12363,7 +12405,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     walksRealtimeCancelledList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** Current number of cancelled or closed walks in the system */
           cancelled_count: number;
@@ -12391,7 +12433,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     walksGroupedList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** Group name */
           name?: string;
@@ -12416,7 +12458,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     walksGroupDetail: (groupName: string, params: RequestParams = {}) =>
-      this.http.request<any[], void>({
+      this.request<any[], void>({
         path: `/api/walks/group/${groupName}`,
         method: "GET",
         secure: true,
@@ -12473,7 +12515,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -12512,7 +12554,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: any;
@@ -12548,7 +12590,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/sync/campus/${campusId}`,
         method: "POST",
         body: data,
@@ -12578,7 +12620,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/sync/status`,
         method: "GET",
         query: query,
@@ -12596,7 +12638,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placesDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/places/${id}`,
         method: "DELETE",
         secure: true,
@@ -12613,7 +12655,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placesRestoreCreate: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -12638,7 +12680,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placesPhotoSyncStatsList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -12678,7 +12720,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -12731,7 +12773,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -12761,7 +12803,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placesSystemInitCreate: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/places/system/init`,
         method: "POST",
         secure: true,
@@ -12778,7 +12820,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placesSystemStatusList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/places/system/status`,
         method: "GET",
         secure: true,
@@ -12795,7 +12837,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placesSystemRestartCreate: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/places/system/restart`,
         method: "POST",
         secure: true,
@@ -12827,7 +12869,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -12875,7 +12917,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/places/popular`,
         method: "GET",
         query: query,
@@ -12903,7 +12945,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/places/popular`,
         method: "POST",
         body: data,
@@ -12922,7 +12964,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placesPopularDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/places/popular/${id}`,
         method: "DELETE",
         secure: true,
@@ -12947,7 +12989,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/places/popular/reorder`,
         method: "PATCH",
         body: data,
@@ -12972,7 +13014,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/app-categories`,
         method: "GET",
         query: query,
@@ -13001,7 +13043,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/app-categories`,
         method: "POST",
         body: data,
@@ -13032,7 +13074,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/app-categories/${id}`,
         method: "PUT",
         body: data,
@@ -13051,7 +13093,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     appCategoriesDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/app-categories/${id}`,
         method: "DELETE",
         secure: true,
@@ -13068,7 +13110,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     appCategoriesGoogleTypesList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/app-categories/google-types`,
         method: "GET",
         secure: true,
@@ -13085,7 +13127,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     monitoringDashboardList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/monitoring/dashboard`,
         method: "GET",
         secure: true,
@@ -13102,7 +13144,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     monitoringHealthList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/monitoring/health`,
         method: "GET",
         secure: true,
@@ -13119,7 +13161,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     monitoringApiUsageList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/monitoring/api-usage`,
         method: "GET",
         secure: true,
@@ -13136,7 +13178,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     monitoringSyncPerformanceList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/monitoring/sync-performance`,
         method: "GET",
         secure: true,
@@ -13153,7 +13195,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     monitoringDatabaseList: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/monitoring/database`,
         method: "GET",
         secure: true,
@@ -13185,7 +13227,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/monitoring/alerts`,
         method: "GET",
         query: query,
@@ -13206,7 +13248,7 @@ export class Api<SecurityDataType extends unknown> {
       alertId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/monitoring/alerts/${alertId}/acknowledge`,
         method: "POST",
         secure: true,
@@ -13226,7 +13268,7 @@ export class Api<SecurityDataType extends unknown> {
       alertId: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/monitoring/alerts/${alertId}/resolve`,
         method: "POST",
         secure: true,
@@ -13257,7 +13299,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/monitoring/errors`,
         method: "GET",
         query: query,
@@ -13286,7 +13328,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<string, void>({
+      this.request<string, void>({
         path: `/admin/monitoring/metrics/export`,
         method: "GET",
         query: query,
@@ -13312,7 +13354,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -13360,7 +13402,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -13394,7 +13436,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placeTypesDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -13442,7 +13484,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -13476,7 +13518,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placeTypesDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/place-types/${id}`,
         method: "DELETE",
         secure: true,
@@ -13493,7 +13535,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     placeTypesGoogleTypesList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           data?: {
@@ -13520,7 +13562,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     regionsCampusDetail: (campusId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/regions/campus/${campusId}`,
         method: "GET",
         secure: true,
@@ -13537,7 +13579,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     regionsCampusSummaryList: (campusId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/regions/campus/${campusId}/summary`,
         method: "GET",
         secure: true,
@@ -13573,7 +13615,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/regions/campus/${campusId}/places`,
         method: "GET",
         query: query,
@@ -13604,7 +13646,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/regions/nearby`,
         method: "POST",
         body: data,
@@ -13623,7 +13665,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     regionsCampusStatsList: (campusId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/regions/campus/${campusId}/stats`,
         method: "GET",
         secure: true,
@@ -13651,7 +13693,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/sync/trigger`,
         method: "POST",
         body: data,
@@ -13670,7 +13712,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     syncRetryFailedCreate: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/sync/retry-failed`,
         method: "POST",
         secure: true,
@@ -13705,7 +13747,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/sync/logs`,
         method: "GET",
         query: query,
@@ -13723,7 +13765,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     syncStatsDetail: (regionId: string, params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/sync/stats/${regionId}`,
         method: "GET",
         secure: true,
@@ -13740,7 +13782,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     syncSchedulerStartCreate: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/sync/scheduler/start`,
         method: "POST",
         secure: true,
@@ -13757,7 +13799,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     syncSchedulerStopCreate: (params: RequestParams = {}) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/sync/scheduler/stop`,
         method: "POST",
         secure: true,
@@ -13784,7 +13826,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/admin/sync/scheduler/config`,
         method: "PUT",
         body: data,
@@ -13804,7 +13846,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     getAge: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           ages?: number[];
           data?: {
@@ -13838,7 +13880,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     under18List: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           data?: {
             id?: string;
@@ -13871,7 +13913,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     averageList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           /** The average age of all users */
           averageAge?: number;
@@ -13896,7 +13938,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ambassadorsList: (params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -13949,7 +13991,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -13986,7 +14028,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ambassadorsDetail: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -14032,7 +14074,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -14071,7 +14113,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     ambassadorsDelete: (id: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -14106,7 +14148,7 @@ export class Api<SecurityDataType extends unknown> {
      * @secure
      */
     campusDetail: (campusId: string, params: RequestParams = {}) =>
-      this.http.request<
+      this.request<
         {
           success?: boolean;
           message?: string;
@@ -14176,7 +14218,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           logs?: object[];
           total?: number;
@@ -14211,7 +14253,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/audit/security-events`,
         method: "GET",
         query: query,
@@ -14239,7 +14281,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/audit/user-activity/${userId}`,
         method: "GET",
         query: query,
@@ -14267,7 +14309,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, void>({
+      this.request<void, void>({
         path: `/audit/export`,
         method: "POST",
         body: data,
@@ -14302,7 +14344,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<string, void>({
+      this.request<string, void>({
         path: `/auth/landing`,
         method: "GET",
         query: query,
@@ -14330,7 +14372,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           /** @example "Password changed successfully" */
           message?: string;
@@ -14365,7 +14407,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           isValid?: boolean;
           errors?: string[];
@@ -14403,7 +14445,7 @@ export class Api<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
+      this.request<
         {
           /** Breakdown of active users */
           monthlyData?: {

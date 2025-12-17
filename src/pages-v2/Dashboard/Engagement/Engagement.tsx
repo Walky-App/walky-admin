@@ -17,6 +17,7 @@ import {
   DashboardSkeleton,
 } from "../components";
 import { useTheme } from "../../../hooks/useTheme";
+import { usePermissions } from "../../../hooks/usePermissions";
 import "./Engagement.css";
 
 import { useDashboard } from "../../../contexts/DashboardContext";
@@ -28,8 +29,12 @@ const Engagement: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
   const { timePeriod, setTimePeriod } = useDashboard();
+  const { canExport } = usePermissions();
   const [selectedMetric, setSelectedMetric] = useState("user-engagement");
   const exportRef = useRef<HTMLElement | null>(null);
+
+  // Check if user can export engagement data
+  const showExport = canExport("engagement");
 
   const { data: engagementData, isLoading: isEngagementLoading } = useQuery({
     queryKey: [
@@ -112,6 +117,7 @@ const Engagement: React.FC = () => {
         onTimePeriodChange={setTimePeriod}
         exportTargetRef={exportRef}
         exportFileName={`engagement_${timePeriod}`}
+        showExport={showExport}
       />
 
       {/* Stats Cards */}

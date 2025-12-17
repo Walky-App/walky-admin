@@ -19,6 +19,7 @@ import {
   ReportType,
 } from "../../../components-v2";
 import { useDebounce } from "../../../hooks/useDebounce";
+import { usePermissions } from "../../../hooks/usePermissions";
 import ReportsTable, { ReportRow } from "../components/ReportsTable";
 import "./ReportHistory.css";
 
@@ -34,6 +35,13 @@ interface HistoryReportData {
 }
 
 const ReportHistory: React.FC = () => {
+  const { canExport, canUpdate } = usePermissions();
+
+  // Check permissions for this page
+  const showExport = canExport("report_history");
+  const canChangeReportStatus = canUpdate("report_history");
+  const canFlagReportedItems = canUpdate("report_history");
+
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
@@ -142,9 +150,10 @@ const ReportHistory: React.FC = () => {
   const totalPages = Math.ceil(totalEntries / itemsPerPage) || 1;
 
   const stats = {
-    total: statsData?.data.total || 0,
     resolved: statsData?.data.resolved || 0,
     dismissed: statsData?.data.dismissed || 0,
+    // History total should be resolved + dismissed, not ALL reports
+    total: (statsData?.data.resolved || 0) + (statsData?.data.dismissed || 0),
   };
 
   const formatBanDate = (value?: string) => {
@@ -456,7 +465,7 @@ const ReportHistory: React.FC = () => {
             </div>
           </div>
 
-          <ExportButton />
+          {showExport && <ExportButton />}
         </div>
 
         <div className="reports-table-wrapper">
@@ -490,6 +499,8 @@ const ReportHistory: React.FC = () => {
             actionTestId="report-history-options"
             getStatusTestId={(row) => `status-dropdown-${row.id}`}
             showResolutionDate={true}
+            canChangeStatus={canChangeReportStatus}
+            canFlag={canFlagReportedItems}
           />
         </div>
 

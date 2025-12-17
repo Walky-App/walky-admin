@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../../API";
+import { usePermissions } from "../../../../hooks/usePermissions";
 import { getFirstName } from "../../../../lib/utils/nameUtils";
 import {
   DeleteModal,
@@ -49,7 +50,12 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
   sortOrder = "asc",
   onSortChange,
 }) => {
+  const { canUpdate, canDelete } = usePermissions();
   const queryClient = useQueryClient();
+
+  // Permission checks for space actions
+  const canFlagSpaces = canUpdate("spaces_manager");
+  const canDeleteSpaces = canDelete("spaces_manager");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [spaceToDelete, setSpaceToDelete] = useState<SpaceData | null>(null);
   const [flagModalOpen, setFlagModalOpen] = useState(false);
@@ -395,31 +401,43 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
                         label: "Space Details",
                         onClick: (e) => handleViewSpaceDetails(space, e),
                       },
-                      {
-                        isDivider: true,
-                        label: "",
-                        onClick: () => {},
-                      },
-                      space.isFlagged
-                        ? {
-                            label: "Unflag",
-                            icon: "flag-icon",
-                            variant: "danger",
-                            onClick: (e) => handleUnflagSpace(space, e),
-                          }
-                        : {
-                            label: "Flag",
-                            icon: "flag-icon",
-                            onClick: (e) => handleFlagSpace(space, e),
-                          },
-                      {
-                        label: "Delete Space",
-                        variant: "danger",
-                        onClick: (e) => {
-                          e.stopPropagation();
-                          handleDeleteClick(space);
-                        },
-                      },
+                      ...(canFlagSpaces || canDeleteSpaces
+                        ? [
+                            {
+                              isDivider: true,
+                              label: "",
+                              onClick: () => {},
+                            },
+                          ]
+                        : []),
+                      ...(canFlagSpaces
+                        ? [
+                            space.isFlagged
+                              ? {
+                                  label: "Unflag",
+                                  icon: "flag-icon" as const,
+                                  variant: "danger" as const,
+                                  onClick: (e: React.MouseEvent) => handleUnflagSpace(space, e),
+                                }
+                              : {
+                                  label: "Flag",
+                                  icon: "flag-icon" as const,
+                                  onClick: (e: React.MouseEvent) => handleFlagSpace(space, e),
+                                },
+                          ]
+                        : []),
+                      ...(canDeleteSpaces
+                        ? [
+                            {
+                              label: "Delete Space",
+                              variant: "danger" as const,
+                              onClick: (e: React.MouseEvent) => {
+                                e.stopPropagation();
+                                handleDeleteClick(space);
+                              },
+                            },
+                          ]
+                        : []),
                     ]}
                   />
                 </td>

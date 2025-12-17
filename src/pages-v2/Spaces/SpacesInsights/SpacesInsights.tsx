@@ -104,12 +104,17 @@ const SpacesInsightsSkeleton = () => (
 
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
+import { usePermissions } from "../../../hooks/usePermissions";
 
 export const SpacesInsights: React.FC = () => {
+  const { canExport } = usePermissions();
   const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
     "month"
   );
   const exportRef = useRef<HTMLElement | null>(null);
+
+  // Check permissions for this page
+  const showExport = canExport("spaces_insights");
 
   // Filtered data for categories/top spaces
   const { data: insightsData, isLoading } = useQuery({
@@ -163,7 +168,9 @@ export const SpacesInsights: React.FC = () => {
     <main className="spaces-insights-page" ref={exportRef}>
       {/* Header with Export Button */}
       <div className="insights-header">
-        <ExportButton captureRef={exportRef} filename="spaces_insights" />
+        {showExport && (
+          <ExportButton captureRef={exportRef} filename="spaces_insights" />
+        )}
       </div>
 
       {/* Top 2 Stats Cards */}

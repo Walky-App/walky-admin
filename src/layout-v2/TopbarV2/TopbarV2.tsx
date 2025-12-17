@@ -251,146 +251,148 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
 
         {/* Main Container */}
         <div className="topbar-main">
-          {/* School and Campus Selectors */}
-          <div className="selector-container">
-            {isMobile ? (
-              <>
-                {/* Mobile: Icon buttons with text */}
-                <button
-                  className="selector-icon-btn"
-                  onClick={() => setSchoolModalOpen(true)}
-                  aria-label="Select school"
-                >
-                  <AssetIcon
-                    name="school-icon"
-                    color={theme.colors.bodyColor}
-                  />
-                  <span className="selector-btn-text">
-                    {selectedSchool?.school_name || "School"}
-                  </span>
-                  <AssetIcon
-                    name="arrow-down"
-                    size={18}
-                    fill="var(--v2-neutral-black-main-500)"
-                  />
-                </button>
-                <button
-                  className="selector-icon-btn"
-                  onClick={() => setCampusModalOpen(true)}
-                  aria-label="Select campus"
-                >
-                  <AssetIcon
-                    name="campus-icon"
-                    color={theme.colors.bodyColor}
-                  />
-                  <span className="selector-btn-text">
-                    {selectedCampus?.campus_name || "Campus"}
-                  </span>
-                  <AssetIcon
-                    name="arrow-down"
-                    size={18}
-                    fill="var(--v2-neutral-black-main-500)"
-                  />
-                </button>
-              </>
-            ) : (
-              <>
-                {/* Desktop: Full dropdowns */}
-                <div className="selector-group">
-                  <div className="selector-icon">
+          {/* School and Campus Selectors - Only visible for super admins */}
+          {isSuperAdmin() && (
+            <div className="selector-container">
+              {isMobile ? (
+                <>
+                  {/* Mobile: Icon buttons with text */}
+                  <button
+                    className="selector-icon-btn"
+                    onClick={() => setSchoolModalOpen(true)}
+                    aria-label="Select school"
+                  >
                     <AssetIcon
                       name="school-icon"
                       color={theme.colors.bodyColor}
                     />
-                  </div>
-                  <div className="selector-info">
-                    <span className="selector-label">Your school</span>
-                    <CDropdown className="selector-dropdown">
-                      <CDropdownToggle color="link" className="selector-toggle">
-                        {isLoadingSchools ? (
-                          <CSpinner size="sm" />
-                        ) : (
-                          <>
-                            <span className="selector-value">
-                              {selectedSchool?.school_name || "Select School"}
-                            </span>
-                            <AssetIcon
-                              name="arrow-down"
-                              size={20}
-                              fill="var(--v2-neutral-black-main-500)"
-                            />
-                          </>
-                        )}
-                      </CDropdownToggle>
-                      <CDropdownMenu>
-                        {availableSchools.map((school: School) => (
-                          <CDropdownItem
-                            key={school._id}
-                            onClick={() => setSelectedSchool(school)}
-                            active={selectedSchool?._id === school._id}
-                          >
-                            {school.school_name}
-                          </CDropdownItem>
-                        ))}
-                        {availableSchools.length === 0 && !isLoadingSchools && (
-                          <CDropdownItem disabled>
-                            No schools available
-                          </CDropdownItem>
-                        )}
-                      </CDropdownMenu>
-                    </CDropdown>
-                  </div>
-                </div>
-
-                <div className="selector-group">
-                  <div className="selector-icon">
+                    <span className="selector-btn-text">
+                      {selectedSchool?.school_name || "School"}
+                    </span>
+                    <AssetIcon
+                      name="arrow-down"
+                      size={18}
+                      fill="var(--v2-neutral-black-main-500)"
+                    />
+                  </button>
+                  <button
+                    className="selector-icon-btn"
+                    onClick={() => setCampusModalOpen(true)}
+                    aria-label="Select campus"
+                  >
                     <AssetIcon
                       name="campus-icon"
                       color={theme.colors.bodyColor}
                     />
-                  </div>
-                  <div className="selector-info">
-                    <span className="selector-label">Your campus</span>
-                    <CDropdown className="selector-dropdown">
-                      <CDropdownToggle color="link" className="selector-toggle">
-                        {isLoadingCampuses ? (
-                          <CSpinner size="sm" />
-                        ) : (
-                          <>
-                            <span className="selector-value">
-                              {selectedCampus?.campus_name || "Select Campus"}
-                            </span>
-                            <AssetIcon
-                              name="arrow-down"
-                              size={20}
-                              fill="var(--v2-neutral-black-main-500)"
-                            />
-                          </>
-                        )}
-                      </CDropdownToggle>
-                      <CDropdownMenu>
-                        {availableCampuses.map((campus: Campus) => (
-                          <CDropdownItem
-                            key={campus._id}
-                            onClick={() => setSelectedCampus(campus)}
-                            active={selectedCampus?._id === campus._id}
-                          >
-                            {campus.campus_name}
-                          </CDropdownItem>
-                        ))}
-                        {availableCampuses.length === 0 &&
-                          !isLoadingCampuses && (
+                    <span className="selector-btn-text">
+                      {selectedCampus?.campus_name || "Campus"}
+                    </span>
+                    <AssetIcon
+                      name="arrow-down"
+                      size={18}
+                      fill="var(--v2-neutral-black-main-500)"
+                    />
+                  </button>
+                </>
+              ) : (
+                <>
+                  {/* Desktop: Full dropdowns */}
+                  <div className="selector-group">
+                    <div className="selector-icon">
+                      <AssetIcon
+                        name="school-icon"
+                        color={theme.colors.bodyColor}
+                      />
+                    </div>
+                    <div className="selector-info">
+                      <span className="selector-label">Your school</span>
+                      <CDropdown className="selector-dropdown">
+                        <CDropdownToggle color="link" className="selector-toggle">
+                          {isLoadingSchools ? (
+                            <CSpinner size="sm" />
+                          ) : (
+                            <>
+                              <span className="selector-value">
+                                {selectedSchool?.school_name || "Select School"}
+                              </span>
+                              <AssetIcon
+                                name="arrow-down"
+                                size={20}
+                                fill="var(--v2-neutral-black-main-500)"
+                              />
+                            </>
+                          )}
+                        </CDropdownToggle>
+                        <CDropdownMenu>
+                          {availableSchools.map((school: School) => (
+                            <CDropdownItem
+                              key={school._id}
+                              onClick={() => setSelectedSchool(school)}
+                              active={selectedSchool?._id === school._id}
+                            >
+                              {school.school_name}
+                            </CDropdownItem>
+                          ))}
+                          {availableSchools.length === 0 && !isLoadingSchools && (
                             <CDropdownItem disabled>
-                              No campuses available
+                              No schools available
                             </CDropdownItem>
                           )}
-                      </CDropdownMenu>
-                    </CDropdown>
+                        </CDropdownMenu>
+                      </CDropdown>
+                    </div>
                   </div>
-                </div>
-              </>
-            )}
-          </div>
+
+                  <div className="selector-group">
+                    <div className="selector-icon">
+                      <AssetIcon
+                        name="campus-icon"
+                        color={theme.colors.bodyColor}
+                      />
+                    </div>
+                    <div className="selector-info">
+                      <span className="selector-label">Your campus</span>
+                      <CDropdown className="selector-dropdown">
+                        <CDropdownToggle color="link" className="selector-toggle">
+                          {isLoadingCampuses ? (
+                            <CSpinner size="sm" />
+                          ) : (
+                            <>
+                              <span className="selector-value">
+                                {selectedCampus?.campus_name || "Select Campus"}
+                              </span>
+                              <AssetIcon
+                                name="arrow-down"
+                                size={20}
+                                fill="var(--v2-neutral-black-main-500)"
+                              />
+                            </>
+                          )}
+                        </CDropdownToggle>
+                        <CDropdownMenu>
+                          {availableCampuses.map((campus: Campus) => (
+                            <CDropdownItem
+                              key={campus._id}
+                              onClick={() => setSelectedCampus(campus)}
+                              active={selectedCampus?._id === campus._id}
+                            >
+                              {campus.campus_name}
+                            </CDropdownItem>
+                          ))}
+                          {availableCampuses.length === 0 &&
+                            !isLoadingCampuses && (
+                              <CDropdownItem disabled>
+                                No campuses available
+                              </CDropdownItem>
+                            )}
+                        </CDropdownMenu>
+                      </CDropdown>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {/* User Actions */}
           <div className="user-actions">
@@ -463,71 +465,75 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
       {/* Bottom Border */}
       <div className="topbar-border" />
 
-      {/* School Modal (Mobile) */}
-      <CModal
-        visible={schoolModalOpen}
-        onClose={() => setSchoolModalOpen(false)}
-        alignment="center"
-        className="selector-modal"
-      >
-        <CModalHeader>
-          <CModalTitle>Select School</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <div className="modal-list">
-            {availableSchools.map((school: School) => (
-              <button
-                key={school._id}
-                className={`modal-list-item ${
-                  selectedSchool?._id === school._id ? "active" : ""
-                }`}
-                onClick={() => {
-                  setSelectedSchool(school);
-                  setSchoolModalOpen(false);
-                }}
-              >
-                {school.school_name}
-              </button>
-            ))}
-            {availableSchools.length === 0 && !isLoadingSchools && (
-              <div className="modal-empty">No schools available</div>
-            )}
-          </div>
-        </CModalBody>
-      </CModal>
+      {/* School Modal (Mobile) - Only for super admins */}
+      {isSuperAdmin() && (
+        <CModal
+          visible={schoolModalOpen}
+          onClose={() => setSchoolModalOpen(false)}
+          alignment="center"
+          className="selector-modal"
+        >
+          <CModalHeader>
+            <CModalTitle>Select School</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            <div className="modal-list">
+              {availableSchools.map((school: School) => (
+                <button
+                  key={school._id}
+                  className={`modal-list-item ${
+                    selectedSchool?._id === school._id ? "active" : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedSchool(school);
+                    setSchoolModalOpen(false);
+                  }}
+                >
+                  {school.school_name}
+                </button>
+              ))}
+              {availableSchools.length === 0 && !isLoadingSchools && (
+                <div className="modal-empty">No schools available</div>
+              )}
+            </div>
+          </CModalBody>
+        </CModal>
+      )}
 
-      {/* Campus Modal (Mobile) */}
-      <CModal
-        visible={campusModalOpen}
-        onClose={() => setCampusModalOpen(false)}
-        alignment="center"
-        className="selector-modal"
-      >
-        <CModalHeader>
-          <CModalTitle>Select Campus</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <div className="modal-list">
-            {availableCampuses.map((campus: Campus) => (
-              <button
-                key={campus._id}
-                className={`modal-list-item ${
-                  selectedCampus?._id === campus._id ? "active" : ""
-                }`}
-                onClick={() => {
-                  setSelectedCampus(campus);
-                  setCampusModalOpen(false);
-                }}
-              >
-                {campus.campus_name}
-              </button>
-            ))}
-            {availableCampuses.length === 0 && !isLoadingCampuses && (
-              <div className="modal-empty">No campuses available</div>
-            )}
-          </div>
-        </CModalBody>
-      </CModal>
+      {/* Campus Modal (Mobile) - Only for super admins */}
+      {isSuperAdmin() && (
+        <CModal
+          visible={campusModalOpen}
+          onClose={() => setCampusModalOpen(false)}
+          alignment="center"
+          className="selector-modal"
+        >
+          <CModalHeader>
+            <CModalTitle>Select Campus</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            <div className="modal-list">
+              {availableCampuses.map((campus: Campus) => (
+                <button
+                  key={campus._id}
+                  className={`modal-list-item ${
+                    selectedCampus?._id === campus._id ? "active" : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedCampus(campus);
+                    setCampusModalOpen(false);
+                  }}
+                >
+                  {campus.campus_name}
+                </button>
+              ))}
+              {availableCampuses.length === 0 && !isLoadingCampuses && (
+                <div className="modal-empty">No campuses available</div>
+              )}
+            </div>
+          </CModalBody>
+        </CModal>
+      )}
     </div>
   );
 };

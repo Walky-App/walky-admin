@@ -23,6 +23,7 @@ import {
 } from "../pages-v2/Admin";
 import { CampusProvider } from "../contexts/CampusContext";
 import { DashboardProvider } from "../contexts/DashboardContext";
+import { PermissionGuard } from "../components-v2";
 
 /**
  * Example router configuration for V2 layout
@@ -51,61 +52,187 @@ const V2Routes: React.FC = () => {
               element={<Navigate to="dashboard/engagement" replace />}
             />
 
-            {/* New Dashboard Screens (Figma Design) */}
+            {/* New Dashboard Screens (Figma Design) - Protected by permissions */}
             <Route
               path="dashboard/engagement"
-              element={<DashboardEngagement />}
+              element={
+                <PermissionGuard resource="engagement" fallback="redirect">
+                  <DashboardEngagement />
+                </PermissionGuard>
+              }
             />
             <Route
               path="dashboard/popular-features"
-              element={<DashboardPopularFeatures />}
+              element={
+                <PermissionGuard resource="popular_features" fallback="redirect">
+                  <DashboardPopularFeatures />
+                </PermissionGuard>
+              }
             />
             <Route
               path="dashboard/user-interactions"
-              element={<DashboardUserInteractions />}
+              element={
+                <PermissionGuard resource="user_interactions" fallback="redirect">
+                  <DashboardUserInteractions />
+                </PermissionGuard>
+              }
             />
-            <Route path="dashboard/community" element={<DashboardCommunity />} />
+            <Route
+              path="dashboard/community"
+              element={
+                <PermissionGuard resource="community" fallback="redirect">
+                  <DashboardCommunity />
+                </PermissionGuard>
+              }
+            />
             <Route
               path="dashboard/student-safety"
-              element={<DashboardStudentSafety />}
+              element={
+                <PermissionGuard resource="student_safety" fallback="redirect">
+                  <DashboardStudentSafety />
+                </PermissionGuard>
+              }
             />
             <Route
               path="dashboard/student-behavior"
-              element={<DashboardStudentBehavior />}
+              element={
+                <PermissionGuard resource="student_behavior" fallback="redirect">
+                  <DashboardStudentBehavior />
+                </PermissionGuard>
+              }
             />
 
-            {/* Campus Routes */}
-            <Route path="manage-students/active" element={<ActiveStudents />} />
-            <Route path="manage-students/banned" element={<BannedStudents />} />
+            {/* Campus Routes - Protected by permissions */}
+            <Route
+              path="manage-students/active"
+              element={
+                <PermissionGuard resource="active_students" fallback="redirect">
+                  <ActiveStudents />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="manage-students/banned"
+              element={
+                <PermissionGuard resource="banned_students" fallback="redirect">
+                  <BannedStudents />
+                </PermissionGuard>
+              }
+            />
             <Route
               path="manage-students/deactivated"
-              element={<DeactivatedStudents />}
+              element={
+                <PermissionGuard resource="inactive_students" fallback="redirect">
+                  <DeactivatedStudents />
+                </PermissionGuard>
+              }
             />
             <Route
               path="manage-students/disengaged"
-              element={<DisengagedStudents />}
+              element={
+                <PermissionGuard resource="disengaged_students" fallback="redirect">
+                  <DisengagedStudents />
+                </PermissionGuard>
+              }
             />
 
-            {/* Events Routes */}
-            <Route path="events" element={<EventsManager />} />
-            <Route path="events/insights" element={<EventsInsights />} />
+            {/* Events Routes - Protected by permissions */}
+            <Route
+              path="events"
+              element={
+                <PermissionGuard resource="events_manager" fallback="redirect">
+                  <EventsManager />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="events/insights"
+              element={
+                <PermissionGuard resource="events_insights" fallback="redirect">
+                  <EventsInsights />
+                </PermissionGuard>
+              }
+            />
 
-            {/* Spaces Routes */}
-            <Route path="spaces" element={<SpacesManager />} />
-            <Route path="spaces/insights" element={<SpacesInsights />} />
+            {/* Spaces Routes - Protected by permissions */}
+            <Route
+              path="spaces"
+              element={
+                <PermissionGuard resource="spaces_manager" fallback="redirect">
+                  <SpacesManager />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="spaces/insights"
+              element={
+                <PermissionGuard resource="spaces_insights" fallback="redirect">
+                  <SpacesInsights />
+                </PermissionGuard>
+              }
+            />
 
-            {/* Ideas Routes */}
-            <Route path="ideas" element={<IdeasManager />} />
-            <Route path="ideas/insights" element={<IdeasInsights />} />
+            {/* Ideas Routes - Protected by permissions */}
+            <Route
+              path="ideas"
+              element={
+                <PermissionGuard resource="ideas_manager" fallback="redirect">
+                  <IdeasManager />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="ideas/insights"
+              element={
+                <PermissionGuard resource="ideas_insights" fallback="redirect">
+                  <IdeasInsights />
+                </PermissionGuard>
+              }
+            />
 
-            {/* Moderation Routes */}
-            <Route path="report-safety" element={<ReportSafety />} />
-            <Route path="report-history" element={<ReportHistory />} />
+            {/* Moderation Routes - Protected by permissions */}
+            <Route
+              path="report-safety"
+              element={
+                <PermissionGuard resource="report_safety" fallback="redirect">
+                  <ReportSafety />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="report-history"
+              element={
+                <PermissionGuard resource="report_history" fallback="redirect">
+                  <ReportHistory />
+                </PermissionGuard>
+              }
+            />
 
-            {/* Admin Routes */}
-            <Route path="admin/campuses" element={<Campuses />} />
-            <Route path="admin/ambassadors" element={<Ambassadors />} />
-            <Route path="admin/role-management" element={<RoleManagement />} />
+            {/* Admin Routes - Protected by permissions */}
+            <Route
+              path="admin/campuses"
+              element={
+                <PermissionGuard resource="campuses" fallback="redirect">
+                  <Campuses />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="admin/ambassadors"
+              element={
+                <PermissionGuard resource="ambassadors" fallback="redirect">
+                  <Ambassadors />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="admin/role-management"
+              element={
+                <PermissionGuard resource="role_management" fallback="redirect">
+                  <RoleManagement />
+                </PermissionGuard>
+              }
+            />
             <Route path="admin/settings" element={<AdministratorSettings />} />
 
             {/* Legacy Admin Routes (redirect to new paths) */}

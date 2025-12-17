@@ -9,6 +9,7 @@ import {
   LastUpdated,
   ReportDetailsModal,
 } from "../../../components-v2";
+import { usePermissions } from "../../../hooks/usePermissions";
 import "./StudentSafety.css";
 
 import { useDashboard } from "../../../contexts/DashboardContext";
@@ -77,9 +78,13 @@ const StudentSafety: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
   const { timePeriod, setTimePeriod } = useDashboard();
+  const { canExport } = usePermissions();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedReportType, setSelectedReportType] = useState("");
   const exportRef = useRef<HTMLElement | null>(null);
+
+  // Check if user can export student safety data
+  const showExport = canExport("student_safety");
 
   // ... (inside component)
 
@@ -214,6 +219,7 @@ const StudentSafety: React.FC = () => {
         onTimePeriodChange={setTimePeriod}
         exportTargetRef={exportRef}
         exportFileName={`student_safety_${timePeriod}`}
+        showExport={showExport}
       />
 
       {/* Header Section */}

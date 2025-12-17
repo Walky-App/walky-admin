@@ -12,6 +12,7 @@ import { StatsCard } from "../components/StatsCard";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";
+import { usePermissions } from "../../../hooks/usePermissions";
 import "./DisengagedStudents.css";
 
 import { useQuery } from "@tanstack/react-query";
@@ -36,6 +37,7 @@ interface DisengagedStudent {
 }
 
 export const DisengagedStudents: React.FC = () => {
+  const { canExport } = usePermissions();
   const [selectedStudent, setSelectedStudent] =
     useState<DisengagedStudent | null>(null);
   const [profileModalVisible, setProfileModalVisible] = useState(false);
@@ -43,6 +45,9 @@ export const DisengagedStudents: React.FC = () => {
   const [toastMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const entriesPerPage = 10;
+
+  // Check permissions for this page
+  const showExport = canExport("disengaged_students");
 
   const exportRef = useRef<HTMLElement | null>(null);
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
@@ -186,7 +191,9 @@ export const DisengagedStudents: React.FC = () => {
               and the number of ignored invitations.
             </p>
           </div>
-          <ExportButton captureRef={exportRef} filename="disengaged_students" />
+          {showExport && (
+            <ExportButton captureRef={exportRef} filename="disengaged_students" />
+          )}
         </div>
 
         {/* Custom Table */}
