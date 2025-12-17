@@ -371,7 +371,16 @@ export const StudentTable: React.FC<StudentTableProps> = ({
           : student.interests || [],
         status: (details.status as StudentData["status"]) || student.status,
         banHistory,
-        reportHistory: [],
+        reportHistory: ((details as any).reportHistory || []).map((r: any) => ({
+          reportedIdea: r.reportedIdea || "User Report",
+          reportId: r.reportId || "",
+          reason: r.reason || "",
+          description: r.description || "",
+          reportedDate: r.reportedDate || "",
+          reportedTime: r.reportedTime || "",
+          reportedBy: r.reportedBy || "Anonymous",
+          status: r.status || "Pending",
+        })),
         blockedByUsers: (details.blockedByUsers || []).map((b) => ({
           id: b.id || "",
           name: b.name || "",

@@ -29,7 +29,41 @@ function App() {
 
   return (
     <DeactivatedUserProvider>
-      <Toaster position="top-right" />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#ffffff',
+            color: '#5B6168',
+            fontFamily: '"Lato", sans-serif',
+            fontSize: '16px',
+            fontWeight: 600,
+            padding: '16px 16px 16px 32px',
+            borderRadius: '4px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            minWidth: '350px',
+          },
+          success: {
+            style: {
+              borderLeft: '5px solid #1c9e3e',
+            },
+            iconTheme: {
+              primary: '#429b5f',
+              secondary: '#FFFFFF',
+            },
+          },
+          error: {
+            style: {
+              borderLeft: '5px solid #e53935',
+            },
+            iconTheme: {
+              primary: '#e53935',
+              secondary: '#FFFFFF',
+            },
+          },
+        }}
+      />
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<LoginV2 />} />

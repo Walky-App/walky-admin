@@ -142,6 +142,11 @@ export const usePermissions = () => {
   const isModerator = useMemo(() => userRole === 'moderator', [userRole]);
 
   /**
+   * Check if user is Walky Internal (read-only employee access)
+   */
+  const isWalkyInternal = useMemo(() => userRole === 'walky_internal', [userRole]);
+
+  /**
    * Check if user has admin-level access (super_admin, school_admin, or campus_admin)
    */
   const isAdmin = useMemo(
@@ -165,6 +170,7 @@ export const usePermissions = () => {
     isSchoolAdmin,
     isCampusAdmin,
     isModerator,
+    isWalkyInternal,
     isAdmin,
     // Current user role
     userRole,

@@ -47,7 +47,7 @@ export const AdministratorSettings: React.FC = () => {
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
   const [showLogoutAllModal, setShowLogoutAllModal] = useState(false);
 
-  // Fetch profile data on mount
+  // Fetch profile data on mount only
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -86,7 +86,8 @@ export const AdministratorSettings: React.FC = () => {
       }
     };
     fetchProfile();
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   console.log("AdministratorSettings component loaded", {
     user,
@@ -143,24 +144,32 @@ export const AdministratorSettings: React.FC = () => {
     field: keyof typeof notificationData,
     value: boolean
   ) => {
+    // Store previous state for potential rollback
+    const previousState = { ...notificationData };
+
     // Optimistically update local state
-    setNotificationData((prev) => ({ ...prev, [field]: value }));
+    const newState = { ...notificationData, [field]: value };
+    setNotificationData(newState);
 
     try {
-      // Save to API
+      // Save to API using the new values
       await apiClient.api.adminProfileNotificationsUpdate({
-        emailNotifications:
-          field === "emailNotifications"
-            ? value
-            : notificationData.emailNotifications,
-        pushNotifications:
-          field === "securityAlerts" ? value : notificationData.securityAlerts,
+        emailNotifications: newState.emailNotifications,
+        pushNotifications: newState.securityAlerts,
       });
+
+      // Update profileData to keep everything in sync
+      setProfileData((prev) => prev ? {
+        ...prev,
+        emailNotifications: newState.emailNotifications,
+        securityAlerts: newState.securityAlerts,
+      } : null);
+
       toast.success("Notification settings saved");
     } catch (error) {
       console.error("Error saving notification settings:", error);
       // Revert on error
-      setNotificationData((prev) => ({ ...prev, [field]: !value }));
+      setNotificationData(previousState);
       toast.error("Failed to save notification settings");
     }
   };
@@ -243,12 +252,8 @@ export const AdministratorSettings: React.FC = () => {
   };
 
   const handleBackToPanel = () => {
-    if (hasUnsavedChanges) {
-      setPendingNavigation(-1);
-      setShowUnsavedModal(true);
-    } else {
-      navigate(-1);
-    }
+    // Modal disabled - always navigate without confirmation
+    navigate(-1);
   };
 
   const handleLeaveWithoutSaving = () => {
