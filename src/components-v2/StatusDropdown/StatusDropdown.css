@@ -19,6 +19,15 @@
   background-color: #f4f5f7;
 }
 
+.status-dropdown-cell--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.status-dropdown-cell--disabled:hover {
+  background-color: #ffffff;
+}
+
 .status-dropdown-cell span {
   font-family: "Lato", sans-serif;
   font-size: 14px;

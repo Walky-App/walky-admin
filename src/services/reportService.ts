@@ -1,5 +1,4 @@
 import { apiClient } from "../API";
-import { ContentType } from "../API/WalkyAPI";
 import { BannedUser, UserBanHistory } from "../types/report";
 
 // Type for pagination response
@@ -182,13 +181,13 @@ export const reportService = {
   removeUser: async (userId: string, reason: string, sendEmail = true) => {
     try {
       console.log("🚀 Removing user:", userId);
-      const response = await apiClient.http.request({
-        path: `/api/admin/users/${userId}/remove`,
-        method: "DELETE",
-        body: { reason, sendEmail },
-        secure: true,
-        type: ContentType.Json,
-      });
+      const response = await apiClient.instance.delete(
+        `/api/admin/users/${userId}/remove`,
+        {
+          data: { reason, sendEmail },
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       console.log("✅ Remove user response:", response.data);
       return response.data;
     } catch (error) {

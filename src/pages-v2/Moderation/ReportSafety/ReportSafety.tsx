@@ -24,6 +24,7 @@ import {
 } from "../../../components-v2";
 import { ReportStatus, ReportType } from "../../../components-v2";
 import { useDebounce } from "../../../hooks/useDebounce";
+import { usePermissions } from "../../../hooks/usePermissions";
 import ReportsTable, { ReportRow } from "../components/ReportsTable";
 import "./ReportSafety.css";
 
@@ -43,6 +44,12 @@ interface ReportData {
 const ReportSafety: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { canExport, canUpdate } = usePermissions();
+
+  // Check permissions for this page
+  const showExport = canExport("report_safety");
+  const canChangeReportStatus = canUpdate("report_safety");
+  const canFlagReportedItems = canUpdate("report_safety");
 
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -540,7 +547,7 @@ const ReportSafety: React.FC = () => {
               />
             </div>
           </div>
-          <ExportButton />
+          {showExport && <ExportButton />}
         </div>
 
         <div className="reports-table-wrapper">
@@ -581,6 +588,8 @@ const ReportSafety: React.FC = () => {
             onSort={() =>
               setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
             }
+            canChangeStatus={canChangeReportStatus}
+            canFlag={canFlagReportedItems}
           />
         </div>
         {totalEntries > 0 && (

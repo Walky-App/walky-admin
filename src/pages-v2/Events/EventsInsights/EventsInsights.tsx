@@ -9,6 +9,7 @@ import {
 } from "../../../components-v2";
 import { LastUpdated } from "../../../components-v2";
 import { apiClient } from "../../../API";
+import { usePermissions } from "../../../hooks/usePermissions";
 
 interface Interest {
   name: string;
@@ -34,12 +35,16 @@ import { useCampus } from "../../../contexts/CampusContext";
 export const EventsInsights: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
+  const { canExport } = usePermissions();
   const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
     "month"
   );
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
   const exportRef = useRef<HTMLElement | null>(null);
+
+  // Check permissions for this page
+  const showExport = canExport("events_insights");
 
   // Stats state
   const [stats, setStats] = useState({
@@ -212,7 +217,9 @@ export const EventsInsights: React.FC = () => {
     <main className="events-insights-page" ref={exportRef}>
       {/* Header with Export Button */}
       <div className="insights-header">
-        <ExportButton captureRef={exportRef} filename="events_insights" />
+        {showExport && (
+          <ExportButton captureRef={exportRef} filename="events_insights" />
+        )}
       </div>
 
       {/* Top 3 Stats Cards */}

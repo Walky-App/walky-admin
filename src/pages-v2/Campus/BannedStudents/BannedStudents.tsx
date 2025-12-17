@@ -6,14 +6,19 @@ import { BannedStudentTable } from "../components/BannedStudentTable";
 import { StudentData, StudentTableColumn } from "../components/StudentTable";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";
+import { usePermissions } from "../../../hooks/usePermissions";
 import "./BannedStudents.css";
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 
 export const BannedStudents: React.FC = () => {
+  const { canExport } = usePermissions();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Check permissions for this page
+  const showExport = canExport("banned_students");
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -243,7 +248,9 @@ export const BannedStudents: React.FC = () => {
               variant="primary"
             />
           </div>
-          <ExportButton captureRef={exportRef} filename="banned_students" />
+          {showExport && (
+            <ExportButton captureRef={exportRef} filename="banned_students" />
+          )}
         </div>
 
         {isLoading ? (

@@ -12,6 +12,7 @@ import {
 import { CopyableId } from "../../../components-v2/CopyableId";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
+import { usePermissions } from "../../../hooks/usePermissions";
 import { getFirstName } from "../../../lib/utils/nameUtils";
 import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
@@ -43,6 +44,11 @@ export const DeactivatedStudentTable: React.FC<
   onSortChange,
   emptyMessage = "No students found",
 }) => {
+  const { canUpdate } = usePermissions();
+
+  // Permission check for deactivated student actions (reactivate)
+  const canModifyDeactivatedStudents = canUpdate("inactive_students");
+
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedStudent, setSelectedStudent] = useState<StudentData | null>(
@@ -59,14 +65,13 @@ export const DeactivatedStudentTable: React.FC<
 
   const queryClient = useQueryClient();
 
-  // Note: There's no specific "activate" endpoint, so we'll use DELETE to reactivate
-  // The backend should handle this based on current status
   const activateMutation = useMutation({
-    mutationFn: (id: string) => apiClient.api.adminV2StudentsDelete(id),
+    mutationFn: (id: string) => apiClient.api.adminV2StudentsActivateCreate(id),
     onSuccess: () => {
+      // Invalidate all student queries to refresh both active and deactivated lists
       queryClient.invalidateQueries({
-        queryKey: ["students"],
-        refetchType: "all",
+        predicate: (query) =>
+          Array.isArray(query.queryKey) && query.queryKey[0] === "students",
       });
       queryClient.invalidateQueries({ queryKey: ["studentStats"] });
       setToastMessage("User activated successfully");
@@ -82,9 +87,10 @@ export const DeactivatedStudentTable: React.FC<
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       apiClient.api.adminV2StudentsFlagCreate(id, { reason: reason }),
     onSuccess: () => {
+      // Invalidate all student queries to refresh all lists
       queryClient.invalidateQueries({
-        queryKey: ["students"],
-        refetchType: "all",
+        predicate: (query) =>
+          Array.isArray(query.queryKey) && query.queryKey[0] === "students",
       });
       setToastMessage("User flagged successfully");
       setShowToast(true);
@@ -376,27 +382,35 @@ export const DeactivatedStudentTable: React.FC<
                             handleSendEmail(student);
                           },
                         },
-                        {
-                          label: "Flag",
-                          icon: "flag-icon",
-                          onClick: (e) => {
-                            e.stopPropagation();
-                            handleFlagUser(student);
-                          },
-                        },
-                        {
-                          isDivider: true,
-                          label: "",
-                          onClick: () => {},
-                        },
-                        {
-                          label: "Activate user",
-                          variant: "danger",
-                          onClick: (e) => {
-                            e.stopPropagation();
-                            handleActivateUser(student);
-                          },
-                        },
+                        ...(canModifyDeactivatedStudents
+                          ? [
+                              {
+                                label: "Flag",
+                                icon: "flag-icon" as const,
+                                onClick: (e: React.MouseEvent) => {
+                                  e.stopPropagation();
+                                  handleFlagUser(student);
+                                },
+                              },
+                            ]
+                          : []),
+                        ...(canModifyDeactivatedStudents
+                          ? [
+                              {
+                                isDivider: true,
+                                label: "",
+                                onClick: () => {},
+                              },
+                              {
+                                label: "Activate user",
+                                variant: "danger" as const,
+                                onClick: (e: React.MouseEvent) => {
+                                  e.stopPropagation();
+                                  handleActivateUser(student);
+                                },
+                              },
+                            ]
+                          : []),
                       ]}
                     />
                   </td>

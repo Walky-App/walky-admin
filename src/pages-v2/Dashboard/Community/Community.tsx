@@ -4,6 +4,7 @@ import { apiClient } from "../../../API";
 import { AssetIcon, FilterBar, LastUpdated } from "../../../components-v2";
 import { BarChart } from "./components/BarChart";
 import { DashboardSkeleton } from "../components";
+import { usePermissions } from "../../../hooks/usePermissions";
 import "./Community.css";
 
 import { useDashboard } from "../../../contexts/DashboardContext";
@@ -14,6 +15,10 @@ const Community: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
   const { timePeriod, setTimePeriod } = useDashboard();
+  const { canExport } = usePermissions();
+
+  // Check if user can export community data
+  const showExport = canExport("community");
 
   const { data: apiData, isLoading } = useQuery({
     queryKey: [
@@ -65,6 +70,7 @@ const Community: React.FC = () => {
         onTimePeriodChange={setTimePeriod}
         exportTargetRef={exportRef}
         exportFileName={`community_${timePeriod}`}
+        showExport={showExport}
       />
 
       {/* Header Section */}

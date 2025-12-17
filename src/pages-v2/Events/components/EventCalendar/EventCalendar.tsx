@@ -3,6 +3,7 @@ import "./EventCalendar.css";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../../API";
 import { useCampus } from "../../../../contexts/CampusContext";
+import { usePermissions } from "../../../../hooks/usePermissions";
 
 import {
   AssetIcon,
@@ -22,6 +23,12 @@ type CalendarView = "day" | "week" | "month";
 
 export const EventCalendar: React.FC = () => {
   const { selectedCampus } = useCampus();
+  const { canUpdate, canDelete } = usePermissions();
+
+  // Permission checks for event actions
+  const canFlagEvents = canUpdate("events_manager");
+  const canDeleteEvents = canDelete("events_manager");
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<CalendarView>("month");
   const today = new Date().getDate();
@@ -636,9 +643,9 @@ export const EventCalendar: React.FC = () => {
             isOpen={eventDetailsModalOpen}
             onClose={() => setEventDetailsModalOpen(false)}
             eventData={selectedEventDetails}
-            onDelete={handleDeleteClick}
-            onFlag={handleFlagClick}
-            onUnflag={handleUnflagClick}
+            onDelete={canDeleteEvents ? handleDeleteClick : undefined}
+            onFlag={canFlagEvents ? handleFlagClick : undefined}
+            onUnflag={canFlagEvents ? handleUnflagClick : undefined}
           />
         )}
 
@@ -754,9 +761,9 @@ export const EventCalendar: React.FC = () => {
             isOpen={eventDetailsModalOpen}
             onClose={() => setEventDetailsModalOpen(false)}
             eventData={selectedEventDetails}
-            onDelete={handleDeleteClick}
-            onFlag={handleFlagClick}
-            onUnflag={handleUnflagClick}
+            onDelete={canDeleteEvents ? handleDeleteClick : undefined}
+            onFlag={canFlagEvents ? handleFlagClick : undefined}
+            onUnflag={canFlagEvents ? handleUnflagClick : undefined}
           />
         )}
 
@@ -953,9 +960,9 @@ export const EventCalendar: React.FC = () => {
           }}
           onCloseAll={handleCloseAllModals}
           eventData={selectedEventDetails}
-          onDelete={handleDeleteClick}
-          onFlag={handleFlagClick}
-          onUnflag={handleUnflagClick}
+          onDelete={canDeleteEvents ? handleDeleteClick : undefined}
+          onFlag={canFlagEvents ? handleFlagClick : undefined}
+          onUnflag={canFlagEvents ? handleUnflagClick : undefined}
         />
       )}
 

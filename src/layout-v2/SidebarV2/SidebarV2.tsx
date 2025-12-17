@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { AssetIcon } from "../../components-v2";
+import { usePermissions } from "../../hooks/usePermissions";
+import { PermissionResource } from "../../lib/permissions";
 import "./SidebarV2.css";
 
 // Walky Logo component
@@ -14,6 +16,8 @@ interface MenuItem {
   label: string;
   path?: string;
   submenu?: MenuItem[];
+  /** Required resource permission for this menu item (checked for 'read' action) */
+  resource?: PermissionResource;
 }
 
 interface MenuSection {
@@ -115,30 +119,31 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
   );
 };
 
-const SidebarV2: React.FC = () => {
-  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
-
-  const menuSections: MenuSection[] = [
+// Define all menu sections with permission resources (moved outside component for performance)
+const allMenuSections: MenuSection[] = [
     {
       title: "DASHBOARD",
       items: [
         {
           label: "Campus Analytics",
           submenu: [
-            { label: "Engagement", path: "/dashboard/engagement" },
+            { label: "Engagement", path: "/dashboard/engagement", resource: "engagement" },
             {
               label: "Popular Features",
               path: "/dashboard/popular-features",
+              resource: "popular_features",
             },
             {
               label: "User Interactions",
               path: "/dashboard/user-interactions",
+              resource: "user_interactions",
             },
-            { label: "Community", path: "/dashboard/community" },
-            { label: "Student safety", path: "/dashboard/student-safety" },
+            { label: "Community", path: "/dashboard/community", resource: "community" },
+            { label: "Student safety", path: "/dashboard/student-safety", resource: "student_safety" },
             {
               label: "Student Behavior",
               path: "/dashboard/student-behavior",
+              resource: "student_behavior",
             },
           ],
         },
@@ -150,32 +155,32 @@ const SidebarV2: React.FC = () => {
         {
           label: "Manage Students",
           submenu: [
-            { label: "Active", path: "/manage-students/active" },
-            { label: "Banned", path: "/manage-students/banned" },
-            { label: "Deactivated", path: "/manage-students/deactivated" },
-            { label: "Disengaged", path: "/manage-students/disengaged" },
+            { label: "Active", path: "/manage-students/active", resource: "active_students" },
+            { label: "Banned", path: "/manage-students/banned", resource: "banned_students" },
+            { label: "Deactivated", path: "/manage-students/deactivated", resource: "inactive_students" },
+            { label: "Disengaged", path: "/manage-students/disengaged", resource: "disengaged_students" },
           ],
         },
 
         {
           label: "Events",
           submenu: [
-            { label: "Events Manager", path: "/events" },
-            { label: "Events Insights", path: "/events/insights" },
+            { label: "Events Manager", path: "/events", resource: "events_manager" },
+            { label: "Events Insights", path: "/events/insights", resource: "events_insights" },
           ],
         },
         {
           label: "Spaces",
           submenu: [
-            { label: "Spaces Manager", path: "/spaces" },
-            { label: "Spaces Insights", path: "/spaces/insights" },
+            { label: "Spaces Manager", path: "/spaces", resource: "spaces_manager" },
+            { label: "Spaces Insights", path: "/spaces/insights", resource: "spaces_insights" },
           ],
         },
         {
           label: "Ideas",
           submenu: [
-            { label: "Ideas Manager", path: "/ideas" },
-            { label: "Ideas Insights", path: "/ideas/insights" },
+            { label: "Ideas Manager", path: "/ideas", resource: "ideas_manager" },
+            { label: "Ideas Insights", path: "/ideas/insights", resource: "ideas_insights" },
           ],
         },
       ],
@@ -186,10 +191,12 @@ const SidebarV2: React.FC = () => {
         {
           label: "Report & Safety",
           path: "/report-safety",
+          resource: "report_safety",
         },
         {
           label: "Report History",
           path: "/report-history",
+          resource: "report_history",
         },
       ],
     },
@@ -199,18 +206,60 @@ const SidebarV2: React.FC = () => {
         {
           label: "Campuses",
           path: "/admin/campuses",
+          resource: "campuses",
         },
         {
           label: "Ambassadors",
           path: "/admin/ambassadors",
+          resource: "ambassadors",
         },
         {
           label: "Role Management",
           path: "/admin/role-management",
+          resource: "role_management",
         },
       ],
     },
   ];
+
+const SidebarV2: React.FC = () => {
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+  const { canRead } = usePermissions();
+
+  // Filter menu items based on permissions
+  const menuSections = useMemo(() => {
+    const filterMenuItem = (item: MenuItem): MenuItem | null => {
+      // If item has a resource, check permission
+      if (item.resource && !canRead(item.resource)) {
+        return null;
+      }
+
+      // If item has submenu, filter submenu items
+      if (item.submenu) {
+        const filteredSubmenu = item.submenu
+          .map(filterMenuItem)
+          .filter((subItem): subItem is MenuItem => subItem !== null);
+
+        // If all submenu items are filtered out, hide the parent item
+        if (filteredSubmenu.length === 0) {
+          return null;
+        }
+
+        return { ...item, submenu: filteredSubmenu };
+      }
+
+      return item;
+    };
+
+    return allMenuSections
+      .map((section) => ({
+        ...section,
+        items: section.items
+          .map(filterMenuItem)
+          .filter((item): item is MenuItem => item !== null),
+      }))
+      .filter((section) => section.items.length > 0);
+  }, [canRead]);
 
   const toggleMenu = (label: string) => {
     setOpenMenus((prev) => ({

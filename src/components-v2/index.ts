@@ -84,3 +84,4 @@ export type { UnflagModalType } from "./UnflagModal";
 export { WriteNoteModal } from "./WriteNoteModal";
 export type { WriteNoteModalProps } from "./WriteNoteModal";
 export { default as SkeletonLoader } from "./SkeletonLoader/SkeletonLoader";
+export { PermissionGuard, withPermission } from "./PermissionGuard";

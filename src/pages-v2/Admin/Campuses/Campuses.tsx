@@ -11,6 +11,7 @@ import {
   Pagination,
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import { usePermissions } from "../../../hooks/usePermissions";
 import CampusBoundary from "../../CampusBoundary/CampusBoundary";
 
 interface CampusData {
@@ -40,6 +41,8 @@ const getInitials = (name: string): string => {
 
 export const Campuses: React.FC = () => {
   const { theme } = useTheme();
+  const { canUpdate } = usePermissions();
+  const canSyncPlaces = canUpdate("campuses");
   const [searchQuery, _setSearchQuery] = useState("");
   const [expandedCampusId, setExpandedCampusId] = useState<string | null>(null);
   const [currentPage] = useState(1);
@@ -259,14 +262,15 @@ export const Campuses: React.FC = () => {
                         <td className="campus-sync">
                           <button
                             data-testid="sync-places-btn"
-                            className="sync-button"
-                            title="Sync places"
+                            className={`sync-button${!canSyncPlaces ? " sync-button--disabled" : ""}`}
+                            title={canSyncPlaces ? "Sync places" : "You don't have permission to sync places"}
                             aria-label="Sync places for campus"
+                            disabled={!canSyncPlaces}
                           >
                             <AssetIcon
                               name="sync-icon"
                               size={18}
-                              color="#1D1B20"
+                              color={canSyncPlaces ? "#1D1B20" : "#9CA3AF"}
                             />
                           </button>
                         </td>

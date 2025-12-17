@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../../API";
+import { usePermissions } from "../../../../hooks/usePermissions";
 import { getFirstName } from "../../../../lib/utils/nameUtils";
 import "./IdeasTable.css";
 import {
@@ -53,7 +54,12 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
   sortOrder = "asc",
   onSortChange,
 }) => {
+  const { canUpdate, canDelete } = usePermissions();
   const queryClient = useQueryClient();
+
+  // Permission checks for idea actions
+  const canFlagIdeas = canUpdate("ideas_manager");
+  const canDeleteIdeas = canDelete("ideas_manager");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [ideaToDelete, setIdeaToDelete] = useState<IdeaData | null>(null);
   const [flagModalOpen, setFlagModalOpen] = useState(false);
@@ -66,7 +72,8 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
   const [selectedIdea, setSelectedIdea] = useState<IdeaData | null>(null);
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => apiClient.api.adminV2IdeasDelete(id),
+    mutationFn: (data: { id: string; reason?: string }) =>
+      apiClient.api.adminV2IdeasDelete(data.id, { reason: data.reason }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ideas"] });
       setToastMessage(`Idea deleted successfully`);
@@ -226,9 +233,9 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
     setDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = (_reason: string) => {
+  const handleDeleteConfirm = (reason: string) => {
     if (ideaToDelete) {
-      deleteMutation.mutate(ideaToDelete.id);
+      deleteMutation.mutate({ id: ideaToDelete.id, reason });
     }
   };
 
@@ -350,28 +357,40 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
                           label: "Idea Details",
                           onClick: (e) => handleViewIdeaDetails(idea, e),
                         },
-                        {
-                          isDivider: true,
-                          label: "",
-                          onClick: () => {},
-                        },
-                        idea.isFlagged
-                          ? {
-                              label: "Unflag",
-                              icon: "flag-icon",
-                              variant: "danger",
-                              onClick: (e) => handleUnflagIdea(idea, e),
-                            }
-                          : {
-                              label: "Flag",
-                              icon: "flag-icon",
-                              onClick: (e) => handleFlagIdea(idea, e),
-                            },
-                        {
-                          label: "Delete Idea",
-                          variant: "danger",
-                          onClick: (e) => handleDeleteClick(idea, e),
-                        },
+                        ...(canFlagIdeas || canDeleteIdeas
+                          ? [
+                              {
+                                isDivider: true,
+                                label: "",
+                                onClick: () => {},
+                              },
+                            ]
+                          : []),
+                        ...(canFlagIdeas
+                          ? [
+                              idea.isFlagged
+                                ? {
+                                    label: "Unflag",
+                                    icon: "flag-icon" as const,
+                                    variant: "danger" as const,
+                                    onClick: (e: React.MouseEvent) => handleUnflagIdea(idea, e),
+                                  }
+                                : {
+                                    label: "Flag",
+                                    icon: "flag-icon" as const,
+                                    onClick: (e: React.MouseEvent) => handleFlagIdea(idea, e),
+                                  },
+                            ]
+                          : []),
+                        ...(canDeleteIdeas
+                          ? [
+                              {
+                                label: "Delete Idea",
+                                variant: "danger" as const,
+                                onClick: (e: React.MouseEvent) => handleDeleteClick(idea, e),
+                              },
+                            ]
+                          : []),
                       ]}
                     />
                   </td>

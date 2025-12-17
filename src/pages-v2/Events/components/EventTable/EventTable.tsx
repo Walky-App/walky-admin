@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../../API";
+import { usePermissions } from "../../../../hooks/usePermissions";
 import {
   DeleteModal,
   CustomToast,
@@ -51,7 +52,13 @@ export const EventTable: React.FC<EventTableProps> = ({
   sortOrder = "asc",
   onSortChange,
 }) => {
+  const { canUpdate, canDelete } = usePermissions();
   const queryClient = useQueryClient();
+
+  // Permission checks for event actions
+  const canFlagEvents = canUpdate("events_manager");
+  const canDeleteEvents = canDelete("events_manager");
+
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [eventToDelete, setEventToDelete] = useState<EventData | null>(null);
   const [flagModalOpen, setFlagModalOpen] = useState(false);
@@ -406,31 +413,39 @@ export const EventTable: React.FC<EventTableProps> = ({
                     testId="event-dropdown"
                     title="Event details"
                     items={[
-                      event.isFlagged
-                        ? {
-                            label: "Unflag",
-                            icon: "flag-icon",
-                            variant: "danger",
-                            onClick: (e) => handleUnflagEvent(event, e),
-                          }
-                        : {
-                            label: "Flag",
-                            icon: "flag-icon",
-                            onClick: (e) => handleFlagEvent(event, e),
-                          },
-                      {
-                        isDivider: true,
-                        label: "",
-                        onClick: () => {},
-                      },
-                      {
-                        label: "Delete Event",
-                        variant: "danger",
-                        onClick: (e) => {
-                          e.stopPropagation();
-                          handleDeleteClick(event);
-                        },
-                      },
+                      ...(canFlagEvents
+                        ? [
+                            event.isFlagged
+                              ? {
+                                  label: "Unflag",
+                                  icon: "flag-icon" as const,
+                                  variant: "danger" as const,
+                                  onClick: (e: React.MouseEvent) => handleUnflagEvent(event, e),
+                                }
+                              : {
+                                  label: "Flag",
+                                  icon: "flag-icon" as const,
+                                  onClick: (e: React.MouseEvent) => handleFlagEvent(event, e),
+                                },
+                          ]
+                        : []),
+                      ...(canDeleteEvents
+                        ? [
+                            {
+                              isDivider: true,
+                              label: "",
+                              onClick: () => {},
+                            },
+                            {
+                              label: "Delete Event",
+                              variant: "danger" as const,
+                              onClick: (e: React.MouseEvent) => {
+                                e.stopPropagation();
+                                handleDeleteClick(event);
+                              },
+                            },
+                          ]
+                        : []),
                     ]}
                     onDropdownClick={(e) => {
                       handleViewEvent(event, e);

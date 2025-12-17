@@ -385,6 +385,15 @@
   background-color: #f1f4f9;
 }
 
+.sync-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sync-button--disabled:hover {
+  background-color: #ffffff;
+}
+
 /* Boundary Row */
 .boundary-row {
 }
@@ -533,6 +542,10 @@
 
 .campuses-container.dark-mode .sync-button:hover {
   background-color: #3a3a3a;
+}
+
+.campuses-container.dark-mode .sync-button--disabled:hover {
+  background-color: #2a2a2a;
 }
 
 .campuses-container.dark-mode .boundary-row {

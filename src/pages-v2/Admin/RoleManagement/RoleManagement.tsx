@@ -24,10 +24,14 @@ import {
   MemberFormData,
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import { usePermissions } from "../../../hooks/usePermissions";
 import { apiClient } from "../../../API";
 import "./RoleManagement.css";
 
 type RoleType = "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator";
+
+type SortField = "name" | "email" | "role" | "invitationStatus" | "lastActive";
+type SortOrder = "asc" | "desc";
 
 type MemberData = {
   id: string;
@@ -42,6 +46,7 @@ type MemberData = {
   };
   invitationStatus: "Accepted" | "Pending" | "Expired";
   lastActive: string | null;
+  isActive: boolean;
 };
 
 const getInitials = (name: string): string =>
@@ -54,7 +59,14 @@ const getInitials = (name: string): string =>
 
 export const RoleManagement: React.FC = () => {
   const { theme } = useTheme();
+  const { canCreate, canUpdate, canDelete, canManage } = usePermissions();
   const queryClient = useQueryClient();
+
+  // Permission checks for actions
+  const canCreateMember = canCreate("role_management");
+  const canChangeRole = canUpdate("role_management");
+  const canRemoveMember = canDelete("role_management");
+  const canSendPasswordReset = canManage("role_management");
 
   const entriesPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,6 +74,8 @@ export const RoleManagement: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState<RoleType | "All Roles">(
     "All Roles"
   );
+  const [sortField, setSortField] = useState<SortField>("name");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [selectedRole, setSelectedRole] = useState<RoleType | null>(null);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
 
@@ -75,13 +89,15 @@ export const RoleManagement: React.FC = () => {
   const [toastMessage, setToastMessage] = useState("");
 
   const { data: membersData, isLoading } = useQuery({
-    queryKey: ["members", currentPage, searchQuery, roleFilter],
+    queryKey: ["members", currentPage, searchQuery, roleFilter, sortField, sortOrder],
     queryFn: () =>
       apiClient.api.adminV2MembersList({
         page: currentPage,
         limit: entriesPerPage,
         search: searchQuery || undefined,
         role: roleFilter !== "All Roles" ? roleFilter : undefined,
+        sortBy: sortField,
+        sortOrder: sortOrder,
       }),
     placeholderData: keepPreviousData,
   });
@@ -107,6 +123,8 @@ export const RoleManagement: React.FC = () => {
     lastActive?: string;
     last_active?: string;
     last_login?: string;
+    isActive?: boolean;
+    is_active?: boolean;
   };
 
   const members: MemberData[] = useMemo(
@@ -141,6 +159,7 @@ export const RoleManagement: React.FC = () => {
             member.last_active ||
             member.last_login ||
             null,
+          isActive: member.isActive !== false && member.is_active !== false,
         };
       }),
     [membersData]
@@ -150,6 +169,18 @@ export const RoleManagement: React.FC = () => {
 
   const handleRoleFilterSelect = (value: string) => {
     setRoleFilter(value as RoleType | "All Roles");
+    setCurrentPage(1);
+  };
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      // Toggle sort order if same field
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      // New field, default to ascending
+      setSortField(field);
+      setSortOrder("asc");
+    }
     setCurrentPage(1);
   };
 
@@ -229,6 +260,29 @@ export const RoleManagement: React.FC = () => {
     setIsPasswordResetModalOpen(false);
   };
 
+  const handleToggleMemberStatus = async (memberId: string, currentStatus: boolean) => {
+    const member = members.find((m) => m.id === memberId);
+    if (!member) return;
+
+    const newStatus = !currentStatus;
+    const actionLabel = newStatus ? "activated" : "deactivated";
+
+    try {
+      await apiClient.api.adminV2MembersStatusPartialUpdate(memberId, {
+        isActive: newStatus,
+      });
+      toast.success(`Member ${actionLabel} successfully`);
+      setToastMessage(`Member ${actionLabel} successfully`);
+      setShowToast(true);
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+    } catch (error) {
+      console.error(`Failed to ${actionLabel.replace("d", "")} member:`, error);
+      toast.error(`Failed to ${actionLabel.replace("d", "")} member`);
+      setToastMessage(`Failed to ${actionLabel.replace("d", "")} member`);
+      setShowToast(true);
+    }
+  };
+
   const handleCreateMember = () => setIsCreateMemberModalOpen(true);
 
   const handleConfirmCreateMember = async (memberData: MemberFormData) => {
@@ -297,13 +351,15 @@ export const RoleManagement: React.FC = () => {
               />
             </div>
           </div>
-          <button
-            data-testid="create-member-btn"
-            className="create-member-button"
-            onClick={handleCreateMember}
-          >
-            <span>+ Create new member</span>
-          </button>
+          {canCreateMember && (
+            <button
+              data-testid="create-member-btn"
+              className="create-member-button"
+              onClick={handleCreateMember}
+            >
+              <span>+ Create new member</span>
+            </button>
+          )}
         </div>
 
         <div className="members-table-wrapper">
@@ -315,34 +371,79 @@ export const RoleManagement: React.FC = () => {
                 }`}
               >
                 <th>
-                  <div className="full-name-header">
+                  <button
+                    data-testid="sort-by-name"
+                    className={`sortable-header full-name-header${sortField === "name" ? " active" : ""}`}
+                    onClick={() => handleSort("name")}
+                  >
                     <span>Full Name</span>
-                    <AssetIcon name="swap-arrows-icon" size={24} />
-                  </div>
+                    <AssetIcon
+                      name={sortField === "name" && sortOrder === "desc" ? "arrow-down" : "arrow-up"}
+                      size={16}
+                      className={sortField === "name" ? "sort-icon active" : "sort-icon"}
+                    />
+                  </button>
                 </th>
                 <th>
-                  <span>Institutional email</span>
+                  <button
+                    data-testid="sort-by-email"
+                    className={`sortable-header${sortField === "email" ? " active" : ""}`}
+                    onClick={() => handleSort("email")}
+                  >
+                    <span>Institutional email</span>
+                    <AssetIcon
+                      name={sortField === "email" && sortOrder === "desc" ? "arrow-down" : "arrow-up"}
+                      size={16}
+                      className={sortField === "email" ? "sort-icon active" : "sort-icon"}
+                    />
+                  </button>
                 </th>
                 <th>
-                  <span>Role</span>
+                  <button
+                    data-testid="sort-by-role"
+                    className={`sortable-header${sortField === "role" ? " active" : ""}`}
+                    onClick={() => handleSort("role")}
+                  >
+                    <span>Role</span>
+                    <AssetIcon
+                      name={sortField === "role" && sortOrder === "desc" ? "arrow-down" : "arrow-up"}
+                      size={16}
+                      className={sortField === "role" ? "sort-icon active" : "sort-icon"}
+                    />
+                  </button>
                 </th>
                 <th>
                   <div className="assigned-by-header">
                     <span>Assigned By</span>
-                    <AssetIcon name="swap-arrows-icon" size={24} />
                   </div>
                 </th>
                 <th>
-                  <div className="invitation-status-header">
+                  <button
+                    data-testid="sort-by-invitation-status"
+                    className={`sortable-header invitation-status-header${sortField === "invitationStatus" ? " active" : ""}`}
+                    onClick={() => handleSort("invitationStatus")}
+                  >
                     <span>Invitation status</span>
-                    <AssetIcon name="swap-arrows-icon" size={24} />
-                  </div>
+                    <AssetIcon
+                      name={sortField === "invitationStatus" && sortOrder === "desc" ? "arrow-down" : "arrow-up"}
+                      size={16}
+                      className={sortField === "invitationStatus" ? "sort-icon active" : "sort-icon"}
+                    />
+                  </button>
                 </th>
                 <th>
-                  <div className="last-active-header">
+                  <button
+                    data-testid="sort-by-last-active"
+                    className={`sortable-header last-active-header${sortField === "lastActive" ? " active" : ""}`}
+                    onClick={() => handleSort("lastActive")}
+                  >
                     <span>Last active</span>
-                    <AssetIcon name="swap-arrows-icon" size={24} />
-                  </div>
+                    <AssetIcon
+                      name={sortField === "lastActive" && sortOrder === "desc" ? "arrow-down" : "arrow-up"}
+                      size={16}
+                      className={sortField === "lastActive" ? "sort-icon active" : "sort-icon"}
+                    />
+                  </button>
                 </th>
                 <th></th>
               </tr>
@@ -360,7 +461,7 @@ export const RoleManagement: React.FC = () => {
               ) : (
                 members.map((member, index) => (
                   <React.Fragment key={member.id}>
-                    <tr className="member-row">
+                    <tr className={`member-row${!member.isActive ? " deactivated" : ""}`}>
                       <td className="member-full-name">
                         <div className="member-info">
                           {member.avatar ? (
@@ -417,38 +518,63 @@ export const RoleManagement: React.FC = () => {
                       </td>
 
                       <td className="member-actions">
-                        <ActionDropdown
-                          testId="member-actions"
-                          items={[
-                            {
-                              label: "Change role",
-                              onClick: (e) => {
-                                e.stopPropagation();
-                                handleChangeRole(member.id);
-                              },
-                            },
-                            {
-                              label: "Send a password reset",
-                              onClick: (e) => {
-                                e.stopPropagation();
-                                handleSendPasswordReset(member.id);
-                              },
-                            },
-                            {
-                              label: "",
-                              isDivider: true,
-                              onClick: () => {},
-                            },
-                            {
-                              label: "Remove member",
-                              variant: "danger",
-                              onClick: (e) => {
-                                e.stopPropagation();
-                                handleRemoveMember(member.id);
-                              },
-                            },
-                          ]}
-                        />
+                        {(canChangeRole || canSendPasswordReset || canRemoveMember) && (
+                          <ActionDropdown
+                            testId="member-actions"
+                            items={[
+                              ...(canChangeRole
+                                ? [
+                                    {
+                                      label: "Change role",
+                                      onClick: (e: React.MouseEvent) => {
+                                        e.stopPropagation();
+                                        handleChangeRole(member.id);
+                                      },
+                                    },
+                                  ]
+                                : []),
+                              ...(canSendPasswordReset
+                                ? [
+                                    {
+                                      label: "Send a password reset",
+                                      onClick: (e: React.MouseEvent) => {
+                                        e.stopPropagation();
+                                        handleSendPasswordReset(member.id);
+                                      },
+                                    },
+                                  ]
+                                : []),
+                              ...(canChangeRole
+                                ? [
+                                    {
+                                      label: member.isActive ? "Deactivate member" : "Activate member",
+                                      onClick: (e: React.MouseEvent) => {
+                                        e.stopPropagation();
+                                        handleToggleMemberStatus(member.id, member.isActive);
+                                      },
+                                    },
+                                  ]
+                                : []),
+                              ...(canRemoveMember
+                                ? [
+                                    {
+                                      label: "",
+                                      isDivider: true,
+                                      onClick: () => {},
+                                    },
+                                    {
+                                      label: "Remove member",
+                                      variant: "danger" as const,
+                                      onClick: (e: React.MouseEvent) => {
+                                        e.stopPropagation();
+                                        handleRemoveMember(member.id);
+                                      },
+                                    },
+                                  ]
+                                : []),
+                            ]}
+                          />
+                        )}
                       </td>
                     </tr>
                     {index < members.length - 1 && (

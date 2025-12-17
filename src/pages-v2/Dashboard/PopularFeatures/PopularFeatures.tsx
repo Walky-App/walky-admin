@@ -9,6 +9,7 @@ import {
   SeeAllInterestsModal,
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import { usePermissions } from "../../../hooks/usePermissions";
 import {
   FeatureCard,
   PopularitySelector,
@@ -30,6 +31,7 @@ const PopularFeatures: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
   const { timePeriod, setTimePeriod } = useDashboard();
+  const { canExport } = usePermissions();
   const [popularity, setPopularity] = useState<PopularityOption>("most");
   const [viewType, setViewType] = useState<ViewType>("grid");
   const [interestsModalVisible, setInterestsModalVisible] = useState(false);
@@ -38,6 +40,9 @@ const PopularFeatures: React.FC = () => {
     items: [],
   });
   const exportRef = useRef<HTMLElement | null>(null);
+
+  // Check if user can export popular features data
+  const showExport = canExport("popular_features");
 
   console.log(
     "PopularFeatures - interestsModalVisible:",
@@ -123,6 +128,7 @@ const PopularFeatures: React.FC = () => {
         onTimePeriodChange={setTimePeriod}
         exportTargetRef={exportRef}
         exportFileName={`popular_features_${timePeriod}`}
+        showExport={showExport}
       />
 
       {/* Header Section - title, popularity selector, and view toggle in one row */}

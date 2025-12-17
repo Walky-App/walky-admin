@@ -11,11 +11,16 @@ import {
 } from "../components/StudentTable";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";
+import { usePermissions } from "../../../hooks/usePermissions";
 import "./ActiveStudents.css";
 
 export const ActiveStudents: React.FC = () => {
+  const { canExport } = usePermissions();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Check permissions for this page
+  const showExport = canExport("active_students");
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -158,7 +163,9 @@ export const ActiveStudents: React.FC = () => {
               variant="primary"
             />
           </div>
-          <ExportButton captureRef={exportRef} filename="active_students" />
+          {showExport && (
+            <ExportButton captureRef={exportRef} filename="active_students" />
+          )}
         </div>
 
         {isLoading ? (

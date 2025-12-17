@@ -12,6 +12,7 @@ import { CopyableId } from "../../../components-v2/CopyableId";
 import { getStatusChipStyle } from "../../../components-v2/utils/chipStyles";
 import "./Ambassadors.css";
 import { useTheme } from "../../../hooks/useTheme";
+import { usePermissions } from "../../../hooks/usePermissions";
 import { apiClient } from "../../../API";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";
 
@@ -40,6 +41,12 @@ interface Student {
 
 export const Ambassadors: React.FC = () => {
   const { theme } = useTheme();
+  const { canCreate, canDelete } = usePermissions();
+
+  // Permission checks for actions
+  const canAddAmbassador = canCreate("ambassadors");
+  const canDeleteAmbassador = canDelete("ambassadors");
+
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [ambassadorToDelete, setAmbassadorToDelete] = useState<{
@@ -301,13 +308,15 @@ export const Ambassadors: React.FC = () => {
               {activeAmbassadors} ambassadors active
             </p>
           </div>
-          <button
-            data-testid="add-ambassador-btn"
-            className="add-button"
-            onClick={handleAddAmbassador}
-          >
-            <span>+ Add a new Ambassador</span>
-          </button>
+          {canAddAmbassador && (
+            <button
+              data-testid="add-ambassador-btn"
+              className="add-button"
+              onClick={handleAddAmbassador}
+            >
+              <span>+ Add a new Ambassador</span>
+            </button>
+          )}
         </div>
 
         {/* Table Container */}
@@ -451,14 +460,16 @@ export const Ambassadors: React.FC = () => {
 
                       {/* Actions Column */}
                       <td className="ambassador-actions">
-                        <button
-                          data-testid="delete-ambassador-btn"
-                          className="delete-button"
-                          onClick={() => handleDeleteAmbassador(ambassador.id)}
-                          title="Delete ambassador"
-                        >
-                          <AssetIcon name="delete-icon" size={24} />
-                        </button>
+                        {canDeleteAmbassador && (
+                          <button
+                            data-testid="delete-ambassador-btn"
+                            className="delete-button"
+                            onClick={() => handleDeleteAmbassador(ambassador.id)}
+                            title="Delete ambassador"
+                          >
+                            <AssetIcon name="delete-icon" size={24} />
+                          </button>
+                        )}
                       </td>
                     </tr>
                     {index < sortedAmbassadors.length - 1 && (
