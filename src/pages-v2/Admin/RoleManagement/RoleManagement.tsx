@@ -28,7 +28,7 @@ import { usePermissions } from "../../../hooks/usePermissions";
 import { apiClient } from "../../../API";
 import "./RoleManagement.css";
 
-type RoleType = "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator";
+type RoleType = "Walky Admin" | "Walky Internal" | "School Admin" | "Campus Admin" | "Moderator";
 
 type SortField = "name" | "email" | "role" | "invitationStatus" | "lastActive";
 type SortOrder = "asc" | "desc";
@@ -342,6 +342,7 @@ export const RoleManagement: React.FC = () => {
                 options={[
                   { value: "All Roles", label: "All Roles" },
                   { value: "Walky Admin", label: "Walky Admin" },
+                  { value: "Walky Internal", label: "Walky Internal" },
                   { value: "School Admin", label: "School Admin" },
                   { value: "Campus Admin", label: "Campus Admin" },
                   { value: "Moderator", label: "Moderator" },
