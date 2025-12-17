@@ -79,6 +79,7 @@ const ReportSafety: React.FC = () => {
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
   const [banUserData, setBanUserData] = useState<{ id: string; name: string } | null>(null);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+  const [deactivateUserData, setDeactivateUserData] = useState<{ id: string; name: string } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -768,8 +769,15 @@ const ReportSafety: React.FC = () => {
                 }
               }}
               onDeactivateUser={() => {
-                setIsDetailModalOpen(false);
-                setIsDeactivateModalOpen(true);
+                if (selectedReportDetails?.reportedUser?.id) {
+                  // Save user data BEFORE closing detail modal
+                  setDeactivateUserData({
+                    id: selectedReportDetails.reportedUser.id,
+                    name: selectedReportDetails.reportedUser.name || "Unknown",
+                  });
+                  setIsDetailModalOpen(false);
+                  setIsDeactivateModalOpen(true);
+                }
               }}
               onBanUser={() => {
                 if (selectedReportDetails?.reportedUser?.id) {
@@ -834,17 +842,19 @@ const ReportSafety: React.FC = () => {
         visible={isDeactivateModalOpen}
         onClose={() => {
           setIsDeactivateModalOpen(false);
-          if (selectedReport && selectedReportDetails) {
+          setDeactivateUserData(null);
+          if (selectedReport) {
             setIsDetailModalOpen(true);
           }
         }}
         onConfirm={() => {
-          if (selectedReportDetails?.reportedUser?.id) {
-            deleteStudentMutation.mutate(selectedReportDetails.reportedUser.id);
+          if (deactivateUserData?.id) {
+            deleteStudentMutation.mutate(deactivateUserData.id);
+            setDeactivateUserData(null);
           }
           setIsDeactivateModalOpen(false);
         }}
-        userName={selectedReportDetails?.reportedUser?.name || ""}
+        userName={deactivateUserData?.name || ""}
       />
 
       <FlagModal

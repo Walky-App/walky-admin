@@ -74,6 +74,7 @@ const ReportHistory: React.FC = () => {
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
   const [banUserData, setBanUserData] = useState<{ id: string; name: string } | null>(null);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+  const [deactivateUserData, setDeactivateUserData] = useState<{ id: string; name: string } | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -763,8 +764,15 @@ const ReportHistory: React.FC = () => {
                 }
               }}
               onDeactivateUser={() => {
-                setIsDetailModalOpen(false);
-                setIsDeactivateModalOpen(true);
+                if (reportDetails?.reportedUser?.id) {
+                  // Save user data BEFORE closing detail modal (which clears reportDetails)
+                  setDeactivateUserData({
+                    id: reportDetails.reportedUser.id,
+                    name: reportDetails.reportedUser.name || "Unknown",
+                  });
+                  setIsDetailModalOpen(false);
+                  setIsDeactivateModalOpen(true);
+                }
               }}
               onBanUser={() => {
                 if (reportDetails?.reportedUser?.id) {
@@ -860,28 +868,43 @@ const ReportHistory: React.FC = () => {
         userName={banUserData?.name}
       />
 
-      {selectedReport && reportDetails && (
-        <DeactivateUserModal
-          visible={isDeactivateModalOpen}
-          onClose={() => {
-            setIsDeactivateModalOpen(false);
+      <DeactivateUserModal
+        visible={isDeactivateModalOpen}
+        onClose={() => {
+          setIsDeactivateModalOpen(false);
+          setDeactivateUserData(null);
+          // restore detail modal so user can continue
+          if (selectedReport) {
             setIsDetailModalOpen(true);
-          }}
-          onConfirm={async () => {
-            const userId = reportDetails?.reportedUser?.id;
-            if (!userId) return;
-            await apiClient.api.adminV2StudentsDelete(userId);
+          }
+        }}
+        onConfirm={async () => {
+          if (!deactivateUserData?.id) {
+            setToastMessage("Error: User ID not found");
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+            return;
+          }
+
+          try {
+            await apiClient.api.adminV2StudentsDelete(deactivateUserData.id);
             setToastMessage("User deactivated successfully");
             setShowToast(true);
             setTimeout(() => setShowToast(false), 3000);
             setIsDeactivateModalOpen(false);
+            setDeactivateUserData(null);
             // keep detail modal closed after confirm
             refetch();
             refetchStats();
-          }}
-          userName={reportDetails?.reportedUser?.name || ""}
-        />
-      )}
+          } catch (error) {
+            console.error("Error deactivating user:", error);
+            setToastMessage("Error deactivating user");
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+          }
+        }}
+        userName={deactivateUserData?.name || ""}
+      />
 
       {showToast && (
         <CustomToast
