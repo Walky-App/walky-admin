@@ -79,6 +79,7 @@
   flex-wrap: wrap;
   margin-left: 0;
   margin-right: 0;
+  align-items: stretch;
 }
 
 .list-view-row > [class*="col-"] {

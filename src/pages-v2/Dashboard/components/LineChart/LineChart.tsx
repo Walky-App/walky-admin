@@ -27,6 +27,8 @@ interface LineChartProps {
   yAxisLabel?: string;
   maxValue?: number;
   titleTooltip?: string;
+  animate?: boolean;
+  animationDuration?: number;
 }
 
 export const LineChart: React.FC<LineChartProps> = ({
@@ -38,6 +40,8 @@ export const LineChart: React.FC<LineChartProps> = ({
   yAxisLabel,
   maxValue,
   titleTooltip,
+  animate = false,
+  animationDuration = 400,
 }) => {
   const { theme } = useTheme();
 
@@ -68,7 +72,7 @@ export const LineChart: React.FC<LineChartProps> = ({
             border: `1px solid ${theme.colors.tooltipBorder}`,
             padding: "10px",
             borderRadius: "4px",
-            color: theme.colors.tooltipText,
+            color: theme.colors.white,
             fontSize: "12px",
             fontFamily: "var(--v2-font-family)",
           }}
@@ -111,7 +115,7 @@ export const LineChart: React.FC<LineChartProps> = ({
           y={0}
           dy={16}
           textAnchor="middle"
-          fill={theme.colors.textSecondary}
+          fill="#5b6168"
           fontFamily="var(--v2-font-family)"
           fontSize={14}
           fontWeight={600}
@@ -124,7 +128,7 @@ export const LineChart: React.FC<LineChartProps> = ({
             y={0}
             dy={34}
             textAnchor="middle"
-            fill={theme.colors.textMuted}
+            fill="#5b6168"
             fontFamily="var(--v2-font-family)"
             fontSize={12}
             fontWeight={400}
@@ -206,7 +210,7 @@ export const LineChart: React.FC<LineChartProps> = ({
               <YAxis
                 domain={[0, maxValue || "auto"]}
                 tick={{
-                  fill: theme.colors.textSecondary,
+                  fill: "#5b6168",
                   fontFamily: "var(--v2-font-family)",
                   fontSize: 14,
                   fontWeight: 600,
@@ -223,6 +227,8 @@ export const LineChart: React.FC<LineChartProps> = ({
                 stroke={color}
                 strokeWidth={2}
                 fill={`url(#gradient-${title.replace(/\s+/g, "-")})`}
+                isAnimationActive={animate}
+                animationDuration={animationDuration}
                 fillOpacity={1}
                 dot={false}
                 activeDot={{

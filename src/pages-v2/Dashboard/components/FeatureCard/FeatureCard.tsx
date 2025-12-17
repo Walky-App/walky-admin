@@ -96,7 +96,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
                       justifyContent: "center",
                       width: "32px",
                       height: "32px",
-                      borderRadius: "8px",
+                      borderRadius: "50%",
                       fontWeight: "600",
                       fontSize: "14px",
                     }}

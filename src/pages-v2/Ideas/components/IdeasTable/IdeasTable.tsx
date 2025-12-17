@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../../API";
 import { usePermissions } from "../../../../hooks/usePermissions";
+import { useTheme } from "../../../../hooks/useTheme";
 import { getFirstName } from "../../../../lib/utils/nameUtils";
 import "./IdeasTable.css";
 import {
@@ -55,6 +56,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
   onSortChange,
 }) => {
   const { canUpdate, canDelete } = usePermissions();
+  const { theme } = useTheme();
   const queryClient = useQueryClient();
 
   // Permission checks for idea actions
@@ -251,7 +253,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
                   <AssetIcon
                     name="swap-arrows-icon"
                     size={24}
-                    color="#1D1B20"
+                    color={theme.colors.bodyColor}
                   />
                 </div>
               </th>
@@ -271,7 +273,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
                   <AssetIcon
                     name="swap-arrows-icon"
                     size={24}
-                    color="#1D1B20"
+                    color={theme.colors.bodyColor}
                   />
                 </div>
               </th>
@@ -281,7 +283,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
                   <AssetIcon
                     name="swap-arrows-icon"
                     size={24}
-                    color="#1D1B20"
+                    color={theme.colors.bodyColor}
                   />
                 </div>
               </th>
@@ -373,12 +375,14 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
                                     label: "Unflag",
                                     icon: "flag-icon" as const,
                                     variant: "danger" as const,
-                                    onClick: (e: React.MouseEvent) => handleUnflagIdea(idea, e),
+                                    onClick: (e: React.MouseEvent) =>
+                                      handleUnflagIdea(idea, e),
                                   }
                                 : {
                                     label: "Flag",
                                     icon: "flag-icon" as const,
-                                    onClick: (e: React.MouseEvent) => handleFlagIdea(idea, e),
+                                    onClick: (e: React.MouseEvent) =>
+                                      handleFlagIdea(idea, e),
                                   },
                             ]
                           : []),
@@ -387,7 +391,8 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
                               {
                                 label: "Delete Idea",
                                 variant: "danger" as const,
-                                onClick: (e: React.MouseEvent) => handleDeleteClick(idea, e),
+                                onClick: (e: React.MouseEvent) =>
+                                  handleDeleteClick(idea, e),
                               },
                             ]
                           : []),

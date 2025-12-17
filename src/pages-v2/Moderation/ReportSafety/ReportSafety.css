@@ -347,6 +347,50 @@
   border-bottom: none;
 }
 
+/* Dark Mode */
+[data-theme="dark"] .report-safety-page .reports-container {
+  background: #1e1e1e;
+  border-color: #3f3f46;
+}
+
+[data-theme="dark"] .report-safety-page .reports-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .report-safety-page .reports-table thead {
+  background: #1f1f21;
+}
+
+[data-theme="dark"] .report-safety-page .reports-table thead tr {
+  background: #1f1f21;
+}
+
+[data-theme="dark"] .report-safety-page .reports-table thead th {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .report-safety-page .reports-table tbody td,
+[data-theme="dark"] .report-safety-page .report-type-label,
+[data-theme="dark"] .report-safety-page .report-date,
+[data-theme="dark"] .report-safety-page .report-time {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .report-safety-page .student-id-badge {
+  background: #1a2840;
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .report-safety-page .status-dropdown-cell {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .report-safety-page .status-dropdown-cell:hover {
+  background: #4a4a4a;
+}
+
 /* Flagged Row */
 .flagged-row {
   background: #fff3f2;

@@ -31,10 +31,7 @@ export const LastUpdated: React.FC<LastUpdatedProps> = ({
         className="last-updated-left"
         style={{ backgroundColor: theme.colors.lastUpdatedBg }}
       >
-        <p
-          className="last-updated-text"
-          style={{ color: theme.colors.textMuted }}
-        >
+        <p className="last-updated-text">
           Don't see the data you are looking for?{" "}
           <a
             href="https://walkyapp.com/contact/"
@@ -48,12 +45,7 @@ export const LastUpdated: React.FC<LastUpdatedProps> = ({
         </p>
       </div>
       <div className="last-updated-right">
-        <p
-          className="last-updated-text"
-          style={{ color: theme.colors.textMuted }}
-        >
-          Last updated: {formattedDate}
-        </p>
+        <p className="last-updated-text">Last updated: {formattedDate}</p>
       </div>
     </div>
   );

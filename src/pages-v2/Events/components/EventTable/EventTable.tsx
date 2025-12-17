@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../../API";
 import { usePermissions } from "../../../../hooks/usePermissions";
+import { useTheme } from "../../../../hooks/useTheme";
 import {
   DeleteModal,
   CustomToast,
@@ -53,6 +54,7 @@ export const EventTable: React.FC<EventTableProps> = ({
   onSortChange,
 }) => {
   const { canUpdate, canDelete } = usePermissions();
+  const { theme } = useTheme();
   const queryClient = useQueryClient();
 
   // Permission checks for event actions
@@ -303,7 +305,11 @@ export const EventTable: React.FC<EventTableProps> = ({
                 onClick={() => handleSort("eventName")}
               >
                 <span>Event name</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
+                <AssetIcon
+                  name="swap-arrows-icon"
+                  size={24}
+                  color={theme.colors.bodyColor}
+                />
               </div>
             </th>
             <th>
@@ -347,16 +353,24 @@ export const EventTable: React.FC<EventTableProps> = ({
             <React.Fragment key={event.id}>
               <tr className={event.isFlagged ? "event-row-flagged" : ""}>
                 <td>
-                  {event.isFlagged && (
-                    <span title={event.flagReason || "Flagged"}>
-                      <AssetIcon
-                        name="flag-icon"
-                        size={16}
-                        color="#D53425"
-                        className="event-flag-icon"
-                      />
-                    </span>
-                  )}
+                  <AssetIcon
+                    name="swap-arrows-icon"
+                    size={24}
+                    color={theme.colors.bodyColor}
+                  />
+                  <span title={event.flagReason || "Flagged"}>
+                    <AssetIcon
+                      name="flag-icon"
+                      size={16}
+                      color="#D53425"
+                      className="event-flag-icon"
+                    />
+                  </span>
+                  <AssetIcon
+                    name="swap-arrows-icon"
+                    size={24}
+                    color={theme.colors.bodyColor}
+                  />
                   <div className="event-name-cell">
                     <span className="event-name" title={event.eventName}>
                       {event.eventName}
@@ -420,12 +434,14 @@ export const EventTable: React.FC<EventTableProps> = ({
                                   label: "Unflag",
                                   icon: "flag-icon" as const,
                                   variant: "danger" as const,
-                                  onClick: (e: React.MouseEvent) => handleUnflagEvent(event, e),
+                                  onClick: (e: React.MouseEvent) =>
+                                    handleUnflagEvent(event, e),
                                 }
                               : {
                                   label: "Flag",
                                   icon: "flag-icon" as const,
-                                  onClick: (e: React.MouseEvent) => handleFlagEvent(event, e),
+                                  onClick: (e: React.MouseEvent) =>
+                                    handleFlagEvent(event, e),
                                 },
                           ]
                         : []),

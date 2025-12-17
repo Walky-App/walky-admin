@@ -5,6 +5,7 @@ import {
   CDropdownMenu,
   CDropdownItem,
 } from "@coreui/react";
+import { useTheme } from "../../hooks/useTheme";
 import { AssetIcon } from "../AssetIcon/AssetIcon";
 import "./FilterDropdown.css";
 
@@ -34,6 +35,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   ariaLabel,
   width = "auto",
 }) => {
+  const { theme } = useTheme();
   const selectedOption = options.find((opt) => opt.value === value);
 
   return (
@@ -49,7 +51,11 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
       >
         {selectedOption?.label || placeholder}
         <div className="filter-dropdown-icon">
-          <AssetIcon name="arrow-down" size={24} color="#1D1B20" />
+          <AssetIcon
+            name="arrow-down"
+            size={24}
+            color={theme.colors.bodyColor}
+          />
         </div>
       </CDropdownToggle>
       <CDropdownMenu>

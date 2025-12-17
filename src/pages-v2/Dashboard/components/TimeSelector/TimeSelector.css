@@ -51,7 +51,7 @@
 
 /* Acessibilidade: foco visível para navegação por teclado */
 .ts-time-option:focus-visible {
-  outline: 2px solid #546fd9;
+  outline: 2px solid var(--time-selector-focus, #546fd9);
   outline-offset: 2px;
   z-index: 1;
 }

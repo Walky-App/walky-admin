@@ -34,6 +34,7 @@
   font-weight: 600;
   font-size: 14px;
   text-align: right;
+  color: #5b6168;
 }
 
 .stacked-bar-chart-area {
@@ -152,6 +153,7 @@
   font-weight: 600;
   font-size: 14px;
   margin: 0;
+  color: #5b6168;
 }
 
 .stacked-bar-week-dates {
@@ -159,6 +161,7 @@
   font-weight: 400;
   font-size: 12px;
   margin: 0;
+  color: #5b6168;
 }
 
 .stacked-bar-chart-legend {
@@ -184,6 +187,7 @@
   font-family: "Lato", sans-serif;
   font-weight: 600;
   font-size: 16px;
+  color: #5b6168;
 }
 
 /* Responsive */

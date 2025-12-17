@@ -8,6 +8,7 @@ import {
 } from "@coreui/react";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import { SearchInput } from "../SearchInput/SearchInput";
+import { NoData } from "../NoData";
 import "./SeeAllInterestsModal.css";
 
 interface Interest {
@@ -84,45 +85,54 @@ const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
           {/* Interest List */}
           <div className="see-all-interests-list-container">
             <div className="see-all-interests-list-scroll">
-              {filteredInterests.length > 0 ? (
-                <ol className="see-all-interests-list">
-                  {filteredInterests.map((interest) => (
-                    <li key={interest.rank} className="see-all-interests-item">
-                      <div className="see-all-interests-item-content">
-                        <span className="see-all-interests-rank">
-                          {interest.rank}.
-                        </span>
-                        <div className="see-all-interests-item-icon">
-                          <div className="see-all-interests-icon-background">
-                            {interest.icon ? (
-                              <img
-                                src={interest.icon}
-                                alt={interest.name}
-                                className="see-all-interests-icon-image"
-                              />
-                            ) : (
-                              <div className="see-all-interests-icon-placeholder">
-                                {interest.name.charAt(0).toUpperCase()}
-                              </div>
-                            )}
+              <div className="see-all-interests-scroll-inner">
+                {filteredInterests.length > 0 ? (
+                  <ol className="see-all-interests-list">
+                    {filteredInterests.map((interest) => (
+                      <li
+                        key={interest.rank}
+                        className="see-all-interests-item"
+                      >
+                        <div className="see-all-interests-item-content">
+                          <span className="see-all-interests-rank">
+                            {interest.rank}.
+                          </span>
+                          <div className="see-all-interests-item-icon">
+                            <div className="see-all-interests-icon-background">
+                              {interest.icon ? (
+                                <img
+                                  src={interest.icon}
+                                  alt={interest.name}
+                                  className="see-all-interests-icon-image"
+                                />
+                              ) : (
+                                <div className="see-all-interests-icon-placeholder">
+                                  {interest.name.charAt(0).toUpperCase()}
+                                </div>
+                              )}
+                            </div>
                           </div>
+                          <span className="see-all-interests-name">
+                            {interest.name}
+                          </span>
                         </div>
-                        <span className="see-all-interests-name">
-                          {interest.name}
-                        </span>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <div className="see-all-interests-empty">
-                  <p className="see-all-interests-empty-text">
-                    {searchTerm
-                      ? "No interests found matching your search."
-                      : "No interests available."}
-                  </p>
-                </div>
-              )}
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <div className="see-all-interests-empty">
+                    <NoData
+                      type="primary"
+                      message={
+                        searchTerm
+                          ? "No interests found matching your search."
+                          : "No interests available."
+                      }
+                      iconName="nd-grafs-empty"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

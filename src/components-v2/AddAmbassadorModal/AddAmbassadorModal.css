@@ -29,8 +29,8 @@
 
 .add-ambassador-modal-close {
   position: absolute;
-  top: 20px;
-  right: 24px;
+  top: 18px;
+  right: 20px;
   background: none;
   border: none;
   cursor: pointer;
@@ -87,6 +87,12 @@
   gap: 10px;
   align-items: center;
   padding: 0 8px 0 8px;
+}
+
+.add-emba-search-input.search-input-container.primary {
+  min-width: 0;
+  width: 100%;
+  padding: 12px 12px;
 }
 
 .add-ambassador-search-input-wrapper {

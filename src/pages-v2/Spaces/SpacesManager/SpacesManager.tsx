@@ -18,7 +18,11 @@ interface SpaceCategory {
   order?: number;
 }
 
-export type SpaceSortField = "spaceName" | "members" | "creationDate";
+export type SpaceSortField =
+  | "spaceName"
+  | "members"
+  | "events"
+  | "creationDate";
 
 export const SpacesManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -76,8 +80,8 @@ export const SpacesManager: React.FC = () => {
       currentPage,
       debouncedSearchQuery,
       categoryFilter,
-      sortBy,
-      sortOrder,
+      sortBy === "events" ? undefined : sortBy,
+      sortBy === "events" ? undefined : sortOrder,
     ],
     queryFn: () =>
       apiClient.api.adminV2SpacesList({
@@ -85,8 +89,8 @@ export const SpacesManager: React.FC = () => {
         limit: 10,
         search: debouncedSearchQuery,
         category: categoryFilter,
-        sortBy,
-        sortOrder,
+        sortBy: sortBy === "events" ? undefined : sortBy,
+        sortOrder: sortBy === "events" ? undefined : sortOrder,
       }),
     placeholderData: keepPreviousData,
   });
@@ -138,6 +142,16 @@ export const SpacesManager: React.FC = () => {
     };
   });
 
+  // Local sort fallback for fields the API cannot sort (e.g., events)
+  const displayedSpaces = React.useMemo(() => {
+    if (sortBy === "events") {
+      return [...filteredSpaces].sort((a, b) =>
+        sortOrder === "asc" ? a.events - b.events : b.events - a.events
+      );
+    }
+    return filteredSpaces;
+  }, [filteredSpaces, sortBy, sortOrder]);
+
   const totalPages = Math.ceil((spacesData?.data.total || 0) / 10);
   const totalEntries = spacesData?.data.total || 0;
   const isEmpty = !isLoading && filteredSpaces.length === 0;
@@ -187,7 +201,7 @@ export const SpacesManager: React.FC = () => {
           <>
             <div style={{ opacity: isEmpty ? 0.4 : 1 }}>
               <SpaceTable
-                spaces={filteredSpaces}
+                spaces={displayedSpaces}
                 sortBy={sortBy}
                 sortOrder={sortOrder}
                 onSortChange={handleSortChange}

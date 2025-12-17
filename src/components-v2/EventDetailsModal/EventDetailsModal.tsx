@@ -88,7 +88,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   return (
     <CModal
       visible={isOpen}
-      onClose={handleCloseAll}
+      onClose={onClose}
       size="xl"
       alignment="center"
       backdrop="static"
@@ -98,7 +98,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
         <button
           data-testid="event-details-close-btn"
           className="event-details-close"
-          onClick={handleCloseAll}
+          onClick={onClose}
           aria-label="Close modal"
         >
           <AssetIcon name="close-button" size={16} color="#5b6168" />
@@ -147,7 +147,9 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
               {/* Event Organizer - Only show if NOT from a space */}
               {!eventData.space && (
                 <div className="event-details-section">
-                  <h3 className="event-details-section-title">Event organizer</h3>
+                  <h3 className="event-details-section-title">
+                    Event organizer
+                  </h3>
                   <div className="event-details-organizer">
                     <div className="event-organizer-avatar">
                       {eventData.organizer.avatar ? (
@@ -162,7 +164,9 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                       )}
                     </div>
                     <div className="event-organizer-info">
-                      <p className="event-organizer-name">{organizerFirstName}</p>
+                      <p className="event-organizer-name">
+                        {organizerFirstName}
+                      </p>
                       <CopyableId
                         id={eventData.organizer.studentId}
                         label="Student ID"
@@ -181,7 +185,9 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                     <div className="event-space-avatar">
                       {eventData.space.logo || eventData.space.coverImage ? (
                         <img
-                          src={eventData.space.logo || eventData.space.coverImage}
+                          src={
+                            eventData.space.logo || eventData.space.coverImage
+                          }
                           alt={eventData.space.name}
                         />
                       ) : (
@@ -312,7 +318,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
             <button
               data-testid="event-details-close-footer-btn"
               className="event-details-close-btn"
-              onClick={onClose}
+              onClick={handleCloseAll}
             >
               Close
             </button>

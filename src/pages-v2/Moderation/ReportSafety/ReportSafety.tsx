@@ -77,9 +77,15 @@ const ReportSafety: React.FC = () => {
     "event" | "idea" | "space" | "user"
   >("event");
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
-  const [banUserData, setBanUserData] = useState<{ id: string; name: string } | null>(null);
+  const [banUserData, setBanUserData] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
-  const [deactivateUserData, setDeactivateUserData] = useState<{ id: string; name: string } | null>(null);
+  const [deactivateUserData, setDeactivateUserData] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -662,6 +668,25 @@ const ReportSafety: React.FC = () => {
             reporter.picture ||
             "";
 
+          const rawMessage =
+            selectedReportDetails.content?.text ??
+            selectedReportDetails.content?.message ??
+            selectedReportDetails.description ??
+            selectedReport.description ??
+            "";
+
+          const descriptionText =
+            typeof selectedReport.description === "string"
+              ? selectedReport.description
+              : "";
+
+          const messageText =
+            typeof rawMessage === "string"
+              ? rawMessage
+              : typeof rawMessage === "object" && rawMessage !== null
+              ? (rawMessage as { text?: string }).text || ""
+              : "";
+
           return (
             <ReportDetailModal
               isOpen={isDetailModalOpen}
@@ -691,7 +716,10 @@ const ReportSafety: React.FC = () => {
                 reasonColor: "red",
                 reportDate: selectedReport.reportDate,
                 contentId: selectedReport.id,
-                description: selectedReport.description,
+                description:
+                  mappedType === "Message"
+                    ? messageText || descriptionText
+                    : descriptionText,
                 reportingUser: {
                   name: reporterName,
                   id: reporterId,
@@ -747,6 +775,16 @@ const ReportSafety: React.FC = () => {
                           memberCount:
                             selectedReportDetails.content.space.memberCount ||
                             "0 members",
+                        }
+                      : undefined,
+                  message:
+                    mappedType === "Message"
+                      ? {
+                          text: messageText,
+                          timestamp:
+                            selectedReportDetails.content?.timestamp ||
+                            selectedReportDetails.content?.created_at ||
+                            selectedReport.reportDate,
                         }
                       : undefined,
                 },
@@ -817,9 +855,10 @@ const ReportSafety: React.FC = () => {
               "14 Days": 14,
               "30 Days": 30,
               "90 Days": 90,
-              "Permanent": 36500,
+              Permanent: 36500,
             };
-            const durationDays = durationMap[duration] || parseInt(duration) || 7;
+            const durationDays =
+              durationMap[duration] || parseInt(duration) || 7;
 
             banStudentMutation.mutate({
               id: banUserData.id,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   CDropdown,
   CDropdownToggle,
@@ -17,15 +17,87 @@ interface Interest {
   barWidth: number;
   rankColor: string;
   rankBgColor: string;
+  icon?: string;
 }
 
 interface CommonInterestsProps {
   interests: Interest[];
+  datasets?: Record<string, any[]>;
 }
 
-const CommonInterests: React.FC<CommonInterestsProps> = ({ interests }) => {
+const CommonInterests: React.FC<CommonInterestsProps> = ({
+  interests,
+  datasets,
+}) => {
   const { theme } = useTheme();
   const [selectedFilter, setSelectedFilter] = useState("Common Interests");
+
+  const filterOptions = useMemo(
+    () => [
+      "Common Interests",
+      "Popular Space categories",
+      "Popular Events categories",
+      "Popular ways to connect",
+      "Visited Places",
+      "Invitation categories",
+      "Most engaged",
+      "Events by number of attendees",
+      "Spaces by number of members",
+      "Collaborative Ideas",
+    ],
+    []
+  );
+
+  const displayedInterests = useMemo(() => {
+    const rankBgPalette = ["#fff3d6", "#d9e3f7", "#ffebe9"]; // top1, top2, top3 backgrounds
+    const rankColorPalette = ["#8f5400", "#4a4cd9", "#ba5630"]; // top1, top2, top3 text
+    const source = datasets?.[selectedFilter];
+    const list =
+      source && Array.isArray(source)
+        ? source
+        : selectedFilter === "Common Interests"
+        ? interests
+        : [];
+
+    const toNumber = (value: any, fallback = 0) => {
+      const n = parseFloat(value);
+      return Number.isFinite(n) ? n : fallback;
+    };
+
+    const counts = list.map((item) =>
+      toNumber(item.students ?? item.count ?? item.value ?? item.total, 0)
+    );
+    const maxCount = Math.max(1, ...counts);
+
+    return list.map((item: any, idx: number): Interest => {
+      const rank = Number(item.rank ?? idx + 1) || idx + 1;
+      const students = counts[idx] ?? 0;
+      const computedPercentage = students ? (students / maxCount) * 100 : 0;
+      const percentage = toNumber(item.percentage, computedPercentage);
+      const computedBarWidth = Math.min(100, percentage || computedPercentage);
+      const barWidth = toNumber(item.barWidth, computedBarWidth);
+
+      const rankColor =
+        rank >= 1 && rank <= 3
+          ? rankColorPalette[rank - 1]
+          : item.rankColor ?? "#676d70";
+      const rankBgColor =
+        rank >= 1 && rank <= 3
+          ? rankBgPalette[rank - 1]
+          : item.rankBgColor ?? "#f4f5f7";
+
+      return {
+        rank,
+        name: item.name || item.label || "—",
+        students,
+        percentage,
+        barWidth,
+        rankColor,
+        rankBgColor,
+        icon: item.icon,
+      };
+    });
+  }, [datasets, interests, selectedFilter]);
 
   console.log("CommonInterests modalVisible:", false);
 
@@ -39,7 +111,7 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({ interests }) => {
               color={theme.colors.iconPurple}
             />
           </div>
-          <h3 className="common-interests-title">Common Interests</h3>
+          <h3 className="common-interests-title">{selectedFilter}</h3>
         </div>
         <CDropdown className="common-interests-dropdown">
           <CDropdownToggle color="light" className="dropdown-toggle-custom">
@@ -51,58 +123,21 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({ interests }) => {
             />
           </CDropdownToggle>
           <CDropdownMenu>
-            <CDropdownItem
-              onClick={() => setSelectedFilter("Common Interests")}
-            >
-              Common Interests
-            </CDropdownItem>
-            <CDropdownItem
-              onClick={() => setSelectedFilter("Popular Space categories")}
-            >
-              Popular Space categories
-            </CDropdownItem>
-            <CDropdownItem
-              onClick={() => setSelectedFilter("Popular Events categories")}
-            >
-              Popular Events categories
-            </CDropdownItem>
-            <CDropdownItem
-              onClick={() => setSelectedFilter("Popular ways to connect")}
-            >
-              Popular ways to connect
-            </CDropdownItem>
-            <CDropdownItem onClick={() => setSelectedFilter("Visited Places")}>
-              Visited Places
-            </CDropdownItem>
-            <CDropdownItem
-              onClick={() => setSelectedFilter("Invitation categories")}
-            >
-              Invitation categories
-            </CDropdownItem>
-            <CDropdownItem onClick={() => setSelectedFilter("Most engaged")}>
-              Most engaged
-            </CDropdownItem>
-            <CDropdownItem
-              onClick={() => setSelectedFilter("Events by number of attendees")}
-            >
-              Events by number of attendees
-            </CDropdownItem>
-            <CDropdownItem
-              onClick={() => setSelectedFilter("Spaces by number of members")}
-            >
-              Spaces by number of members
-            </CDropdownItem>
-            <CDropdownItem
-              onClick={() => setSelectedFilter("Collaborative Ideas")}
-            >
-              Collaborative Ideas
-            </CDropdownItem>
+            {filterOptions.map((option) => (
+              <CDropdownItem
+                key={option}
+                onClick={() => setSelectedFilter(option)}
+                active={selectedFilter === option}
+              >
+                {option}
+              </CDropdownItem>
+            ))}
           </CDropdownMenu>
         </CDropdown>
       </div>
 
       <div className="common-interests-list">
-        {interests.map((interest) => (
+        {displayedInterests.map((interest) => (
           <div key={interest.rank} className="interest-item">
             <div
               className="interest-rank"
@@ -117,14 +152,18 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({ interests }) => {
               <div className="interest-details">
                 <p className="interest-name">{interest.name}</p>
                 <p className="interest-stats">
-                  {interest.students} students ({interest.percentage}%)
+                  {interest.students}
+                  {Number.isFinite(interest.students) ? " students" : ""}
+                  {Number.isFinite(interest.percentage)
+                    ? ` (${interest.percentage}%)`
+                    : ""}
                 </p>
               </div>
               <div className="interest-progress-container">
                 <div className="interest-progress-bg" />
                 <div
                   className="interest-progress-bar"
-                  style={{ width: `${interest.barWidth}px` }}
+                  style={{ width: `${interest.barWidth}%` }}
                 />
               </div>
             </div>

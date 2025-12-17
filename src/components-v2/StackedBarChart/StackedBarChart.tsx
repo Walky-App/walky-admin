@@ -61,7 +61,7 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
             <span
               key={index}
               className="stacked-bar-y-axis-label"
-              style={{ color: theme.colors.textMuted }}
+              style={{ color: "#5b6168" }}
             >
               {label}
             </span>
@@ -99,7 +99,7 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
                       const isTopBar =
                         visibleLegendItems.length > 0 &&
                         legendItem.key ===
-                        visibleLegendItems[visibleLegendItems.length - 1].key;
+                          visibleLegendItems[visibleLegendItems.length - 1].key;
 
                       return (
                         <div
@@ -169,16 +169,10 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
       <div className="stacked-bar-x-axis-labels">
         {weeks.map((week, index) => (
           <div key={index} className="stacked-bar-week-label">
-            <p
-              className="stacked-bar-week-name"
-              style={{ color: theme.colors.textMuted }}
-            >
+            <p className="stacked-bar-week-name" style={{ color: "#5b6168" }}>
               {week.label}
             </p>
-            <p
-              className="stacked-bar-week-dates"
-              style={{ color: theme.colors.textMuted }}
-            >
+            <p className="stacked-bar-week-dates" style={{ color: "#5b6168" }}>
               {week.dateRange}
             </p>
           </div>
@@ -195,7 +189,7 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
             />
             <span
               className="stacked-bar-legend-text"
-              style={{ color: theme.colors.textMuted }}
+              style={{ color: "#5b6168" }}
             >
               {item.label}
             </span>

@@ -69,6 +69,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
   const [studentToUnban, setStudentToUnban] = useState<StudentData | null>(
     null
   );
+  const [resumeProfileAfterUnban, setResumeProfileAfterUnban] = useState(false);
   const [studentToDeactivate, setStudentToDeactivate] =
     useState<StudentData | null>(null);
   const [studentToFlag, setStudentToFlag] = useState<StudentData | null>(null);
@@ -189,7 +190,10 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
 
   const handleConfirmFlag = (reason: string) => {
     if (!studentToFlag) return;
-    flagMutation.mutate({ id: studentToFlag.id, reason: reason || "Flagged by admin" });
+    flagMutation.mutate({
+      id: studentToFlag.id,
+      reason: reason || "Flagged by admin",
+    });
     setFlagModalVisible(false);
     setStudentToFlag(null);
   };
@@ -207,6 +211,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
   const handleUnbanUser = (student: StudentData) => {
     setStudentToUnban(student);
     setUnbanModalVisible(true);
+    setResumeProfileAfterUnban(false);
   };
 
   const handleConfirmUnban = () => {
@@ -214,10 +219,15 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     unbanMutation.mutate(studentToUnban.id);
     setUnbanModalVisible(false);
     setStudentToUnban(null);
+    setResumeProfileAfterUnban(false);
   };
 
   const handleCloseUnbanModal = () => {
     setUnbanModalVisible(false);
+    if (resumeProfileAfterUnban && selectedStudent) {
+      setProfileModalVisible(true);
+    }
+    setResumeProfileAfterUnban(false);
     setStudentToUnban(null);
   };
 
@@ -313,10 +323,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
       render: (student) => (
         <>
           {Boolean(student.isFlagged) && (
-            <CTooltip
-              content={student.flagReason || "Flagged"}
-              placement="top"
-            >
+            <CTooltip content={student.flagReason || "Flagged"} placement="top">
               <div className="student-flag-icon">
                 <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
               </div>
