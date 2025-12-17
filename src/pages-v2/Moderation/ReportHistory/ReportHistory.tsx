@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import {
   AssetIcon,
@@ -27,14 +27,17 @@ interface HistoryReportData {
   id: string;
   description: string;
   studentId: string;
+  reportedItemId?: string;
   reportDate: string;
   resolvedAt: string | null;
   type: string;
   reasonTag: string;
   status: string;
+  isFlagged?: boolean;
 }
 
 const ReportHistory: React.FC = () => {
+  const queryClient = useQueryClient();
   const { canExport, canUpdate } = usePermissions();
 
   // Check permissions for this page
@@ -43,6 +46,9 @@ const ReportHistory: React.FC = () => {
   const canFlagReportedItems = canUpdate("report_history");
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [flagModalType, setFlagModalType] = useState<
+    "event" | "idea" | "space" | "user"
+  >("event");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const handleSearchChange = (value: string) => {
@@ -66,6 +72,7 @@ const ReportHistory: React.FC = () => {
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [isFlagModalOpen, setIsFlagModalOpen] = useState(false);
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
+  const [banUserData, setBanUserData] = useState<{ id: string; name: string } | null>(null);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -116,17 +123,56 @@ const ReportHistory: React.FC = () => {
     refetchOnWindowFocus: false,
   });
 
+  const flagMutation = useMutation({
+    mutationFn: (data: { id: string; type: string; reason: string }) => {
+      switch (data.type.toLowerCase()) {
+        case "user":
+          return apiClient.api.adminV2StudentsFlagCreate(data.id, {
+            reason: data.reason,
+          });
+        case "event":
+          return apiClient.api.adminV2EventsFlagCreate(data.id, {
+            reason: data.reason,
+          });
+        case "idea":
+          return apiClient.api.adminV2IdeasFlagCreate(data.id, {
+            reason: data.reason,
+          });
+        case "space":
+          return apiClient.api.adminV2SpacesFlagCreate(data.id, {
+            reason: data.reason,
+          });
+        default:
+          throw new Error(`Cannot flag type: ${data.type}`);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["history-reports"] });
+      setToastMessage("Item flagged successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setIsFlagModalOpen(false);
+    },
+    onError: () => {
+      setToastMessage("Error flagging item");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+  });
+
   const historyReports: HistoryReportData[] = useMemo(
     () =>
       (reportsData?.data.data || []).map((report: any) => ({
         id: report.id,
         description: report.description,
         studentId: report.studentId,
+        reportedItemId: report.reportedItemId,
         reportDate: report.reportDate,
         resolvedAt: report.resolvedAt || null,
         type: report.type,
         reasonTag: report.reasonTag,
         status: report.status,
+        isFlagged: report.isFlagged,
       })),
     [reportsData]
   );
@@ -142,6 +188,7 @@ const ReportHistory: React.FC = () => {
         type: report.type,
         reasonTag: report.reasonTag,
         status: report.status,
+        isFlagged: report.isFlagged,
       })),
     [historyReports]
   );
@@ -491,6 +538,7 @@ const ReportHistory: React.FC = () => {
               const matched = historyReports.find((r) => r.id === row.id);
               if (matched) {
                 setSelectedReport(matched);
+                setFlagModalType(normalizeFlagType(matched.type));
                 setIsFlagModalOpen(true);
               }
             }}
@@ -719,8 +767,15 @@ const ReportHistory: React.FC = () => {
                 setIsDeactivateModalOpen(true);
               }}
               onBanUser={() => {
-                setIsDetailModalOpen(false);
-                setIsBanModalOpen(true);
+                if (reportDetails?.reportedUser?.id) {
+                  // Save user data BEFORE closing detail modal (which clears reportDetails)
+                  setBanUserData({
+                    id: reportDetails.reportedUser.id,
+                    name: reportDetails.reportedUser.name || "Unknown",
+                  });
+                  setIsDetailModalOpen(false);
+                  setIsBanModalOpen(true);
+                }
               }}
             />
           );
@@ -731,43 +786,79 @@ const ReportHistory: React.FC = () => {
         onClose={() => setIsFlagModalOpen(false)}
         onConfirm={(reason) => {
           if (selectedReport) {
-            setToastMessage(`Flag requested: ${reason}`);
-            setShowToast(true);
-            setTimeout(() => setShowToast(false), 3000);
-            setIsFlagModalOpen(false);
+            const itemId = selectedReport.reportedItemId;
+            if (!itemId) {
+              setToastMessage("Cannot flag: missing item ID");
+              setShowToast(true);
+              setTimeout(() => setShowToast(false), 3000);
+              setIsFlagModalOpen(false);
+              return;
+            }
+            flagMutation.mutate({
+              id: itemId,
+              type: flagModalType,
+              reason,
+            });
           }
         }}
         itemName={selectedReport?.description || ""}
-        type={normalizeFlagType(selectedReport?.type)}
+        type={flagModalType}
       />
 
-      {selectedReport && reportDetails && (
-        <BanUserModal
-          visible={isBanModalOpen}
-          onClose={() => {
-            setIsBanModalOpen(false);
-            // restore detail modal so user can continue
+      <BanUserModal
+        visible={isBanModalOpen}
+        onClose={() => {
+          setIsBanModalOpen(false);
+          setBanUserData(null);
+          // restore detail modal so user can continue
+          if (selectedReport) {
             setIsDetailModalOpen(true);
-          }}
-          onConfirm={async (_duration, reason) => {
-            const userId = reportDetails?.reportedUser?.id;
-            if (!userId) return;
+          }
+        }}
+        onConfirm={async (duration, reason) => {
+          if (!banUserData?.id) {
+            console.error("❌ Cannot ban user: banUserData.id is missing");
+            setToastMessage("Error: User ID not found");
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+            return;
+          }
 
-            await apiClient.api.adminV2StudentsLockSettingsUpdate(userId, {
+          // Modal sends: "1 Day", "3 Days", "7 Days", "14 Days", "30 Days", "90 Days"
+          const durationMap: Record<string, number> = {
+            "1 Day": 1,
+            "3 Days": 3,
+            "7 Days": 7,
+            "14 Days": 14,
+            "30 Days": 30,
+            "90 Days": 90,
+            "Permanent": 36500,
+          };
+          const durationDays = durationMap[duration] || parseInt(duration) || 7;
+
+          try {
+            await apiClient.api.adminV2StudentsLockSettingsUpdate(banUserData.id, {
               lockReason: reason,
               isLocked: true,
+              lockDuration: durationDays,
             });
             setToastMessage("User banned successfully");
             setShowToast(true);
             setTimeout(() => setShowToast(false), 3000);
             setIsBanModalOpen(false);
+            setBanUserData(null);
             // keep detail modal closed after confirm
             refetch();
             refetchStats();
-          }}
-          userName={reportDetails?.reportedUser?.name}
-        />
-      )}
+          } catch (error) {
+            console.error("Error banning user:", error);
+            setToastMessage("Error banning user");
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+          }
+        }}
+        userName={banUserData?.name}
+      />
 
       {selectedReport && reportDetails && (
         <DeactivateUserModal
