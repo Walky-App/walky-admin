@@ -97,9 +97,19 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
           })) as School[];
           console.log("Parsed schools:", schools);
         } else {
-          const response = await apiClient.api.schoolDetail(
-            user.school_id!
-          );
+          // Handle case where school_id might be an object (populated) or string
+          const schoolId = typeof user.school_id === 'object' && user.school_id !== null
+            ? (user.school_id as any)._id || (user.school_id as any).id
+            : user.school_id;
+
+          if (!schoolId) {
+            console.warn("No valid school_id found for user");
+            setIsLoadingSchools(false);
+            hasInitializedSchools.current = true;
+            return;
+          }
+
+          const response = await apiClient.api.schoolDetail(schoolId);
           console.log("School detail API response:", response);
           type RawSchool = { _id?: string; id?: string; school_name?: string; name?: string };
           const data = response.data as RawSchool | undefined;

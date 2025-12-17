@@ -82,9 +82,13 @@ API.interceptors.response.use(
       }
     }
 
-    // Handle 403 Forbidden errors - user deactivated
+    // Handle 403 Forbidden errors - only show deactivated modal for actual deactivation
     if (error.response?.status === 403) {
-      triggerDeactivatedModal();
+      const errorCode = (error.response?.data as any)?.code;
+      // Only trigger deactivated modal for actual account deactivation, not permission errors
+      if (errorCode === 'ACCOUNT_DEACTIVATED' || errorCode === 'USER_DEACTIVATED') {
+        triggerDeactivatedModal();
+      }
     }
 
     return Promise.reject(error);
@@ -167,9 +171,13 @@ apiClient.instance.interceptors.response.use(
       }
     }
 
-    // Handle 403 Forbidden errors - user deactivated
+    // Handle 403 Forbidden errors - only show deactivated modal for actual deactivation
     if (error.response?.status === 403) {
-      triggerDeactivatedModal();
+      const errorCode = (error.response?.data as any)?.code;
+      // Only trigger deactivated modal for actual account deactivation, not permission errors
+      if (errorCode === 'ACCOUNT_DEACTIVATED' || errorCode === 'USER_DEACTIVATED') {
+        triggerDeactivatedModal();
+      }
     }
 
     return Promise.reject(error);
