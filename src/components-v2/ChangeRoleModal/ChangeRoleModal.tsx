@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import "./ChangeRoleModal.css";
 
-type RoleType = "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator";
+type RoleType = "Walky Admin" | "Walky Internal" | "School Admin" | "Campus Admin" | "Moderator";
 
 interface ChangeRoleModalProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ interface ChangeRoleModalProps {
 
 const roleOptions: RoleType[] = [
   "Walky Admin",
+  "Walky Internal",
   "School Admin",
   "Campus Admin",
   "Moderator",

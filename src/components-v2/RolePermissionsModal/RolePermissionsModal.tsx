@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import "./RolePermissionsModal.css";
 
-type RoleType = "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator";
+type RoleType = "Walky Admin" | "Walky Internal" | "School Admin" | "Campus Admin" | "Moderator";
 
 interface Permission {
   name: string;
@@ -51,6 +51,34 @@ const rolePermissionsData: Record<RoleType, RoleData> = {
         name: "Role Management:",
         actions: "Create, Read, Update, Delete + Manage.",
       },
+    ],
+  },
+  "Walky Internal": {
+    title: "Walky Internal",
+    description: "Read-only access for Walky employees (analytics, monitoring, support)",
+    permissions: [
+      { name: "Engagement:", actions: "Read." },
+      { name: "Popular Features:", actions: "Read." },
+      { name: "User Interactions:", actions: "Read." },
+      { name: "Community:", actions: "Read." },
+      { name: "Student Safety:", actions: "Read." },
+      { name: "Student Behavior:", actions: "Read." },
+      { name: "Active Students:", actions: "Read." },
+      { name: "Banned Students:", actions: "Read." },
+      { name: "Inactive Students:", actions: "Read." },
+      { name: "Disengaged Students:", actions: "Read." },
+      { name: "Reported Content:", actions: "Read." },
+      { name: "Events Manager:", actions: "Read." },
+      { name: "Events Insights:", actions: "Read." },
+      { name: "Spaces Manager:", actions: "Read." },
+      { name: "Spaces Insights:", actions: "Read." },
+      { name: "Ideas Manager:", actions: "Read." },
+      { name: "Ideas Insights:", actions: "Read." },
+      { name: "Report & Safety:", actions: "Read." },
+      { name: "Report History:", actions: "Read." },
+      { name: "Campuses:", actions: "Read." },
+      { name: "Ambassadors:", actions: "Read." },
+      { name: "Role Management:", actions: "Read." },
     ],
   },
   "School Admin": {
