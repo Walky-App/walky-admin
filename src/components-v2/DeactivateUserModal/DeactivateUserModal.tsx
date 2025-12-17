@@ -73,6 +73,7 @@ export const DeactivateUserModal: React.FC<DeactivateUserModalProps> = ({
             Cancel
           </CButton>
           <CButton
+            type="button"
             onClick={handleConfirm}
             className="deactivate-modal-confirm-button"
           >
