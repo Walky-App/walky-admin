@@ -37,6 +37,8 @@ const LoginV2: React.FC = () => {
       // Validate user role - only allow admin roles
       const adminRoles = [
         "super_admin",
+        "walky_internal",
+        "school_admin",
         "campus_admin",
         "editor",
         "moderator",
