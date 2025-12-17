@@ -67,6 +67,7 @@ interface StudentProfileModalProps {
   visible: boolean;
   student: StudentProfileData | null;
   onClose: () => void;
+  onUnbanRequest?: (student: StudentProfileData) => void;
   onBanUser?: (
     student: StudentProfileData,
     duration: string,
@@ -82,6 +83,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   visible,
   student,
   onClose,
+  onUnbanRequest,
   onBanUser,
   onDeactivateUser,
   onUnbanUser,
@@ -120,6 +122,10 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
 
   if (!student) return null;
 
+  const banCount = student.banHistory?.length || 0;
+  const reportCount = student.reportHistory?.length || 0;
+  const blockCount = student.blockedByUsers?.length || 0;
+
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(student.email);
     setToastMessage("Email copied to clipboard");
@@ -149,6 +155,10 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   };
 
   const handleUnbanClick = () => {
+    if (onUnbanRequest) {
+      onUnbanRequest(student);
+      return;
+    }
     setIsUnbanModalOpen(true);
   };
 
@@ -515,7 +525,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                   }`}
                   onClick={() => setActiveTab("ban")}
                 >
-                  Ban history
+                  Ban history ({banCount})
                 </button>
                 <button
                   data-testid="profile-history-report-tab"
@@ -524,7 +534,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                   }`}
                   onClick={() => setActiveTab("report")}
                 >
-                  Report history
+                  Report history ({reportCount})
                 </button>
                 <button
                   data-testid="profile-history-block-tab"
@@ -533,7 +543,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                   }`}
                   onClick={() => setActiveTab("block")}
                 >
-                  Block history
+                  Block history ({blockCount})
                 </button>
               </div>
 

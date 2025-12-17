@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTheme } from "../../../../../hooks/useTheme";
 import "./BarChart.css";
 
@@ -21,6 +21,11 @@ interface BarChartProps {
 
 export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
   const { theme } = useTheme();
+  const [hoveredBar, setHoveredBar] = useState<{
+    weekIndex: number;
+    type: "sent" | "accepted" | "ignored";
+    value: number;
+  } | null>(null);
 
   // Calculate max value for scaling
   const maxValue = Math.max(
@@ -61,7 +66,7 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
             <span
               key={index}
               className="y-axis-label"
-              style={{ color: theme.colors.textMuted }}
+              style={{ color: "#5b6168" }}
             >
               {label}
             </span>
@@ -92,24 +97,90 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
                       height: `${getBarHeight(weekData.sent)}%`,
                       backgroundColor: "#98f4a0",
                     }}
-                    title={`Sent: ${weekData.sent}`}
-                  />
+                    onMouseEnter={() =>
+                      setHoveredBar({
+                        weekIndex: index,
+                        type: "sent",
+                        value: weekData.sent,
+                      })
+                    }
+                    onMouseLeave={() => setHoveredBar(null)}
+                    aria-label={`Sent: ${weekData.sent}`}
+                  >
+                    {hoveredBar?.weekIndex === index &&
+                      hoveredBar?.type === "sent" && (
+                        <div
+                          className="bar-tooltip"
+                          style={{
+                            backgroundColor: theme.colors.tooltipBg,
+                            color: theme.colors.tooltipText,
+                            borderColor: theme.colors.tooltipBorder,
+                          }}
+                        >
+                          {hoveredBar.value.toLocaleString()}
+                        </div>
+                      )}
+                  </div>
                   <div
                     className="bar bar-accepted"
                     style={{
                       height: `${getBarHeight(weekData.accepted)}%`,
                       backgroundColor: "#389001",
                     }}
-                    title={`Accepted: ${weekData.accepted}`}
-                  />
+                    onMouseEnter={() =>
+                      setHoveredBar({
+                        weekIndex: index,
+                        type: "accepted",
+                        value: weekData.accepted,
+                      })
+                    }
+                    onMouseLeave={() => setHoveredBar(null)}
+                    aria-label={`Accepted: ${weekData.accepted}`}
+                  >
+                    {hoveredBar?.weekIndex === index &&
+                      hoveredBar?.type === "accepted" && (
+                        <div
+                          className="bar-tooltip"
+                          style={{
+                            backgroundColor: theme.colors.tooltipBg,
+                            color: theme.colors.tooltipText,
+                            borderColor: theme.colors.tooltipBorder,
+                          }}
+                        >
+                          {hoveredBar.value.toLocaleString()}
+                        </div>
+                      )}
+                  </div>
                   <div
                     className="bar bar-ignored"
                     style={{
                       height: `${getBarHeight(weekData.ignored)}%`,
                       backgroundColor: "#a0a0a0",
                     }}
-                    title={`Ignored: ${weekData.ignored}`}
-                  />
+                    onMouseEnter={() =>
+                      setHoveredBar({
+                        weekIndex: index,
+                        type: "ignored",
+                        value: weekData.ignored,
+                      })
+                    }
+                    onMouseLeave={() => setHoveredBar(null)}
+                    aria-label={`Ignored: ${weekData.ignored}`}
+                  >
+                    {hoveredBar?.weekIndex === index &&
+                      hoveredBar?.type === "ignored" && (
+                        <div
+                          className="bar-tooltip"
+                          style={{
+                            backgroundColor: theme.colors.tooltipBg,
+                            color: theme.colors.tooltipText,
+                            borderColor: theme.colors.tooltipBorder,
+                          }}
+                        >
+                          {hoveredBar.value.toLocaleString()}
+                        </div>
+                      )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -121,10 +192,10 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
       <div className="x-axis-labels">
         {weeks.map((week, index) => (
           <div key={index} className="week-label">
-            <p className="week-name" style={{ color: theme.colors.textMuted }}>
+            <p className="week-name" style={{ color: "#5b6168" }}>
               {week.label}
             </p>
-            <p className="week-dates" style={{ color: theme.colors.textMuted }}>
+            <p className="week-dates" style={{ color: "#5b6168" }}>
               {week.dateRange}
             </p>
           </div>
@@ -138,10 +209,7 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
             className="legend-color"
             style={{ backgroundColor: "#98f4a0" }}
           />
-          <span
-            className="legend-text"
-            style={{ color: theme.colors.textMuted }}
-          >
+          <span className="legend-text" style={{ color: "#5b6168" }}>
             Invitations sent
           </span>
         </div>
@@ -150,10 +218,7 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
             className="legend-color"
             style={{ backgroundColor: "#389001" }}
           />
-          <span
-            className="legend-text"
-            style={{ color: theme.colors.textMuted }}
-          >
+          <span className="legend-text" style={{ color: "#5b6168" }}>
             Invitations accepted
           </span>
         </div>
@@ -162,10 +227,7 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
             className="legend-color"
             style={{ backgroundColor: "#a0a0a0" }}
           />
-          <span
-            className="legend-text"
-            style={{ color: theme.colors.textMuted }}
-          >
+          <span className="legend-text" style={{ color: "#5b6168" }}>
             Invitations ignored
           </span>
         </div>

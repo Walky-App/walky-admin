@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import AssetIcon from "../AssetIcon/AssetIcon";
+import { NoData } from "../NoData/NoData";
 import { SearchInput } from "../SearchInput/SearchInput";
 import "./AddAmbassadorModal.css";
 import { apiClient } from "../../API";
@@ -58,9 +59,13 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
 
       const students: Student[] = (data as ExtendedMember[]).map((user) => ({
         id: user.id || user._id || "",
-        name: user.name || `${user.first_name || ""} ${user.last_name || ""}`.trim() || "Unknown",
+        name:
+          user.name ||
+          `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
+          "Unknown",
         email: user.email || "",
-        avatar: user.avatar_url || user.avatar || "https://via.placeholder.com/48",
+        avatar:
+          user.avatar_url || user.avatar || "https://via.placeholder.com/48",
       }));
 
       setSearchResults(students);
@@ -109,7 +114,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
           onClick={handleClose}
           aria-label="Close modal"
         >
-          <AssetIcon name="close-button" size={24} />
+          <AssetIcon name="close-button" size={16} />
         </button>
 
         {/* Header */}
@@ -129,6 +134,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
               onSearch={handleSearch}
               placeholder="Enter full name (e.g. John Smith)"
               testId="add-ambassador-search"
+              className="add-emba-search-input"
             />
             <button
               className="add-ambassador-search-button"
@@ -144,12 +150,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
             {!hasSearched ? (
               // Empty State
               <div className="add-ambassador-empty-state">
-                <div className="add-ambassador-empty-icon">
-                  <AssetIcon name="double-users-icon" size={48} />
-                </div>
-                <p className="add-ambassador-empty-text">
-                  The results will appear here once you enter a name
-                </p>
+                <NoData message="The results will appear here once you enter a name" />
               </div>
             ) : (
               // Results List
@@ -158,9 +159,16 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
                   <div className="d-flex justify-content-center p-4">
                     <CSpinner color="primary" />
                   </div>
+                ) : searchResults.length === 0 ? (
+                  <div className="add-ambassador-empty-state">
+                    <NoData message="No results found. Try another name." />
+                  </div>
                 ) : (
                   searchResults.map((student) => (
-                    <div key={student.id} className="add-ambassador-student-item">
+                    <div
+                      key={student.id}
+                      className="add-ambassador-student-item"
+                    >
                       <input
                         data-testid="add-ambassador-student-checkbox"
                         type="checkbox"
@@ -200,8 +208,9 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
           </button>
           <button
             data-testid="add-ambassador-confirm-btn"
-            className={`add-ambassador-confirm-button ${selectedStudents.length === 0 ? "disabled" : ""
-              }`}
+            className={`add-ambassador-confirm-button ${
+              selectedStudents.length === 0 ? "disabled" : ""
+            }`}
             onClick={handleConfirm}
             disabled={selectedStudents.length === 0}
           >

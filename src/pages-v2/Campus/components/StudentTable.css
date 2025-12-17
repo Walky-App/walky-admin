@@ -339,11 +339,11 @@
 
 /* Dark mode */
 [data-theme="dark"] .student-table-header {
-  background-color: rgba(241, 244, 249, 0.1);
+  background-color: #1f1f21;
 }
 
 [data-theme="dark"] .student-table-header th {
-  color: #ffffff;
+  color: #e0e0e0;
   border-bottom-color: #3a3a3a;
 }
 

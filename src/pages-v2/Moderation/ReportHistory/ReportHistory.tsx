@@ -1,5 +1,10 @@
 import React, { useMemo, useState } from "react";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import {
   AssetIcon,
@@ -72,13 +77,20 @@ const ReportHistory: React.FC = () => {
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [isFlagModalOpen, setIsFlagModalOpen] = useState(false);
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
-  const [banUserData, setBanUserData] = useState<{ id: string; name: string } | null>(null);
+  const [banUserData, setBanUserData] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
-  const [deactivateUserData, setDeactivateUserData] = useState<{ id: string; name: string } | null>(null);
+  const [deactivateUserData, setDeactivateUserData] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const normalizeFlagType = (value?: string) => {
     const t = (value || "").toLowerCase();
@@ -100,6 +112,7 @@ const ReportHistory: React.FC = () => {
       debouncedSearchQuery,
       selectedTypes,
       selectedStatus,
+      sortOrder,
     ],
     queryFn: () =>
       apiClient.api.adminV2ReportsList({
@@ -108,6 +121,8 @@ const ReportHistory: React.FC = () => {
         search: debouncedSearchQuery,
         type: selectedTypes.join(","),
         status: selectedStatus,
+        sortBy: "reportDate",
+        sortOrder,
       }),
     placeholderData: keepPreviousData,
     staleTime: 30_000,
@@ -484,13 +499,16 @@ const ReportHistory: React.FC = () => {
 
               <MultiSelectFilterDropdown
                 selectedValues={selectedTypes}
-                onChange={setSelectedTypes}
+                onChange={(values) => {
+                  setSelectedTypes(values);
+                  setCurrentPage(1);
+                }}
                 options={[
-                  { value: "User", label: "User" },
-                  { value: "Message", label: "Message" },
-                  { value: "Event", label: "Event" },
-                  { value: "Idea", label: "Idea" },
-                  { value: "Space", label: "Space" },
+                  { value: "user", label: "User" },
+                  { value: "message", label: "Message" },
+                  { value: "event", label: "Event" },
+                  { value: "idea", label: "Idea" },
+                  { value: "space", label: "Space" },
                 ]}
                 placeholder="Filter by type"
                 icon="mod-filter-icon"
@@ -548,6 +566,10 @@ const ReportHistory: React.FC = () => {
             actionTestId="report-history-options"
             getStatusTestId={(row) => `status-dropdown-${row.id}`}
             showResolutionDate={true}
+            sortOrder={sortOrder}
+            onSort={() =>
+              setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+            }
             canChangeStatus={canChangeReportStatus}
             canFlag={canFlagReportedItems}
           />
@@ -840,16 +862,19 @@ const ReportHistory: React.FC = () => {
             "14 Days": 14,
             "30 Days": 30,
             "90 Days": 90,
-            "Permanent": 36500,
+            Permanent: 36500,
           };
           const durationDays = durationMap[duration] || parseInt(duration) || 7;
 
           try {
-            await apiClient.api.adminV2StudentsLockSettingsUpdate(banUserData.id, {
-              lockReason: reason,
-              isLocked: true,
-              lockDuration: durationDays,
-            });
+            await apiClient.api.adminV2StudentsLockSettingsUpdate(
+              banUserData.id,
+              {
+                lockReason: reason,
+                isLocked: true,
+                lockDuration: durationDays,
+              }
+            );
             setToastMessage("User banned successfully");
             setShowToast(true);
             setTimeout(() => setShowToast(false), 3000);

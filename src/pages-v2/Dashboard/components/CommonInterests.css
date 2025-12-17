@@ -3,7 +3,9 @@
   border: 1px solid var(--v2-border-light);
   border-radius: var(--v2-radius-lg);
   padding: var(--v2-spacing-6);
-  height: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   box-shadow: var(--v2-shadow-card);
 }
 
@@ -41,30 +43,32 @@
 }
 
 .common-interests-dropdown .dropdown-toggle-custom {
-  background-color: var(--v2-dropdown-bg);
-  border: 0.6px solid var(--v2-dropdown-border);
-  border-radius: var(--v2-radius-sm);
-  font-size: var(--v2-font-size-xs);
+  background-color: #ffffff;
+  border: 1px solid #d6dce6;
+  border-radius: 10px;
   font-family: var(--v2-font-family);
-  font-weight: var(--v2-font-weight-semibold);
-  color: var(--v2-dropdown-text);
-  padding: var(--v2-spacing-2) var(--v2-spacing-3);
+  font-weight: 600;
+  color: #5b6168;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--v2-spacing-2);
+  gap: 10px;
   width: 100%;
   white-space: nowrap;
+  line-height: 1.2;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .common-interests-dropdown .dropdown-toggle-custom:hover {
-  background-color: var(--v2-bg-hover);
+  background-color: #f7f9ff;
+  border-color: #c3c9d4;
 }
 
 .common-interests-dropdown .dropdown-toggle-custom:focus {
-  outline: 2px solid var(--v2-focus-ring);
+  outline: 2px solid #526ac9;
   outline-offset: 2px;
-  border-radius: var(--v2-radius-sm);
+  border-radius: 10px;
 }
 
 .common-interests-dropdown .dropdown-toggle-custom::after {
@@ -76,6 +80,7 @@
   flex-direction: column;
   gap: var(--v2-spacing-5);
   padding: 0 var(--v2-spacing-2);
+  flex: 1;
 }
 
 .interest-item {
@@ -112,15 +117,18 @@
   font-weight: var(--v2-font-weight-bold);
   font-size: var(--v2-font-size-md);
   margin: 0;
-  color: var(--v2-body-color);
+  color: #5b6168;
 }
 
 .interest-stats {
-  font-family: var(--v2-font-family);
-  font-weight: var(--v2-font-weight-normal);
-  font-size: var(--v2-font-size-md);
+  color: #5b6168;
+  text-align: right;
+  font-family: "Lato", sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
   margin: 0;
-  color: var(--v2-text-muted);
 }
 
 .interest-progress-container {
@@ -144,7 +152,7 @@
   top: 0;
   height: 14px;
   border-radius: var(--v2-radius-xl) 0 0 var(--v2-radius-xl);
-  background-color: var(--v2-icon-purple);
+  background-color: #526ac9;
 }
 
 /* See all button */

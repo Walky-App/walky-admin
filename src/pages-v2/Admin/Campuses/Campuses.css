@@ -372,13 +372,13 @@
 .sync-button {
   background-color: #ffffff;
   border: 0.5px solid #f1f4f9;
-  border-radius: 4px;
-  padding: 8px 4px;
+  border-radius: 8px;
+  padding: 8px 10px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .sync-button:hover {
@@ -392,6 +392,98 @@
 
 .sync-button--disabled:hover {
   background-color: #ffffff;
+}
+
+.sync-places-modal .modal-content,
+.sync-places-modal .modal-dialog {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.sync-places-modal-body {
+  position: relative;
+  padding: 28px 28px 24px 28px;
+}
+
+.sync-places-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+}
+
+.sync-places-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  text-align: left;
+  width: 100%;
+}
+
+.sync-places-title {
+  margin: 0;
+  font-family: "Lato", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1d1b20;
+}
+
+.sync-places-subtitle {
+  margin: 0;
+  font-family: "Lato", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #5b6168;
+  line-height: 1.4;
+}
+
+.sync-places-description {
+  margin: 0;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #4a5056;
+  line-height: 1.4;
+}
+
+.sync-places-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.sync-places-btn {
+  border: none;
+  border-radius: 10px;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.sync-places-btn.primary {
+  background: linear-gradient(90deg, #5866e9 0%, #4c58c9 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(88, 102, 233, 0.25);
+}
+
+.sync-places-btn.secondary {
+  background: #eef0f6;
+  color: #1d1b20;
+  border: 1px solid #d9dce7;
+}
+
+.sync-places-btn:active {
+  transform: translateY(1px);
 }
 
 /* Boundary Row */

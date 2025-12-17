@@ -7,6 +7,7 @@ import {
   NoData,
   StatusDropdown,
 } from "../../../components-v2";
+import { useTheme } from "../../../hooks/useTheme";
 import { ReportStatus, IconName } from "../../../components-v2";
 import {
   formatChipLabel,
@@ -89,6 +90,7 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
   canFlag = true,
 }) => {
   const columnCount = showResolutionDate ? 7 : 6;
+  const { theme } = useTheme();
 
   const getReasonStyleByType = (reason: string, type: string) => {
     const normalizedType = type.toLowerCase();
@@ -126,9 +128,13 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
               >
                 Report date
                 <AssetIcon
-                  name={sortOrder === "asc" ? "arrow-up" : "arrow-down"}
-                  size={16}
-                  color="#1d1b20"
+                  name="swap-arrows-icon"
+                  size={14}
+                  color={theme.colors.bodyColor}
+                  style={{
+                    transform: sortOrder === "asc" ? "rotate(180deg)" : "none",
+                    transition: "transform 0.2s ease",
+                  }}
                 />
               </div>
             </th>

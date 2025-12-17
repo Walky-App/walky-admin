@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTheme } from "../../../../../hooks/useTheme";
 import "./BarChart.css";
 
@@ -21,6 +21,11 @@ interface BarChartProps {
 
 export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
   const { theme } = useTheme();
+  const [hoveredBar, setHoveredBar] = useState<{
+    weekIndex: number;
+    type: "events" | "ideas" | "spaces";
+    value: number;
+  } | null>(null);
 
   // Calculate max value for scaling
   const maxValue = Math.max(
@@ -64,7 +69,7 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
             <span
               key={index}
               className="community-y-axis-label"
-              style={{ color: theme.colors.textMuted }}
+              style={{ color: "#5b6168" }}
             >
               {label}
             </span>
@@ -95,24 +100,90 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
                       height: `${getBarHeight(weekData.events)}%`,
                       backgroundColor: "#ff9871",
                     }}
-                    title={`Events: ${weekData.events}`}
-                  />
+                    onMouseEnter={() =>
+                      setHoveredBar({
+                        weekIndex: index,
+                        type: "events",
+                        value: weekData.events,
+                      })
+                    }
+                    onMouseLeave={() => setHoveredBar(null)}
+                    aria-label={`Events: ${weekData.events}`}
+                  >
+                    {hoveredBar?.weekIndex === index &&
+                      hoveredBar?.type === "events" && (
+                        <div
+                          className="community-bar-tooltip"
+                          style={{
+                            backgroundColor: theme.colors.tooltipBg,
+                            color: theme.colors.tooltipText,
+                            borderColor: theme.colors.tooltipBorder,
+                          }}
+                        >
+                          {hoveredBar.value.toLocaleString()}
+                        </div>
+                      )}
+                  </div>
                   <div
                     className="community-bar community-bar-ideas"
                     style={{
                       height: `${getBarHeight(weekData.ideas)}%`,
                       backgroundColor: "#ebb129",
                     }}
-                    title={`Ideas: ${weekData.ideas}`}
-                  />
+                    onMouseEnter={() =>
+                      setHoveredBar({
+                        weekIndex: index,
+                        type: "ideas",
+                        value: weekData.ideas,
+                      })
+                    }
+                    onMouseLeave={() => setHoveredBar(null)}
+                    aria-label={`Ideas: ${weekData.ideas}`}
+                  >
+                    {hoveredBar?.weekIndex === index &&
+                      hoveredBar?.type === "ideas" && (
+                        <div
+                          className="community-bar-tooltip"
+                          style={{
+                            backgroundColor: theme.colors.tooltipBg,
+                            color: theme.colors.tooltipText,
+                            borderColor: theme.colors.tooltipBorder,
+                          }}
+                        >
+                          {hoveredBar.value.toLocaleString()}
+                        </div>
+                      )}
+                  </div>
                   <div
                     className="community-bar community-bar-spaces"
                     style={{
                       height: `${getBarHeight(weekData.spaces)}%`,
                       backgroundColor: "#4a4cd9",
                     }}
-                    title={`Spaces: ${weekData.spaces}`}
-                  />
+                    onMouseEnter={() =>
+                      setHoveredBar({
+                        weekIndex: index,
+                        type: "spaces",
+                        value: weekData.spaces,
+                      })
+                    }
+                    onMouseLeave={() => setHoveredBar(null)}
+                    aria-label={`Spaces: ${weekData.spaces}`}
+                  >
+                    {hoveredBar?.weekIndex === index &&
+                      hoveredBar?.type === "spaces" && (
+                        <div
+                          className="community-bar-tooltip"
+                          style={{
+                            backgroundColor: theme.colors.tooltipBg,
+                            color: theme.colors.tooltipText,
+                            borderColor: theme.colors.tooltipBorder,
+                          }}
+                        >
+                          {hoveredBar.value.toLocaleString()}
+                        </div>
+                      )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -124,16 +195,10 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
       <div className="community-x-axis-labels">
         {weeks.map((week, index) => (
           <div key={index} className="community-week-label">
-            <p
-              className="community-week-name"
-              style={{ color: theme.colors.textMuted }}
-            >
+            <p className="community-week-name" style={{ color: "#5b6168" }}>
               {week.label}
             </p>
-            <p
-              className="community-week-dates"
-              style={{ color: theme.colors.textMuted }}
-            >
+            <p className="community-week-dates" style={{ color: "#5b6168" }}>
               {week.dateRange}
             </p>
           </div>
@@ -147,10 +212,7 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
             className="community-legend-color"
             style={{ backgroundColor: "#ff9871" }}
           />
-          <span
-            className="community-legend-text"
-            style={{ color: theme.colors.textMuted }}
-          >
+          <span className="community-legend-text" style={{ color: "#5b6168" }}>
             Total Events created
           </span>
         </div>
@@ -159,10 +221,7 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
             className="community-legend-color"
             style={{ backgroundColor: "#ebb129" }}
           />
-          <span
-            className="community-legend-text"
-            style={{ color: theme.colors.textMuted }}
-          >
+          <span className="community-legend-text" style={{ color: "#5b6168" }}>
             Total Ideas created
           </span>
         </div>
@@ -171,10 +230,7 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
             className="community-legend-color"
             style={{ backgroundColor: "#4a4cd9" }}
           />
-          <span
-            className="community-legend-text"
-            style={{ color: theme.colors.textMuted }}
-          >
+          <span className="community-legend-text" style={{ color: "#5b6168" }}>
             Total Spaces created
           </span>
         </div>

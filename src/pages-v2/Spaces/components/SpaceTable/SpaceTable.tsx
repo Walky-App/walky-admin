@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../../API";
 import { usePermissions } from "../../../../hooks/usePermissions";
+import { useTheme } from "../../../../hooks/useTheme";
 import { getFirstName } from "../../../../lib/utils/nameUtils";
 import {
   DeleteModal,
@@ -35,7 +36,11 @@ export interface SpaceData {
   flagReason?: string;
 }
 
-export type SpaceSortField = "spaceName" | "members" | "creationDate";
+export type SpaceSortField =
+  | "spaceName"
+  | "members"
+  | "events"
+  | "creationDate";
 
 interface SpaceTableProps {
   spaces: SpaceData[];
@@ -51,6 +56,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
   onSortChange,
 }) => {
   const { canUpdate, canDelete } = usePermissions();
+  const { theme } = useTheme();
   const queryClient = useQueryClient();
 
   // Permission checks for space actions
@@ -294,7 +300,11 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
                 onClick={() => handleSort("spaceName")}
               >
                 <span>Space name</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
+                <AssetIcon
+                  name="swap-arrows-icon"
+                  size={24}
+                  color={theme.colors.bodyColor}
+                />
               </div>
             </th>
             <th>
@@ -304,7 +314,17 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
               <span>Student ID</span>
             </th>
             <th>
-              <span>Events</span>
+              <div
+                className="space-table-header"
+                onClick={() => handleSort("events")}
+              >
+                <span>Events</span>
+                <AssetIcon
+                  name="swap-arrows-icon"
+                  size={24}
+                  color={theme.colors.bodyColor}
+                />
+              </div>
             </th>
             <th>
               <div
@@ -312,7 +332,11 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
                 onClick={() => handleSort("members")}
               >
                 <span>Members</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
+                <AssetIcon
+                  name="swap-arrows-icon"
+                  size={24}
+                  color={theme.colors.bodyColor}
+                />
               </div>
             </th>
             <th>
@@ -321,7 +345,11 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
                 onClick={() => handleSort("creationDate")}
               >
                 <span>Creation date</span>
-                <AssetIcon name="swap-arrows-icon" size={24} color="#1D1B20" />
+                <AssetIcon
+                  name="swap-arrows-icon"
+                  size={24}
+                  color={theme.colors.bodyColor}
+                />
               </div>
             </th>
             <th>
@@ -417,12 +445,14 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
                                   label: "Unflag",
                                   icon: "flag-icon" as const,
                                   variant: "danger" as const,
-                                  onClick: (e: React.MouseEvent) => handleUnflagSpace(space, e),
+                                  onClick: (e: React.MouseEvent) =>
+                                    handleUnflagSpace(space, e),
                                 }
                               : {
                                   label: "Flag",
                                   icon: "flag-icon" as const,
-                                  onClick: (e: React.MouseEvent) => handleFlagSpace(space, e),
+                                  onClick: (e: React.MouseEvent) =>
+                                    handleFlagSpace(space, e),
                                 },
                           ]
                         : []),

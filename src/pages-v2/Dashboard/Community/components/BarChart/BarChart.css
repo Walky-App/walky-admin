@@ -34,6 +34,7 @@
   font-weight: 600;
   font-size: 14px;
   text-align: right;
+  color: #5b6168;
 }
 
 .community-chart-area {
@@ -76,6 +77,7 @@
   justify-content: center;
   align-items: flex-end;
   height: 100%;
+  position: relative;
 }
 
 .community-bars-group {
@@ -92,6 +94,7 @@
   transition: opacity 0.2s ease;
   cursor: pointer;
   min-height: 2px;
+  position: relative;
 }
 
 .community-bar:hover {
@@ -119,6 +122,7 @@
   font-weight: 600;
   font-size: 14px;
   margin: 0;
+  color: #5b6168;
 }
 
 .community-week-dates {
@@ -126,19 +130,61 @@
   font-weight: 400;
   font-size: 12px;
   margin: 0;
+  color: #5b6168;
 }
 
 .community-bar-chart-legend {
   display: flex;
   justify-content: center;
   gap: 30px;
-  margin-top: 24px;
+  margin: 16px 0 0 0;
+  color: #5b6168;
 }
 
 .community-legend-item {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.community-bar-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid;
+  display: inline-flex;
+  gap: 6px;
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.community-bar-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: currentColor transparent transparent transparent;
+  opacity: 0.7;
+}
+
+.community-bar-tooltip-label {
+  opacity: 0.8;
+}
+
+.community-bar-tooltip-value {
+  font-weight: 800;
 }
 
 .community-legend-color {
@@ -151,6 +197,7 @@
   font-family: "Lato", sans-serif;
   font-weight: 600;
   font-size: 16px;
+  color: #5b6168;
 }
 
 /* Responsive */

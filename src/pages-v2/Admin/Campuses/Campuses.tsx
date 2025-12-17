@@ -50,6 +50,8 @@ export const Campuses: React.FC = () => {
   const [avatarModalCoords, setAvatarModalCoords] = useState<
     number[][] | undefined
   >();
+  const [syncModalOpen, setSyncModalOpen] = useState(false);
+  const [campusToSync, setCampusToSync] = useState<CampusData | null>(null);
 
   const { data: campusesData, isLoading } = useQuery({
     queryKey: ["campuses"],
@@ -83,7 +85,7 @@ export const Campuses: React.FC = () => {
         sumLng: acc.sumLng + lng,
         sumLat: acc.sumLat + lat,
       }),
-      { sumLng: 0, sumLat: 0 },
+      { sumLng: 0, sumLat: 0 }
     );
     return { lng: sumLng / coords.length, lat: sumLat / coords.length };
   };
@@ -105,7 +107,7 @@ export const Campuses: React.FC = () => {
         strokeColor="#FF9500"
         backgroundColor="#eef0f1"
         mapBackgroundUrl={buildStaticMapUrl(
-          campus.boundaryData?.geometry?.coordinates?.[0],
+          campus.boundaryData?.geometry?.coordinates?.[0]
         )}
         fallbackText={getInitials(campus.name)}
         showBackground={true}
@@ -262,10 +264,21 @@ export const Campuses: React.FC = () => {
                         <td className="campus-sync">
                           <button
                             data-testid="sync-places-btn"
-                            className={`sync-button${!canSyncPlaces ? " sync-button--disabled" : ""}`}
-                            title={canSyncPlaces ? "Sync places" : "You don't have permission to sync places"}
+                            className={`sync-button${
+                              !canSyncPlaces ? " sync-button--disabled" : ""
+                            }`}
+                            title={
+                              canSyncPlaces
+                                ? "Sync places"
+                                : "You don't have permission to sync places"
+                            }
                             aria-label="Sync places for campus"
                             disabled={!canSyncPlaces}
+                            onClick={() => {
+                              if (!canSyncPlaces) return;
+                              setCampusToSync(campus);
+                              setSyncModalOpen(true);
+                            }}
                           >
                             <AssetIcon
                               name="sync-icon"
@@ -359,6 +372,56 @@ export const Campuses: React.FC = () => {
                 padding={14}
                 showBackground={true}
               />
+            </div>
+          </CModalBody>
+        </CModal>
+
+        <CModal
+          visible={syncModalOpen}
+          alignment="center"
+          onClose={() => setSyncModalOpen(false)}
+          backdrop="static"
+          className="sync-places-modal"
+        >
+          <CModalBody className="sync-places-modal-body">
+            <button
+              type="button"
+              data-testid="close-sync-places-btn"
+              className="sync-places-close"
+              onClick={() => setSyncModalOpen(false)}
+              aria-label="Close sync places"
+            >
+              <AssetIcon name="close-button" size={16} color="#5b6168" />
+            </button>
+
+            <div className="sync-places-content">
+              <h2 className="sync-places-title">Sync places</h2>
+              <p className="sync-places-subtitle">
+                Are you sure you want to sync places for{" "}
+                <strong>{campusToSync?.name || "this campus"}</strong>?
+              </p>
+              <p className="sync-places-description">
+                This will fetch the latest places data from Google Places API.
+              </p>
+
+              <div className="sync-places-actions">
+                <button
+                  type="button"
+                  data-testid="cancel-sync-places-btn"
+                  className="sync-places-btn secondary"
+                  onClick={() => setSyncModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  data-testid="confirm-sync-places-btn"
+                  className="sync-places-btn primary"
+                  onClick={() => setSyncModalOpen(false)}
+                >
+                  Sync Places
+                </button>
+              </div>
             </div>
           </CModalBody>
         </CModal>

@@ -54,7 +54,7 @@ export interface SpaceDetailsData {
   flagReason?: string;
 }
 
-type TabType = "members" | "events" | "details";
+type TabType = "details" | "members" | "events";
 
 interface SpaceDetailsModalProps {
   isOpen: boolean;
@@ -67,12 +67,18 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
   onClose,
   spaceData,
 }) => {
-  const [activeTab, setActiveTab] = useState<TabType>("members");
+  const [activeTab, setActiveTab] = useState<TabType>("details");
   const [searchQuery, setSearchQuery] = useState("");
   const [eventDetailsModalOpen, setEventDetailsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventDetailsData | null>(
     null
   );
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setActiveTab("details");
+    }
+  }, [isOpen, spaceData]);
 
   if (!spaceData) return null;
 
@@ -256,6 +262,15 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
               {/* Tab Navigation */}
               <div className="space-tabs-navigation">
                 <button
+                  data-testid="space-tab-details-btn"
+                  className={`space-tab-button ${
+                    activeTab === "details" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("details")}
+                >
+                  More details
+                </button>
+                <button
                   data-testid="space-tab-members-btn"
                   className={`space-tab-button ${
                     activeTab === "members" ? "active" : ""
@@ -273,23 +288,56 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
                 >
                   Events
                 </button>
-                <button
-                  data-testid="space-tab-details-btn"
-                  className={`space-tab-button ${
-                    activeTab === "details" ? "active" : ""
-                  }`}
-                  onClick={() => setActiveTab("details")}
-                >
-                  More details
-                </button>
               </div>
 
               {/* Tab Content */}
               <div className="space-tab-content">
+                {/* More Details Tab */}
+                {activeTab === "details" && (
+                  <div className="space-tab-panel space-details-tab">
+                    <div className="space-details-info-box">
+                      <div className="space-info-row">
+                        <span className="space-info-label">Members:</span>
+                        <span className="space-info-value">
+                          {spaceData.memberRange ||
+                            `1-${spaceData.members.length}`}
+                        </span>
+                      </div>
+                      <div className="space-info-row">
+                        <span className="space-info-label">
+                          Year established:
+                        </span>
+                        <span className="space-info-value">
+                          {spaceData.yearEstablished || "N/A"}
+                        </span>
+                      </div>
+                      <div className="space-info-row">
+                        <span className="space-info-label">
+                          Governing body:
+                        </span>
+                        <span className="space-info-value">
+                          {spaceData.governingBody || "N/A"}
+                        </span>
+                      </div>
+                      <div className="space-info-row">
+                        <span className="space-info-label">Primary focus:</span>
+                        <span className="space-info-value">
+                          {spaceData.primaryFocus || "N/A"}
+                        </span>
+                      </div>
+                      <div className="space-info-row">
+                        <span className="space-info-label">Contact:</span>
+                        <span className="space-info-value">
+                          {spaceData.contact}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Members Tab */}
                 {activeTab === "members" && (
                   <div className="space-tab-panel">
-                    {/* Search */}
                     <div className="space-search-container">
                       <SearchInput
                         value={searchQuery}
@@ -298,7 +346,6 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
                         variant="primary"
                       />
                     </div>
-                    {/* Members List */}
                     <div className="space-members-list">
                       {filteredMembers.map((member) => (
                         <div key={member.id} className="space-member-item">
@@ -372,49 +419,6 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
                       ) : (
                         <p className="space-no-events">No events available</p>
                       )}
-                    </div>
-                  </div>
-                )}
-
-                {/* More Details Tab */}
-                {activeTab === "details" && (
-                  <div className="space-tab-panel space-details-tab">
-                    <div className="space-details-info-box">
-                      <div className="space-info-row">
-                        <span className="space-info-label">Members:</span>
-                        <span className="space-info-value">
-                          {spaceData.memberRange ||
-                            `1-${spaceData.members.length}`}
-                        </span>
-                      </div>
-                      <div className="space-info-row">
-                        <span className="space-info-label">
-                          Year established:
-                        </span>
-                        <span className="space-info-value">
-                          {spaceData.yearEstablished || "N/A"}
-                        </span>
-                      </div>
-                      <div className="space-info-row">
-                        <span className="space-info-label">
-                          Governing body:
-                        </span>
-                        <span className="space-info-value">
-                          {spaceData.governingBody || "N/A"}
-                        </span>
-                      </div>
-                      <div className="space-info-row">
-                        <span className="space-info-label">Primary focus:</span>
-                        <span className="space-info-value">
-                          {spaceData.primaryFocus || "N/A"}
-                        </span>
-                      </div>
-                      <div className="space-info-row">
-                        <span className="space-info-label">Contact:</span>
-                        <span className="space-info-value">
-                          {spaceData.contact}
-                        </span>
-                      </div>
                     </div>
                   </div>
                 )}

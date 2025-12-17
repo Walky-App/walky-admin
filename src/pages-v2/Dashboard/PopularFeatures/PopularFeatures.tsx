@@ -279,7 +279,21 @@ const PopularFeatures: React.FC = () => {
         <section aria-label="Feature trends" className="list-view-section">
           <CRow className="list-view-row">
             <CCol xs={12} lg={6}>
-              <CommonInterests interests={commonInterests} />
+              <CommonInterests
+                interests={commonInterests}
+                datasets={{
+                  "Common Interests": commonInterests,
+                  "Popular Space categories": visitedPlaces,
+                  "Popular Events categories": topInvitationCategories,
+                  "Popular ways to connect": popularWaysToConnect,
+                  "Visited Places": visitedPlaces,
+                  "Invitation categories": topInvitationCategories,
+                  "Most engaged": mostEngaged,
+                  "Events by number of attendees": topInvitationCategories,
+                  "Spaces by number of members": mostEngaged,
+                  "Collaborative Ideas": commonInterests,
+                }}
+              />
             </CCol>
             <CCol xs={12} lg={6}>
               <TopFieldsOfStudy fields={topFieldsOfStudy} />

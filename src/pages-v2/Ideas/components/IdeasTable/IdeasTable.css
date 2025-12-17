@@ -125,7 +125,6 @@
 .ideas-table-idea-title {
   display: block;
   max-width: 100%;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -248,6 +247,10 @@
 /* Dark Mode Styles */
 [data-theme="dark"] .ideas-table thead {
   background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .ideas-table thead tr {
+  background-color: #1f1f21;
 }
 
 [data-theme="dark"] .ideas-table thead tr th {
