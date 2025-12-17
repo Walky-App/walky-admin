@@ -32,6 +32,7 @@ import modTablePauseIcon from '../../assets-v2/svg/mod-table-pause-icon.svg?reac
 import modTableSearchIcon from '../../assets-v2/svg/mod-table-search-icon.svg?react';
 import ndBarChart from '../../assets-v2/svg/nd-bar-chart.svg?react';
 import ndDonutChart from '../../assets-v2/svg/nd-donut-chart.svg?react';
+import ndGrafIcon from '../../assets-v2/svg/nd-graf-icon.svg?react';
 import ndGrafsEmpty from '../../assets-v2/svg/nd-grafs-empty.svg?react';
 import ndReportIcon from '../../assets-v2/svg/nd-report-icon.svg?react';
 import ndStackedBar from '../../assets-v2/svg/nd-stacked-bar.svg?react';
@@ -97,6 +98,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'mod-table-search-icon': modTableSearchIcon,
   'nd-bar-chart': ndBarChart,
   'nd-donut-chart': ndDonutChart,
+  'nd-graf-icon': ndGrafIcon,
   'nd-grafs-empty': ndGrafsEmpty,
   'nd-report-icon': ndReportIcon,
   'nd-stacked-bar': ndStackedBar,

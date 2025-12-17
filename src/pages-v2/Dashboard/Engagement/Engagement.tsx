@@ -69,9 +69,15 @@ const Engagement: React.FC = () => {
   });
 
   const { data: dashboardStats, isLoading: isStatsLoading } = useQuery({
-    queryKey: ["dashboardStats", selectedSchool?._id, selectedCampus?._id],
+    queryKey: [
+      "dashboardStats",
+      timePeriod,
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
     queryFn: () =>
       apiClient.api.adminV2DashboardStatsList({
+        period: timePeriod,
         schoolId: selectedSchool?._id,
         campusId: selectedCampus?._id,
       }),
@@ -277,6 +283,7 @@ const Engagement: React.FC = () => {
             <CCol xs={12} lg={6}>
               <LineChart
                 title="Connection rate"
+                titleTooltip="New users who actually connect with someone in their first week"
                 data={connectionRateData}
                 labels={retentionLabels}
                 subLabels={retentionSubLabels}
@@ -289,6 +296,7 @@ const Engagement: React.FC = () => {
             <CCol xs={12} lg={6}>
               <LineChart
                 title="Inactive signups"
+                titleTooltip="Users who signed up but never did anything"
                 data={inactiveSignupsData}
                 labels={retentionLabels}
                 subLabels={retentionSubLabels}
