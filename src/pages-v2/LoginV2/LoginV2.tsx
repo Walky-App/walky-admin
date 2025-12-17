@@ -53,6 +53,14 @@ const LoginV2: React.FC = () => {
       }
 
       // Store token and user data in localStorage
+      // Extract IDs from potentially populated objects
+      const schoolId = typeof userData.school_id === 'object' && userData.school_id !== null
+        ? (userData.school_id as any)._id || (userData.school_id as any).id
+        : userData.school_id;
+      const campusId = typeof userData.campus_id === 'object' && userData.campus_id !== null
+        ? (userData.campus_id as any)._id || (userData.campus_id as any).id
+        : userData.campus_id;
+
       localStorage.setItem("token", token);
       localStorage.setItem(
         "user",
@@ -63,8 +71,8 @@ const LoginV2: React.FC = () => {
           last_name: userData.last_name,
           role: userData.role,
           avatar_url: userData.avatar_url,
-          campus_id: userData.campus_id,
-          school_id: userData.school_id,
+          campus_id: campusId,
+          school_id: schoolId,
           require_password_change: !!responseData.require_password_change,
         })
       );
