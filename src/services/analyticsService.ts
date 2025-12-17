@@ -3,7 +3,7 @@
  * API service for fetching campus analytics data
  */
 
-import API from '../API'
+import { apiClient } from '../API'
 import {
   SocialHealthMetrics,
   WellbeingMetrics,
@@ -12,6 +12,11 @@ import {
   CampusAlert,
   MetricsPeriod,
 } from '../types/analytics'
+
+// API only accepts specific periods, 'all' means no period filter
+type ApiPeriod = '7d' | '30d' | '90d' | undefined
+const toApiPeriod = (period: MetricsPeriod): ApiPeriod =>
+  period === 'all' ? undefined : period
 
 export const analyticsService = {
   /**
@@ -22,11 +27,11 @@ export const analyticsService = {
     period: MetricsPeriod = '30d'
   ): Promise<SocialHealthMetrics> => {
     try {
-      const response = await API.get(
-        `/api/admin/campus/${campusId}/metrics/social-health`,
-        { params: { period } }
+      const response = await apiClient.api.adminCampusMetricsSocialHealthList(
+        campusId,
+        { period: toApiPeriod(period) }
       )
-      return response.data
+      return response.data as unknown as SocialHealthMetrics
     } catch (error) {
       console.error('Failed to fetch social health metrics:', error)
       throw error
@@ -41,11 +46,11 @@ export const analyticsService = {
     period: MetricsPeriod = '30d'
   ): Promise<WellbeingMetrics> => {
     try {
-      const response = await API.get(
-        `/api/admin/campus/${campusId}/metrics/wellbeing`,
-        { params: { period } }
+      const response = await apiClient.api.adminCampusMetricsWellbeingList(
+        campusId,
+        { period: toApiPeriod(period) }
       )
-      return response.data
+      return response.data as unknown as WellbeingMetrics
     } catch (error) {
       console.error('Failed to fetch wellbeing metrics:', error)
       throw error
@@ -57,10 +62,8 @@ export const analyticsService = {
    */
   getCampusKPIs: async (campusId: string): Promise<CampusKPIs> => {
     try {
-      const response = await API.get(
-        `/api/admin/campus/${campusId}/metrics/kpis`
-      )
-      return response.data
+      const response = await apiClient.api.adminCampusMetricsKpisList(campusId)
+      return response.data as unknown as CampusKPIs
     } catch (error) {
       console.error('Failed to fetch campus KPIs:', error)
       throw error
@@ -76,14 +79,14 @@ export const analyticsService = {
     limit: number = 100
   ): Promise<ActivityLogEntry[]> => {
     try {
-      const response = await API.get(
-        `/api/admin/campus/${campusId}/metrics/activity-timeline`,
-        { params: { period, limit } }
+      const response = await apiClient.api.adminCampusMetricsActivityTimelineList(
+        campusId,
+        { period: toApiPeriod(period), limit }
       )
-      return response.data.map((entry: Record<string, unknown>) => ({
+      return ((response.data as unknown) as Array<Record<string, unknown>>).map((entry) => ({
         ...entry,
         timestamp: new Date(entry.timestamp as string),
-      }))
+      })) as ActivityLogEntry[]
     } catch (error) {
       console.error('Failed to fetch activity timeline:', error)
       throw error
@@ -99,15 +102,15 @@ export const analyticsService = {
     severity?: 'info' | 'warning' | 'critical'
   ): Promise<CampusAlert[]> => {
     try {
-      const response = await API.get(
-        `/api/admin/campus/${campusId}/alerts`,
-        { params: { unreadOnly, severity } }
+      const response = await apiClient.api.adminCampusAlertsList(
+        campusId,
+        { unreadOnly, severity }
       )
-      return response.data.map((alert: Record<string, unknown>) => ({
+      return ((response.data as unknown) as Array<Record<string, unknown>>).map((alert) => ({
         ...alert,
         createdAt: new Date(alert.createdAt as string),
         updatedAt: alert.updatedAt ? new Date(alert.updatedAt as string) : undefined,
-      }))
+      })) as CampusAlert[]
     } catch (error) {
       console.error('Failed to fetch campus alerts:', error)
       throw error
@@ -122,9 +125,7 @@ export const analyticsService = {
     alertId: string
   ): Promise<void> => {
     try {
-      await API.patch(
-        `/api/admin/campus/${campusId}/alerts/${alertId}/mark-read`
-      )
+      await apiClient.api.adminCampusAlertsMarkReadPartialUpdate(campusId, alertId)
     } catch (error) {
       console.error('Failed to mark alert as read:', error)
       throw error
@@ -136,7 +137,7 @@ export const analyticsService = {
    */
   markAllAlertsAsRead: async (campusId: string): Promise<void> => {
     try {
-      await API.patch(`/api/admin/campus/${campusId}/alerts/mark-all-read`)
+      await apiClient.api.adminCampusAlertsMarkAllReadPartialUpdate(campusId)
     } catch (error) {
       console.error('Failed to mark all alerts as read:', error)
       throw error

@@ -1,36 +1,44 @@
 import { Place, PlacesFilters, PlacesResponse } from "../types/place";
-import API from "../API";
-
-// Removed unused interface BackendPlaceResponse
+import { apiClient } from "../API";
 
 export const placeService = {
   getAll: async (filters: PlacesFilters = {}): Promise<PlacesResponse> => {
     try {
-      const params = new URLSearchParams();
-      
-      if (filters.campus_id) params.append("campus_id", filters.campus_id);
-      // Note: region_id is deprecated, using campus_id directly
-      if (filters.search) params.append("search", filters.search);
-      if (filters.categories?.length) params.append("categories", filters.categories.join(","));
-      if (filters.place_category) params.append("place_category", filters.place_category);
-      if (filters.hierarchy_level !== undefined) params.append("hierarchy_level", String(filters.hierarchy_level));
-      if (filters.parent_place_id !== undefined) params.append("parent_place_id", filters.parent_place_id === null ? "" : filters.parent_place_id);
-      if (filters.is_deleted !== undefined) params.append("is_deleted", String(filters.is_deleted));
-      // Convert page to offset for backend
+      const queryParams: {
+        campus_id?: string;
+        search?: string;
+        categories?: string;
+        place_category?: string;
+        hierarchy_level?: string;
+        parent_place_id?: string;
+        is_deleted?: string;
+        offset?: number;
+        limit?: number;
+        sort?: "name" | "rating" | "updated_at" | "created_at";
+        order?: "asc" | "desc";
+      } = {};
+
+      if (filters.campus_id) queryParams.campus_id = filters.campus_id;
+      if (filters.search) queryParams.search = filters.search;
+      if (filters.categories?.length) queryParams.categories = filters.categories.join(",");
+      if (filters.place_category) queryParams.place_category = filters.place_category;
+      if (filters.hierarchy_level !== undefined) queryParams.hierarchy_level = String(filters.hierarchy_level);
+      if (filters.parent_place_id !== undefined) queryParams.parent_place_id = filters.parent_place_id === null ? "" : filters.parent_place_id;
+      if (filters.is_deleted !== undefined) queryParams.is_deleted = String(filters.is_deleted);
       if (filters.page && filters.limit) {
         const offset = (filters.page - 1) * filters.limit;
-        params.append("offset", String(offset));
+        queryParams.offset = offset;
       }
-      if (filters.limit) params.append("limit", String(filters.limit));
-      if (filters.sort) params.append("sort", filters.sort);
-      if (filters.order) params.append("order", filters.order);
+      if (filters.limit) queryParams.limit = filters.limit;
+      if (filters.sort) queryParams.sort = filters.sort as "name" | "rating" | "updated_at" | "created_at";
+      if (filters.order) queryParams.order = filters.order as "asc" | "desc";
 
-      const response = await API.get(`/admin/places?${params.toString()}`);
+      const response = await apiClient.admin.placesList(queryParams);
 
       // Handle success response with nested data structure
-      if (response.data.success && response.data.data && response.data.data.places && Array.isArray(response.data.data.places)) {
+      if (response.data.success && response.data.data?.places && Array.isArray(response.data.data.places)) {
         return {
-          places: response.data.data.places,
+          places: response.data.data.places as Place[],
           total: response.data.data.pagination?.total || 0,
           page: (response.data.data.pagination?.offset || 0) / (response.data.data.pagination?.limit || 20) + 1,
           pages: Math.ceil((response.data.data.pagination?.total || 0) / (response.data.data.pagination?.limit || 20)),
@@ -38,29 +46,7 @@ export const placeService = {
         };
       }
 
-      // Handle pagination response structure (fallback)
-      if (response.data.places && Array.isArray(response.data.places)) {
-        return {
-          places: response.data.places,
-          total: response.data.total || 0,
-          page: response.data.page || 1,
-          pages: response.data.pages || 1,
-          limit: response.data.limit || 20,
-        };
-      }
-
-      // Handle simple array response
-      if (Array.isArray(response.data)) {
-        return {
-          places: response.data,
-          total: response.data.length,
-          page: 1,
-          pages: 1,
-          limit: response.data.length,
-        };
-      }
-
-      console.warn("⚠️ Unexpected response structure:", response.data);
+      console.warn("Unexpected response structure:", response.data);
       return {
         places: [],
         total: 0,
@@ -70,12 +56,12 @@ export const placeService = {
       };
     } catch (error) {
       console.error("Failed to fetch places:", error);
-      
+
       // Handle 404 specifically (no places found)
       if (error instanceof Error && "response" in error) {
         const axiosError = error as { response?: { status?: number } };
         if (axiosError.response?.status === 404) {
-          console.log("📋 404 error - returning empty response");
+          console.log("404 error - returning empty response");
           return {
             places: [],
             total: 0,
@@ -85,15 +71,15 @@ export const placeService = {
           };
         }
       }
-      
+
       throw error;
     }
   },
 
   updateCategories: async (placeId: string, categories: string[]): Promise<Place> => {
     try {
-      const response = await API.put(`/admin/places/${placeId}/categories`, { categories });
-      return response.data;
+      const response = await apiClient.admin.placesCategoriesUpdate(placeId, { app_categories: categories });
+      return (response.data as { data?: Place }).data as Place;
     } catch (error) {
       console.error("Failed to update place categories:", error);
       throw error;
@@ -102,7 +88,7 @@ export const placeService = {
 
   delete: async (placeId: string): Promise<void> => {
     try {
-      await API.delete(`/admin/places/${placeId}`);
+      await apiClient.admin.placesDelete(placeId);
     } catch (error) {
       console.error("Failed to delete place:", error);
       throw error;
@@ -111,8 +97,8 @@ export const placeService = {
 
   restore: async (placeId: string): Promise<Place> => {
     try {
-      const response = await API.post(`/admin/places/${placeId}/restore`);
-      return response.data;
+      const response = await apiClient.admin.placesRestoreCreate(placeId);
+      return (response.data as { data?: Place }).data as Place;
     } catch (error) {
       console.error("Failed to restore place:", error);
       throw error;
@@ -121,7 +107,7 @@ export const placeService = {
 
   syncPhotos: async (placeId: string): Promise<void> => {
     try {
-      await API.post(`/admin/places/${placeId}/sync-photos`);
+      await apiClient.admin.placesSyncPhotosCreate(placeId);
     } catch (error) {
       console.error("Failed to sync place photos:", error);
       throw error;
@@ -130,7 +116,7 @@ export const placeService = {
 
   batchSyncPhotos: async (placeIds: string[]): Promise<void> => {
     try {
-      await API.post("/admin/places/photo-sync/batch", { place_ids: placeIds });
+      await apiClient.admin.placesPhotoSyncBatchCreate({ place_ids: placeIds });
     } catch (error) {
       console.error("Failed to batch sync photos:", error);
       throw error;
@@ -150,16 +136,23 @@ export const placeService = {
     };
   }> => {
     try {
-      const params = new URLSearchParams();
-      params.append("limit", String(limit));
-      params.append("offset", String(offset));
+      const response = await apiClient.admin.placesNestedList(placeId, { limit, offset });
 
-      const response = await API.get(`/admin/places/${placeId}/nested?${params.toString()}`);
-      
       if (response.data.success && response.data.data) {
-        return response.data.data;
+        return response.data.data as {
+          parent_place: { place_id: string; name: string; place_category: string };
+          nested_places: Place[];
+          pagination: {
+            total: number;
+            limit: number;
+            offset: number;
+            has_more: boolean;
+            current_page: number;
+            total_pages: number;
+          };
+        };
       }
-      
+
       throw new Error("Invalid response structure");
     } catch (error) {
       console.error("Failed to fetch nested places:", error);

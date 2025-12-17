@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface User {
   _id: string;
@@ -6,6 +6,7 @@ interface User {
   first_name: string;
   last_name: string;
   role: string;
+  avatar_url?: string;
   campus_id?: string;
   school_id?: string;
 }
@@ -16,8 +17,8 @@ export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userStr = localStorage.getItem('user');
+    const token = localStorage.getItem("token");
+    const userStr = localStorage.getItem("user");
 
     if (token && userStr) {
       try {
@@ -25,10 +26,10 @@ export const useAuth = () => {
         setUser(userData);
         setIsAuthenticated(true);
       } catch (error) {
-        console.error('Failed to parse user data:', error);
+        console.error("Failed to parse user data:", error);
         // Clear invalid data
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
       }
     }
     setIsLoading(false);
@@ -40,11 +41,11 @@ export const useAuth = () => {
   };
 
   const isSuperAdmin = (): boolean => {
-    return user?.role === 'super_admin';
+    return user?.role === "super_admin";
   };
 
   const isCampusAdmin = (): boolean => {
-    return user?.role === 'campus_admin';
+    return user?.role === "campus_admin";
   };
 
   return {

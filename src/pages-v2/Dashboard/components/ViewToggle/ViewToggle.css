@@ -1,0 +1,50 @@
+.view-toggle {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ebf1ff;
+}
+
+.view-option {
+  background: var(--v2-bg-card);
+  border: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  height: 38px;
+}
+
+.view-option.selected {
+  background-color: #546fd9;
+  border-left: 1px solid #ebf1ff;
+}
+
+.view-option.selected svg,
+.view-option.selected svg path {
+  color: #ffffff;
+  fill: #ffffff;
+}
+
+.view-option:not(.selected) svg,
+.view-option:not(.selected) svg path {
+  color: var(--v2-text-primary);
+  fill: var(--v2-text-primary);
+}
+
+.view-option:hover:not(.selected) {
+  background-color: var(--v2-bg-hover);
+}
+
+/* Acessibilidade: foco visível para navegação por teclado */
+.view-option:focus-visible {
+  outline: 2px solid #546fd9;
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.view-option:focus:not(:focus-visible) {
+  outline: none;
+}

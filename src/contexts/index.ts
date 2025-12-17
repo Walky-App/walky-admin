@@ -1,1 +1,1 @@
-export * as ThemeContext from "./ThemeContext.ts"
+export * as ThemeContext from "./ThemeContext.ts";

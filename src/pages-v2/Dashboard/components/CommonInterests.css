@@ -1,0 +1,210 @@
+.common-interests-container {
+  background-color: var(--v2-card-bg);
+  border: 1px solid var(--v2-border-light);
+  border-radius: var(--v2-radius-lg);
+  padding: var(--v2-spacing-6);
+  height: auto;
+  box-shadow: var(--v2-shadow-card);
+}
+
+.common-interests-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--v2-spacing-12);
+}
+
+.common-interests-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--v2-spacing-2);
+}
+
+.common-interests-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.common-interests-title {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-semibold);
+  font-size: var(--v2-font-size-md);
+  margin: 0;
+  color: var(--v2-text-muted);
+}
+
+.common-interests-dropdown {
+  min-width: 160px;
+}
+
+.common-interests-dropdown .dropdown-toggle-custom {
+  background-color: var(--v2-dropdown-bg);
+  border: 0.6px solid var(--v2-dropdown-border);
+  border-radius: var(--v2-radius-sm);
+  font-size: var(--v2-font-size-xs);
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-semibold);
+  color: var(--v2-dropdown-text);
+  padding: var(--v2-spacing-2) var(--v2-spacing-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--v2-spacing-2);
+  width: 100%;
+  white-space: nowrap;
+}
+
+.common-interests-dropdown .dropdown-toggle-custom:hover {
+  background-color: var(--v2-bg-hover);
+}
+
+.common-interests-dropdown .dropdown-toggle-custom:focus {
+  outline: 2px solid var(--v2-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--v2-radius-sm);
+}
+
+.common-interests-dropdown .dropdown-toggle-custom::after {
+  display: none;
+}
+
+.common-interests-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v2-spacing-5);
+  padding: 0 var(--v2-spacing-2);
+}
+
+.interest-item {
+  display: flex;
+  align-items: center;
+  gap: var(--v2-spacing-4);
+}
+
+.interest-rank {
+  padding: var(--v2-spacing-2) var(--v2-spacing-2);
+  border-radius: var(--v2-radius-md);
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-normal);
+  font-size: var(--v2-font-size-md);
+  min-width: 38px;
+  text-align: center;
+}
+
+.interest-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v2-spacing-3);
+  flex: 1;
+}
+
+.interest-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.interest-name {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-md);
+  margin: 0;
+  color: var(--v2-body-color);
+}
+
+.interest-stats {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-normal);
+  font-size: var(--v2-font-size-md);
+  margin: 0;
+  color: var(--v2-text-muted);
+}
+
+.interest-progress-container {
+  position: relative;
+  height: 14px;
+}
+
+.interest-progress-bg {
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 100%;
+  height: 13px;
+  border-radius: var(--v2-radius-xl);
+  background-color: var(--v2-border-light);
+}
+
+.interest-progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 14px;
+  border-radius: var(--v2-radius-xl) 0 0 var(--v2-radius-xl);
+  background-color: var(--v2-icon-purple);
+}
+
+/* See all button */
+.see-all-button {
+  margin-top: var(--v2-spacing-5);
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-sm);
+  color: var(--v2-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  transition: opacity 0.2s;
+}
+
+.see-all-button:hover {
+  opacity: 0.8;
+}
+
+.see-all-button:focus {
+  outline: 2px solid var(--v2-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--v2-radius-sm);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .common-interests-container {
+    height: auto;
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .common-interests-container {
+    padding: var(--v2-spacing-4);
+  }
+
+  .common-interests-header {
+    margin-bottom: var(--v2-spacing-6);
+  }
+
+  .interest-name,
+  .interest-stats {
+    font-size: var(--v2-font-size-sm);
+  }
+
+  .interest-rank {
+    font-size: var(--v2-font-size-sm);
+    min-width: 34px;
+    padding: var(--v2-spacing-1) var(--v2-spacing-2);
+  }
+}
+
+@media (max-width: 480px) {
+  .interest-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--v2-spacing-1);
+  }
+}

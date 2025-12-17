@@ -6,9 +6,9 @@ echo "Cleaning TypeScript artifacts and build files..."
 echo "Cleaning project root..."
 find . -maxdepth 1 -type f \( -name "*.d.ts" -o -name "*.d.ts.map" -o -name "*.js.map" -o -name "*.tsbuildinfo" \) -not -path "*/node_modules/*" -exec rm -f {} \;
 
-# Remove any TypeScript generated files from src directory
+# Remove any TypeScript generated files from src directory (excluding vite-env.d.ts)
 echo "Cleaning src directory..."
-find src -type f \( -name "*.js" -o -name "*.js.map" -o -name "*.d.ts" -o -name "*.d.ts.map" \) -exec rm -f {} \;
+find src -type f \( -name "*.js" -o -name "*.js.map" -o -name "*.d.ts" -o -name "*.d.ts.map" \) ! -name "vite-env.d.ts" -exec rm -f {} \;
 
 # Clean dist directory if it exists
 if [ -d "dist" ]; then

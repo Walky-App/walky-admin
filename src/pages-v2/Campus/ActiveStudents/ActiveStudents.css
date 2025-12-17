@@ -1,0 +1,121 @@
+.active-students-page {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  background-color: #ffffff;
+  min-height: 100vh;
+  padding-bottom: 85px;
+}
+
+.active-students-stats {
+  display: flex;
+  gap: 32px;
+  width: 100%;
+}
+
+.active-students-content {
+  background-color: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 14px;
+  padding: 32px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
+}
+
+.active-students-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.active-students-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  flex: 1;
+  max-width: 528px;
+}
+
+.active-students-title {
+  font-family: "Lato", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: normal;
+  color: #1d1b20;
+  margin: 0;
+}
+
+.active-students-pagination {
+  padding: 32px 26px;
+}
+
+/* Dark mode */
+[data-theme="dark"] .active-students-page {
+  background-color: var(--v2-bg-app);
+}
+
+[data-theme="dark"] .active-students-content {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .active-students-title {
+  color: #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .active-students-stats {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .active-students-page {
+    padding: 16px;
+    gap: 32px;
+  }
+
+  .active-students-content {
+    padding: 16px;
+  }
+
+  .active-students-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .active-students-title-section {
+    max-width: none;
+  }
+
+  .active-students-title {
+    font-size: 20px;
+  }
+
+  .export-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .active-students-pagination {
+    padding: 16px 0;
+  }
+}
+
+/* Accessibility: Focus-visible styles */
+.active-students-page button:focus-visible,
+.active-students-page a:focus-visible,
+.active-students-page input:focus-visible,
+.active-students-page select:focus-visible,
+.active-students-page [role="button"]:focus-visible,
+.active-students-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

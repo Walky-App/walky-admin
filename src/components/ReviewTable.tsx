@@ -11,7 +11,7 @@ import {
   CDropdownMenu,
   CDropdownItem,
 } from "@coreui/react";
-import API from "../API/";
+import { apiClient } from "../API/";
 import "../App.css";
 
 interface Student {
@@ -28,20 +28,11 @@ const ReviewTable = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const res = await API.get<{
-          users: {
-            _id: string;
-            first_name: string;
-            last_name: string;
-            reason: string;
-            createdAt: string;
-            reportedOn: string;
-          }[];
-        }>(
-          "/users/?fields=_id,first_name,last_name,reason,createdAt,reportedOn"
-        );
+        const res = await apiClient.api.usersList({
+          query: { fields: "_id,first_name,last_name,reason,createdAt,reportedOn" }
+        } as any) as any;
 
-        const transformed = res.data.users.map((user) => ({
+        const transformed = res.data.users.map((user: any) => ({
           id: user._id,
           name: `${user.first_name} ${user.last_name}`,
           reason: user.reason,

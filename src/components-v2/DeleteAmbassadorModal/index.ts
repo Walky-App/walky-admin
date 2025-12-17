@@ -1,0 +1,1 @@
+export { DeleteAmbassadorModal } from "./DeleteAmbassadorModal";

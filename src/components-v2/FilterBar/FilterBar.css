@@ -1,0 +1,68 @@
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.filter-bar-options {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.filter-bar-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.filter-bar-group {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.filter-bar-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.filter-bar-date-range {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 992px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-bar-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+/* Accessibility: Focus-visible styles */
+.filter-bar button:focus-visible,
+.filter-bar a:focus-visible,
+.filter-bar input:focus-visible,
+.filter-bar select:focus-visible,
+.filter-bar [role="button"]:focus-visible,
+.filter-bar [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

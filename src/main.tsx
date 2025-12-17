@@ -9,15 +9,12 @@ import "@coreui/coreui/dist/css/coreui.min.css";
 
 // Import custom styles
 import "./index.css";
-import "./components/ThemeComponents.css";
-import "./styles/modern-theme.css";
-import "./styles/sidebar-modern.css";
-import "./styles/logo-background-fix.css";
-import "./styles/badge-fixes.css";
-import "./styles/visibility-fixes.css";
-import "./styles/enhanced-table.css";
+import "./styles-v2/ThemeComponents.css";
+
+import "./styles-v2/design-tokens.css";
+import "./styles-v2/global.css";
 import App from "./App.tsx";
-import { ThemeProvider } from "./components/ThemeProvider";
+import { ThemeProvider } from "./contexts/ThemeProvider.tsx";
 import { SchoolProvider } from "./contexts/SchoolContext";
 
 createRoot(document.getElementById("root")!).render(

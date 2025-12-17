@@ -1,7 +1,14 @@
-import axios from "axios";
+import axios, {
+  InternalAxiosRequestConfig,
+  AxiosResponse,
+  AxiosError,
+} from "axios";
+import { Api, HttpClient } from "./WalkyAPI";
+import { triggerDeactivatedModal } from "../contexts/DeactivatedUserContext";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ??  "https://staging.walkyapp.com/api",
+  baseURL:
+    import.meta.env.VITE_API_BASE_URL ?? "https://staging.walkyapp.com/api",
   // baseURL: "http://localhost:8080/api", // Use this for local development with /api prefix
 });
 
@@ -22,7 +29,7 @@ API.interceptors.response.use(
       "✅ API Response:",
       response.config.method?.toUpperCase(),
       response.config.url,
-      response.status
+      response.status,
     );
     return response;
   },
@@ -32,12 +39,12 @@ API.interceptors.response.use(
       error.config?.method?.toUpperCase(),
       error.config?.url,
       error.response?.status,
-      error.response?.statusText
+      error.response?.statusText,
     );
     if (error.response?.data) {
       console.error("📄 Error data:", error.response.data);
     }
-    
+
     // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
       // Token might be expired or invalid
@@ -47,9 +54,81 @@ API.interceptors.response.use(
         window.location.href = "/login";
       }
     }
-    
+
+    // Handle 403 Forbidden errors - user deactivated
+    if (error.response?.status === 403) {
+      triggerDeactivatedModal();
+    }
+
     return Promise.reject(error);
-  }
+  },
+);
+
+// Initialize OpenAPI Client
+// Note: Swagger paths are mixed - admin routes include /api prefix, others don't
+// Remove /api from baseURL so:
+// - Admin routes (/api/admin/...) work as-is
+// - Legacy routes (/ambassadors, etc.) hit the legacy router at root
+const baseURL =
+  import.meta.env.VITE_API_BASE_URL ?? "https://staging.walkyapp.com/api";
+
+// Create HttpClient with config, then pass to Api
+const httpClient = new HttpClient({
+  baseURL: baseURL.replace(/\/api\/?$/, ""),
+});
+
+export const apiClient = new Api(httpClient);
+
+// Apply interceptors to the HttpClient's axios instance
+httpClient.instance.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.warn("⚠️ No token found for request:", config.url);
+    }
+    return config;
+  },
+);
+
+httpClient.instance.interceptors.response.use(
+  (response: AxiosResponse) => {
+    console.log(
+      "✅ API Response:",
+      response.config.method?.toUpperCase(),
+      response.config.url,
+      response.status,
+    );
+    return response;
+  },
+  (error: AxiosError) => {
+    console.error(
+      "❌ API Error:",
+      error.config?.method?.toUpperCase(),
+      error.config?.url,
+      error.response?.status,
+      error.response?.statusText,
+    );
+    if (error.response?.data) {
+      console.error("📄 Error data:", error.response.data);
+    }
+
+    // Handle 401 Unauthorized errors
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+
+    // Handle 403 Forbidden errors - user deactivated
+    if (error.response?.status === 403) {
+      triggerDeactivatedModal();
+    }
+
+    return Promise.reject(error);
+  },
 );
 
 export default API;

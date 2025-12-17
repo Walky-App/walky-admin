@@ -1,0 +1,148 @@
+/* Overlay */
+.unsaved-changes-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+/* Content */
+.unsaved-changes-content {
+  background: #ffffff;
+  border: 1px solid #cac4d0;
+  border-radius: 14px;
+  padding: 32px;
+  width: 100%;
+  max-width: 521px;
+  position: relative;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Close button */
+.unsaved-changes-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #5b6168;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unsaved-changes-close:hover {
+  color: #1d1b20;
+}
+
+/* Body */
+.unsaved-changes-body {
+  display: flex;
+  flex-direction: column;
+  gap: 46px;
+  align-items: flex-end;
+}
+
+/* Title */
+.unsaved-changes-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1;
+  color: #1d1b20;
+  margin: 0;
+  width: 100%;
+  text-align: left;
+}
+
+/* Message */
+.unsaved-changes-message {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.unsaved-changes-question {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1;
+  color: #1d1b20;
+  opacity: 0.826;
+  margin: 0;
+}
+
+.unsaved-changes-warning {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1;
+  color: #5b6168;
+  margin: 0;
+}
+
+/* Buttons */
+.unsaved-changes-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.unsaved-changes-stay {
+  background: #ffffff;
+  border: 1px solid #d2d2d3;
+  border-radius: 12px;
+  padding: 9px 32px;
+  height: 40px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  color: #1d1b20;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.unsaved-changes-stay:hover {
+  background: #f5f5f5;
+  border-color: #1d1b20;
+}
+
+.unsaved-changes-leave {
+  background: #d53425;
+  border: none;
+  border-radius: 12px;
+  padding: 9px 20px;
+  height: 40px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0px 2px 7px rgba(115, 115, 115, 0.2);
+  transition: background 0.2s ease;
+}
+
+.unsaved-changes-leave:hover {
+  background: #b72a1f;
+}
+
+/* Accessibility: Focus-visible styles */
+.unsaved-changes-modal-content button:focus-visible,
+.unsaved-changes-modal-content a:focus-visible,
+.unsaved-changes-modal-content [role="button"]:focus-visible,
+.unsaved-changes-modal-content [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

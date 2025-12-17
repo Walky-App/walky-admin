@@ -1,0 +1,1 @@
+export { BannedStudents } from "./BannedStudents";

@@ -1,41 +1,10 @@
-export interface Ambassador {
-  id: string;
-  _id?: string; // MongoDB ObjectId
-  name: string;
-  email: string;
-  phone?: string;
-  student_id?: string;
-  campus_id?: string;
+import { Ambassador as ApiAmbassador } from "../API/data-contracts";
+
+// Extended Ambassador type with additional properties used in legacy code
+export interface Ambassador extends ApiAmbassador {
+  id?: string;
   campus_name?: string;
-  is_active: boolean;
-  profile_image_url?: string;
-  bio?: string;
-  graduation_year?: number;
-  major?: string;
-  created_at?: string;
-  updated_at?: string;
-  createdAt?: string; // MongoDB timestamp
-  updatedAt?: string; // MongoDB timestamp
-  created_by?: string;
-  school_id?: string;
-  role?: string; // Primary role (super_admin, campus_admin, etc.)
-  roles?: Array<{ role: string; campus_id?: string }>; // Array of roles with optional campus scope
-  permissions?: string[]; // Array of permission strings
-  __v?: number; // MongoDB version key
+  avatar_url?: string;
 }
 
-export interface AmbassadorFormData {
-  name: string;
-  email: string;
-  phone?: string;
-  student_id?: string;
-  is_active: boolean;
-  profile_image_url?: string;
-  bio?: string;
-  graduation_year?: number;
-  major?: string;
-}
-
-export type CreateAmbassadorRequest = Omit<AmbassadorFormData, "id">;
-
-export type UpdateAmbassadorRequest = Partial<AmbassadorFormData>;
+export type { ApiAmbassador };

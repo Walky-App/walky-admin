@@ -1,161 +1,140 @@
-export enum ReportType {
-  USER = "user",
-  EVENT = "event",
-  SPACE = "space",
-  IDEA = "idea",
-  MESSAGE = "message",
-}
-
-export interface Report {
-  _id: string;
-  reported_by: {
-    _id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    avatar_url?: string;
-    school_id?: string;
-    campus_id?: string;
-  };
-  report_type: ReportType;
-  reported_item_id: string;
-  reason:
-    | "harassment_threats"
-    | "inappropriate_content"
-    | "spam_fake"
-    | "underage_policy"
-    | "made_uncomfortable"
-    | "violence_dangerous"
-    | "intellectual_property"
-    | "other";
-  description: string;
-  status: "pending" | "under_review" | "resolved" | "dismissed";
-  reviewed_by?: {
-    _id: string;
-    first_name: string;
-    last_name: string;
-    email?: string;
-  };
-  admin_notes?: string;
-  resolved_at?: string;
-  school_id: {
-    _id: string;
-    name: string;
-  };
-  reported_item_snapshot?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ReportDetails extends Report {
-  reportedItem?: ReportedUser | Record<string, unknown>;
-  relatedReports?: Report[];
-  totalRelatedReports?: number;
-}
-
-export interface ReportedUser {
-  _id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
+// Report types for legacy pages
+// Helper type for populated user references
+export interface PopulatedUser {
+  _id?: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
   avatar_url?: string;
-  profile_bio?: string;
-  is_banned?: boolean;
-  ban_reason?: string;
-  report_count?: number;
-  school_id?: {
-    _id: string;
-    name: string;
-  };
 }
 
 export interface BannedUser {
-  _id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
+  _id?: string;
+  id?: string;
+  first_name?: string;
+  last_name?: string;
+  name?: string;
+  email?: string;
   avatar_url?: string;
-  ban_date: string;
+  ban_date?: string;
+  banned_at?: string;
+  banned_by?: string | PopulatedUser;
   ban_reason?: string;
-  ban_duration?: number;
+  ban_duration?: number; // API returns number
   ban_expires_at?: string;
+  status?: string;
   report_count?: number;
-  banned_by?: {
-    _id: string;
-    first_name: string;
-    last_name: string;
-  };
-  school_id?: {
-    _id: string;
-    name: string;
-  };
+  school_id?: string | { _id?: string; name?: string };
+  campus_id?: string | { _id?: string; campus_name?: string };
 }
 
-export interface BanHistory {
-  banned_at: string;
-  banned_by: {
-    _id: string;
-    first_name: string;
-    last_name: string;
-  };
-  reason: string;
-  duration?: number;
+export interface BanHistoryItem {
+  _id?: string;
+  banned_at?: string;
+  banned_by?: string | PopulatedUser;
+  reason?: string;
+  duration?: string;
+  expires_at?: string;
   unbanned_at?: string;
-  unbanned_by?: {
-    _id: string;
-    first_name: string;
-    last_name: string;
-  };
+  unbanned_by?: string | PopulatedUser;
   unban_reason?: string;
 }
 
+export interface ReportItem {
+  _id?: string;
+  reported_at?: string;
+  reported_by?: string | PopulatedUser;
+  reason?: string;
+  description?: string;
+  status?: string;
+  createdAt?: string;
+  created_at?: string;
+  witnesses?: Array<{
+    _id?: string;
+    name?: string;
+  }>;
+}
+
 export interface UserBanHistory {
-  user: {
-    _id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    report_count?: number;
-  };
-  ban_history: BanHistory[];
-  reports: Report[];
+  _id?: string;
+  user_id?: string;
+  ban_history?: BanHistoryItem[];
+  reports?: ReportItem[];
 }
 
-export interface UpdateReportStatusRequest {
-  status: "pending" | "under_review" | "resolved" | "dismissed";
+// Related report in the relatedReports array
+export interface RelatedReport {
+  _id?: string;
+  reason?: string;
+  description?: string;
+  created_at?: string;
+  createdAt?: string;
+  reported_by?: string | PopulatedUser;
+  status?: string;
+}
+
+export interface Report {
+  _id?: string;
+  id?: string;
+  reporter_id?: string;
+  reported_user_id?: string;
+  reason?: string;
+  description?: string;
+  status?: string;
+  created_at?: string;
+  createdAt?: string;
+  updated_at?: string;
+  relatedReports?: RelatedReport[];
+}
+
+// Reported user in report context - extended with additional fields
+export interface ReportedUser {
+  _id?: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  avatar_url?: string;
+  is_banned?: boolean;
+  report_count?: number;
+  profile_bio?: string;
+  school_id?: string | { _id?: string; name?: string };
+  ban_reason?: string;
+}
+
+// Full report details with all populated fields
+export interface ReportDetails extends Report {
+  report_type?: ReportType;
+  reporter?: PopulatedUser;
+  reported_user?: PopulatedUser;
+  reported_by?: PopulatedUser;
+  reviewed_by?: PopulatedUser;
+  school_id?: string | { _id?: string; name?: string };
   admin_notes?: string;
+  resolved_at?: string;
+  totalRelatedReports?: number;
+  reportedItem?: ReportedUser;
+  reported_item_snapshot?: {
+    profile_bio?: string;
+    avatar_url?: string;
+  };
 }
 
+// Ban user request form - for the modal form state
 export interface BanUserRequest {
-  ban_duration?: number; // in days, undefined for permanent
+  ban_duration?: number;
   ban_reason?: string;
   resolve_related_reports?: boolean;
 }
 
-export interface UnbanUserRequest {
-  unban_reason?: string;
-}
+// Report type enum
+export type ReportType = "harassment" | "spam" | "inappropriate_content" | "fake_profile" | "other" | "user";
 
-export interface BulkUpdateReportsRequest {
-  report_ids: string[];
-  action: "resolve" | "dismiss" | "under_review";
-  admin_notes?: string;
-}
-
-export interface ReportFilters {
-  status?: "pending" | "under_review" | "resolved" | "dismissed";
-  report_type?: ReportType;
-  school_id?: string;
-  page?: number;
-  limit?: number;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-  };
-}
+// Report type labels for display
+export const ReportTypeLabels: Record<string, string> = {
+  harassment: "Harassment",
+  spam: "Spam",
+  inappropriate_content: "Inappropriate Content",
+  fake_profile: "Fake Profile",
+  user: "User Report",
+  other: "Other",
+};

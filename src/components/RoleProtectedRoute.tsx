@@ -38,6 +38,11 @@ export const RoleProtectedRoute = ({ children, allowedRoles }: RoleProtectedRout
     return <Navigate to="/unauthorized" replace />;
   }
 
+  // Check if forced password change is required
+  if ((user as any).require_password_change) {
+    return <Navigate to="/force-password-change" replace />;
+  }
+
   // User has required role - render children
   return children;
 };

@@ -1,0 +1,183 @@
+.bar-chart-container {
+  border-radius: 14px;
+  border: 1px solid;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.bar-chart-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  margin: 0 0 32px 0;
+}
+
+.bar-chart-wrapper {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  height: 300px;
+}
+
+.y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.y-axis-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: right;
+}
+
+.chart-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.grid-line {
+  border-top: 1px solid;
+  width: 100%;
+}
+
+.bars-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+  padding: 0;
+}
+
+.week-bars {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.bars-group {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 100%;
+  max-width: 80px;
+}
+
+.bar {
+  width: 20px;
+  border-radius: 4px 4px 0 0;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+  min-height: 2px;
+}
+
+.bar:hover {
+  opacity: 0.8;
+}
+
+.x-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 56px;
+  margin-top: 16px;
+}
+
+.week-label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.week-name {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+}
+
+.week-dates {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  margin: 0;
+}
+
+.bar-chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 24px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.legend-color {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.legend-text {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .bar-chart-container {
+    padding: 20px;
+  }
+
+  .bar-chart-wrapper {
+    height: 250px;
+  }
+
+  .bars-group {
+    max-width: 60px;
+  }
+
+  .bar {
+    width: 16px;
+  }
+
+  .x-axis-labels {
+    padding: 0 40px;
+  }
+
+  .bar-chart-legend {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+}

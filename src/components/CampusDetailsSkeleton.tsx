@@ -10,6 +10,7 @@ import {
 import SkeletonLoader from "./SkeletonLoader";
 import { useTheme } from "../hooks/useTheme";
 
+
 interface CampusDetailsSkeletonProps {
   inTabView?: boolean;
 }

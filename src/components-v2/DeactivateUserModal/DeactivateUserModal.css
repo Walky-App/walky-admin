@@ -1,0 +1,258 @@
+/* Deactivate User Modal Styles */
+
+.deactivate-user-modal .modal-content {
+  background-color: var(--v2-neutral-white);
+  border: 1px solid var(--v2-border-outline);
+  border-radius: var(--v2-radius-xl);
+  box-shadow: var(--v2-shadow-lg);
+  max-width: 521px;
+  padding: 0;
+}
+
+.deactivate-user-modal-body {
+  position: relative;
+}
+
+/* Embedded mode improvements */
+.deactivate-user-modal-body.embedded {
+  padding: 0;
+}
+
+.deactivate-user-modal-body.embedded .deactivate-modal-content {
+  padding: 0;
+  width: 100%;
+}
+
+/* Close Icon */
+.deactivate-modal-close-icon {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--v2-transition-fast);
+  z-index: 10;
+}
+
+.deactivate-modal-close-icon:hover {
+  opacity: 0.7;
+}
+
+/* Content */
+.deactivate-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+  max-width: 457px;
+  margin: 0 auto;
+}
+
+/* Embedded mode - adjust width */
+.deactivate-user-modal-body.embedded .deactivate-modal-content {
+  width: 100%;
+  gap: 40px;
+  margin: 0;
+}
+
+/* Content Inner */
+.deactivate-modal-content > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v2-spacing-24);
+}
+
+/* Title */
+.deactivate-modal-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 130%;
+  color: var(--v2-neutral-black);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Message Container */
+.deactivate-modal-message-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v2-spacing-16);
+  white-space: pre-wrap;
+  line-height: 150%;
+}
+
+.deactivate-modal-question {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 150%;
+  color: var(--v2-neutral-black);
+  opacity: 0.826;
+  margin: 0;
+}
+
+.deactivate-modal-username {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 150%;
+  color: var(--v2-neutral-black);
+}
+
+.deactivate-modal-description {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 160%;
+  color: var(--v2-neutral-dark-grey);
+  margin: 0;
+}
+
+/* Button Container */
+.deactivate-modal-button-container {
+  display: flex;
+  gap: var(--v2-spacing-20);
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Cancel Button */
+.deactivate-modal-cancel-button {
+  background-color: var(--v2-neutral-white) !important;
+  border: 1px solid var(--v2-border-dark) !important;
+  border-radius: var(--v2-radius-lg) !important;
+  padding: 9px var(--v2-spacing-32) !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all var(--v2-transition-fast) !important;
+}
+
+.deactivate-modal-cancel-button span {
+  font-family: "Lato", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  line-height: 100% !important;
+  color: var(--v2-neutral-black) !important;
+  text-align: right !important;
+}
+
+.deactivate-modal-cancel-button:hover {
+  background-color: var(--v2-bg-hover) !important;
+  border-color: var(--v2-border-dark) !important;
+}
+
+/* Confirm Button */
+.deactivate-modal-confirm-button {
+  background-color: var(--v2-neutral-black) !important;
+  border: none !important;
+  border-radius: var(--v2-radius-lg) !important;
+  padding: 9px var(--v2-spacing-20) !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0px 2px 7px 0px rgba(115, 115, 115, 0.2) !important;
+  transition: all var(--v2-transition-fast) !important;
+  color: #ffffff !important;
+}
+
+.deactivate-modal-confirm-button span {
+  font-family: "Lato", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  line-height: 100% !important;
+  color: #ffffff !important;
+  text-align: right !important;
+}
+
+.deactivate-modal-confirm-button:hover {
+  background-color: #000000 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0px 4px 10px 0px rgba(115, 115, 115, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.deactivate-modal-confirm-button:hover span {
+  color: #ffffff !important;
+}
+
+.deactivate-modal-confirm-button:active {
+  transform: translateY(0) !important;
+  color: #ffffff !important;
+}
+
+.deactivate-modal-confirm-button:focus {
+  color: #ffffff !important;
+}
+
+/* Dark Mode Support */
+:root[data-coreui-theme="dark"] .deactivate-user-modal .modal-content,
+[data-theme="dark"] .deactivate-user-modal .modal-content {
+  background-color: var(--v2-bg-card);
+  border-color: var(--v2-border-default);
+}
+
+:root[data-coreui-theme="dark"] .deactivate-modal-title,
+[data-theme="dark"] .deactivate-modal-title,
+:root[data-coreui-theme="dark"] .deactivate-modal-question,
+[data-theme="dark"] .deactivate-modal-question,
+:root[data-coreui-theme="dark"] .deactivate-modal-username,
+[data-theme="dark"] .deactivate-modal-username {
+  color: var(--v2-text-primary);
+}
+
+:root[data-coreui-theme="dark"] .deactivate-modal-description,
+[data-theme="dark"] .deactivate-modal-description {
+  color: var(--v2-text-secondary);
+}
+
+:root[data-coreui-theme="dark"] .deactivate-modal-cancel-button,
+[data-theme="dark"] .deactivate-modal-cancel-button {
+  background-color: transparent;
+  border-color: var(--v2-border-default);
+}
+
+:root[data-coreui-theme="dark"] .deactivate-modal-cancel-button span,
+[data-theme="dark"] .deactivate-modal-cancel-button span {
+  color: var(--v2-text-primary);
+}
+
+:root[data-coreui-theme="dark"] .deactivate-modal-cancel-button:hover,
+[data-theme="dark"] .deactivate-modal-cancel-button:hover {
+  background-color: var(--v2-bg-hover);
+}
+
+:root[data-coreui-theme="dark"] .deactivate-modal-confirm-button,
+[data-theme="dark"] .deactivate-modal-confirm-button {
+  background-color: var(--v2-neutral-white);
+}
+
+:root[data-coreui-theme="dark"] .deactivate-modal-confirm-button span,
+[data-theme="dark"] .deactivate-modal-confirm-button span {
+  color: var(--v2-neutral-black);
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+  .deactivate-modal-content {
+    width: 100%;
+  }
+
+  .deactivate-modal-button-container {
+    flex-direction: column;
+    gap: var(--v2-spacing-12);
+  }
+
+  .deactivate-modal-cancel-button,
+  .deactivate-modal-confirm-button {
+    width: 100%;
+  }
+}

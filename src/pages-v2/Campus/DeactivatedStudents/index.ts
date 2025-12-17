@@ -1,0 +1,1 @@
+export { DeactivatedStudents } from "./DeactivatedStudents";

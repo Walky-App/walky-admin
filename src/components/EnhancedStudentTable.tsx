@@ -40,7 +40,7 @@ import {
   cilCheckCircle,
   cilSortAscending,
 } from '@coreui/icons';
-import API from '../API/';
+import { apiClient } from '../API/';
 
 interface Interest {
   _id: string;
@@ -68,19 +68,19 @@ const EnhancedStudentTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [flaggedUsers, setFlaggedUsers] = useState<string[]>([]);
-  
+
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-  
+
   // Copy feedback state
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  
+
   // Interests modal state
   const [interestsModalVisible, setInterestsModalVisible] = useState(false);
   const [selectedUserInterests, setSelectedUserInterests] = useState<{
@@ -92,20 +92,9 @@ const EnhancedStudentTable = () => {
     const fetchStudents = async () => {
       setLoading(true);
       try {
-        const res = await API.get<{
-          users: {
-            _id: string;
-            first_name: string;
-            last_name: string;
-            email: string;
-            createdAt: string;
-            updatedAt: string;
-            interest_ids?: Interest[];
-            interestList?: Interest[];
-            is_active?: boolean;
-            is_verified?: boolean;
-          }[];
-        }>('/users/?fields=_id,first_name,last_name,email,createdAt,updatedAt,interest_ids,interestList,is_active,is_verified');
+        const res = await apiClient.api.usersList({
+          query: { fields: '_id,first_name,last_name,email,createdAt,updatedAt,interest_ids,interestList,is_active,is_verified' }
+        } as any) as any;
 
         // Debug: Log first user to see data structure
         if (res.data.users.length > 0) {
@@ -114,7 +103,7 @@ const EnhancedStudentTable = () => {
           console.log('Students - Interest List:', res.data.users[0].interestList);
         }
 
-        const transformed = res.data.users.map((user) => ({
+        const transformed = (res.data.users as any[]).map((user: any) => ({
           id: user._id,
           name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'N/A',
           email: user.email,
@@ -169,14 +158,14 @@ const EnhancedStudentTable = () => {
       filtered.sort((a, b) => {
         const aValue = a[sortField];
         const bValue = b[sortField];
-        
+
         if (aValue === null || aValue === undefined) return 1;
         if (bValue === null || bValue === undefined) return -1;
-        
+
         let comparison = 0;
         if (aValue < bValue) comparison = -1;
         if (aValue > bValue) comparison = 1;
-        
+
         return sortDirection === 'asc' ? comparison : -comparison;
       });
     }
@@ -330,8 +319,8 @@ const EnhancedStudentTable = () => {
         <CTable hover responsive className="mb-0 left-align">
           <CTableHead>
             <CTableRow>
-              <CTableHeaderCell 
-                scope="col" 
+              <CTableHeaderCell
+                scope="col"
                 style={{ cursor: 'pointer', userSelect: 'none' }}
                 onClick={() => handleSort('id')}
               >
@@ -340,7 +329,7 @@ const EnhancedStudentTable = () => {
                   <CIcon icon={getSortIcon('id')} size="sm" />
                 </div>
               </CTableHeaderCell>
-              <CTableHeaderCell 
+              <CTableHeaderCell
                 scope="col"
                 style={{ cursor: 'pointer', userSelect: 'none' }}
                 onClick={() => handleSort('name')}
@@ -350,7 +339,7 @@ const EnhancedStudentTable = () => {
                   <CIcon icon={getSortIcon('name')} size="sm" />
                 </div>
               </CTableHeaderCell>
-              <CTableHeaderCell 
+              <CTableHeaderCell
                 scope="col"
                 style={{ cursor: 'pointer', userSelect: 'none' }}
                 onClick={() => handleSort('email')}
@@ -362,7 +351,7 @@ const EnhancedStudentTable = () => {
               </CTableHeaderCell>
               <CTableHeaderCell scope="col">Interests</CTableHeaderCell>
               <CTableHeaderCell scope="col">Account Status</CTableHeaderCell>
-              <CTableHeaderCell 
+              <CTableHeaderCell
                 scope="col"
                 style={{ cursor: 'pointer', userSelect: 'none' }}
                 onClick={() => handleSort('joined')}
@@ -372,7 +361,7 @@ const EnhancedStudentTable = () => {
                   <CIcon icon={getSortIcon('joined')} size="sm" />
                 </div>
               </CTableHeaderCell>
-              <CTableHeaderCell 
+              <CTableHeaderCell
                 scope="col"
                 style={{ cursor: 'pointer', userSelect: 'none' }}
                 onClick={() => handleSort('lastUpdate')}
@@ -406,8 +395,8 @@ const EnhancedStudentTable = () => {
                         onClick={() => handleCopyId(student.id)}
                       >
                         <code style={{ fontSize: '0.875rem' }}>{truncateId(student.id)}</code>
-                        <CIcon 
-                          icon={copiedId === student.id ? cilCheckCircle : cilCopy} 
+                        <CIcon
+                          icon={copiedId === student.id ? cilCheckCircle : cilCopy}
                           size="sm"
                           style={{ color: copiedId === student.id ? 'green' : '#6c757d' }}
                         />
@@ -426,18 +415,18 @@ const EnhancedStudentTable = () => {
                   </CTableDataCell>
                   <CTableDataCell>{student.email}</CTableDataCell>
                   <CTableDataCell>
-                    <div 
-                      className="d-flex flex-wrap gap-1" 
+                    <div
+                      className="d-flex flex-wrap gap-1"
                       style={{ maxWidth: '200px', cursor: student.interests.length > 0 ? 'pointer' : 'default' }}
                       onClick={() => student.interests.length > 0 && handleShowInterests(student.name, student.interests)}
                     >
                       {student.interests.length > 0 ? (
                         <>
                           {student.interests.slice(0, 3).map((interest) => (
-                            <CBadge 
-                              key={interest._id} 
-                              color="primary" 
-                              style={{ 
+                            <CBadge
+                              key={interest._id}
+                              color="primary"
+                              style={{
                                 fontSize: '0.65rem',
                                 fontWeight: 'normal',
                                 textTransform: 'capitalize'
@@ -447,9 +436,9 @@ const EnhancedStudentTable = () => {
                             </CBadge>
                           ))}
                           {student.interests.length > 3 && (
-                            <CBadge 
-                              color="info" 
-                              style={{ 
+                            <CBadge
+                              color="info"
+                              style={{
                                 fontSize: '0.65rem',
                                 fontWeight: 'bold'
                               }}
@@ -541,7 +530,7 @@ const EnhancedStudentTable = () => {
                 } else {
                   pageNumber = currentPage - 2 + index;
                 }
-                
+
                 return (
                   <CPaginationItem
                     key={pageNumber}
@@ -587,11 +576,11 @@ const EnhancedStudentTable = () => {
                       <CCardBody className="text-center p-3">
                         {interest.icon_url && (
                           <div className="mb-2">
-                            <img 
-                              src={interest.icon_url} 
+                            <img
+                              src={interest.icon_url}
                               alt={interest.name}
-                              style={{ 
-                                width: '48px', 
+                              style={{
+                                width: '48px',
                                 height: '48px',
                                 objectFit: 'contain'
                               }}
