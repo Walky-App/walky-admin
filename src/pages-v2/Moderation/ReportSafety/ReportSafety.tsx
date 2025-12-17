@@ -77,6 +77,7 @@ const ReportSafety: React.FC = () => {
     "event" | "idea" | "space" | "user"
   >("event");
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
+  const [banUserData, setBanUserData] = useState<{ id: string; name: string } | null>(null);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [showToast, setShowToast] = useState(false);
@@ -140,6 +141,7 @@ const ReportSafety: React.FC = () => {
       apiClient.api.adminV2StudentsLockSettingsUpdate(payload.id, {
         lockReason: payload.reason,
         isLocked: true,
+        lockDuration: payload.duration,
       }),
     onSuccess: () => {
       setToastMessage("User banned successfully");
@@ -147,6 +149,12 @@ const ReportSafety: React.FC = () => {
       setTimeout(() => setShowToast(false), 3000);
       setIsBanModalOpen(false);
       refetch();
+    },
+    onError: (error) => {
+      console.error("Error banning user:", error);
+      setToastMessage("Error banning user");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     },
   });
 
@@ -765,6 +773,11 @@ const ReportSafety: React.FC = () => {
               }}
               onBanUser={() => {
                 if (selectedReportDetails?.reportedUser?.id) {
+                  // Save user data BEFORE closing detail modal (which clears selectedReportDetails)
+                  setBanUserData({
+                    id: selectedReportDetails.reportedUser.id,
+                    name: selectedReportDetails.reportedUser.name || "Unknown",
+                  });
                   setIsDetailModalOpen(false);
                   setIsBanModalOpen(true);
                 }
@@ -781,27 +794,40 @@ const ReportSafety: React.FC = () => {
         visible={isBanModalOpen}
         onClose={() => {
           setIsBanModalOpen(false);
-          if (selectedReport && selectedReportDetails) {
+          setBanUserData(null);
+          if (selectedReport) {
             setIsDetailModalOpen(true);
           }
         }}
         onConfirm={(duration, reason) => {
-          if (selectedReportDetails?.reportedUser?.id) {
-            let durationDays = 0;
-            if (duration.includes("24 hours")) durationDays = 1;
-            else if (duration.includes("7 days")) durationDays = 7;
-            else if (duration.includes("30 days")) durationDays = 30;
-            else if (duration.includes("Permanent")) durationDays = 36500;
+          if (banUserData?.id) {
+            // Modal sends: "1 Day", "3 Days", "7 Days", "14 Days", "30 Days", "90 Days"
+            const durationMap: Record<string, number> = {
+              "1 Day": 1,
+              "3 Days": 3,
+              "7 Days": 7,
+              "14 Days": 14,
+              "30 Days": 30,
+              "90 Days": 90,
+              "Permanent": 36500,
+            };
+            const durationDays = durationMap[duration] || parseInt(duration) || 7;
 
             banStudentMutation.mutate({
-              id: selectedReportDetails.reportedUser.id,
+              id: banUserData.id,
               duration: durationDays,
               reason,
             });
             setIsBanModalOpen(false);
+            setBanUserData(null);
+          } else {
+            console.error("❌ Cannot ban user: banUserData.id is missing");
+            setToastMessage("Error: User ID not found");
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
           }
         }}
-        userName={selectedReportDetails?.reportedUser?.name}
+        userName={banUserData?.name}
       />
 
       <DeactivateUserModal
@@ -831,6 +857,11 @@ const ReportSafety: React.FC = () => {
               type: flagModalType,
               reason,
             });
+          } else {
+            setToastMessage("Unable to flag: missing item ID");
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+            setIsFlagModalOpen(false);
           }
         }}
         itemName={selectedReport?.description || ""}

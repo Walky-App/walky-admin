@@ -87,6 +87,16 @@ const readUpdateExport: ResourcePermission = {
   manage: false,
 };
 
+// Read, update, delete, export permissions (for content management)
+const readUpdateDeleteExport: ResourcePermission = {
+  read: true,
+  create: false,
+  update: true,
+  delete: true,
+  export: true,
+  manage: false,
+};
+
 // Create, read, delete permissions (for Ambassadors)
 const createReadDelete: ResourcePermission = {
   read: true,
@@ -138,13 +148,13 @@ export const permissionMatrix: PermissionMatrix = {
     disengaged_students: readExport,
     reported_content: readUpdateExport,
     // Events
-    events_manager: readUpdateExport,
+    events_manager: readUpdateDeleteExport,
     events_insights: readExport,
     // Spaces
-    spaces_manager: readUpdateExport,
+    spaces_manager: readUpdateDeleteExport,
     spaces_insights: readExport,
     // Ideas
-    ideas_manager: readUpdateExport,
+    ideas_manager: readUpdateDeleteExport,
     ideas_insights: readExport,
     // Moderation
     report_safety: readUpdateExport,
@@ -171,13 +181,13 @@ export const permissionMatrix: PermissionMatrix = {
     disengaged_students: readExport,
     reported_content: readUpdateExport,
     // Events
-    events_manager: readUpdateExport,
+    events_manager: readUpdateDeleteExport,
     events_insights: readExport,
     // Spaces
-    spaces_manager: readUpdateExport,
+    spaces_manager: readUpdateDeleteExport,
     spaces_insights: readExport,
     // Ideas
-    ideas_manager: readUpdateExport,
+    ideas_manager: readUpdateDeleteExport,
     ideas_insights: readExport,
     // Moderation
     report_safety: readUpdateExport,
@@ -204,13 +214,13 @@ export const permissionMatrix: PermissionMatrix = {
     disengaged_students: readExport,
     reported_content: readUpdateExport,
     // Events
-    events_manager: readUpdateExport,
+    events_manager: readUpdateDeleteExport,
     events_insights: readExport,
     // Spaces
-    spaces_manager: readUpdateExport,
+    spaces_manager: readUpdateDeleteExport,
     spaces_insights: readExport,
     // Ideas
-    ideas_manager: readUpdateExport,
+    ideas_manager: readUpdateDeleteExport,
     ideas_insights: readExport,
     // Moderation
     report_safety: readUpdateExport,
