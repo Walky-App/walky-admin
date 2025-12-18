@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AssetIcon from "../../components-v2/AssetIcon/AssetIcon";
 import AssetImage from "../../components-v2/AssetImage/AssetImage";
 import { apiClient } from "../../API";
@@ -6,10 +7,41 @@ import toast from "react-hot-toast";
 import "./ForcePasswordChange.css";
 
 const ForcePasswordChange: React.FC = () => {
+    const navigate = useNavigate();
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [isChecking, setIsChecking] = useState(true);
+
+    // Check authentication and password reset requirement on mount
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const userStr = localStorage.getItem("user");
+
+        if (!token || !userStr) {
+            // Not authenticated, redirect to login
+            navigate("/login", { replace: true });
+            return;
+        }
+
+        try {
+            const user = JSON.parse(userStr);
+            if (!user.require_password_change) {
+                // Doesn't need password change, redirect to home
+                navigate("/", { replace: true });
+                return;
+            }
+        } catch {
+            // Invalid user data, redirect to login
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            navigate("/login", { replace: true });
+            return;
+        }
+
+        setIsChecking(false);
+    }, [navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -57,6 +89,11 @@ const ForcePasswordChange: React.FC = () => {
             setIsLoading(false);
         }
     };
+
+    // Show nothing while checking authentication
+    if (isChecking) {
+        return null;
+    }
 
     return (
         <main

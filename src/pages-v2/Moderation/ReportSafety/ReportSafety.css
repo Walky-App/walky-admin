@@ -341,6 +341,7 @@
 
 .reports-table tbody td:first-child {
   padding-left: 35px;
+  position: relative;
 }
 
 .reports-table tbody tr:last-child td {
@@ -392,20 +393,21 @@
 }
 
 /* Flagged Row */
-.flagged-row {
-  background: #fff3f2;
+.report-row-flagged {
+  background-color: #fff3f2 !important;
 }
 
-.flagged-row td {
+.report-row-flagged td {
+  background-color: #fff3f2 !important;
   border-bottom: none;
 }
 
-.flagged-row td:first-child {
+.report-row-flagged td:first-child {
   border-radius: 16px 0 0 16px;
   position: relative;
 }
 
-.flagged-row td:last-child {
+.report-row-flagged td:last-child {
   border-radius: 0 16px 16px 0;
 }
 
@@ -423,7 +425,7 @@
   flex: 1;
 }
 
-.flag-icon-wrapper {
+.report-flag-icon {
   position: absolute;
   top: 8px;
   left: 12px;
@@ -626,8 +628,14 @@
   color: #7a8fff;
 }
 
-.reports-container.dark-mode .flagged-row {
-  background-color: #3a2020;
+.reports-container.dark-mode .report-row-flagged,
+.reports-container.dark-mode .report-row-flagged td {
+  background-color: #2a1f1f !important;
+}
+
+[data-theme="dark"] .report-row-flagged,
+[data-theme="dark"] .report-row-flagged td {
+  background-color: #2a1f1f !important;
 }
 
 .reports-container.dark-mode .status-dropdown-cell {

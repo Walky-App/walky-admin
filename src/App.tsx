@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 
 import { useTheme } from "./hooks/useTheme";
 import { DeactivatedUserProvider } from "./contexts/DeactivatedUserContext";
+import { AuthGuard } from "./components-v2";
 
 import V2Routes from "./routes/v2Routes";
 
@@ -76,7 +77,11 @@ function App() {
         <Route path="/v2/*" element={<V2RedirectHandler />} />
 
         {/* V2 Layout Routes - New Design System (Default) */}
-        <Route path="/*" element={<V2Routes />} />
+        <Route path="/*" element={
+          <AuthGuard>
+            <V2Routes />
+          </AuthGuard>
+        } />
       </Routes>
     </DeactivatedUserProvider>
   );

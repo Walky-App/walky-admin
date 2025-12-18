@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../../API";
 import { usePermissions } from "../../../../hooks/usePermissions";
 import { useTheme } from "../../../../hooks/useTheme";
@@ -15,6 +15,8 @@ import {
   SpaceDetailsData,
   UnflagModal,
   Divider,
+  ChangeCategoryModal,
+  CategoryOption,
 } from "../../../../components-v2";
 import { SpaceTypeChip, SpaceType } from "../SpaceTypeChip/SpaceTypeChip";
 import "./SpaceTable.css";
@@ -74,6 +76,28 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
   );
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [spaceToEditCategory, setSpaceToEditCategory] =
+    useState<SpaceData | null>(null);
+
+  // Fetch categories for the modal
+  const { data: categoriesData } = useQuery({
+    queryKey: ["spaceCategories"],
+    queryFn: () => apiClient.api.adminSpaceCategoriesList(),
+  });
+
+  const categories: CategoryOption[] = React.useMemo(() => {
+    const responseData = categoriesData?.data as
+      | CategoryOption[]
+      | { data?: CategoryOption[] }
+      | undefined;
+    const cats: CategoryOption[] = Array.isArray(responseData)
+      ? responseData
+      : Array.isArray(responseData?.data)
+      ? responseData.data
+      : [];
+    return [...cats].sort((a, b) => a.name.localeCompare(b.name));
+  }, [categoriesData]);
 
   const deleteMutation = useMutation({
     mutationFn: (data: { id: string; reason?: string }) =>
@@ -123,6 +147,27 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
     onError: (error) => {
       console.error("Error unflagging space:", error);
       setToastMessage("Error unflagging space");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+  });
+
+  const updateCategoryMutation = useMutation({
+    mutationFn: (data: { id: string; categoryId: string }) =>
+      apiClient.api.adminV2SpacesPartialUpdate(data.id, {
+        category: data.categoryId,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["spaces"] });
+      setToastMessage("Category updated successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setCategoryModalOpen(false);
+      setSpaceToEditCategory(null);
+    },
+    onError: (error) => {
+      console.error("Error updating category:", error);
+      setToastMessage("Error updating category");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     },
@@ -286,6 +331,21 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
     }
   };
 
+  const handleEditCategory = (space: SpaceData, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSpaceToEditCategory(space);
+    setCategoryModalOpen(true);
+  };
+
+  const handleCategoryConfirm = (categoryId: string) => {
+    if (spaceToEditCategory) {
+      updateCategoryMutation.mutate({
+        id: spaceToEditCategory.id,
+        categoryId,
+      });
+    }
+  };
+
   // Mark the first item as flagged for visual testing only.
   const decoratedSpaces = spaces;
 
@@ -429,6 +489,15 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
                         label: "Space Details",
                         onClick: (e) => handleViewSpaceDetails(space, e),
                       },
+                      ...(canFlagSpaces
+                        ? [
+                            {
+                              label: "Edit Category",
+                              onClick: (e: React.MouseEvent) =>
+                                handleEditCategory(space, e),
+                            },
+                          ]
+                        : []),
                       ...(canFlagSpaces || canDeleteSpaces
                         ? [
                             {
@@ -515,6 +584,18 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
           setSelectedSpace(null);
         }}
         spaceData={selectedSpace}
+      />
+
+      <ChangeCategoryModal
+        isOpen={categoryModalOpen}
+        onClose={() => {
+          setCategoryModalOpen(false);
+          setSpaceToEditCategory(null);
+        }}
+        onConfirm={handleCategoryConfirm}
+        categories={categories}
+        spaceName={spaceToEditCategory?.spaceName || ""}
+        isLoading={updateCategoryMutation.isPending}
       />
 
       {showToast && (

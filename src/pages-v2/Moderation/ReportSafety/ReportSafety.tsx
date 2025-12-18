@@ -39,6 +39,7 @@ interface ReportData {
   reasonTag: string;
   status: string;
   isFlagged?: boolean;
+  flagReason?: string | null;
 }
 
 const ReportSafety: React.FC = () => {
@@ -166,7 +167,12 @@ const ReportSafety: React.FC = () => {
   });
 
   const flagMutation = useMutation({
-    mutationFn: (data: { id: string; type: string; reason: string }) => {
+    mutationFn: (data: {
+      id: string;
+      type: string;
+      reason: string;
+      reportId: string;
+    }) => {
       switch (data.type.toLowerCase()) {
         case "user":
           return apiClient.api.adminV2StudentsFlagCreate(data.id, {
@@ -188,15 +194,153 @@ const ReportSafety: React.FC = () => {
           throw new Error(`Cannot flag type: ${data.type}`);
       }
     },
+    onMutate: async (data) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["reports"] });
+
+      // Snapshot the previous value
+      const previousReports = queryClient.getQueryData([
+        "reports",
+        currentPage,
+        debouncedSearchQuery,
+        selectedTypes,
+        selectedStatus,
+        sortOrder,
+      ]);
+
+      // Optimistically update the cache
+      queryClient.setQueryData(
+        [
+          "reports",
+          currentPage,
+          debouncedSearchQuery,
+          selectedTypes,
+          selectedStatus,
+          sortOrder,
+        ],
+        (old: any) => {
+          if (!old?.data?.data) return old;
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              data: old.data.data.map((report: any) =>
+                report.id === data.reportId
+                  ? { ...report, isFlagged: true, flagReason: data.reason }
+                  : report
+              ),
+            },
+          };
+        }
+      );
+
+      return { previousReports };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["reports"] });
       setToastMessage("Item flagged successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
       setIsFlagModalOpen(false);
     },
-    onError: () => {
+    onError: (_error, _data, context) => {
+      // Rollback to the previous value on error
+      if (context?.previousReports) {
+        queryClient.setQueryData(
+          [
+            "reports",
+            currentPage,
+            debouncedSearchQuery,
+            selectedTypes,
+            selectedStatus,
+            sortOrder,
+          ],
+          context.previousReports
+        );
+      }
       setToastMessage("Error flagging item");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+  });
+
+  const unflagMutation = useMutation({
+    mutationFn: (data: { id: string; type: string; reportId: string }) => {
+      switch (data.type.toLowerCase()) {
+        case "user":
+          return apiClient.api.adminV2StudentsUnflagCreate(data.id);
+        case "event":
+          return apiClient.api.adminV2EventsUnflagCreate(data.id);
+        case "idea":
+          return apiClient.api.adminV2IdeasUnflagCreate(data.id);
+        case "space":
+          return apiClient.api.adminV2SpacesUnflagCreate(data.id);
+        default:
+          throw new Error(`Cannot unflag type: ${data.type}`);
+      }
+    },
+    onMutate: async (data) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["reports"] });
+
+      // Snapshot the previous value
+      const previousReports = queryClient.getQueryData([
+        "reports",
+        currentPage,
+        debouncedSearchQuery,
+        selectedTypes,
+        selectedStatus,
+        sortOrder,
+      ]);
+
+      // Optimistically update the cache
+      queryClient.setQueryData(
+        [
+          "reports",
+          currentPage,
+          debouncedSearchQuery,
+          selectedTypes,
+          selectedStatus,
+          sortOrder,
+        ],
+        (old: any) => {
+          if (!old?.data?.data) return old;
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              data: old.data.data.map((report: any) =>
+                report.id === data.reportId
+                  ? { ...report, isFlagged: false, flagReason: null }
+                  : report
+              ),
+            },
+          };
+        }
+      );
+
+      return { previousReports };
+    },
+    onSuccess: () => {
+      setToastMessage("Item unflagged successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+    onError: (_error, _data, context) => {
+      // Rollback to the previous value on error
+      if (context?.previousReports) {
+        queryClient.setQueryData(
+          [
+            "reports",
+            currentPage,
+            debouncedSearchQuery,
+            selectedTypes,
+            selectedStatus,
+            sortOrder,
+          ],
+          context.previousReports
+        );
+      }
+      setToastMessage("Error unflagging item");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     },
@@ -215,6 +359,7 @@ const ReportSafety: React.FC = () => {
         reasonTag: report.reasonTag,
         status: report.status,
         isFlagged: report.isFlagged,
+        flagReason: report.flagReason,
       })),
     [reportsData]
   );
@@ -230,6 +375,7 @@ const ReportSafety: React.FC = () => {
         reasonTag: report.reasonTag,
         status: report.status,
         isFlagged: report.isFlagged,
+        flagReason: report.flagReason,
       })),
     [reports]
   );
@@ -595,6 +741,16 @@ const ReportSafety: React.FC = () => {
                 setIsFlagModalOpen(true);
               }
             }}
+            onUnflag={(row) => {
+              const matched = reports.find((r) => r.id === row.id);
+              if (matched && matched.reportedItemId) {
+                unflagMutation.mutate({
+                  id: matched.reportedItemId,
+                  type: normalizeFlagType(matched.type),
+                  reportId: matched.id,
+                });
+              }
+            }}
             getReasonColor={getReasonColor}
             formatDate={formatReportDateParts}
             actionTestId="report-options"
@@ -790,9 +946,13 @@ const ReportSafety: React.FC = () => {
                 },
                 safetyRecord: {
                   banHistory:
-                    selectedReportDetails.reportedUser?.banHistory || [],
-                  reportHistory: [],
-                  blockHistory: [],
+                    selectedReportDetails.safetyRecord?.banHistory ||
+                    selectedReportDetails.reportedUser?.banHistory ||
+                    [],
+                  reportHistory:
+                    selectedReportDetails.safetyRecord?.reportHistory || [],
+                  blockHistory:
+                    selectedReportDetails.safetyRecord?.blockHistory || [],
                 },
                 notes: selectedReportDetails.notes || [],
               }}
@@ -905,6 +1065,7 @@ const ReportSafety: React.FC = () => {
               id: selectedReport.reportedItemId,
               type: flagModalType,
               reason,
+              reportId: selectedReport.id,
             });
           } else {
             setToastMessage("Unable to flag: missing item ID");

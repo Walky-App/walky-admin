@@ -60,20 +60,21 @@ export const IdeasInsights: React.FC = () => {
       setLoading(true);
       try {
         // Fetch counts with time period filter
+        // API types are incomplete - period param is supported by backend
         const periodParam = timePeriod === "all" ? undefined : timePeriod;
         const [totalRes, collaboratedRes, ideasRes, timeMetricsRes] = await Promise.all([
           apiClient.api.adminAnalyticsIdeasCountList({
             type: "total",
             period: periodParam,
-          }),
+          } as Parameters<typeof apiClient.api.adminAnalyticsIdeasCountList>[0]),
           apiClient.api.adminAnalyticsIdeasCountList({
             type: "collaborated",
             period: periodParam,
-          }),
-          apiClient.api.adminV2IdeasList({ limit: 100, period: periodParam }),
+          } as Parameters<typeof apiClient.api.adminAnalyticsIdeasCountList>[0]),
+          apiClient.api.adminV2IdeasList({ limit: 100, period: periodParam } as Parameters<typeof apiClient.api.adminV2IdeasList>[0]),
           apiClient.api.adminAnalyticsIdeasTimeMetricsList({
             period: periodParam,
-          }).catch(() => ({ data: null })),
+          } as Parameters<typeof apiClient.api.adminAnalyticsIdeasTimeMetricsList>[0]).catch(() => ({ data: null })),
         ]);
 
         // Extract count from response - API returns different fields based on type
@@ -93,8 +94,9 @@ export const IdeasInsights: React.FC = () => {
         });
 
         // Process time metrics if available
-        if (timeMetricsRes.data) {
-          const metricsData = timeMetricsRes.data as TimeMetrics & { lastUpdated?: string };
+        const timeMetricsData = (timeMetricsRes as { data: (TimeMetrics & { lastUpdated?: string }) | null }).data;
+        if (timeMetricsData) {
+          const metricsData = timeMetricsData;
           setTimeMetrics({
             timeToFirstCollaborator: metricsData.timeToFirstCollaborator || {
               value: 0,

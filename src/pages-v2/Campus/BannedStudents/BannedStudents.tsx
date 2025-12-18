@@ -7,6 +7,8 @@ import { StudentData, StudentTableColumn } from "../components/StudentTable";
 import { StudentTableSkeleton } from "../components/StudentTableSkeleton/StudentTableSkeleton";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 import "./BannedStudents.css";
 
 import { useQuery } from "@tanstack/react-query";
@@ -14,6 +16,8 @@ import { apiClient } from "../../../API";
 
 export const BannedStudents: React.FC = () => {
   const { canExport } = usePermissions();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -62,8 +66,12 @@ export const BannedStudents: React.FC = () => {
   });
 
   const { data: statsData } = useQuery({
-    queryKey: ["studentStats"],
-    queryFn: () => apiClient.api.adminV2StudentsStatsList(),
+    queryKey: ["studentStats", selectedSchool?._id, selectedCampus?._id],
+    queryFn: () =>
+      apiClient.api.adminV2StudentsStatsList({
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
   });
 
   const isLoading = isStudentsLoading;

@@ -1,4 +1,5 @@
 import React from "react";
+import { CTooltip } from "@coreui/react";
 import {
   ActionDropdown,
   AssetIcon,
@@ -29,6 +30,7 @@ export type ReportRow = {
   reasonTag: string;
   status: string;
   isFlagged?: boolean;
+  flagReason?: string | null;
 };
 
 interface EmptyStateProps {
@@ -48,6 +50,7 @@ interface ReportsTableProps {
   onStatusChange: (id: string, newStatus: string) => void;
   onNoteRequired?: (id: string, newStatus: string) => void;
   onFlag: (row: ReportRow) => void;
+  onUnflag?: (row: ReportRow) => void;
   getReasonColor: (reason: string) => { bg: string; text: string };
   formatDate?: (value: string) => { date: string; time?: string | null };
   statusOptions?: ReportStatus[] | string[];
@@ -71,6 +74,7 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
   onStatusChange,
   onNoteRequired,
   onFlag,
+  onUnflag,
   getReasonColor: _getReasonColor,
   formatDate,
   statusOptions = [
@@ -177,8 +181,24 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
 
               return (
                 <React.Fragment key={report.id}>
-                  <tr>
+                  <tr
+                    className={report.isFlagged ? "report-row-flagged" : ""}
+                  >
                     <td>
+                      {report.isFlagged && (
+                        <CTooltip
+                          content={report.flagReason || "Flagged"}
+                          placement="top"
+                        >
+                          <div className="report-flag-icon">
+                            <AssetIcon
+                              name="flag-icon"
+                              size={16}
+                              color="#d32f2f"
+                            />
+                          </div>
+                        </CTooltip>
+                      )}
                       <div className="report-description-cell">
                         <div className="report-content-wrapper">
                           <p
@@ -292,12 +312,19 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
                           ...(canFlag
                             ? [
                                 {
-                                  label: "Flag",
+                                  label: report.isFlagged ? "Unflag" : "Flag",
                                   icon: "flag-icon" as const,
                                   iconSize: 18,
+                                  variant: report.isFlagged
+                                    ? ("danger" as const)
+                                    : undefined,
                                   onClick: (e: React.MouseEvent) => {
                                     e.stopPropagation();
-                                    onFlag(report);
+                                    if (report.isFlagged && onUnflag) {
+                                      onUnflag(report);
+                                    } else {
+                                      onFlag(report);
+                                    }
                                   },
                                 },
                               ]

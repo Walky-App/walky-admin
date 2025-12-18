@@ -150,6 +150,17 @@
   color: var(--v2-text-primary);
 }
 
+.selector-value-readonly {
+  font-family: var(--v2-font-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: var(--v2-text-primary);
+  display: flex;
+  align-items: center;
+}
+
 /* User Actions */
 .user-actions {
   display: flex;

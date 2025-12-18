@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./RecoverPasswordV2.css";
 import VerifyCodeStep from "../VerifyCodeStep/VerifyCodeStep";
 import ResetPasswordStep from "../ResetPasswordStep/ResetPasswordStep";
-import { AssetIcon } from "../../../components-v2";
+import { AssetIcon, CustomToast } from "../../../components-v2";
 
 type RecoveryStep = "email" | "verify" | "reset";
 
@@ -17,6 +17,9 @@ const RecoverPasswordV2: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<RecoveryStep>("email");
   const [error, setError] = useState("");
+  const [resetError, setResetError] = useState("");
+  const [resetErrors, setResetErrors] = useState<string[]>([]);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +54,8 @@ const RecoverPasswordV2: React.FC = () => {
 
   const handleReset = async (password: string) => {
     setIsLoading(true);
-    setError("");
+    setResetError("");
+    setResetErrors([]);
     try {
       await apiClient.api.resetPasswordCreate({
         email,
@@ -60,12 +64,24 @@ const RecoverPasswordV2: React.FC = () => {
         password_confirmed: password,
       });
       console.log("Password reset complete");
-      navigate("/login");
+      setShowSuccessToast(true);
+      // Navigate after showing toast
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (err: any) {
       console.error("Password reset failed:", err);
-      // If OTP is invalid, maybe go back to verify step?
-      // For now just show error
-      alert(err?.response?.data?.message || "Failed to reset password.");
+      const data = err?.response?.data;
+
+      // Handle password validation errors - show in form, not alert
+      if (data?.message === "Password validation failed" && data?.errors) {
+        setResetErrors(data.errors);
+        throw err; // Re-throw so child component can handle loading state
+      }
+
+      // Handle other errors
+      setResetError(data?.message || "Failed to reset password.");
+      throw err; // Re-throw so child component can handle loading state
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +114,18 @@ const RecoverPasswordV2: React.FC = () => {
         data-testid="recover-password-reset-step"
         aria-label="Reset password page"
       >
-        <ResetPasswordStep onReset={handleReset} />
+        <ResetPasswordStep
+          onReset={handleReset}
+          apiError={resetError}
+          apiErrors={resetErrors}
+        />
+        {showSuccessToast && (
+          <CustomToast
+            message="Password reset successfully! Redirecting to login..."
+            onClose={() => setShowSuccessToast(false)}
+            duration={2000}
+          />
+        )}
       </main>
     );
   }

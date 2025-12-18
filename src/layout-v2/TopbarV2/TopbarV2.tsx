@@ -261,10 +261,11 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
 
         {/* Main Container */}
         <div className="topbar-main">
-          {/* School and Campus Selectors - Only visible for super admins */}
-          {isSuperAdmin() && (
-            <div className="selector-container">
-              {isMobile ? (
+          {/* School and Campus Selectors - Dropdown for super admins, read-only display for others */}
+          <div className="selector-container">
+            {isSuperAdmin() ? (
+              // Super admin: Interactive dropdowns
+              isMobile ? (
                 <>
                   {/* Mobile: Icon buttons with text */}
                   <button
@@ -400,9 +401,50 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                     </div>
                   </div>
                 </>
-              )}
-            </div>
-          )}
+              )
+            ) : (
+              // Non-super admin: Read-only display of school and campus
+              <>
+                <div className="selector-group">
+                  <div className="selector-icon">
+                    <AssetIcon
+                      name="school-icon"
+                      color={theme.colors.bodyColor}
+                    />
+                  </div>
+                  <div className="selector-info">
+                    <span className="selector-label">Your school</span>
+                    <span className="selector-value-readonly">
+                      {isLoadingSchools ? (
+                        <CSpinner size="sm" />
+                      ) : (
+                        selectedSchool?.school_name || "Not assigned"
+                      )}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="selector-group">
+                  <div className="selector-icon">
+                    <AssetIcon
+                      name="campus-icon"
+                      color={theme.colors.bodyColor}
+                    />
+                  </div>
+                  <div className="selector-info">
+                    <span className="selector-label">Your campus</span>
+                    <span className="selector-value-readonly">
+                      {isLoadingCampuses ? (
+                        <CSpinner size="sm" />
+                      ) : (
+                        selectedCampus?.campus_name || "Not assigned"
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
 
           {/* User Actions */}
           <div className="user-actions">
