@@ -383,7 +383,7 @@ export const Ambassadors: React.FC = () => {
                 <tr>
                   <td colSpan={7} className="empty-state-cell">
                     <NoData
-                      message="No ambassadors found"
+                      message="No ambassadors created yet"
                       iconName="double-users-icon"
                     />
                   </td>
@@ -464,7 +464,9 @@ export const Ambassadors: React.FC = () => {
                           <button
                             data-testid="delete-ambassador-btn"
                             className="delete-button"
-                            onClick={() => handleDeleteAmbassador(ambassador.id)}
+                            onClick={() =>
+                              handleDeleteAmbassador(ambassador.id)
+                            }
                             title="Delete ambassador"
                           >
                             <AssetIcon name="delete-icon" size={24} />

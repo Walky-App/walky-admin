@@ -15,7 +15,6 @@ import {
   StudentProfileModal,
   UnbanUserModal,
 } from "../../../components-v2";
-import { getFirstName } from "../../../lib/utils/nameUtils";
 import { InterestChip } from "./InterestChip";
 import { NoStudentsFound } from "./NoStudentsFound/NoStudentsFound";
 import { StatusBadge } from "./StatusBadge";
@@ -292,14 +291,71 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
 
   const formatBanDateParts = (student: StudentData) => {
     const { bannedDate, bannedTime } = student;
+
     if (!bannedDate && !bannedTime) {
       return { date: "-", time: null as string | null };
     }
 
-    return {
-      date: bannedDate || "-",
-      time: bannedTime || null,
-    };
+    const parsedDate = bannedDate ? new Date(bannedDate) : null;
+    const hasValidDate = parsedDate && !Number.isNaN(parsedDate.getTime());
+
+    const dateText = hasValidDate
+      ? new Intl.DateTimeFormat("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          timeZone: "UTC",
+        }).format(parsedDate as Date)
+      : bannedDate || "-";
+
+    const timeText = bannedTime
+      ? bannedTime
+      : hasValidDate
+      ? new Intl.DateTimeFormat("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: false,
+          timeZone: "UTC",
+        }).format(parsedDate as Date)
+      : null;
+
+    return { date: dateText, time: timeText };
+  };
+
+  const parseDurationDays = (duration?: string | null) => {
+    if (!duration) return null;
+    const lower = duration.toLowerCase();
+    if (lower.includes("permanent")) return null;
+    const match = duration.match(/(\d+(?:\.\d+)?)/);
+    if (!match) return null;
+    const days = parseFloat(match[1]);
+    return Number.isFinite(days) ? days : null;
+  };
+
+  const getExpiresInText = (student: StudentData) => {
+    const expiresIn = student.banHistory?.[0]?.expiresIn;
+    if (expiresIn) return expiresIn;
+
+    const durationDays = parseDurationDays(student.duration);
+    if (!durationDays) return null;
+
+    const start = student.bannedDate ? new Date(student.bannedDate) : null;
+    if (!start || Number.isNaN(start.getTime())) return null;
+
+    const end = new Date(start.getTime() + durationDays * 24 * 60 * 60 * 1000);
+    const diffMs = end.getTime() - Date.now();
+    if (diffMs <= 0) return "Expired";
+
+    const diffHours = diffMs / (1000 * 60 * 60);
+    if (diffHours >= 36) {
+      const days = Math.round(diffHours / 24);
+      return `Expires in about ${days} day${days === 1 ? "" : "s"}`;
+    }
+
+    const roundedHours = Math.round(diffHours);
+    return `Expires in about ${roundedHours} hour${
+      roundedHours === 1 ? "" : "s"
+    }`;
   };
 
   const columnConfig: Record<
@@ -339,7 +395,24 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
                 </div>
               )}
             </div>
-            <span className="student-name">{getFirstName(student.name)}</span>
+            <div className="student-texts">
+              <span className="student-name">{student.name}</span>
+              <div className="student-email-row">
+                <span className="student-email student-email--muted">
+                  {student.email}
+                </span>
+                <button
+                  type="button"
+                  className="student-copy-btn"
+                  data-testid="copy-student-email"
+                  onClick={() => handleSendEmail(student)}
+                  title="Copy email"
+                  aria-label="Copy email"
+                >
+                  <AssetIcon name="copy-icon" size={14} color="#ACB6BA" />
+                </button>
+              </div>
+            </div>
           </div>
         </>
       ),
@@ -378,9 +451,16 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     bannedDate: {
       label: "Banned date",
       sortable: true,
-      render: (student) => (
-        <span className="student-date">{formatBanDateParts(student).date}</span>
-      ),
+      render: (student) =>
+        (() => {
+          const parts = formatBanDateParts(student);
+          return (
+            <div className="ban-date-cell">
+              <span className="student-date">{parts.date}</span>
+              {parts.time && <span className="student-time">{parts.time}</span>}
+            </div>
+          );
+        })(),
     },
     bannedBy: {
       label: "Banned by",
@@ -395,7 +475,19 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     duration: {
       label: "Duration",
       sortable: false,
-      render: (student) => <span>{student.duration || "-"}</span>,
+      render: (student) => {
+        const duration = student.duration || "-";
+        const expiresText = getExpiresInText(student);
+
+        return (
+          <div className="ban-duration-cell">
+            <span className="ban-duration-pill">{duration}</span>
+            {expiresText && (
+              <span className="ban-duration-subtext">{expiresText}</span>
+            )}
+          </div>
+        );
+      },
     },
     deactivatedDate: {
       label: "Deactivated date",

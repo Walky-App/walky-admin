@@ -1,5 +1,9 @@
-import React, { useRef, useState } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  useQuery,
+  keepPreviousData,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import {
   CRow,
@@ -25,6 +29,7 @@ import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
 const Engagement: React.FC = () => {
+  const queryClient = useQueryClient();
   const { theme } = useTheme();
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
@@ -36,6 +41,27 @@ const Engagement: React.FC = () => {
   // Check if user can export engagement data
   const showExport = canExport("engagement");
 
+  const fetchDashboardStats = (period: "week" | "month" | "all-time") =>
+    apiClient.api.adminV2DashboardStatsList({
+      period,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id,
+    });
+
+  const fetchEngagementStats = (period: "week" | "month" | "all-time") =>
+    apiClient.api.adminV2DashboardEngagementList({
+      period,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id,
+    });
+
+  const fetchRetentionStats = (period: "week" | "month" | "all-time") =>
+    apiClient.api.adminV2DashboardRetentionList({
+      period,
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id,
+    });
+
   const { data: engagementData, isLoading: isEngagementLoading } = useQuery({
     queryKey: [
       "engagementStats",
@@ -44,11 +70,7 @@ const Engagement: React.FC = () => {
       selectedCampus?._id,
     ],
     queryFn: () =>
-      apiClient.api.adminV2DashboardEngagementList({
-        period: timePeriod,
-        schoolId: selectedSchool?._id,
-        campusId: selectedCampus?._id,
-      }),
+      fetchEngagementStats(timePeriod as "week" | "month" | "all-time"),
     placeholderData: keepPreviousData,
   });
 
@@ -60,11 +82,7 @@ const Engagement: React.FC = () => {
       selectedCampus?._id,
     ],
     queryFn: () =>
-      apiClient.api.adminV2DashboardRetentionList({
-        period: timePeriod,
-        schoolId: selectedSchool?._id,
-        campusId: selectedCampus?._id,
-      }),
+      fetchRetentionStats(timePeriod as "week" | "month" | "all-time"),
     placeholderData: keepPreviousData,
   });
 
@@ -76,24 +94,74 @@ const Engagement: React.FC = () => {
       selectedCampus?._id,
     ],
     queryFn: () =>
-      apiClient.api.adminV2DashboardStatsList({
-        period: timePeriod as "week" | "month" | "all-time",
-        schoolId: selectedSchool?._id,
-        campusId: selectedCampus?._id,
-      }),
+      fetchDashboardStats(timePeriod as "week" | "month" | "all-time"),
     placeholderData: keepPreviousData,
   });
+
+  useEffect(() => {
+    const periods: Array<"week" | "month" | "all-time"> = [
+      "week",
+      "month",
+      "all-time",
+    ];
+
+    periods.forEach((period) => {
+      queryClient.prefetchQuery({
+        queryKey: [
+          "dashboardStats",
+          period,
+          selectedSchool?._id,
+          selectedCampus?._id,
+        ],
+        queryFn: () => fetchDashboardStats(period),
+      });
+      queryClient.prefetchQuery({
+        queryKey: [
+          "engagementStats",
+          period,
+          selectedSchool?._id,
+          selectedCampus?._id,
+        ],
+        queryFn: () => fetchEngagementStats(period),
+      });
+      queryClient.prefetchQuery({
+        queryKey: [
+          "retentionStats",
+          period,
+          selectedSchool?._id,
+          selectedCampus?._id,
+        ],
+        queryFn: () => fetchRetentionStats(period),
+      });
+    });
+  }, [queryClient, selectedCampus?._id, selectedSchool?._id]);
 
   const isLoading = isEngagementLoading || isRetentionLoading || isStatsLoading;
 
   // Helper to format trend data for StatsCard
-  const formatTrend = (changeData: { changePercentage?: string; changeDirection?: string } | undefined) => {
-    if (!changeData || changeData.changePercentage === "N/A" || timePeriod === "all-time") {
+  const formatTrend = (
+    changeData:
+      | { changePercentage?: string; changeDirection?: string }
+      | undefined
+  ) => {
+    if (!changeData) {
       return undefined;
     }
+    const direction: "up" | "down" | "neutral" =
+      changeData.changeDirection === "neutral" ||
+      changeData.changePercentage === "0%" ||
+      changeData.changePercentage === "N/A"
+        ? "neutral"
+        : changeData.changeDirection === "up"
+        ? "up"
+        : "down";
+    const value =
+      changeData.changePercentage === "N/A"
+        ? "0%"
+        : changeData.changePercentage || "0%";
     return {
-      value: changeData.changePercentage || "0%",
-      direction: (changeData.changeDirection === "up" ? "up" : "down") as "up" | "down",
+      value,
+      direction,
       text: "from last period",
     };
   };

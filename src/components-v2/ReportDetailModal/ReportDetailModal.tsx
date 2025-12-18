@@ -610,6 +610,11 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     ? "This user is currently deactivated"
     : null;
 
+  const isUserBanned = !!reportData.associatedUser.isBanned;
+  const isUserDeactivated = !!reportData.associatedUser.isDeactivated;
+  const disableBanUser = isUserBanned;
+  const disableDeactivateUser = isUserBanned || isUserDeactivated;
+
   const renderContentSkeleton = () => {
     const wrapContent = (body: React.ReactNode) => (
       <div className="rdm-content-section">
@@ -932,6 +937,15 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                         className="rdm-deactivate-btn"
                         onClick={handleDeactivateUser}
                         data-testid="report-detail-deactivate-btn"
+                        disabled={disableDeactivateUser}
+                        aria-disabled={disableDeactivateUser}
+                        title={
+                          isUserBanned
+                            ? "User is banned"
+                            : isUserDeactivated
+                            ? "User is already deactivated"
+                            : "Deactivate user"
+                        }
                       >
                         Deactivate user
                       </button>
@@ -939,6 +953,11 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                         className="rdm-ban-btn"
                         onClick={handleBanUser}
                         data-testid="report-detail-ban-btn"
+                        disabled={disableBanUser}
+                        aria-disabled={disableBanUser}
+                        title={
+                          isUserBanned ? "User is already banned" : "Ban user"
+                        }
                       >
                         Ban user
                       </button>

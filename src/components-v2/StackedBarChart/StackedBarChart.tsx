@@ -17,27 +17,49 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
     value: number;
   } | null>(null);
 
-  // Calculate max value for scaling
-  const maxValue = Math.max(
-    ...data.map((weekData) =>
-      Object.values(weekData).reduce((sum, val) => sum + val, 0)
-    )
-  );
-  const roundedMax = Math.ceil(maxValue / 20) * 20; // Round to nearest 20
+  const tickCount = 6; // top to baseline
+
+  // Scale uses the max weekly total (stacked bars).
+  const rawMax = data.reduce((maxSoFar, weekData) => {
+    const weekTotal = Object.values(weekData).reduce(
+      (sum, val) => sum + val,
+      0
+    );
+    return Math.max(maxSoFar, weekTotal);
+  }, 0);
+
+  const buildScale = (maxValue: number) => {
+    if (maxValue <= 0) {
+      const fallbackMax = 1;
+      return { roundedMax: fallbackMax, step: fallbackMax / (tickCount - 1) };
+    }
+
+    const magnitude = 10 ** Math.floor(Math.log10(maxValue));
+    const fraction = maxValue / magnitude;
+
+    let niceFraction = 1;
+    if (fraction <= 1) niceFraction = 1;
+    else if (fraction <= 2) niceFraction = 2;
+    else if (fraction <= 2.5) niceFraction = 2.5;
+    else if (fraction <= 5) niceFraction = 5;
+    else niceFraction = 10;
+
+    const roundedMax = niceFraction * magnitude;
+    const step = roundedMax / (tickCount - 1);
+    return { roundedMax, step };
+  };
+
+  const { roundedMax, step } = buildScale(rawMax);
 
   // Calculate bar heights as percentages
   const getBarHeight = (value: number) => {
-    return (value / roundedMax) * 100;
+    return roundedMax === 0 ? 0 : (value / roundedMax) * 100;
   };
 
-  // Y-axis labels
-  const yAxisLabels = [
-    roundedMax,
-    roundedMax * 0.8,
-    roundedMax * 0.6,
-    roundedMax * 0.4,
-    roundedMax * 0.2,
-  ];
+  // Y-axis labels (top to bottom)
+  const yAxisLabels = Array.from({ length: tickCount }, (_, idx) =>
+    Number((roundedMax - step * idx).toFixed(2))
+  );
 
   return (
     <div
@@ -57,28 +79,44 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
       <div className="stacked-bar-chart-wrapper">
         {/* Y-axis */}
         <div className="stacked-bar-y-axis">
-          {yAxisLabels.map((label, index) => (
-            <span
-              key={index}
-              className="stacked-bar-y-axis-label"
-              style={{ color: "#5b6168" }}
-            >
-              {label}
-            </span>
-          ))}
+          {yAxisLabels.map((label, index) => {
+            const top =
+              roundedMax === 0 ? 0 : ((roundedMax - label) / roundedMax) * 100;
+            return (
+              <span
+                key={index}
+                className="stacked-bar-y-axis-label"
+                style={{
+                  color: "#5b6168",
+                  top: `${top}%`,
+                }}
+              >
+                {label}
+              </span>
+            );
+          })}
         </div>
 
         {/* Chart area */}
         <div className="stacked-bar-chart-area">
           {/* Horizontal grid lines */}
           <div className="stacked-bar-grid-lines">
-            {yAxisLabels.map((_, index) => (
-              <div
-                key={index}
-                className="stacked-bar-grid-line"
-                style={{ borderColor: theme.colors.gridColor }}
-              />
-            ))}
+            {yAxisLabels.map((label, index) => {
+              const top =
+                roundedMax === 0
+                  ? 0
+                  : ((roundedMax - label) / roundedMax) * 100;
+              return (
+                <div
+                  key={index}
+                  className="stacked-bar-grid-line"
+                  style={{
+                    borderColor: theme.colors.gridColor,
+                    top: `${top}%`,
+                  }}
+                />
+              );
+            })}
           </div>
 
           {/* Bars */}

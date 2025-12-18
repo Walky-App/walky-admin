@@ -484,7 +484,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       "14 Days": 14,
       "30 Days": 30,
       "90 Days": 90,
-      "Permanent": 36500,
+      Permanent: 36500,
     };
     const durationDays = durationMap[duration] || parseInt(duration) || 7;
 
@@ -592,7 +592,16 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                 </div>
               )}
             </div>
-            <span className="student-name">{getFirstName(student.name)}</span>
+            {student.status === "banned" ? (
+              <div className="student-texts">
+                <span className="student-name">{student.name}</span>
+                <span className="student-email student-email--muted">
+                  {student.email}
+                </span>
+              </div>
+            ) : (
+              <span className="student-name">{getFirstName(student.name)}</span>
+            )}
           </div>
         </>
       ),
@@ -816,7 +825,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
             "14 Days": 14,
             "30 Days": 30,
             "90 Days": 90,
-            "Permanent": 36500,
+            Permanent: 36500,
           };
           const durationDays = durationMap[duration] || parseInt(duration) || 7;
 

@@ -20,6 +20,36 @@
   height: 18px;
 }
 
+.ban-duration-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.ban-duration-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background-color: #d12a2a;
+  color: #ffffff;
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.2px;
+}
+
+.ban-duration-subtext {
+  font-family: "Lato", sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: #5b6168;
+  line-height: 1.2;
+}
+
 .student-table-header {
   background-color: #f1f4f9;
   height: 53px;
@@ -185,6 +215,13 @@
   position: relative;
 }
 
+.student-texts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
 .student-avatar {
   position: relative;
   width: 38px;
@@ -240,6 +277,33 @@
   font-size: 14px;
   font-weight: 600;
   color: #1d1b20;
+}
+
+.student-email--muted {
+  font-weight: 500;
+  color: #5b6168;
+  font-size: 13px;
+}
+
+.student-email-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.student-copy-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.student-copy-btn:hover {
+  opacity: 0.7;
 }
 
 .student-interests {

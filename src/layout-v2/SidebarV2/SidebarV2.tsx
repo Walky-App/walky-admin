@@ -121,108 +121,157 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
 
 // Define all menu sections with permission resources (moved outside component for performance)
 const allMenuSections: MenuSection[] = [
-    {
-      title: "DASHBOARD",
-      items: [
-        {
-          label: "Campus Analytics",
-          submenu: [
-            { label: "Engagement", path: "/dashboard/engagement", resource: "engagement" },
-            {
-              label: "Popular Features",
-              path: "/dashboard/popular-features",
-              resource: "popular_features",
-            },
-            {
-              label: "User Interactions",
-              path: "/dashboard/user-interactions",
-              resource: "user_interactions",
-            },
-            { label: "Community", path: "/dashboard/community", resource: "community" },
-            { label: "Student safety", path: "/dashboard/student-safety", resource: "student_safety" },
-            {
-              label: "Student Behavior",
-              path: "/dashboard/student-behavior",
-              resource: "student_behavior",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      title: "CAMPUS",
-      items: [
-        {
-          label: "Manage Students",
-          submenu: [
-            { label: "Active", path: "/manage-students/active", resource: "active_students" },
-            { label: "Banned", path: "/manage-students/banned", resource: "banned_students" },
-            { label: "Deactivated", path: "/manage-students/deactivated", resource: "inactive_students" },
-            { label: "Disengaged", path: "/manage-students/disengaged", resource: "disengaged_students" },
-          ],
-        },
+  {
+    title: "DASHBOARD",
+    items: [
+      {
+        label: "Campus Analytics",
+        submenu: [
+          {
+            label: "Engagement",
+            path: "/dashboard/engagement",
+            resource: "engagement",
+          },
+          {
+            label: "Popular Features",
+            path: "/dashboard/popular-features",
+            resource: "popular_features",
+          },
+          {
+            label: "User Interactions",
+            path: "/dashboard/user-interactions",
+            resource: "user_interactions",
+          },
+          {
+            label: "Community",
+            path: "/dashboard/community",
+            resource: "community",
+          },
+          {
+            label: "Student safety",
+            path: "/dashboard/student-safety",
+            resource: "student_safety",
+          },
+          {
+            label: "Student Behavior",
+            path: "/dashboard/student-behavior",
+            resource: "student_behavior",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "CAMPUS",
+    items: [
+      {
+        label: "Manage Students",
+        submenu: [
+          {
+            label: "Active",
+            path: "/manage-students/active",
+            resource: "active_students",
+          },
+          {
+            label: "Banned",
+            path: "/manage-students/banned",
+            resource: "banned_students",
+          },
+          {
+            label: "Deactivated",
+            path: "/manage-students/deactivated",
+            resource: "inactive_students",
+          },
+          {
+            label: "Disengaged",
+            path: "/manage-students/disengaged",
+            resource: "disengaged_students",
+          },
+        ],
+      },
 
-        {
-          label: "Events",
-          submenu: [
-            { label: "Events Manager", path: "/events", resource: "events_manager" },
-            { label: "Events Insights", path: "/events/insights", resource: "events_insights" },
-          ],
-        },
-        {
-          label: "Spaces",
-          submenu: [
-            { label: "Spaces Manager", path: "/spaces", resource: "spaces_manager" },
-            { label: "Spaces Insights", path: "/spaces/insights", resource: "spaces_insights" },
-          ],
-        },
-        {
-          label: "Ideas",
-          submenu: [
-            { label: "Ideas Manager", path: "/ideas", resource: "ideas_manager" },
-            { label: "Ideas Insights", path: "/ideas/insights", resource: "ideas_insights" },
-          ],
-        },
-      ],
-    },
-    {
-      title: "MODERATION",
-      items: [
-        {
-          label: "Report & Safety",
-          path: "/report-safety",
-          resource: "report_safety",
-        },
-        {
-          label: "Report History",
-          path: "/report-history",
-          resource: "report_history",
-        },
-      ],
-    },
-    {
-      title: "ADMIN",
-      items: [
-        {
-          label: "Campuses",
-          path: "/admin/campuses",
-          resource: "campuses",
-        },
-        {
-          label: "Ambassadors",
-          path: "/admin/ambassadors",
-          resource: "ambassadors",
-        },
-        {
-          label: "Role Management",
-          path: "/admin/role-management",
-          resource: "role_management",
-        },
-      ],
-    },
-  ];
+      {
+        label: "Events",
+        submenu: [
+          {
+            label: "Events Manager",
+            path: "/events",
+            resource: "events_manager",
+          },
+          {
+            label: "Events Insights",
+            path: "/events/insights",
+            resource: "events_insights",
+          },
+        ],
+      },
+      {
+        label: "Spaces",
+        submenu: [
+          {
+            label: "Spaces Manager",
+            path: "/spaces",
+            resource: "spaces_manager",
+          },
+          {
+            label: "Spaces Insights",
+            path: "/spaces/insights",
+            resource: "spaces_insights",
+          },
+        ],
+      },
+      {
+        label: "Ideas",
+        submenu: [
+          { label: "Ideas Manager", path: "/ideas", resource: "ideas_manager" },
+          {
+            label: "Ideas Insights",
+            path: "/ideas/insights",
+            resource: "ideas_insights",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "MODERATION",
+    items: [
+      {
+        label: "Report & Safety",
+        path: "/report-safety",
+        resource: "report_safety",
+      },
+      {
+        label: "Report History",
+        path: "/report-history",
+        resource: "report_history",
+      },
+    ],
+  },
+  {
+    title: "ADMIN",
+    items: [
+      {
+        label: "Campuses",
+        path: "/admin/campuses",
+        resource: "campuses",
+      },
+      {
+        label: "Ambassadors",
+        path: "/admin/ambassadors",
+        resource: "ambassadors",
+      },
+      {
+        label: "Role Management",
+        path: "/admin/role-management",
+        resource: "role_management",
+      },
+    ],
+  },
+];
 
 const SidebarV2: React.FC = () => {
+  const location = useLocation();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
   const { canRead } = usePermissions();
 
@@ -261,11 +310,47 @@ const SidebarV2: React.FC = () => {
       .filter((section) => section.items.length > 0);
   }, [canRead]);
 
+  // Initialize open menus from localStorage (persist user choice across reloads)
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem("sidebar-open-menus");
+      if (saved) {
+        const parsed = JSON.parse(saved) as Record<string, boolean>;
+        setOpenMenus(parsed);
+      }
+    } catch (err) {
+      console.warn("Failed to load sidebar state", err);
+    }
+  }, []);
+
+  // Auto-open the parent menu for the current route so the active item stays visible on refresh
+  React.useEffect(() => {
+    const path = location.pathname;
+    const parentsToOpen: Record<string, boolean> = {};
+
+    menuSections.forEach((section) => {
+      section.items.forEach((item) => {
+        if (
+          item.submenu?.some((sub) => sub.path && path.startsWith(sub.path))
+        ) {
+          parentsToOpen[item.label] = true;
+        }
+      });
+    });
+
+    setOpenMenus((prev) => ({ ...prev, ...parentsToOpen }));
+  }, [location.pathname, menuSections]);
+
   const toggleMenu = (label: string) => {
-    setOpenMenus((prev) => ({
-      ...prev,
-      [label]: !prev[label],
-    }));
+    setOpenMenus((prev) => {
+      const next = { ...prev, [label]: !prev[label] };
+      try {
+        localStorage.setItem("sidebar-open-menus", JSON.stringify(next));
+      } catch (err) {
+        console.warn("Failed to save sidebar state", err);
+      }
+      return next;
+    });
   };
 
   return (

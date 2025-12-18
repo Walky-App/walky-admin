@@ -153,6 +153,16 @@
   color: #d53425;
 }
 
+.st-trend-icon.st-trend-neutral {
+  color: #8280ff;
+}
+
+.st-trend-dash {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .st-stats-change-text {
   font-family: "Lato", sans-serif;
   font-weight: 600;
