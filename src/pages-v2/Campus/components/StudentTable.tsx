@@ -15,9 +15,9 @@ import {
   CustomToast,
   ActionDropdown,
   Divider,
+  Chip,
 } from "../../../components-v2";
 import { CopyableId } from "../../../components-v2/CopyableId";
-import { StatusBadge } from "./StatusBadge";
 import { InterestChip } from "./InterestChip";
 import { NoStudentsFound } from "./NoStudentsFound/NoStudentsFound";
 import "./StudentTable.css";
@@ -46,6 +46,8 @@ export interface StudentData {
   bannedTime?: string;
   reason?: string;
   duration?: string;
+  reported?: number | boolean;
+  reportedContentCount?: number;
   // Deactivated specific fields
   deactivatedDate?: string;
   deactivatedBy?: string;
@@ -621,7 +623,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     status: {
       label: "Status",
       sortable: false,
-      render: (student) => <StatusBadge status={student.status} />,
+      render: (student) => <Chip value={student.status} type="status" />,
     },
     memberSince: {
       label: "Member since",

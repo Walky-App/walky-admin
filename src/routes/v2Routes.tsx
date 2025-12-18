@@ -64,7 +64,10 @@ const V2Routes: React.FC = () => {
             <Route
               path="dashboard/popular-features"
               element={
-                <PermissionGuard resource="popular_features" fallback="redirect">
+                <PermissionGuard
+                  resource="popular_features"
+                  fallback="redirect"
+                >
                   <DashboardPopularFeatures />
                 </PermissionGuard>
               }
@@ -72,7 +75,10 @@ const V2Routes: React.FC = () => {
             <Route
               path="dashboard/user-interactions"
               element={
-                <PermissionGuard resource="user_interactions" fallback="redirect">
+                <PermissionGuard
+                  resource="user_interactions"
+                  fallback="redirect"
+                >
                   <DashboardUserInteractions />
                 </PermissionGuard>
               }
@@ -96,7 +102,10 @@ const V2Routes: React.FC = () => {
             <Route
               path="dashboard/student-behavior"
               element={
-                <PermissionGuard resource="student_behavior" fallback="redirect">
+                <PermissionGuard
+                  resource="student_behavior"
+                  fallback="redirect"
+                >
                   <DashboardStudentBehavior />
                 </PermissionGuard>
               }
@@ -122,7 +131,10 @@ const V2Routes: React.FC = () => {
             <Route
               path="manage-students/deactivated"
               element={
-                <PermissionGuard resource="inactive_students" fallback="redirect">
+                <PermissionGuard
+                  resource="inactive_students"
+                  fallback="redirect"
+                >
                   <DeactivatedStudents />
                 </PermissionGuard>
               }
@@ -130,7 +142,10 @@ const V2Routes: React.FC = () => {
             <Route
               path="manage-students/disengaged"
               element={
-                <PermissionGuard resource="disengaged_students" fallback="redirect">
+                <PermissionGuard
+                  resource="disengaged_students"
+                  fallback="redirect"
+                >
                   <DisengagedStudents />
                 </PermissionGuard>
               }

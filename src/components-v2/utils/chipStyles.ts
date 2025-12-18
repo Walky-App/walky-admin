@@ -52,94 +52,156 @@ const firstMatchingStyle = (
 
 const reasonBase = {
   defaultStyle: {
-    bg: "#f4f5f7",
-    text: "#676d70",
+    bg: "#f7f7f7",
+    text: "#6a6a6a",
     label: "Other",
   } as ChipStyle,
 };
 
+const typeStyles = {
+  type1: { bg: "#fff4e4", text: "#8f5400" },
+  type2: { bg: "#ffe2fa", text: "#91127c" },
+  type3: { bg: "#e5f2ff", text: "#0a4e8c" },
+  type4: { bg: "#ffe5e4", text: "#a4181a" },
+  type5: { bg: "#fcffe5", text: "#7c670a" },
+  type6: { bg: "#f2e5ff", text: "#5a1a8c" },
+  type7: { bg: "#f7f7f7", text: "#6a6a6a" },
+};
+
 const userMessageReasons: Matcher[] = [
-  { labels: ["harassment", "threat"], bg: "#fee8d6", text: "#b45b1c" },
+  {
+    labels: ["harassment", "threat"],
+    ...typeStyles.type1,
+    fallbackLabel: "Harassment\n/ Threats",
+  },
   {
     labels: ["made me uncomfortable", "made_me_uncomfortable", "uncomfortable"],
-    bg: "#f3dcff",
-    text: "#7a2bb5",
+    ...typeStyles.type2,
+    fallbackLabel: "Made Me\nUncomfortable",
   },
   {
     labels: ["explicit", "nudity", "inappropriate"],
-    bg: "#e6edff",
-    text: "#1b4f9c",
+    ...typeStyles.type3,
+    fallbackLabel: "Explicit / Nudity\n/ Inappropriate",
   },
   {
     labels: ["self", "harmful behavior", "self-injury"],
-    bg: "#ffe7f3",
-    text: "#b5126b",
+    ...typeStyles.type4,
+    fallbackLabel: "Self-Injury /\nHarmful Behavior",
   },
   {
     labels: ["spam", "fake profile", "misuse"],
-    bg: "#fff6e0",
-    text: "#a36b00",
+    ...typeStyles.type5,
+    fallbackLabel: "Spam, Fake Profile,\nor Misuse",
   },
-  { labels: ["underage", "policy violation"], bg: "#e9f0ff", text: "#3452c4" },
+  {
+    labels: ["underage", "policy violation"],
+    ...typeStyles.type7,
+    fallbackLabel: "Underage User or\nPolicy Violation",
+  },
+  { labels: ["other"], ...typeStyles.type7, fallbackLabel: "Other" },
 ];
 
 const eventReasons: Matcher[] = [
   {
     labels: ["explicit", "nudity", "inappropriate"],
-    bg: "#e6edff",
-    text: "#1b4f9c",
+    ...typeStyles.type3,
+    fallbackLabel: "Explicit / Nudity\n/ Inappropriate",
   },
-  { labels: ["harmful", "unsafe behavior"], bg: "#ffe8e1", text: "#c45516" },
+  {
+    labels: ["harmful", "unsafe behavior"],
+    ...typeStyles.type4,
+    fallbackLabel: "Harmful /\nUnsafe Behavior",
+  },
   {
     labels: ["spam", "fake profile", "misuse"],
-    bg: "#fff6e0",
-    text: "#a36b00",
+    ...typeStyles.type5,
+    fallbackLabel: "Spam, Fake Profile,\nor Misuse",
   },
-  { labels: ["hate speech", "offensive"], bg: "#ffe3e3", text: "#b12929" },
+  {
+    labels: ["hate speech", "offensive"],
+    ...typeStyles.type2,
+    fallbackLabel: "Hate Speech /\nOffensive",
+  },
   {
     labels: ["discriminatory", "exclusionary"],
-    bg: "#e7e4ff",
-    text: "#4b3baa",
+    ...typeStyles.type6,
+    fallbackLabel: "Discriminatory /\nExclusionary",
   },
-  { labels: ["duplicate"], bg: "#e9f5ec", text: "#2e7d32" },
+  {
+    labels: ["duplicate"],
+    ...typeStyles.type1,
+    fallbackLabel: "Duplicate Event",
+  },
+  { labels: ["other"], ...typeStyles.type7, fallbackLabel: "Other" },
 ];
 
 const ideaReasons: Matcher[] = [
-  { labels: ["harassment", "threat"], bg: "#fee8d6", text: "#b45b1c" },
+  {
+    labels: ["harassment", "threat"],
+    ...typeStyles.type2,
+    fallbackLabel: "Harassment /\nThreats",
+  },
   {
     labels: ["spam", "fake profile", "misuse"],
-    bg: "#fff6e0",
-    text: "#a36b00",
+    ...typeStyles.type5,
+    fallbackLabel: "Spam, Fake Profile,\nor Misuse",
   },
-  { labels: ["harmful", "dangerous"], bg: "#e6f3ff", text: "#0a4e8c" },
+  {
+    labels: ["harmful", "dangerous"],
+    ...typeStyles.type3,
+    fallbackLabel: "Harmful /\nDangerous Content",
+  },
   {
     labels: ["self", "harmful behavior", "self-injury"],
-    bg: "#ffe7f3",
-    text: "#b5126b",
+    ...typeStyles.type4,
+    fallbackLabel: "Self-Injury /\nHarmful Behavior",
   },
   {
     labels: ["discriminatory", "exclusionary"],
-    bg: "#e7e4ff",
-    text: "#4b3baa",
+    ...typeStyles.type6,
+    fallbackLabel: "Discriminatory /\nExclusionary",
   },
-  { labels: ["intellectual"], bg: "#fff3d6", text: "#8f5400" },
+  {
+    labels: ["intellectual"],
+    ...typeStyles.type1,
+    fallbackLabel: "Intellectual\nproperty",
+  },
+  { labels: ["other"], ...typeStyles.type7, fallbackLabel: "Other" },
 ];
 
 const spaceReasons: Matcher[] = [
-  { labels: ["inappropriate", "offensive"], bg: "#e6edff", text: "#1b4f9c" },
+  {
+    labels: ["inappropriate", "offensive"],
+    ...typeStyles.type1,
+    fallbackLabel: "Inappropriate\nor offensive",
+  },
   {
     labels: ["misinformation", "false", "misleading"],
-    bg: "#eaf5ff",
-    text: "#0a4e8c",
+    ...typeStyles.type2,
+    fallbackLabel: "Misinformation\n(false or misleading)",
   },
-  { labels: ["hate speech", "discrimination"], bg: "#ffe3e3", text: "#b12929" },
-  { labels: ["unsafe", "harmful"], bg: "#fff4e1", text: "#b45b1c" },
-  { labels: ["solicitation", "sales"], bg: "#e6edff", text: "#3452c4" },
+  {
+    labels: ["hate speech", "discrimination"],
+    ...typeStyles.type4,
+    fallbackLabel: "Hate speech\nor discrimination",
+  },
+  {
+    labels: ["unsafe", "harmful"],
+    ...typeStyles.type5,
+    fallbackLabel: "Unsafe or harmful\nbehavior",
+  },
+  {
+    labels: ["solicitation", "sales"],
+    ...typeStyles.type3,
+    fallbackLabel: "Solicitation or sales",
+  },
   {
     labels: ["duplicate", "unauthorized", "impersonation"],
-    bg: "#f2e5ff",
-    text: "#7a2bb5",
+    ...typeStyles.type6,
+    fallbackLabel: "Duplicate, unauthorized,\nor impersonation",
   },
+  { labels: ["other"], ...typeStyles.type7, fallbackLabel: "Other" },
 ];
 
 const getReasonChipStyle = (reason?: string): ChipStyle =>
@@ -180,84 +242,84 @@ const getStatusChipStyle = (status?: string): ChipStyle => {
   const entries: Matcher[] = [
     {
       labels: ["pending review", "under review", "review"],
-      bg: "#eef0f1",
-      text: "#5b6168",
+      bg: "#e7ecef",
+      text: "#4f565d",
       fallbackLabel: "Pending Review",
-      padding: "4px 10px",
-      size: "compact",
+      padding: "8px 16px",
+      size: "regular",
     },
     {
       labels: ["active"],
-      bg: "#e6f7eb",
-      text: "#00c943",
-      padding: "4px 10px",
-      size: "compact",
+      bg: "#edffed",
+      text: "#18682c",
+      padding: "8px 16px",
+      size: "regular",
     },
     {
       labels: ["banned"],
-      bg: "#ffe3de",
-      text: "#d9381e",
-      padding: "4px 10px",
-      size: "compact",
+      bg: "#d53425",
+      text: "#ffffff",
+      padding: "8px 16px",
+      size: "regular",
     },
     {
       labels: ["deactivated", "inactive"],
-      bg: "#e7e6e8",
-      text: "#1d1b20",
-      padding: "4px 10px",
-      size: "compact",
+      bg: "#1d1b20",
+      text: "#ffffff",
+      padding: "8px 16px",
+      size: "regular",
     },
     {
       labels: ["not reported"],
       bg: "#eef0f1",
       text: "#5b6168",
-      padding: "4px 10px",
-      size: "compact",
+      padding: "8px 18px",
+      size: "regular",
     },
     {
       labels: ["reported"],
-      bg: "#fff4d6",
-      text: "#ebb129",
-      padding: "4px 10px",
-      size: "compact",
+      bg: "#ffe5e4",
+      text: "#a4181a",
+      padding: "8px 16px",
+      size: "regular",
     },
     {
       labels: ["pending"],
-      bg: "#fff4d6",
-      text: "#ebb129",
-      padding: "4px 10px",
-      size: "compact",
+      bg: "#e7ecef",
+      text: "#4f565d",
+      padding: "8px 16px",
+      size: "regular",
     },
     {
       labels: ["under", "evaluation"],
-      bg: "#eef0f1",
-      text: "#5b6168",
+      bg: "#e7ecef",
+      text: "#4f565d",
       fallbackLabel: "Under Evaluation",
-      padding: "4px 10px",
-      size: "compact",
+      padding: "8px 16px",
+      size: "regular",
     },
     {
       labels: ["resolved"],
-      bg: "#eef0f1",
-      text: "#5b6168",
-      padding: "4px 10px",
-      size: "compact",
+      bg: "#e7ecef",
+      text: "#4f565d",
+      padding: "8px 16px",
+      size: "regular",
     },
     {
       labels: ["dismiss"],
-      bg: "#eef0f1",
-      text: "#5b6168",
-      padding: "4px 10px",
-      size: "compact",
+      bg: "#e7ecef",
+      text: "#4f565d",
+      padding: "8px 16px",
+      size: "regular",
     },
   ];
 
   const defaultStyle: ChipStyle = {
-    bg: "#eef0f1",
-    text: "#5b6168",
+    bg: "#e7ecef",
+    text: "#4f565d",
     label: formatChipLabel(status) || "Status",
-    padding: "4px 10px",
-    size: "compact",
+    padding: "8px 16px",
+    size: "regular",
   };
 
   return firstMatchingStyle(status, entries, defaultStyle);
@@ -265,15 +327,60 @@ const getStatusChipStyle = (status?: string): ChipStyle => {
 
 const getSpaceCategoryChipStyle = (space?: string): ChipStyle => {
   const entries: Matcher[] = [
-    { labels: ["clubs"], bg: "#e9f0ff", text: "#3452c4" },
-    { labels: ["fraternit"], bg: "#fdf0dc", text: "#b26a00" },
-    { labels: ["sororit"], bg: "#fce2ef", text: "#b82c70" },
-    { labels: ["academics", "honors"], bg: "#f6f1ff", text: "#6b2fb3" },
-    { labels: ["leadership", "government"], bg: "#f2f5ff", text: "#2949c7" },
-    { labels: ["club sports", "sports"], bg: "#fff3e1", text: "#b45b1c" },
-    { labels: ["im teams"], bg: "#e7f7ff", text: "#0a6c9a" },
-    { labels: ["volunteer"], bg: "#fff4d6", text: "#b17800" },
-    { labels: ["cultural", "diversity"], bg: "#e6f7f3", text: "#0f7a63" },
+    {
+      labels: ["clubs"],
+      bg: "#e2e0f2",
+      text: "#5f56a9",
+      fallbackLabel: "Clubs",
+    },
+    {
+      labels: ["fraternit"],
+      bg: "#fbf1df",
+      text: "#896726",
+      fallbackLabel: "Fraternities",
+    },
+    {
+      labels: ["sororit"],
+      bg: "#fbf6f3",
+      text: "#816651",
+      fallbackLabel: "Sororities",
+    },
+    {
+      labels: ["academics", "honors"],
+      bg: "#ffe3de",
+      text: "#ad411e",
+      fallbackLabel: "Academics\n& Honors",
+    },
+    {
+      labels: ["leadership", "government"],
+      bg: "#d5c0ab",
+      text: "#502c11",
+      fallbackLabel: "Leadership &\nGovernment",
+    },
+    {
+      labels: ["club sports", "sports"],
+      bg: "#f9d9be",
+      text: "#873511",
+      fallbackLabel: "Club Sports",
+    },
+    {
+      labels: ["im teams"],
+      bg: "#e0e1e2",
+      text: "#464a51",
+      fallbackLabel: "IM Teams",
+    },
+    {
+      labels: ["volunteer"],
+      bg: "#fce3bd",
+      text: "#a34007",
+      fallbackLabel: "Volunteer",
+    },
+    {
+      labels: ["cultural", "diversity"],
+      bg: "#c1e5ff",
+      text: "#234798",
+      fallbackLabel: "Cultural\n& Diversity",
+    },
   ];
 
   const defaultStyle: ChipStyle = {
@@ -287,11 +394,11 @@ const getSpaceCategoryChipStyle = (space?: string): ChipStyle => {
 
 const getAdminRoleChipStyle = (role?: string): ChipStyle => {
   const entries: Matcher[] = [
-    { labels: ["school admin"], bg: "#e9f0ff", text: "#3452c4" },
-    { labels: ["campus admin"], bg: "#e6f7eb", text: "#1a7f49" },
-    { labels: ["moderator"], bg: "#fff4d6", text: "#b17800" },
-    { labels: ["walky admin"], bg: "#f6f1ff", text: "#6b2fb3" },
-    { labels: ["walky internal"], bg: "#e7f7ff", text: "#0a6c9a" },
+    { labels: ["school admin"], bg: "#cacaee", text: "#1c1cd3" },
+    { labels: ["campus admin"], bg: "#cae1ee", text: "#0e4c6f" },
+    { labels: ["moderator"], bg: "#f0e3c4", text: "#5f470b" },
+    { labels: ["walky admin"], bg: "#eed8ca", text: "#74370e" },
+    { labels: ["walky internal"], bg: "#ffe2fa", text: "#91127c" },
   ];
 
   const defaultStyle: ChipStyle = {

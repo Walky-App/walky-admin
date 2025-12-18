@@ -7,7 +7,7 @@ import {
   SearchInput,
   EventDetailsModal,
 } from "../../components-v2";
-import { SpaceTypeChip } from "../../pages-v2/Spaces/components/SpaceTypeChip/SpaceTypeChip";
+import { Chip } from "../../components-v2/Chip";
 import type { EventDetailsData } from "../../components-v2/EventDetailsModal/EventDetailsModal";
 import { getFirstName } from "../../lib/utils/nameUtils";
 
@@ -210,7 +210,7 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
                 <div className="space-details-info-box">
                   <div className="space-info-row">
                     <span className="space-info-label">Category:</span>
-                    <SpaceTypeChip type={spaceData.category} />
+                    <Chip type="spaceCategory" value={spaceData.category} />
                   </div>
                   <div className="space-info-row">
                     <span className="space-info-label">Name:</span>

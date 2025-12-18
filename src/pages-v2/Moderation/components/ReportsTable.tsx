@@ -3,6 +3,7 @@ import { CTooltip } from "@coreui/react";
 import {
   ActionDropdown,
   AssetIcon,
+  Chip,
   CopyableId,
   Divider,
   NoData,
@@ -10,14 +11,6 @@ import {
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
 import { ReportStatus, IconName } from "../../../components-v2";
-import {
-  formatChipLabel,
-  getReasonChipStyle,
-  getUserReasonChipStyle,
-  getEventReasonChipStyle,
-  getIdeaReasonChipStyle,
-  getSpaceReasonChipStyle,
-} from "../../../components-v2/utils/chipStyles";
 import { getReportTypeIcon } from "../../../components-v2/utils/reportTypeIcon";
 
 export type ReportRow = {
@@ -96,14 +89,12 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
   const columnCount = showResolutionDate ? 7 : 6;
   const { theme } = useTheme();
 
-  const getReasonStyleByType = (reason: string, type: string) => {
+  const getReasonChipType = (type: string) => {
     const normalizedType = type.toLowerCase();
-    if (normalizedType.includes("event"))
-      return getEventReasonChipStyle(reason);
-    if (normalizedType.includes("idea")) return getIdeaReasonChipStyle(reason);
-    if (normalizedType.includes("space"))
-      return getSpaceReasonChipStyle(reason);
-    return getUserReasonChipStyle(reason);
+    if (normalizedType.includes("event")) return "eventReason" as const;
+    if (normalizedType.includes("idea")) return "ideaReason" as const;
+    if (normalizedType.includes("space")) return "spaceReason" as const;
+    return "userReason" as const;
   };
 
   return (
@@ -181,9 +172,7 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
 
               return (
                 <React.Fragment key={report.id}>
-                  <tr
-                    className={report.isFlagged ? "report-row-flagged" : ""}
-                  >
+                  <tr className={report.isFlagged ? "report-row-flagged" : ""}>
                     <td>
                       {report.isFlagged && (
                         <CTooltip
@@ -239,25 +228,10 @@ export const ReportsTable: React.FC<ReportsTableProps> = ({
                       </div>
                     </td>
                     <td>
-                      {(() => {
-                        const style =
-                          getReasonStyleByType(report.reasonTag, report.type) ||
-                          getReasonChipStyle(report.reasonTag);
-                        const label =
-                          style.label || formatChipLabel(report.reasonTag);
-                        return (
-                          <div
-                            className="reason-badge"
-                            style={{
-                              background: style.bg,
-                              color: style.text,
-                              padding: style.padding || "10px",
-                            }}
-                          >
-                            <span>{label}</span>
-                          </div>
-                        );
-                      })()}
+                      <Chip
+                        value={report.reasonTag}
+                        type={getReasonChipType(report.type)}
+                      />
                     </td>
                     {showResolutionDate && (
                       <td className="report-date">

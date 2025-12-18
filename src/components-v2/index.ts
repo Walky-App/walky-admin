@@ -88,3 +88,5 @@ export type { WriteNoteModalProps } from "./WriteNoteModal";
 export { default as SkeletonLoader } from "./SkeletonLoader/SkeletonLoader";
 export { PermissionGuard, withPermission } from "./PermissionGuard";
 export { AuthGuard } from "./AuthGuard/AuthGuard";
+export { Chip } from "./Chip";
+export type { ChipProps, ChipType } from "./Chip";

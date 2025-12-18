@@ -358,6 +358,22 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     }`;
   };
 
+  const getReportedContentCount = (student: StudentData) => {
+    if (typeof student.reportedContentCount === "number") {
+      return student.reportedContentCount;
+    }
+
+    if (typeof student.reported === "number") {
+      return student.reported;
+    }
+
+    if (Array.isArray(student.reportHistory)) {
+      return student.reportHistory.length;
+    }
+
+    return null;
+  };
+
   const columnConfig: Record<
     StudentTableColumn,
     {
@@ -449,7 +465,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
       ),
     },
     bannedDate: {
-      label: "Banned date",
+      label: "Ban date",
       sortable: true,
       render: (student) =>
         (() => {
@@ -465,12 +481,31 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     bannedBy: {
       label: "Banned by",
       sortable: false,
-      render: (student) => <span>{student.bannedBy || "-"}</span>,
+      render: (student) => (
+        <span className="banned-by-email">
+          {student.bannedByEmail || student.bannedBy || "-"}
+        </span>
+      ),
     },
     reason: {
-      label: "Reason",
+      label: "Reported content",
       sortable: false,
-      render: (student) => <span>{student.reason || "-"}</span>,
+      render: (student) => {
+        const reportedCount = getReportedContentCount(student);
+        const hasCount = reportedCount !== null && reportedCount !== undefined;
+        const pillValue = hasCount ? reportedCount.toString() : "-";
+        const subtext =
+          hasCount && reportedCount > 0
+            ? `${reportedCount} report${reportedCount === 1 ? "" : "s"}`
+            : null;
+
+        return (
+          <div className="ban-duration-cell">
+            <span className="ban-duration-pill">{pillValue}</span>
+            {subtext && <span className="ban-duration-subtext">{subtext}</span>}
+          </div>
+        );
+      },
     },
     duration: {
       label: "Duration",

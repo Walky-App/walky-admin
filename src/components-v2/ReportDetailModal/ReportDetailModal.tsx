@@ -6,14 +6,7 @@ import { NoData } from "../NoData/NoData";
 import { CopyableId } from "../CopyableId/CopyableId";
 import { StatusDropdown } from "../StatusDropdown/StatusDropdown";
 import SkeletonLoader from "../SkeletonLoader/SkeletonLoader";
-import {
-  formatChipLabel,
-  getReasonChipStyle,
-  getUserReasonChipStyle,
-  getEventReasonChipStyle,
-  getIdeaReasonChipStyle,
-  getSpaceReasonChipStyle,
-} from "../utils/chipStyles";
+import { Chip } from "../Chip";
 
 export type ReportType =
   | "Event"
@@ -182,28 +175,12 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     return `${datePart} | ${timePart}`;
   };
 
-  const getReasonStyleByType = (reason: string) => {
+  const getReasonChipType = () => {
     const type = reportType.toLowerCase();
-    if (type.includes("event")) return getEventReasonChipStyle(reason);
-    if (type.includes("idea")) return getIdeaReasonChipStyle(reason);
-    if (type.includes("space")) return getSpaceReasonChipStyle(reason);
-    return getUserReasonChipStyle(reason);
-  };
-
-  const renderReasonChip = (reason: string, _reasonColor: string) => {
-    const style = getReasonStyleByType(reason) || getReasonChipStyle(reason);
-    return (
-      <div
-        className="rdm-reason-chip"
-        style={{
-          backgroundColor: style.bg,
-          color: style.text,
-          padding: style.padding || undefined,
-        }}
-      >
-        {style.label || formatChipLabel(reason)}
-      </div>
-    );
+    if (type.includes("event")) return "eventReason" as const;
+    if (type.includes("idea")) return "ideaReason" as const;
+    if (type.includes("space")) return "spaceReason" as const;
+    return "userReason" as const;
   };
 
   const formatEmail = (email?: string) => {
@@ -531,7 +508,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                 </div>
                 <div className="rdm-report-reason-row">
                   <span className="rdm-label">Reason</span>
-                  {renderReasonChip(report.reason, report.reasonColor)}
+                  <Chip value={report.reason} type={getReasonChipType()} />
                 </div>
                 <p className="rdm-report-description">
                   <span className="rdm-label">Description:</span>{" "}
@@ -1032,10 +1009,10 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
 
                   <div className="rdm-report-reason-row">
                     <span className="rdm-label">Reason:</span>
-                    {renderReasonChip(
-                      reportData.reason,
-                      reportData.reasonColor
-                    )}
+                    <Chip
+                      value={reportData.reason}
+                      type={getReasonChipType()}
+                    />
                   </div>
 
                   <div className="rdm-report-date-row">
