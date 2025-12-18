@@ -10,7 +10,7 @@ interface StatsCardProps {
   iconBgColor: string;
   trend?: {
     value: string;
-    direction: "up" | "down";
+    direction: "up" | "down" | "neutral";
     text: string;
   };
 }
@@ -23,6 +23,12 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   trend,
 }) => {
   const { theme } = useTheme();
+  const trendColor =
+    trend?.direction === "up"
+      ? theme.colors.trendUpGreen
+      : trend?.direction === "down"
+      ? theme.colors.trendDownRed
+      : theme.colors.iconBlue;
 
   return (
     <div
@@ -53,22 +59,24 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       {trend && (
         <div className="st-stats-change-container">
           <div className={`st-trend-icon st-trend-${trend.direction}`}>
-            <AssetIcon
-              name={
-                trend.direction === "up" ? "trend-up-icon" : "trend-down-icon"
-              }
-              size={16}
-              color={trend.direction === "up" ? "#18682c" : "#d53425"}
-            />
+            {trend.direction === "neutral" ? (
+              <span className="st-trend-dash" aria-hidden="true">
+                —
+              </span>
+            ) : (
+              <AssetIcon
+                name={
+                  trend.direction === "up" ? "trend-up-icon" : "trend-down-icon"
+                }
+                size={16}
+                color={trendColor}
+              />
+            )}
           </div>
           <p className="st-stats-change-text">
             <span
-              className={
-                trend.direction === "up" ? "st-trend-up" : "st-trend-down"
-              }
-              style={{
-                color: trend.direction === "up" ? "#18682c" : "#d53425",
-              }}
+              className={`st-trend-${trend.direction}`}
+              style={{ color: trendColor }}
             >
               {trend.value}
             </span>{" "}

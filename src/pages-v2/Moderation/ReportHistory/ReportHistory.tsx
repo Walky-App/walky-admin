@@ -141,7 +141,12 @@ const ReportHistory: React.FC = () => {
   });
 
   const flagMutation = useMutation({
-    mutationFn: (data: { id: string; type: string; reason: string }) => {
+    mutationFn: (data: {
+      id: string;
+      type: string;
+      reason: string;
+      reportId: string;
+    }) => {
       switch (data.type.toLowerCase()) {
         case "user":
           return apiClient.api.adminV2StudentsFlagCreate(data.id, {
@@ -163,14 +168,65 @@ const ReportHistory: React.FC = () => {
           throw new Error(`Cannot flag type: ${data.type}`);
       }
     },
+    onMutate: async (data) => {
+      await queryClient.cancelQueries({ queryKey: ["history-reports"] });
+
+      const previousReports = queryClient.getQueryData([
+        "history-reports",
+        currentPage,
+        debouncedSearchQuery,
+        selectedTypes,
+        selectedStatus,
+        sortOrder,
+      ]);
+
+      queryClient.setQueryData(
+        [
+          "history-reports",
+          currentPage,
+          debouncedSearchQuery,
+          selectedTypes,
+          selectedStatus,
+          sortOrder,
+        ],
+        (old: any) => {
+          if (!old?.data?.data) return old;
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              data: old.data.data.map((report: any) =>
+                report.id === data.reportId
+                  ? { ...report, isFlagged: true, flagReason: data.reason }
+                  : report
+              ),
+            },
+          };
+        }
+      );
+
+      return { previousReports };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["history-reports"] });
       setToastMessage("Item flagged successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
       setIsFlagModalOpen(false);
     },
-    onError: () => {
+    onError: (_error, _data, context) => {
+      if (context?.previousReports) {
+        queryClient.setQueryData(
+          [
+            "history-reports",
+            currentPage,
+            debouncedSearchQuery,
+            selectedTypes,
+            selectedStatus,
+            sortOrder,
+          ],
+          context.previousReports
+        );
+      }
       setToastMessage("Error flagging item");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -178,7 +234,7 @@ const ReportHistory: React.FC = () => {
   });
 
   const unflagMutation = useMutation({
-    mutationFn: (data: { id: string; type: string }) => {
+    mutationFn: (data: { id: string; type: string; reportId: string }) => {
       switch (data.type.toLowerCase()) {
         case "user":
           return apiClient.api.adminV2StudentsUnflagCreate(data.id);
@@ -192,13 +248,64 @@ const ReportHistory: React.FC = () => {
           throw new Error(`Cannot unflag type: ${data.type}`);
       }
     },
+    onMutate: async (data) => {
+      await queryClient.cancelQueries({ queryKey: ["history-reports"] });
+
+      const previousReports = queryClient.getQueryData([
+        "history-reports",
+        currentPage,
+        debouncedSearchQuery,
+        selectedTypes,
+        selectedStatus,
+        sortOrder,
+      ]);
+
+      queryClient.setQueryData(
+        [
+          "history-reports",
+          currentPage,
+          debouncedSearchQuery,
+          selectedTypes,
+          selectedStatus,
+          sortOrder,
+        ],
+        (old: any) => {
+          if (!old?.data?.data) return old;
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              data: old.data.data.map((report: any) =>
+                report.id === data.reportId
+                  ? { ...report, isFlagged: false, flagReason: null }
+                  : report
+              ),
+            },
+          };
+        }
+      );
+
+      return { previousReports };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["history-reports"] });
       setToastMessage("Item unflagged successfully");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     },
-    onError: () => {
+    onError: (_error, _data, context) => {
+      if (context?.previousReports) {
+        queryClient.setQueryData(
+          [
+            "history-reports",
+            currentPage,
+            debouncedSearchQuery,
+            selectedTypes,
+            selectedStatus,
+            sortOrder,
+          ],
+          context.previousReports
+        );
+      }
       setToastMessage("Error unflagging item");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -598,6 +705,7 @@ const ReportHistory: React.FC = () => {
                 unflagMutation.mutate({
                   id: matched.reportedItemId,
                   type: normalizeFlagType(matched.type),
+                  reportId: matched.id,
                 });
               }
             }}
@@ -813,8 +921,7 @@ const ReportHistory: React.FC = () => {
                   ),
                   reportHistory:
                     reportDetails?.safetyRecord?.reportHistory || [],
-                  blockHistory:
-                    reportDetails?.safetyRecord?.blockHistory || [],
+                  blockHistory: reportDetails?.safetyRecord?.blockHistory || [],
                 },
                 notes: reportDetails?.notes || [],
               }}
@@ -872,6 +979,7 @@ const ReportHistory: React.FC = () => {
               id: itemId,
               type: flagModalType,
               reason,
+              reportId: selectedReport.id,
             });
           }
         }}

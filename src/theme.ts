@@ -137,7 +137,7 @@ const lightColors: ThemeColors = {
   info: "#5AC8FA",
   warning: "#FF9500",
   danger: "#FF3B30",
-  textMuted: "#9CA3AF",
+  textMuted: "#5B6168",
   textSecondary: "#5B6168",
   chartLine: "rgb(255, 255, 255)",
   graphLine: "#5E5CE6",

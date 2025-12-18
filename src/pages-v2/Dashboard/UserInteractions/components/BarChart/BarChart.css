@@ -20,11 +20,8 @@
 }
 
 .y-axis {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  position: relative;
+  height: 100%;
   width: 40px;
   flex-shrink: 0;
 }
@@ -33,8 +30,12 @@
   font-family: "Lato", sans-serif;
   font-weight: 600;
   font-size: 14px;
+  line-height: 1;
   text-align: right;
   color: #5b6168;
+  position: absolute;
+  transform: translateY(-50%);
+  right: 0;
 }
 
 .chart-area {
@@ -42,6 +43,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .grid-lines {
@@ -50,15 +52,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   pointer-events: none;
 }
 
 .grid-line {
   border-top: 1px solid;
   width: 100%;
+  position: absolute;
+  transform: translateY(-0.5px);
 }
 
 .bars-container {

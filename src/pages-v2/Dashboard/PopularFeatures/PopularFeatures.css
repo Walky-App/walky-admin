@@ -1,4 +1,5 @@
 .popular-features-page {
+  --v2-text-muted: #5b6168;
   display: flex;
   flex-direction: column;
   gap: 30px;

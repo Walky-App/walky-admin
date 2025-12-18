@@ -32,7 +32,7 @@ interface UserProfile {
 
 export const AdministratorSettings: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<TabType>("personal");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -164,12 +164,30 @@ export const AdministratorSettings: React.FC = () => {
       });
 
       // API types are incomplete - cast through unknown
-      const data = (response as unknown as { data: { avatar_url?: string } }).data;
+      const data = (response as unknown as { data: { avatar_url?: string } })
+        .data;
+      const updatedAvatarUrl = data.avatar_url;
 
       // Update profile data with new avatar URL
       setProfileData((prev) =>
-        prev ? { ...prev, avatar_url: data.avatar_url } : null
+        prev ? { ...prev, avatar_url: updatedAvatarUrl } : null
       );
+
+      // Keep auth user in sync so components (e.g., topbar) update instantly
+      if (updatedAvatarUrl) {
+        if (user) {
+          updateUser({ ...user, avatar_url: updatedAvatarUrl });
+        } else if (profileData) {
+          updateUser({
+            _id: profileData._id || "",
+            email: profileData.email || "",
+            first_name: profileData.first_name || "",
+            last_name: profileData.last_name || "",
+            role: profileData.role || "",
+            avatar_url: updatedAvatarUrl,
+          });
+        }
+      }
 
       toast.success("Avatar updated successfully");
     } catch (error) {
@@ -203,12 +221,21 @@ export const AdministratorSettings: React.FC = () => {
         }
 
         // Update profileData to keep in sync
-        setProfileData((prev) => prev ? { ...prev, twoFactorEnabled: value } : null);
-        toast.success(value ? "Two-factor authentication enabled" : "Two-factor authentication disabled");
+        setProfileData((prev) =>
+          prev ? { ...prev, twoFactorEnabled: value } : null
+        );
+        toast.success(
+          value
+            ? "Two-factor authentication enabled"
+            : "Two-factor authentication disabled"
+        );
       } catch (error) {
         console.error("Error updating 2FA setting:", error);
         // Revert on error
-        setSecurityData((prev) => ({ ...prev, twoFactorEnabled: previousState }));
+        setSecurityData((prev) => ({
+          ...prev,
+          twoFactorEnabled: previousState,
+        }));
         toast.error("Failed to update two-factor authentication");
       }
     } else {
@@ -235,11 +262,15 @@ export const AdministratorSettings: React.FC = () => {
       });
 
       // Update profileData to keep everything in sync
-      setProfileData((prev) => prev ? {
-        ...prev,
-        emailNotifications: newState.emailNotifications,
-        securityAlerts: newState.securityAlerts,
-      } : null);
+      setProfileData((prev) =>
+        prev
+          ? {
+              ...prev,
+              emailNotifications: newState.emailNotifications,
+              securityAlerts: newState.securityAlerts,
+            }
+          : null
+      );
 
       toast.success("Notification settings saved");
     } catch (error) {
@@ -478,7 +509,11 @@ export const AdministratorSettings: React.FC = () => {
                   style={{ display: "none" }}
                   data-testid="avatar-file-input"
                 />
-                <div className={`profile-picture ${isUploadingAvatar ? "uploading" : ""}`}>
+                <div
+                  className={`profile-picture ${
+                    isUploadingAvatar ? "uploading" : ""
+                  }`}
+                >
                   <img
                     src={
                       profileData?.avatar_url ||
@@ -499,7 +534,9 @@ export const AdministratorSettings: React.FC = () => {
                     </div>
                   )}
                   <button
-                    className={`profile-picture-edit ${isUploadingAvatar ? "uploading" : ""}`}
+                    className={`profile-picture-edit ${
+                      isUploadingAvatar ? "uploading" : ""
+                    }`}
                     data-testid="profile-picture-edit-btn"
                     aria-label="Edit profile picture"
                     onClick={handleAvatarClick}

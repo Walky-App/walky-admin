@@ -326,6 +326,7 @@
 .rdm-deactivate-btn:disabled,
 .rdm-ban-btn:disabled {
   cursor: not-allowed;
+  opacity: 0.4;
 }
 
 .rdm-status-message {
@@ -1444,5 +1445,5 @@
 }
 
 [data-theme="dark"] .rdm-note-date {
-  color: #9ca3af;
+  color: #5b6168;
 }

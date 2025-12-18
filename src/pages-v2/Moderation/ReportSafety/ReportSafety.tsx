@@ -356,7 +356,7 @@ const ReportSafety: React.FC = () => {
         reportDate: report.reportDate,
         type: report.type,
         reason: report.reason,
-        reasonTag: report.reasonTag,
+        reasonTag: report.reasonTag || report.reason || "",
         status: report.status,
         isFlagged: report.isFlagged,
         flagReason: report.flagReason,
@@ -868,7 +868,12 @@ const ReportSafety: React.FC = () => {
                     selectedReportDetails.reportedUser?.isDeactivated || false,
                 },
                 status: selectedReport.status as ReportStatus,
-                reason: selectedReport.reason,
+                reason:
+                  selectedReportDetails?.reasonTag ||
+                  selectedReportDetails?.reason ||
+                  selectedReport.reasonTag ||
+                  selectedReport.reason ||
+                  "",
                 reasonColor: "red",
                 reportDate: selectedReport.reportDate,
                 contentId: selectedReport.id,

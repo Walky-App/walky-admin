@@ -79,7 +79,6 @@ interface StudentProfileModalProps {
 
 type HistoryTab = "ban" | "report" | "block";
 
-
 export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   visible,
   student,
@@ -390,7 +389,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                       title="Copy email"
                       aria-label="Copy email to clipboard"
                     >
-                      <AssetIcon name="copy-icon" size={16} color="#ACB6BA" />
+                      <AssetIcon name="copy-icon" size={16} color="#6366f1" />
                     </button>
                   </div>
 
@@ -406,15 +405,16 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
               </div>
 
               <div className="profile-action-buttons">
-                {student.status !== "banned" && (
-                  <button
-                    data-testid="profile-deactivate-btn"
-                    className="profile-btn profile-btn-deactivate"
-                    onClick={handleDeactivateClick}
-                  >
-                    Deactivate user
-                  </button>
-                )}
+                {student.status !== "banned" &&
+                  student.status !== "deactivated" && (
+                    <button
+                      data-testid="profile-deactivate-btn"
+                      className="profile-btn profile-btn-deactivate"
+                      onClick={handleDeactivateClick}
+                    >
+                      Deactivate user
+                    </button>
+                  )}
                 {student.status === "banned" ? (
                   <button
                     data-testid="profile-unban-btn"

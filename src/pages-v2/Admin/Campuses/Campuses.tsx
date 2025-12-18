@@ -283,7 +283,7 @@ export const Campuses: React.FC = () => {
                             <AssetIcon
                               name="sync-icon"
                               size={18}
-                              color={canSyncPlaces ? "#1D1B20" : "#9CA3AF"}
+                              color={canSyncPlaces ? "#1D1B20" : "#5B6168"}
                             />
                           </button>
                         </td>
