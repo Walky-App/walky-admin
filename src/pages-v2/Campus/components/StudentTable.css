@@ -291,6 +291,15 @@
   gap: 6px;
 }
 
+.banned-by-email {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  color: #1d1b20;
+}
+
 .student-copy-btn {
   background: none;
   border: none;

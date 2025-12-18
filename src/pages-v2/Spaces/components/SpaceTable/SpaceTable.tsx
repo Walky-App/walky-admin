@@ -18,7 +18,7 @@ import {
   ChangeCategoryModal,
   CategoryOption,
 } from "../../../../components-v2";
-import { SpaceTypeChip, SpaceType } from "../SpaceTypeChip/SpaceTypeChip";
+import { Chip } from "../../../../components-v2/Chip";
 import "./SpaceTable.css";
 
 export interface SpaceData {
@@ -33,7 +33,7 @@ export interface SpaceData {
   members: number;
   creationDate: string;
   creationTime: string;
-  category: SpaceType;
+  category: string;
   isFlagged?: boolean;
   flagReason?: string;
 }
@@ -98,6 +98,20 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
       : [];
     return [...cats].sort((a, b) => a.name.localeCompare(b.name));
   }, [categoriesData]);
+
+  const slugifyCategory = (value: string) =>
+    value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-");
+
+  const getCategoryLabel = (value: string) => {
+    if (!value) return "Uncategorized";
+    const match = categories.find(
+      (cat) => slugifyCategory(cat.name) === slugifyCategory(value)
+    );
+    return match?.name || value;
+  };
 
   const deleteMutation = useMutation({
     mutationFn: (data: { id: string; reason?: string }) =>
@@ -479,7 +493,10 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
                   </div>
                 </td>
                 <td>
-                  <SpaceTypeChip type={space.category} />
+                  <Chip
+                    type="spaceCategory"
+                    value={getCategoryLabel(space.category)}
+                  />
                 </td>
                 <td>
                   <ActionDropdown

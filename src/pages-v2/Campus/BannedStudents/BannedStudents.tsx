@@ -152,7 +152,9 @@ export const BannedStudents: React.FC = () => {
       reason?: string;
     }>;
     reportHistory?: Array<unknown>;
-    reported?: boolean;
+    reported?: number | boolean;
+    reportedContentCount?: number;
+    reportedContent?: number;
   };
 
   const students: StudentData[] = (studentsData?.data.data || []).map((s) => {
@@ -170,6 +172,16 @@ export const BannedStudents: React.FC = () => {
       bannedTime: student.bannedTime,
       reason: student.reason,
       duration: student.duration,
+      reportedContentCount:
+        typeof student.reportedContentCount === "number"
+          ? student.reportedContentCount
+          : typeof student.reportedContent === "number"
+          ? student.reportedContent
+          : typeof student.reported === "number"
+          ? student.reported
+          : Array.isArray(student.reportHistory)
+          ? student.reportHistory.length
+          : undefined,
       memberSince: formatMemberSince(student.memberSince),
       onlineLast: student.onlineLast || "",
       avatar: student.avatar,

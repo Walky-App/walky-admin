@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { CModal, CModalBody } from "@coreui/react";
 import AssetIcon from "../AssetIcon/AssetIcon";
-import { StatusBadge } from "../../pages-v2/Campus/components/StatusBadge";
+import { Chip } from "../Chip";
 import { CustomToast } from "../CustomToast/CustomToast";
 import { BanUserModal } from "../BanUserModal/BanUserModal";
 import { DeactivateUserModal } from "../DeactivateUserModal/DeactivateUserModal";
@@ -445,7 +445,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
 
               <div className="profile-details-row">
                 <span className="profile-detail-label">Status:</span>
-                <StatusBadge status={student.status} />
+                <Chip value={student.status} type="status" />
               </div>
 
               <div className="profile-details-row">
