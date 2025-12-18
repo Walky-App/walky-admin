@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { usePermissions } from '../../hooks/usePermissions';
+import { useAuth } from '../../hooks/useAuth';
 import { PermissionResource, PermissionAction } from '../../lib/permissions';
 
 interface PermissionGuardProps {
@@ -63,6 +64,13 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
   redirectTo = '/dashboard/engagement',
 }) => {
   const { can } = usePermissions();
+  const { isLoading } = useAuth();
+
+  // Wait for auth state to load before evaluating permissions
+  // This prevents redirect on page refresh before auth is initialized
+  if (isLoading) {
+    return null;
+  }
 
   const hasPermission = can(resource, action);
 

@@ -39,6 +39,7 @@ interface HistoryReportData {
   reasonTag: string;
   status: string;
   isFlagged?: boolean;
+  flagReason?: string | null;
 }
 
 const ReportHistory: React.FC = () => {
@@ -176,6 +177,34 @@ const ReportHistory: React.FC = () => {
     },
   });
 
+  const unflagMutation = useMutation({
+    mutationFn: (data: { id: string; type: string }) => {
+      switch (data.type.toLowerCase()) {
+        case "user":
+          return apiClient.api.adminV2StudentsUnflagCreate(data.id);
+        case "event":
+          return apiClient.api.adminV2EventsUnflagCreate(data.id);
+        case "idea":
+          return apiClient.api.adminV2IdeasUnflagCreate(data.id);
+        case "space":
+          return apiClient.api.adminV2SpacesUnflagCreate(data.id);
+        default:
+          throw new Error(`Cannot unflag type: ${data.type}`);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["history-reports"] });
+      setToastMessage("Item unflagged successfully");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+    onError: () => {
+      setToastMessage("Error unflagging item");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+  });
+
   const historyReports: HistoryReportData[] = useMemo(
     () =>
       (reportsData?.data.data || []).map((report: any) => ({
@@ -189,6 +218,7 @@ const ReportHistory: React.FC = () => {
         reasonTag: report.reasonTag,
         status: report.status,
         isFlagged: report.isFlagged,
+        flagReason: report.flagReason,
       })),
     [reportsData]
   );
@@ -205,6 +235,7 @@ const ReportHistory: React.FC = () => {
         reasonTag: report.reasonTag,
         status: report.status,
         isFlagged: report.isFlagged,
+        flagReason: report.flagReason,
       })),
     [historyReports]
   );
@@ -561,6 +592,15 @@ const ReportHistory: React.FC = () => {
                 setIsFlagModalOpen(true);
               }
             }}
+            onUnflag={(row) => {
+              const matched = historyReports.find((r) => r.id === row.id);
+              if (matched && matched.reportedItemId) {
+                unflagMutation.mutate({
+                  id: matched.reportedItemId,
+                  type: normalizeFlagType(matched.type),
+                });
+              }
+            }}
             getReasonColor={getReasonColor}
             formatDate={formatReportDateParts}
             actionTestId="report-history-options"
@@ -767,10 +807,14 @@ const ReportHistory: React.FC = () => {
                 })(),
                 safetyRecord: {
                   banHistory: mapBanHistory(
-                    reportDetails?.reportedUser?.banHistory || []
+                    reportDetails?.safetyRecord?.banHistory ||
+                      reportDetails?.reportedUser?.banHistory ||
+                      []
                   ),
-                  reportHistory: [],
-                  blockHistory: [],
+                  reportHistory:
+                    reportDetails?.safetyRecord?.reportHistory || [],
+                  blockHistory:
+                    reportDetails?.safetyRecord?.blockHistory || [],
                 },
                 notes: reportDetails?.notes || [],
               }}

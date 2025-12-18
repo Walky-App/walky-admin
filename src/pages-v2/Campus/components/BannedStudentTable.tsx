@@ -552,6 +552,10 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
         onClose={handleCloseProfile}
         onBanUser={(student) => console.log("Ban user", student)}
         onDeactivateUser={(student) => console.log("Deactivate user", student)}
+        onUnbanUser={(student) => {
+          unbanMutation.mutate(student.id);
+          setProfileModalVisible(false);
+        }}
       />
 
       <UnbanUserModal

@@ -79,6 +79,7 @@ interface StudentProfileModalProps {
 
 type HistoryTab = "ban" | "report" | "block";
 
+
 export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   visible,
   student,

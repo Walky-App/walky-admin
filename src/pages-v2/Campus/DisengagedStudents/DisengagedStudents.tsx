@@ -13,6 +13,8 @@ import { StudentTableSkeleton } from "../components/StudentTableSkeleton/Student
 import { NoStudentsFound } from "../components/NoStudentsFound/NoStudentsFound";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 import "./DisengagedStudents.css";
 
 import { useQuery } from "@tanstack/react-query";
@@ -38,6 +40,8 @@ interface DisengagedStudent {
 
 export const DisengagedStudents: React.FC = () => {
   const { canExport } = usePermissions();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [selectedStudent, setSelectedStudent] =
     useState<DisengagedStudent | null>(null);
   const [profileModalVisible, setProfileModalVisible] = useState(false);
@@ -61,8 +65,12 @@ export const DisengagedStudents: React.FC = () => {
   });
 
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
-    queryKey: ["studentStats"],
-    queryFn: () => apiClient.api.adminV2StudentsStatsList(),
+    queryKey: ["studentStats", selectedSchool?._id, selectedCampus?._id],
+    queryFn: () =>
+      apiClient.api.adminV2StudentsStatsList({
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
   });
 
   const isLoading = isStudentsLoading || isStatsLoading;

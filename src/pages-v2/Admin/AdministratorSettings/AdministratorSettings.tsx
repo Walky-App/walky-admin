@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { apiClient } from "../../../API";
 import { useNavigate } from "react-router-dom";
 import AssetIcon from "../../../components-v2/AssetIcon/AssetIcon";
@@ -120,6 +120,10 @@ export const AdministratorSettings: React.FC = () => {
   // Danger zone state
   const [deleteReason, setDeleteReason] = useState("");
 
+  // Avatar upload
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+
   const [initialFormData] = useState(formData);
 
   // Check for unsaved changes
@@ -133,11 +137,83 @@ export const AdministratorSettings: React.FC = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSecurityChange = (
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    try {
+      const response = await apiClient.api.adminProfileAvatarCreate({
+        avatar: file,
+      });
+
+      // API types are incomplete - cast through unknown
+      const data = (response as unknown as { data: { avatar_url?: string } }).data;
+
+      // Update profile data with new avatar URL
+      setProfileData((prev) =>
+        prev ? { ...prev, avatar_url: data.avatar_url } : null
+      );
+
+      toast.success("Avatar updated successfully");
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      toast.error("Failed to upload avatar");
+    } finally {
+      setIsUploadingAvatar(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleSecurityChange = async (
     field: keyof typeof securityData,
     value: string | boolean
   ) => {
-    setSecurityData((prev) => ({ ...prev, [field]: value }));
+    // Handle 2FA toggle with API call
+    if (field === "twoFactorEnabled" && typeof value === "boolean") {
+      const previousState = securityData.twoFactorEnabled;
+
+      // Optimistically update UI
+      setSecurityData((prev) => ({ ...prev, twoFactorEnabled: value }));
+
+      try {
+        if (value) {
+          await apiClient.api.adminProfile2FaEnableCreate();
+        } else {
+          await apiClient.api.adminProfile2FaDisableCreate();
+        }
+
+        // Update profileData to keep in sync
+        setProfileData((prev) => prev ? { ...prev, twoFactorEnabled: value } : null);
+        toast.success(value ? "Two-factor authentication enabled" : "Two-factor authentication disabled");
+      } catch (error) {
+        console.error("Error updating 2FA setting:", error);
+        // Revert on error
+        setSecurityData((prev) => ({ ...prev, twoFactorEnabled: previousState }));
+        toast.error("Failed to update two-factor authentication");
+      }
+    } else {
+      setSecurityData((prev) => ({ ...prev, [field]: value }));
+    }
   };
 
   const handleNotificationChange = async (
@@ -394,7 +470,15 @@ export const AdministratorSettings: React.FC = () => {
             <div className="settings-form">
               {/* Profile Picture */}
               <div className="profile-picture-container">
-                <div className="profile-picture">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleAvatarChange}
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  data-testid="avatar-file-input"
+                />
+                <div className={`profile-picture ${isUploadingAvatar ? "uploading" : ""}`}>
                   <img
                     src={
                       profileData?.avatar_url ||
@@ -409,17 +493,28 @@ export const AdministratorSettings: React.FC = () => {
                     }
                     alt="Profile"
                   />
+                  {isUploadingAvatar && (
+                    <div className="avatar-upload-overlay">
+                      <div className="avatar-spinner"></div>
+                    </div>
+                  )}
                   <button
-                    className="profile-picture-edit"
+                    className={`profile-picture-edit ${isUploadingAvatar ? "uploading" : ""}`}
                     data-testid="profile-picture-edit-btn"
                     aria-label="Edit profile picture"
+                    onClick={handleAvatarClick}
+                    disabled={isUploadingAvatar}
                   >
-                    <AssetIcon
-                      name="camera-icon"
-                      size={22}
-                      className="profile-picture-edit-icon"
-                      aria-hidden="true"
-                    />
+                    {isUploadingAvatar ? (
+                      <div className="avatar-button-spinner"></div>
+                    ) : (
+                      <AssetIcon
+                        name="camera-icon"
+                        size={22}
+                        className="profile-picture-edit-icon"
+                        aria-hidden="true"
+                      />
+                    )}
                   </button>
                 </div>
               </div>

@@ -3,13 +3,23 @@ import { AssetIcon } from "../../../components-v2";
 
 interface ResetPasswordStepProps {
   onReset: (password: string) => Promise<void> | void;
+  apiError?: string;
+  apiErrors?: string[];
 }
 
-const ResetPasswordStep: React.FC<ResetPasswordStepProps> = ({ onReset }) => {
+const ResetPasswordStep: React.FC<ResetPasswordStepProps> = ({
+  onReset,
+  apiError,
+  apiErrors,
+}) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Combine client-side and API errors for display
+  const displayError = error || apiError;
+  const displayErrors = apiErrors || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +40,7 @@ const ResetPasswordStep: React.FC<ResetPasswordStepProps> = ({ onReset }) => {
       await onReset(newPassword);
     } catch (err) {
       console.error(err);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -57,14 +68,81 @@ const ResetPasswordStep: React.FC<ResetPasswordStepProps> = ({ onReset }) => {
           data-testid="reset-password-form"
           aria-label="Reset password form"
         >
-          {error && (
+          {(displayError || displayErrors.length > 0) && (
             <div
               className="error-message"
               role="alert"
               aria-live="polite"
               data-testid="reset-password-error"
+              style={{
+                backgroundColor: "rgba(255, 107, 107, 0.1)",
+                border: "1px solid rgba(255, 107, 107, 0.3)",
+                borderRadius: "12px",
+                padding: "16px 20px",
+                marginBottom: "20px",
+              }}
             >
-              {error}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginBottom: displayErrors.length > 0 ? "12px" : 0,
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "18px",
+                    lineHeight: 1,
+                  }}
+                >
+                  ⚠️
+                </span>
+                <span
+                  style={{
+                    color: "#dc3545",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                  }}
+                >
+                  {displayError || "Please fix the following issues:"}
+                </span>
+              </div>
+              {displayErrors.length > 0 && (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    paddingLeft: "28px",
+                  }}
+                >
+                  {displayErrors.map((err, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        color: "#666",
+                        fontSize: "13px",
+                        lineHeight: "1.4",
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "8px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: "#dc3545",
+                          fontSize: "8px",
+                          marginTop: "5px",
+                        }}
+                      >
+                        ●
+                      </span>
+                      <span>{err}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

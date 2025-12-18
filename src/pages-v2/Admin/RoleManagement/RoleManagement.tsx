@@ -96,9 +96,10 @@ export const RoleManagement: React.FC = () => {
         limit: entriesPerPage,
         search: searchQuery || undefined,
         role: roleFilter !== "All Roles" ? roleFilter : undefined,
+        // API types are incomplete - these params are supported by backend
         sortBy: sortField,
         sortOrder: sortOrder,
-      }),
+      } as Parameters<typeof apiClient.api.adminV2MembersList>[0]),
     placeholderData: keepPreviousData,
   });
 
