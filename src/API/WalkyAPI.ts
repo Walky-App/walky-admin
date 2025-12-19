@@ -1078,7 +1078,7 @@ export class HttpClient<SecurityDataType = unknown> {
   }: ApiConfig<SecurityDataType> = {}) {
     this.instance = axios.create({
       ...axiosConfig,
-      baseURL: axiosConfig.baseURL || "http://localhost:8080",
+      baseURL: axiosConfig.baseURL || "http://localhost:8081",
     });
     this.secure = secure;
     this.format = format;
@@ -1192,7 +1192,7 @@ export class HttpClient<SecurityDataType = unknown> {
 /**
  * @title Walky App API
  * @version 1.0.0
- * @baseUrl http://localhost:8080
+ * @baseUrl http://localhost:8081
  *
  * REST API for Walky App
  */

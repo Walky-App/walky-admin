@@ -240,7 +240,7 @@
 }
 
 [data-theme="dark"] .create-member-input::placeholder {
-  color: #808080;
+  color: #808180;
 }
 
 [data-theme="dark"] .create-member-input:focus {
@@ -258,7 +258,7 @@
 }
 
 [data-theme="dark"] .create-member-select span.placeholder {
-  color: #808080;
+  color: #808180;
 }
 
 [data-theme="dark"] .create-member-select:hover {

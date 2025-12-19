@@ -210,8 +210,8 @@ const Engagement: React.FC = () => {
       <CRow className="stats-container">
         <CCol xs={12} sm={6} md={6} lg={3}>
           <StatsCard
-            title="Total User"
-            value={dashboardStats?.data.totalUsers?.toString() || "0"}
+            title="Total Students"
+            value={(dashboardStats?.data as any)?.totalStudents?.toString() || dashboardStats?.data.totalUsers?.toString() || "0"}
             icon={
               <AssetIcon
                 name="double-users-icon"
@@ -219,7 +219,21 @@ const Engagement: React.FC = () => {
               />
             }
             iconBgColor={theme.colors.iconPurpleBg}
-            trend={formatTrend((dashboardStats?.data as any)?.usersChange)}
+            trend={formatTrend((dashboardStats?.data as any)?.studentsChange || (dashboardStats?.data as any)?.usersChange)}
+          />
+        </CCol>
+        <CCol xs={12} sm={6} md={6} lg={3}>
+          <StatsCard
+            title="Deactivated Students"
+            value={(dashboardStats?.data as any)?.deactivatedStudents?.toString() || "0"}
+            icon={
+              <AssetIcon
+                name="double-users-icon"
+                color="#dc3545"
+              />
+            }
+            iconBgColor="#f8d7da"
+            trend={formatTrend((dashboardStats?.data as any)?.deactivatedStudentsChange)}
           />
         </CCol>
         <CCol xs={12} sm={6} md={6} lg={3}>
