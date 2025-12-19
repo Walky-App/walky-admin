@@ -49,7 +49,12 @@ export const IdeasInsights: React.FC = () => {
   });
 
   const [timeMetrics, setTimeMetrics] = useState<TimeMetrics>({
-    timeToFirstCollaborator: { value: 0, unit: "days", trend: 0, trendDirection: "up" },
+    timeToFirstCollaborator: {
+      value: 0,
+      unit: "days",
+      trend: 0,
+      trendDirection: "up",
+    },
     avgResponseTime: { value: 0, unit: "days", trend: 0, trendDirection: "up" },
   });
 
@@ -62,26 +67,41 @@ export const IdeasInsights: React.FC = () => {
         // Fetch counts with time period filter
         // API types are incomplete - period param is supported by backend
         const periodParam = timePeriod === "all" ? undefined : timePeriod;
-        const [totalRes, collaboratedRes, ideasRes, timeMetricsRes] = await Promise.all([
-          apiClient.api.adminAnalyticsIdeasCountList({
-            type: "total",
-            period: periodParam,
-          } as Parameters<typeof apiClient.api.adminAnalyticsIdeasCountList>[0]),
-          apiClient.api.adminAnalyticsIdeasCountList({
-            type: "collaborated",
-            period: periodParam,
-          } as Parameters<typeof apiClient.api.adminAnalyticsIdeasCountList>[0]),
-          apiClient.api.adminV2IdeasList({ limit: 100, period: periodParam } as Parameters<typeof apiClient.api.adminV2IdeasList>[0]),
-          apiClient.api.adminAnalyticsIdeasTimeMetricsList({
-            period: periodParam,
-          } as Parameters<typeof apiClient.api.adminAnalyticsIdeasTimeMetricsList>[0]).catch(() => ({ data: null })),
-        ]);
+        const [totalRes, collaboratedRes, ideasRes, timeMetricsRes] =
+          await Promise.all([
+            apiClient.api.adminAnalyticsIdeasCountList({
+              type: "total",
+              period: periodParam,
+            } as Parameters<typeof apiClient.api.adminAnalyticsIdeasCountList>[0]),
+            apiClient.api.adminAnalyticsIdeasCountList({
+              type: "collaborated",
+              period: periodParam,
+            } as Parameters<typeof apiClient.api.adminAnalyticsIdeasCountList>[0]),
+            apiClient.api.adminV2IdeasList({
+              limit: 100,
+              period: periodParam,
+            } as Parameters<typeof apiClient.api.adminV2IdeasList>[0]),
+            apiClient.api
+              .adminAnalyticsIdeasTimeMetricsList({
+                period: periodParam,
+              } as Parameters<typeof apiClient.api.adminAnalyticsIdeasTimeMetricsList>[0])
+              .catch(() => ({ data: null })),
+          ]);
 
         // Extract count from response - API returns different fields based on type
-        const totalData = totalRes.data as { totalIdeasCreated?: number; count?: number };
-        const collaboratedData = collaboratedRes.data as { collaboratedIdeasCount?: number; count?: number };
+        const totalData = totalRes.data as {
+          totalIdeasCreated?: number;
+          count?: number;
+        };
+        const collaboratedData = collaboratedRes.data as {
+          collaboratedIdeasCount?: number;
+          count?: number;
+        };
         const total = totalData.totalIdeasCreated || totalData.count || 0;
-        const collaborated = collaboratedData.collaboratedIdeasCount || collaboratedData.count || 0;
+        const collaborated =
+          collaboratedData.collaboratedIdeasCount ||
+          collaboratedData.count ||
+          0;
 
         // Calculate conversion rate (collaborated / total) * 100
         const conversion =
@@ -94,7 +114,11 @@ export const IdeasInsights: React.FC = () => {
         });
 
         // Process time metrics if available
-        const timeMetricsData = (timeMetricsRes as { data: (TimeMetrics & { lastUpdated?: string }) | null }).data;
+        const timeMetricsData = (
+          timeMetricsRes as {
+            data: (TimeMetrics & { lastUpdated?: string }) | null;
+          }
+        ).data;
         if (timeMetricsData) {
           const metricsData = timeMetricsData;
           setTimeMetrics({
@@ -117,7 +141,11 @@ export const IdeasInsights: React.FC = () => {
         }
 
         // Type assertion for accessing optional metadata fields
-        const ideasData = ideasRes.data as { lastUpdated?: string; updatedAt?: string; metadata?: { lastUpdated?: string } };
+        const ideasData = ideasRes.data as {
+          lastUpdated?: string;
+          updatedAt?: string;
+          metadata?: { lastUpdated?: string };
+        };
         setLastUpdated(
           (totalData as { lastUpdated?: string }).lastUpdated ||
             (totalData as { updatedAt?: string }).updatedAt ||
@@ -278,18 +306,30 @@ export const IdeasInsights: React.FC = () => {
               </div>
             </div>
             <p className="time-card-value">
-              {loading ? "..." : `${timeMetrics.timeToFirstCollaborator.value} Days`}
+              {loading
+                ? "..."
+                : `${timeMetrics.timeToFirstCollaborator.value} Days`}
             </p>
             <div className="time-card-trend">
               <AssetIcon
-                name={timeMetrics.timeToFirstCollaborator.trendDirection === "up" ? "trend-up-red" : "trend-down-green"}
+                name={
+                  timeMetrics.timeToFirstCollaborator.trendDirection === "up"
+                    ? "trend-up-red"
+                    : "trend-down-green"
+                }
                 size={24}
-                color={timeMetrics.timeToFirstCollaborator.trendDirection === "up" ? "#D53425" : "#00C943"}
+                color={
+                  timeMetrics.timeToFirstCollaborator.trendDirection === "up"
+                    ? "#D53425"
+                    : "#00C943"
+                }
               />
               <p className="trend-text">
-                <span className="trend-percentage">{Math.abs(timeMetrics.timeToFirstCollaborator.trend)}%</span>{" "}
+                <span className="trend-percentage">
+                  {Math.abs(timeMetrics.timeToFirstCollaborator.trend)}%
+                </span>{" "}
                 <span className="trend-label">
-                  {timeMetrics.timeToFirstCollaborator.trendDirection === "up" ? "Up" : "Down"} from last {timePeriod === "week" ? "week" : "month"}
+                  from last {timePeriod === "week" ? "week" : "month"}
                 </span>
               </p>
             </div>
@@ -309,14 +349,24 @@ export const IdeasInsights: React.FC = () => {
             </p>
             <div className="time-card-trend">
               <AssetIcon
-                name={timeMetrics.avgResponseTime.trendDirection === "up" ? "trend-up-red" : "trend-down-green"}
+                name={
+                  timeMetrics.avgResponseTime.trendDirection === "up"
+                    ? "trend-up-red"
+                    : "trend-down-green"
+                }
                 size={24}
-                color={timeMetrics.avgResponseTime.trendDirection === "up" ? "#D53425" : "#00C943"}
+                color={
+                  timeMetrics.avgResponseTime.trendDirection === "up"
+                    ? "#D53425"
+                    : "#00C943"
+                }
               />
               <p className="trend-text">
-                <span className="trend-percentage">{Math.abs(timeMetrics.avgResponseTime.trend)}%</span>{" "}
+                <span className="trend-percentage">
+                  {Math.abs(timeMetrics.avgResponseTime.trend)}%
+                </span>{" "}
                 <span className="trend-label">
-                  {timeMetrics.avgResponseTime.trendDirection === "up" ? "Up" : "Down"} from last {timePeriod === "week" ? "week" : "month"}
+                  from last {timePeriod === "week" ? "week" : "month"}
                 </span>
               </p>
             </div>

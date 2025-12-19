@@ -96,7 +96,7 @@ const userMessageReasons: Matcher[] = [
   },
   {
     labels: ["underage", "policy violation"],
-    ...typeStyles.type7,
+    ...typeStyles.type6,
     fallbackLabel: "Underage User or\nPolicy Violation",
   },
   { labels: ["other"], ...typeStyles.type7, fallbackLabel: "Other" },
@@ -148,14 +148,14 @@ const ideaReasons: Matcher[] = [
     fallbackLabel: "Spam, Fake Profile,\nor Misuse",
   },
   {
-    labels: ["harmful", "dangerous"],
-    ...typeStyles.type3,
-    fallbackLabel: "Harmful /\nDangerous Content",
-  },
-  {
     labels: ["self", "harmful behavior", "self-injury"],
     ...typeStyles.type4,
     fallbackLabel: "Self-Injury /\nHarmful Behavior",
+  },
+  {
+    labels: ["harmful", "dangerous"],
+    ...typeStyles.type3,
+    fallbackLabel: "Harmful /\nDangerous Content",
   },
   {
     labels: ["discriminatory", "exclusionary"],
@@ -175,6 +175,11 @@ const spaceReasons: Matcher[] = [
     labels: ["inappropriate", "offensive"],
     ...typeStyles.type1,
     fallbackLabel: "Inappropriate\nor offensive",
+  },
+  {
+    labels: ["underage", "policy violation"],
+    ...typeStyles.type6,
+    fallbackLabel: "Underage User or\nPolicy Violation",
   },
   {
     labels: ["misinformation", "false", "misleading"],
