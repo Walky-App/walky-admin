@@ -271,7 +271,7 @@
 
 .sortable-header .sort-icon {
   opacity: 0.3;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .sortable-header:hover .sort-icon {
@@ -280,6 +280,14 @@
 
 .sortable-header .sort-icon.active {
   opacity: 1;
+}
+
+.sortable-header .sort-icon.asc {
+  transform: rotate(180deg);
+}
+
+.sortable-header .sort-icon.desc {
+  transform: rotate(0deg);
 }
 
 /* Table Rows */

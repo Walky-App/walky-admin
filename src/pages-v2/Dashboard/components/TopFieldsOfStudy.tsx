@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { CTooltip } from "@coreui/react";
 import { AssetIcon } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
 import "./TopFieldsOfStudy.css";
@@ -141,23 +140,6 @@ const TopFieldsOfStudy: React.FC<TopFieldsOfStudyProps> = ({ fields }) => {
                 }`}
               />
             </button>
-            <CTooltip
-              content="Explanation of how this data is calculated"
-              placement="top"
-            >
-              <button
-                data-testid="avg-interactions-tooltip-button"
-                className="tooltip-button"
-                aria-label="Information about average interactions"
-                type="button"
-              >
-                <AssetIcon
-                  name="tooltip-icon"
-                  color={theme.colors.iconTooltip}
-                  size={16}
-                />
-              </button>
-            </CTooltip>
           </div>
         </div>
 

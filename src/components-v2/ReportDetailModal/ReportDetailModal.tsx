@@ -581,14 +581,18 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
     );
   };
 
-  const userStatusMessage = reportData.associatedUser.isBanned
-    ? "This user is currently banned"
-    : reportData.associatedUser.isDeactivated
-    ? "This user is currently deactivated"
-    : null;
+  const isUserBanned = reportData.associatedUser.isBanned === true;
+  const isUserDeactivated = reportData.associatedUser.isDeactivated === true;
 
-  const isUserBanned = !!reportData.associatedUser.isBanned;
-  const isUserDeactivated = !!reportData.associatedUser.isDeactivated;
+  const userStatusMessage =
+    isUserBanned && isUserDeactivated
+      ? "This user is currently banned and deactivated"
+      : isUserBanned
+      ? "This user is currently banned"
+      : isUserDeactivated
+      ? "This user is currently deactivated"
+      : null;
+
   const disableBanUser = isUserBanned;
   const disableDeactivateUser = isUserBanned || isUserDeactivated;
 

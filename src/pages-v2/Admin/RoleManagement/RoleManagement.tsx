@@ -398,15 +398,12 @@ export const RoleManagement: React.FC = () => {
                   >
                     <span>Full Name</span>
                     <AssetIcon
-                      name={
-                        sortField === "name" && sortOrder === "desc"
-                          ? "arrow-down"
-                          : "arrow-up"
-                      }
+                      name="swap-arrows-icon"
+                      color="#1d1b20"
                       size={16}
-                      className={
-                        sortField === "name" ? "sort-icon active" : "sort-icon"
-                      }
+                      className={`sort-icon ${
+                        sortField === "name" ? `${sortOrder} active` : ""
+                      }`}
                     />
                   </button>
                 </th>
@@ -420,15 +417,12 @@ export const RoleManagement: React.FC = () => {
                   >
                     <span>Institutional email</span>
                     <AssetIcon
-                      name={
-                        sortField === "email" && sortOrder === "desc"
-                          ? "arrow-down"
-                          : "arrow-up"
-                      }
+                      name="swap-arrows-icon"
+                      color="#1d1b20"
                       size={16}
-                      className={
-                        sortField === "email" ? "sort-icon active" : "sort-icon"
-                      }
+                      className={`sort-icon ${
+                        sortField === "email" ? `${sortOrder} active` : ""
+                      }`}
                     />
                   </button>
                 </th>
@@ -442,15 +436,12 @@ export const RoleManagement: React.FC = () => {
                   >
                     <span>Role</span>
                     <AssetIcon
-                      name={
-                        sortField === "role" && sortOrder === "desc"
-                          ? "arrow-down"
-                          : "arrow-up"
-                      }
+                      name="swap-arrows-icon"
+                      color="#1d1b20"
                       size={16}
-                      className={
-                        sortField === "role" ? "sort-icon active" : "sort-icon"
-                      }
+                      className={`sort-icon ${
+                        sortField === "role" ? `${sortOrder} active` : ""
+                      }`}
                     />
                   </button>
                 </th>
@@ -469,17 +460,14 @@ export const RoleManagement: React.FC = () => {
                   >
                     <span>Invitation status</span>
                     <AssetIcon
-                      name={
-                        sortField === "invitationStatus" && sortOrder === "desc"
-                          ? "arrow-down"
-                          : "arrow-up"
-                      }
+                      name="swap-arrows-icon"
+                      color="#1d1b20"
                       size={16}
-                      className={
+                      className={`sort-icon ${
                         sortField === "invitationStatus"
-                          ? "sort-icon active"
-                          : "sort-icon"
-                      }
+                          ? `${sortOrder} active`
+                          : ""
+                      }`}
                     />
                   </button>
                 </th>
@@ -493,17 +481,12 @@ export const RoleManagement: React.FC = () => {
                   >
                     <span>Last active</span>
                     <AssetIcon
-                      name={
-                        sortField === "lastActive" && sortOrder === "desc"
-                          ? "arrow-down"
-                          : "arrow-up"
-                      }
+                      name="swap-arrows-icon"
+                      color="#1d1b20"
                       size={16}
-                      className={
-                        sortField === "lastActive"
-                          ? "sort-icon active"
-                          : "sort-icon"
-                      }
+                      className={`sort-icon ${
+                        sortField === "lastActive" ? `${sortOrder} active` : ""
+                      }`}
                     />
                   </button>
                 </th>

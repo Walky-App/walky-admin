@@ -185,12 +185,14 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .idea-info-row {
   display: flex;
   gap: 12px;
-  align-items: center;
+  align-items: flex-start;
   font-family: "Lato", sans-serif;
   font-size: 16px;
   line-height: 100%;
@@ -202,6 +204,9 @@
   font-size: 16px;
   line-height: 100%;
   color: #1d1b20;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .idea-info-label {
@@ -211,6 +216,9 @@
 .idea-info-value {
   font-weight: 400;
   opacity: 0.8;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .idea-info-flag-reason {

@@ -353,24 +353,16 @@ export const EventTable: React.FC<EventTableProps> = ({
             <React.Fragment key={event.id}>
               <tr className={event.isFlagged ? "event-row-flagged" : ""}>
                 <td>
-                  <AssetIcon
-                    name="swap-arrows-icon"
-                    size={24}
-                    color={theme.colors.bodyColor}
-                  />
-                  <span title={event.flagReason || "Flagged"}>
-                    <AssetIcon
-                      name="flag-icon"
-                      size={16}
-                      color="#D53425"
-                      className="event-flag-icon"
-                    />
-                  </span>
-                  <AssetIcon
-                    name="swap-arrows-icon"
-                    size={24}
-                    color={theme.colors.bodyColor}
-                  />
+                  {event.isFlagged && (
+                    <span title={event.flagReason || "Flagged"}>
+                      <AssetIcon
+                        name="flag-icon"
+                        size={16}
+                        color="#D53425"
+                        className="event-flag-icon"
+                      />
+                    </span>
+                  )}
                   <div className="event-name-cell">
                     <span className="event-name" title={event.eventName}>
                       {event.eventName}
