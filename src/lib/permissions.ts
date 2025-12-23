@@ -274,8 +274,8 @@ export const permissionMatrix: PermissionMatrix = {
     community: readOnly,
     student_safety: readOnly,
     student_behavior: readOnly,
-    // Campus - Manage Students - Read only for active, no access to banned/deactivated/disengaged
-    active_students: readOnly,
+    // Campus - Manage Students - No access for walky_internal
+    active_students: noPermissions,
     banned_students: noPermissions,
     inactive_students: noPermissions,
     disengaged_students: noPermissions,
@@ -289,12 +289,12 @@ export const permissionMatrix: PermissionMatrix = {
     // Ideas - Read only
     ideas_manager: readOnly,
     ideas_insights: readOnly,
-    // Moderation/Reports - Read only (observation for audits, no enforcement actions)
-    report_safety: readOnly,
-    report_history: readOnly,
-    // Admin - No access to campuses/ambassadors, read-only for role management
-    campuses: noPermissions,
-    ambassadors: noPermissions,
+    // Moderation/Reports - No access for walky_internal
+    report_safety: noPermissions,
+    report_history: noPermissions,
+    // Admin - Read-only access to campuses/ambassadors for visibility
+    campuses: readOnly,
+    ambassadors: readOnly,
     role_management: readOnly,
   },
 };
