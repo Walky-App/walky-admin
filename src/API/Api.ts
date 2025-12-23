@@ -3399,6 +3399,40 @@ export class Api<
       }),
 
     /**
+     * @description Returns a list of ideas that have at least one collaborator, for use in filter dropdowns
+     *
+     * @tags AdminV2
+     * @name AdminV2IdeasFilterOptionsCollaboratedList
+     * @summary Get collaborated ideas for filter dropdown
+     * @request GET:/api/admin/v2/ideas/filter-options/collaborated
+     * @secure
+     */
+    adminV2IdeasFilterOptionsCollaboratedList: (
+      query?: {
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          id?: string;
+          title?: string;
+          collaboratorCount?: number;
+        }[],
+        any
+      >({
+        path: `/api/admin/v2/ideas/filter-options/collaborated`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * No description
      *
      * @tags AdminV2
@@ -4310,6 +4344,20 @@ export class Api<
         role?: string;
         /** If true, search will match exact first name or last name only */
         exactMatch?: boolean;
+        /** Field to sort by */
+        sortBy?:
+          | "name"
+          | "email"
+          | "role"
+          | "lastActive"
+          | "invitationStatus"
+          | "createdAt";
+        /** Sort order */
+        sortOrder?: "asc" | "desc";
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -6168,7 +6216,7 @@ export class Api<
       }),
 
     /**
-     * @description Returns newest events in user's school (admins see all schools)
+     * @description Returns upcoming events (keeps today visible until midnight) in user's school (admins see all schools)
      *
      * @tags Discovery
      * @name DiscoverEventsList

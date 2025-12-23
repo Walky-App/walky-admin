@@ -8,6 +8,27 @@
   margin-bottom: 32px;
 }
 
+/* Error Banner */
+.insights-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  color: #92400e;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .insights-error-banner {
+  background-color: #422006;
+  border-color: #b45309;
+  color: #fcd34d;
+}
+
 /* Stats Cards Row */
 .ideas-insights-page .stats-cards-row {
   display: grid;

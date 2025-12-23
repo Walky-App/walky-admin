@@ -26,6 +26,7 @@ import {
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { useCampus } from "../../../contexts/CampusContext";
 import { apiClient } from "../../../API";
 import "./RoleManagement.css";
 
@@ -66,6 +67,7 @@ const getInitials = (name: string): string =>
 export const RoleManagement: React.FC = () => {
   const { theme } = useTheme();
   const { canCreate, canUpdate, canDelete, canManage } = usePermissions();
+  const { selectedCampus } = useCampus();
   const queryClient = useQueryClient();
 
   // Permission checks for actions
@@ -102,6 +104,7 @@ export const RoleManagement: React.FC = () => {
       roleFilter,
       sortField,
       sortOrder,
+      selectedCampus?._id,
     ],
     queryFn: () =>
       apiClient.api.adminV2MembersList({
@@ -109,10 +112,10 @@ export const RoleManagement: React.FC = () => {
         limit: entriesPerPage,
         search: searchQuery || undefined,
         role: roleFilter !== "All Roles" ? roleFilter : undefined,
-        // API types are incomplete - these params are supported by backend
         sortBy: sortField,
         sortOrder: sortOrder,
-      } as Parameters<typeof apiClient.api.adminV2MembersList>[0]),
+        campusId: selectedCampus?._id,
+      }),
     placeholderData: keepPreviousData,
   });
 

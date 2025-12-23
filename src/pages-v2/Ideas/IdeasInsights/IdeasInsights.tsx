@@ -59,10 +59,12 @@ export const IdeasInsights: React.FC = () => {
   });
 
   const [popularIdeas, setPopularIdeas] = useState<PopularIdea[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setError(null);
       try {
         // Fetch counts with time period filter
         // API types are incomplete - period param is supported by backend
@@ -200,8 +202,17 @@ export const IdeasInsights: React.FC = () => {
           }));
 
         setPopularIdeas(sortedIdeas);
-      } catch (error) {
-        console.error("Failed to fetch ideas insights:", error);
+      } catch (err: any) {
+        console.error("Failed to fetch ideas insights:", err);
+        // Check for school configuration error
+        const errorMessage = err?.response?.data?.error || err?.message || "";
+        if (errorMessage.includes("school") || err?.response?.status === 400) {
+          setError(
+            "Your account is not associated with a school. Please contact an administrator to configure your school access."
+          );
+        } else {
+          setError("Failed to load ideas insights data.");
+        }
       } finally {
         setLoading(false);
       }
@@ -218,6 +229,14 @@ export const IdeasInsights: React.FC = () => {
           <ExportButton captureRef={exportRef} filename="ideas_insights" />
         )}
       </div>
+
+      {/* Error Warning Banner */}
+      {error && (
+        <div className="insights-error-banner">
+          <AssetIcon name="red-flag-icon" size={20} color="#F59E0B" />
+          <span>{error}</span>
+        </div>
+      )}
 
       {/* Top 3 Stats Cards */}
       <div className="stats-cards-row">

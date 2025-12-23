@@ -131,6 +131,23 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     },
   });
 
+  const unflagMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2StudentsUnflagCreate(id),
+    onSuccess: () => {
+      // Invalidate all student queries
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) && query.queryKey[0] === "students",
+      });
+      setToastMessage("User unflagged successfully");
+      setShowToast(true);
+    },
+    onError: () => {
+      setToastMessage("Failed to unflag user");
+      setShowToast(true);
+    },
+  });
+
   const handleViewProfile = async (student: StudentData) => {
     try {
       const response = (await apiClient.api.adminV2StudentsDetail(
@@ -626,7 +643,11 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
                                   : undefined,
                                 onClick: (e: React.MouseEvent) => {
                                   e.stopPropagation();
-                                  handleFlagUser(student);
+                                  if (student.isFlagged) {
+                                    unflagMutation.mutate(student.id);
+                                  } else {
+                                    handleFlagUser(student);
+                                  }
                                 },
                               },
                             ]
