@@ -35,32 +35,32 @@ function App() {
         toastOptions={{
           duration: 3000,
           style: {
-            background: '#ffffff',
-            color: '#5B6168',
+            background: "#ffffff",
+            color: "#5B6168",
             fontFamily: '"Lato", sans-serif',
-            fontSize: '16px',
+            fontSize: "16px",
             fontWeight: 600,
-            padding: '16px 16px 16px 32px',
-            borderRadius: '4px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            minWidth: '350px',
+            padding: "16px 16px 16px 32px",
+            borderRadius: "4px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            minWidth: "350px",
           },
           success: {
             style: {
-              borderLeft: '5px solid #1c9e3e',
+              borderLeft: "5px solid #1c9e3e",
             },
             iconTheme: {
-              primary: '#429b5f',
-              secondary: '#FFFFFF',
+              primary: "#429b5f",
+              secondary: "#FFFFFF",
             },
           },
           error: {
             style: {
-              borderLeft: '5px solid #e53935',
+              borderLeft: "5px solid #e53935",
             },
             iconTheme: {
-              primary: '#e53935',
-              secondary: '#FFFFFF',
+              primary: "#e53935",
+              secondary: "#FFFFFF",
             },
           },
         }}
@@ -71,17 +71,24 @@ function App() {
 
         {/* V2 Auth Routes */}
         <Route path="/recover-password" element={<RecoverPasswordV2 />} />
-        <Route path="/force-password-change" element={<ForcePasswordChange />} />
+        <Route path="/auth/otp" element={<RecoverPasswordV2 />} />
+        <Route
+          path="/force-password-change"
+          element={<ForcePasswordChange />}
+        />
 
         {/* Redirect old /v2/* paths to new root paths */}
         <Route path="/v2/*" element={<V2RedirectHandler />} />
 
         {/* V2 Layout Routes - New Design System (Default) */}
-        <Route path="/*" element={
-          <AuthGuard>
-            <V2Routes />
-          </AuthGuard>
-        } />
+        <Route
+          path="/*"
+          element={
+            <AuthGuard>
+              <V2Routes />
+            </AuthGuard>
+          }
+        />
       </Routes>
     </DeactivatedUserProvider>
   );
