@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AssetIcon } from "../../../components-v2";
 interface VerifyCodeStepProps {
   email: string;
-  onVerify: (code: string) => void;
+  onVerify: (code: string) => Promise<void> | void;
   onResendCode: () => void;
 }
 
@@ -18,10 +18,11 @@ const VerifyCodeStep: React.FC<VerifyCodeStepProps> = ({
     e.preventDefault();
     setIsLoading(true);
 
-    // Pass the code to the parent component. 
-    // Actual verification happens during the password reset step as the API verifies OTP and resets password in one request.
-    onVerify(verificationCode);
-    setIsLoading(false);
+    try {
+      await onVerify(verificationCode);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleResend = () => {

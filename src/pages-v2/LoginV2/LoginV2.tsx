@@ -27,6 +27,41 @@ const LoginV2: React.FC = () => {
       });
 
       const responseData = response.data;
+
+      // If backend signals not verified (even with HTTP 200), send user to verification
+      if (responseData?.status === "not_verified") {
+        const redirectPath = responseData?.redirect;
+
+        // Extract params from backend redirect if present
+        let redirectEmail = responseData?.email || email;
+        let redirectPhone = responseData?.phoneNumber;
+        if (redirectPath) {
+          try {
+            const url = new URL(redirectPath, window.location.origin);
+            redirectEmail = url.searchParams.get("email") || redirectEmail;
+            const phoneFromUrl = url.searchParams.get("phoneNumber");
+            redirectPhone = phoneFromUrl || redirectPhone;
+          } catch (parseErr) {
+            console.warn("Failed to parse redirectPath", parseErr);
+          }
+        }
+
+        // Preserve '+' that may come URL-decoded as spaces
+        if (redirectEmail && redirectEmail.includes(" ")) {
+          redirectEmail = redirectEmail.replace(/ /g, "+");
+        }
+
+        const params = new URLSearchParams();
+        params.set("step", "verify");
+        if (redirectEmail) params.set("email", redirectEmail);
+        if (redirectPhone && redirectPhone !== "undefined") {
+          params.set("phoneNumber", redirectPhone);
+        }
+
+        window.location.href = `/auth/otp?${params.toString()}`;
+        return;
+      }
+
       const token = responseData.access_token;
       const userData = responseData;
 
@@ -54,12 +89,14 @@ const LoginV2: React.FC = () => {
 
       // Store token and user data in localStorage
       // Extract IDs from potentially populated objects
-      const schoolId = typeof userData.school_id === 'object' && userData.school_id !== null
-        ? (userData.school_id as any)._id || (userData.school_id as any).id
-        : userData.school_id;
-      const campusId = typeof userData.campus_id === 'object' && userData.campus_id !== null
-        ? (userData.campus_id as any)._id || (userData.campus_id as any).id
-        : userData.campus_id;
+      const schoolId =
+        typeof userData.school_id === "object" && userData.school_id !== null
+          ? (userData.school_id as any)._id || (userData.school_id as any).id
+          : userData.school_id;
+      const campusId =
+        typeof userData.campus_id === "object" && userData.campus_id !== null
+          ? (userData.campus_id as any)._id || (userData.campus_id as any).id
+          : userData.campus_id;
 
       localStorage.setItem("token", token);
       localStorage.setItem(
@@ -87,6 +124,35 @@ const LoginV2: React.FC = () => {
       window.location.href = "/";
     } catch (err: any) {
       console.error("Login failed:", err);
+
+      const status = err?.response?.data?.status;
+      if (status === "not_verified") {
+        const redirectPath = err?.response?.data?.redirect;
+
+        // Extract params from backend redirect if present
+        let redirectEmail = err?.response?.data?.email || email;
+        let redirectPhone = err?.response?.data?.phoneNumber;
+        if (redirectPath) {
+          try {
+            const url = new URL(redirectPath, window.location.origin);
+            redirectEmail = url.searchParams.get("email") || redirectEmail;
+            const phoneFromUrl = url.searchParams.get("phoneNumber");
+            redirectPhone = phoneFromUrl || redirectPhone;
+          } catch (parseErr) {
+            console.warn("Failed to parse redirectPath", parseErr);
+          }
+        }
+
+        const params = new URLSearchParams();
+        params.set("step", "verify");
+        if (redirectEmail) params.set("email", redirectEmail);
+        if (redirectPhone && redirectPhone !== "undefined") {
+          params.set("phoneNumber", redirectPhone);
+        }
+
+        window.location.href = `/auth/otp?${params.toString()}`;
+        return;
+      }
 
       // Check if user is deactivated
       if (err?.response?.data?.code === "USER_DEACTIVATED") {
@@ -123,7 +189,14 @@ const LoginV2: React.FC = () => {
             aria-label="Login form"
           >
             {error && (
-              <div className="error-message" style={{ color: "red", marginBottom: "1rem", textAlign: "center" }}>
+              <div
+                className="error-message"
+                style={{
+                  color: "red",
+                  marginBottom: "1rem",
+                  textAlign: "center",
+                }}
+              >
                 {error}
               </div>
             )}
@@ -212,7 +285,8 @@ const LoginV2: React.FC = () => {
             </div>
             <h2 className="deactivated-modal-title">Account Deactivated</h2>
             <p className="deactivated-modal-message">
-              Your account has been deactivated. Please contact Walky admin for assistance.
+              Your account has been deactivated. Please contact Walky admin for
+              assistance.
             </p>
             <a
               href="mailto:support@walkyapp.com"

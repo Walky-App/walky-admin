@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import "./RecoverPasswordV2.css";
 import VerifyCodeStep from "../VerifyCodeStep/VerifyCodeStep";
@@ -20,6 +20,21 @@ const RecoverPasswordV2: React.FC = () => {
   const [resetError, setResetError] = useState("");
   const [resetErrors, setResetErrors] = useState<string[]>([]);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const step = searchParams.get("step");
+    const emailFromQuery = searchParams.get("email");
+    if (emailFromQuery) {
+      const normalizedEmail = emailFromQuery.includes(" ")
+        ? emailFromQuery.replace(/ /g, "+")
+        : emailFromQuery;
+      setEmail(normalizedEmail);
+    }
+    if (step === "verify" && emailFromQuery) {
+      setCurrentStep("verify");
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,10 +52,21 @@ const RecoverPasswordV2: React.FC = () => {
     }
   };
 
-  const handleVerify = (code: string) => {
-    console.log("Verification code:", code);
-    setOtp(parseInt(code));
-    setCurrentStep("reset");
+  const handleVerify = async (code: string) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const otpValue = parseInt(code, 10);
+      await apiClient.api.verifyCreate({ email, otp: otpValue });
+      setOtp(otpValue);
+      setCurrentStep("reset");
+    } catch (err: any) {
+      console.error("Verification failed:", err);
+      setError(err?.response?.data?.message || "Invalid code.");
+      throw err; // Let child component handle loading state reset
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleResendCode = async () => {
@@ -150,7 +176,14 @@ const RecoverPasswordV2: React.FC = () => {
             aria-label="Password recovery form"
           >
             {error && (
-              <div className="error-message" style={{ color: "red", marginBottom: "1rem", textAlign: "center" }}>
+              <div
+                className="error-message"
+                style={{
+                  color: "red",
+                  marginBottom: "1rem",
+                  textAlign: "center",
+                }}
+              >
                 {error}
               </div>
             )}
