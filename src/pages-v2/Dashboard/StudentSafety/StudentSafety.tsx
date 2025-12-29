@@ -1,5 +1,9 @@
-import React, { useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { DashboardSkeleton } from "../components";
 import { apiClient } from "../../../API";
 import {
@@ -17,7 +21,7 @@ import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
 const mapTimePeriodToApi = (
-  period: "all-time" | "week" | "month",
+  period: "all-time" | "week" | "month"
 ): "all" | "week" | "month" | "year" => {
   if (period === "all-time") return "all";
   return period;
@@ -75,6 +79,7 @@ const formatStatusLabel = (value?: string) => {
 };
 
 const StudentSafety: React.FC = () => {
+  const queryClient = useQueryClient();
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
   const { timePeriod, setTimePeriod } = useDashboard();
@@ -114,7 +119,7 @@ const StudentSafety: React.FC = () => {
       });
 
       const reports = (res.data.data || []).filter((r: any) =>
-        isWithinPeriod(r.reportDate, timePeriod),
+        isWithinPeriod(r.reportDate, timePeriod)
       );
 
       setModalTotalCount(reports.length);
@@ -173,7 +178,33 @@ const StudentSafety: React.FC = () => {
         schoolId: selectedSchool?._id,
         campusId: selectedCampus?._id,
       }),
+    placeholderData: keepPreviousData,
   });
+
+  useEffect(() => {
+    const periods: Array<"week" | "month" | "all-time"> = [
+      "week",
+      "month",
+      "all-time",
+    ];
+
+    periods.forEach((period) => {
+      queryClient.prefetchQuery({
+        queryKey: [
+          "studentSafety",
+          period,
+          selectedSchool?._id,
+          selectedCampus?._id,
+        ],
+        queryFn: () =>
+          apiClient.api.adminV2DashboardStudentSafetyList({
+            period,
+            schoolId: selectedSchool?._id,
+            campusId: selectedCampus?._id,
+          }),
+      });
+    });
+  }, [queryClient, selectedCampus?._id, selectedSchool?._id]);
 
   const data = apiData?.data || { labels: [], subLabels: [], reportsData: [] };
   const chartLabels = data.labels || [];
@@ -257,8 +288,8 @@ const StudentSafety: React.FC = () => {
           timePeriod === "month"
             ? "this month"
             : timePeriod === "week"
-              ? "this week"
-              : "all time"
+            ? "this week"
+            : "all time"
         }
         loading={modalLoading}
       />

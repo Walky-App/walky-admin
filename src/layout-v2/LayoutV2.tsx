@@ -3,7 +3,10 @@ import { Outlet, useLocation } from "react-router-dom";
 import SidebarV2 from "./SidebarV2/SidebarV2";
 import TopbarV2 from "./TopbarV2/TopbarV2";
 import DeactivatedUserModal from "../components-v2/DeactivatedUserModal/DeactivatedUserModal";
-import { useDeactivatedUser, registerDeactivatedSetter } from "../contexts/DeactivatedUserContext";
+import {
+  useDeactivatedUser,
+  registerDeactivatedSetter,
+} from "../contexts/DeactivatedUserContext";
 import "./LayoutV2.css";
 
 const LayoutV2: React.FC = () => {

@@ -1,5 +1,9 @@
-import React, { useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { DashboardSkeleton } from "../components";
 import { apiClient } from "../../../API";
 import API from "../../../API";
@@ -33,6 +37,7 @@ interface CompletionMetric {
 }
 
 const StudentBehavior: React.FC = () => {
+  const queryClient = useQueryClient();
   const { theme } = useTheme();
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
@@ -64,7 +69,33 @@ const StudentBehavior: React.FC = () => {
         schoolId: selectedSchool?._id,
         campusId: selectedCampus?._id,
       }),
+    placeholderData: keepPreviousData,
   });
+
+  useEffect(() => {
+    const periods: Array<"week" | "month" | "all-time"> = [
+      "week",
+      "month",
+      "all-time",
+    ];
+
+    periods.forEach((period) => {
+      queryClient.prefetchQuery({
+        queryKey: [
+          "studentBehavior",
+          period,
+          selectedSchool?._id,
+          selectedCampus?._id,
+        ],
+        queryFn: () =>
+          apiClient.api.adminV2DashboardStudentBehaviorList({
+            period,
+            schoolId: selectedSchool?._id,
+            campusId: selectedCampus?._id,
+          }),
+      });
+    });
+  }, [queryClient, selectedCampus?._id, selectedSchool?._id]);
 
   const data = apiData?.data || { metricCards: [], completionMetrics: [] };
   const metricCards: MetricCard[] =

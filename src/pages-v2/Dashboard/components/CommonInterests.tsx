@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   CDropdown,
   CDropdownToggle,
@@ -30,23 +30,19 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
   datasets,
 }) => {
   const { theme } = useTheme();
-  const [selectedFilter, setSelectedFilter] = useState("Common Interests");
+  const filterOptions = useMemo(() => {
+    const keys = datasets ? Object.keys(datasets) : [];
+    return keys.length ? keys : ["Common Interests"];
+  }, [datasets]);
 
-  const filterOptions = useMemo(
-    () => [
-      "Common Interests",
-      "Popular Space categories",
-      "Popular Events categories",
-      "Popular ways to connect",
-      "Visited Places",
-      "Invitation categories",
-      "Engaged",
-      "Events by number of attendees",
-      "Spaces by number of members",
-      "Collaborative Ideas",
-    ],
-    []
-  );
+  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
+
+  useEffect(() => {
+    if (!filterOptions.length) return;
+    if (!selectedFilter || !filterOptions.includes(selectedFilter)) {
+      setSelectedFilter(filterOptions[0]);
+    }
+  }, [filterOptions, selectedFilter]);
 
   const displayedInterests = useMemo(() => {
     const rankBgPalette = ["#fff3d6", "#d9e3f7", "#ffebe9"]; // top1, top2, top3 backgrounds
@@ -65,7 +61,16 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
     };
 
     const counts = list.map((item) =>
-      toNumber(item.students ?? item.count ?? item.value ?? item.total, 0)
+      toNumber(
+        item.students ??
+          item.count ??
+          item.value ??
+          item.total ??
+          item.visits ??
+          item.attendees ??
+          item.members,
+        0
+      )
     );
     const maxCount = Math.max(1, ...counts);
 
@@ -73,7 +78,10 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
       const rank = Number(item.rank ?? idx + 1) || idx + 1;
       const students = counts[idx] ?? 0;
       const computedPercentage = students ? (students / maxCount) * 100 : 0;
-      const percentage = toNumber(item.percentage, computedPercentage);
+      const percentageRaw = toNumber(item.percentage, computedPercentage);
+      const percentage = Number.isFinite(percentageRaw)
+        ? Number((percentageRaw as number).toFixed(2))
+        : percentageRaw;
       const computedBarWidth = Math.min(100, percentage || computedPercentage);
       const barWidth = toNumber(item.barWidth, computedBarWidth);
 

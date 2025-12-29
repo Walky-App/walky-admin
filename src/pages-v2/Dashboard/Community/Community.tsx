@@ -1,5 +1,9 @@
-import React, { useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useEffect, useRef } from "react";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { AssetIcon, FilterBar, LastUpdated } from "../../../components-v2";
 import { BarChart } from "./components/BarChart";
@@ -12,6 +16,7 @@ import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
 const Community: React.FC = () => {
+  const queryClient = useQueryClient();
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
   const { timePeriod, setTimePeriod } = useDashboard();
@@ -33,7 +38,33 @@ const Community: React.FC = () => {
         schoolId: selectedSchool?._id,
         campusId: selectedCampus?._id,
       }),
+    placeholderData: keepPreviousData,
   });
+
+  useEffect(() => {
+    const periods: Array<"week" | "month" | "all-time"> = [
+      "week",
+      "month",
+      "all-time",
+    ];
+
+    periods.forEach((period) => {
+      queryClient.prefetchQuery({
+        queryKey: [
+          "communityCreation",
+          period,
+          selectedSchool?._id,
+          selectedCampus?._id,
+        ],
+        queryFn: () =>
+          apiClient.api.adminV2DashboardCommunityCreationList({
+            period,
+            schoolId: selectedSchool?._id,
+            campusId: selectedCampus?._id,
+          }),
+      });
+    });
+  }, [queryClient, selectedCampus?._id, selectedSchool?._id]);
 
   // ... (inside component)
 
