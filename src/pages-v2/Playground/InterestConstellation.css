@@ -1,0 +1,45 @@
+.interest-constellation-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  color: #e5e7eb;
+  background: radial-gradient(
+      circle at 20% 20%,
+      rgba(88, 28, 135, 0.08),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 80% 10%,
+      rgba(14, 165, 233, 0.08),
+      transparent 32%
+    ),
+    #0b1220;
+  min-height: 100%;
+}
+
+.interest-constellation-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.interest-constellation-header .subtitle {
+  margin: 6px 0 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.interest-constellation-canvas {
+  height: calc(100vh - 150px);
+  min-height: 520px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.interest-constellation-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+}

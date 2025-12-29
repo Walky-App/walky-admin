@@ -40,7 +40,7 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
       "Popular ways to connect",
       "Visited Places",
       "Invitation categories",
-      "Most engaged",
+      "Engaged",
       "Events by number of attendees",
       "Spaces by number of members",
       "Collaborative Ideas",

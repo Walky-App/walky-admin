@@ -13,14 +13,12 @@ import { usePermissions } from "../../../hooks/usePermissions";
 import {
   FeatureCard,
   PopularitySelector,
-  ViewToggle,
   CommonInterests,
   TopFieldsOfStudy,
   DashboardSkeleton,
 } from "../components";
 import "./PopularFeatures.css";
 type PopularityOption = "least" | "most";
-type ViewType = "grid" | "list";
 
 import { useDashboard } from "../../../contexts/DashboardContext";
 import { useSchool } from "../../../contexts/SchoolContext";
@@ -33,10 +31,9 @@ const PopularFeatures: React.FC = () => {
   const { timePeriod, setTimePeriod } = useDashboard();
   const { canExport } = usePermissions();
   const [popularity, setPopularity] = useState<PopularityOption>("most");
-  const [viewType, setViewType] = useState<ViewType>("grid");
   const [interestsModalVisible, setInterestsModalVisible] = useState(false);
   const [modalData, setModalData] = useState<{ title: string; items: any[] }>({
-    title: "Top interests",
+    title: "Interests",
     items: [],
   });
   const exportRef = useRef<HTMLElement | null>(null);
@@ -152,155 +149,149 @@ const PopularFeatures: React.FC = () => {
         </div>
         <div className="header-controls">
           <PopularitySelector selected={popularity} onChange={setPopularity} />
-          <ViewToggle selected={viewType} onChange={setViewType} />
         </div>
       </div>
 
-      {/* Grid View */}
-      {viewType === "grid" && (
-        <section aria-label="Feature statistics">
-          <CRow className="feature-cards-row">
-            <CCol xs={12} md={6} lg={4}>
-              <FeatureCard
-                title="Top interests"
-                icon={
-                  <AssetIcon
-                    name="top-interests-icon"
-                    color={theme.colors.iconPurple}
-                    size={30}
-                  />
-                }
-                items={topInterests}
-                onSeeAll={() => {
-                  console.log("See all Top interests clicked!");
-                  setModalData({
-                    title: "Top interests",
-                    items: topInterests,
-                  });
-                  setInterestsModalVisible(true);
-                }}
-              />
-            </CCol>
-            <CCol xs={12} md={6} lg={4}>
-              <FeatureCard
-                title="Popular ways to connect"
-                icon={
-                  <AssetIcon
-                    name="double-users-icon"
-                    color={theme.colors.iconPurple}
-                    size={30}
-                  />
-                }
-                items={popularWaysToConnect}
-                onSeeAll={() => {
-                  console.log("See all ways clicked!");
-                  setModalData({
-                    title: "Popular ways to connect",
-                    items: popularWaysToConnect,
-                  });
-                  setInterestsModalVisible(true);
-                }}
-              />
-            </CCol>
-            <CCol xs={12} md={6} lg={4}>
-              <FeatureCard
-                title="Visited places"
-                icon={
-                  <AssetIcon
-                    name="visited-places-icon"
-                    color={theme.colors.iconGreen}
-                    size={30}
-                  />
-                }
-                items={visitedPlaces}
-                maxItems={visitedPlaces.length}
-                onSeeAll={() => {
-                  console.log("See all places clicked!");
-                  setModalData({
-                    title: "Visited places",
-                    items: visitedPlaces,
-                  });
-                  setInterestsModalVisible(true);
-                }}
-              />
-            </CCol>
-          </CRow>
+      {/* Unified view: grid on top, list below */}
+      <section aria-label="Feature statistics">
+        <CRow className="feature-cards-row">
+          <CCol xs={12} md={6} lg={4}>
+            <FeatureCard
+              title="Students' interests"
+              icon={
+                <AssetIcon
+                  name="top-interests-icon"
+                  color={theme.colors.iconPurple}
+                  size={30}
+                />
+              }
+              items={topInterests}
+              onSeeAll={() => {
+                console.log("See all Interests clicked!");
+                setModalData({
+                  title: "Students' interests",
+                  items: topInterests,
+                });
+                setInterestsModalVisible(true);
+              }}
+            />
+          </CCol>
+          <CCol xs={12} md={6} lg={4}>
+            <FeatureCard
+              title="Ways to connect"
+              icon={
+                <AssetIcon
+                  name="ways-to-connect"
+                  color={theme.colors.iconPurple}
+                  size={30}
+                />
+              }
+              items={popularWaysToConnect}
+              onSeeAll={() => {
+                console.log("See all ways clicked!");
+                setModalData({
+                  title: "Ways to connect",
+                  items: popularWaysToConnect,
+                });
+                setInterestsModalVisible(true);
+              }}
+            />
+          </CCol>
+          <CCol xs={12} md={6} lg={4}>
+            <FeatureCard
+              title="Visited places"
+              icon={
+                <AssetIcon
+                  name="visited-places-icon"
+                  color={theme.colors.iconGreen}
+                  size={30}
+                />
+              }
+              items={visitedPlaces}
+              maxItems={visitedPlaces.length}
+              onSeeAll={() => {
+                console.log("See all places clicked!");
+                setModalData({
+                  title: "Visited places",
+                  items: visitedPlaces,
+                });
+                setInterestsModalVisible(true);
+              }}
+            />
+          </CCol>
+        </CRow>
 
-          {/* Bottom Row Cards */}
-          <CRow className="feature-cards-row bottom-cards-row">
-            <CCol xs={12} md={6}>
-              <FeatureCard
-                title="Top invitation categories"
-                icon={
-                  <AssetIcon
-                    name="map-icon"
-                    color={theme.colors.iconPurple}
-                    size={30}
-                  />
-                }
-                items={topInvitationCategories}
-                onSeeAll={() => {
-                  console.log("See all categories clicked!");
-                  setModalData({
-                    title: "Top invitation categories",
-                    items: topInvitationCategories,
-                  });
-                  setInterestsModalVisible(true);
-                }}
-              />
-            </CCol>
-            <CCol xs={12} md={6}>
-              <FeatureCard
-                title="Most Engaged"
-                icon={
-                  <AssetIcon
-                    name="double-users-icon"
-                    color={theme.colors.iconPurple}
-                    size={30}
-                  />
-                }
-                items={mostEngaged}
-                onSeeAll={() => {
-                  console.log("See all engaged clicked!");
-                  setModalData({
-                    title: "Most Engaged",
-                    items: mostEngaged,
-                  });
-                  setInterestsModalVisible(true);
-                }}
-              />
-            </CCol>
-          </CRow>
-        </section>
-      )}
+        {/* Bottom Row Cards */}
+        <CRow className="feature-cards-row bottom-cards-row">
+          <CCol xs={12} md={6}>
+            <FeatureCard
+              title="Invitation categories"
+              icon={
+                <AssetIcon
+                  name="map-icon"
+                  color={theme.colors.iconPurple}
+                  size={30}
+                />
+              }
+              items={topInvitationCategories}
+              onSeeAll={() => {
+                console.log("See all categories clicked!");
+                setModalData({
+                  title: "Invitation categories",
+                  items: topInvitationCategories,
+                });
+                setInterestsModalVisible(true);
+              }}
+            />
+          </CCol>
+          <CCol xs={12} md={6}>
+            <FeatureCard
+              title="Engaged students"
+              icon={
+                <AssetIcon
+                  name="double-users-icon"
+                  color={theme.colors.iconPurple}
+                  size={30}
+                />
+              }
+              items={mostEngaged}
+              onSeeAll={() => {
+                console.log("See all engaged clicked!");
+                setModalData({
+                  title: "Engaged students",
+                  items: mostEngaged,
+                });
+                setInterestsModalVisible(true);
+              }}
+            />
+          </CCol>
+        </CRow>
+      </section>
 
-      {/* List View */}
-      {viewType === "list" && (
-        <section aria-label="Feature trends" className="list-view-section">
-          <CRow className="list-view-row">
-            <CCol xs={12} lg={6}>
-              <CommonInterests
-                interests={commonInterests}
-                datasets={{
-                  "Common Interests": commonInterests,
-                  "Popular Space categories": visitedPlaces,
-                  "Popular Events categories": topInvitationCategories,
-                  "Popular ways to connect": popularWaysToConnect,
-                  "Visited Places": visitedPlaces,
-                  "Invitation categories": topInvitationCategories,
-                  "Most engaged": mostEngaged,
-                  "Events by number of attendees": topInvitationCategories,
-                  "Spaces by number of members": mostEngaged,
-                  "Collaborative Ideas": commonInterests,
-                }}
-              />
-            </CCol>
-            <CCol xs={12} lg={6}>
-              <TopFieldsOfStudy fields={topFieldsOfStudy} />
-            </CCol>
-          </CRow>
-        </section>
-      )}
+      <section aria-label="Feature trends" className="list-view-section">
+        <CRow className="list-view-row">
+          <CCol xs={12} lg={6}>
+            <CommonInterests
+              interests={commonInterests}
+              datasets={{
+                "Common Interests": commonInterests,
+                "Popular Space categories": visitedPlaces,
+                "Popular Events categories": topInvitationCategories,
+                "Ways to connect": popularWaysToConnect,
+                "Visited Places": visitedPlaces,
+                "Invitation categories": topInvitationCategories,
+                Engaged: mostEngaged,
+                "Events by number of attendees": topInvitationCategories,
+                "Spaces by number of members": mostEngaged,
+                "Collaborative Ideas": commonInterests,
+              }}
+            />
+          </CCol>
+          <CCol xs={12} lg={6}>
+            <TopFieldsOfStudy fields={topFieldsOfStudy} />
+          </CCol>
+        </CRow>
+      </section>
 
       {/* Last Updated Footer */}
       <LastUpdated />

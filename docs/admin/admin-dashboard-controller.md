@@ -14,7 +14,13 @@ English overview of `/api/admin/v2/dashboard/*` endpoints with links to controll
 ```json
 {
   "labels": ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
-  "subLabels": ["Dec 1 - Dec 6", "Dec 7 - Dec 13", "Dec 14 - Dec 20", "Dec 21 - Dec 27", "Dec 28 - Dec 31"],
+  "subLabels": [
+    "Dec 1 - Dec 6",
+    "Dec 7 - Dec 13",
+    "Dec 14 - Dec 20",
+    "Dec 21 - Dec 27",
+    "Dec 28 - Dec 31"
+  ],
   "data": [
     {
       "events": 8,
@@ -49,7 +55,7 @@ English overview of `/api/admin/v2/dashboard/*` endpoints with links to controll
 <img src="./assets/community.png" alt="Community creation" />
 </div>
 
-Calculation notes:
+### Calculation notes (how each metric is calculated)
 
 - events: count of Event documents whose `createdAt` falls in the slice; campus filter comes from event creator campus or linked space campus.
 - ideas: count of Idea documents with `createdAt` in the slice and matching campus/school.
@@ -68,13 +74,29 @@ Calculation notes:
 ```json
 {
   "labels": ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
-  "subLabels": ["Dec 1 - Dec 6", "Dec 7 - Dec 13", "Dec 14 - Dec 20", "Dec 21 - Dec 27", "Dec 28 - Dec 31"],
+  "subLabels": [
+    "Dec 1 - Dec 6",
+    "Dec 7 - Dec 13",
+    "Dec 14 - Dec 20",
+    "Dec 21 - Dec 27",
+    "Dec 28 - Dec 31"
+  ],
   "userEngagement": [28, 11, 25, 4, 0],
   "sessionDuration": [0, 0, 8.4, 0, 0],
   "totalChats": [12, 0, 6, 0, 0],
   "donutData": [
-    { "label": "Events organized by spaces", "value": 82, "percentage": "27.70%", "color": "#526ac9" },
-    { "label": "Events organized by users", "value": 214, "percentage": "72.30%", "color": "#321fdb" }
+    {
+      "label": "Events organized by spaces",
+      "value": 82,
+      "percentage": "27.70%",
+      "color": "#526ac9"
+    },
+    {
+      "label": "Events organized by users",
+      "value": 214,
+      "percentage": "72.30%",
+      "color": "#321fdb"
+    }
   ]
 }
 ```
@@ -83,12 +105,12 @@ Calculation notes:
 <img src="./assets/dash-engagement.png" alt="Dashboard engagement" />
 </div>
 
-Calculation notes:
+### Calculation notes (how each metric is calculated)
 
-- userEngagement: unique `userId` across SessionTracking, Chat (`senderId`), Event/Idea creation, WalkInvite, and PeerRequest activity where `createdAt` is inside the slice.
-- sessionDuration: average `SessionTracking.durationMinutes` grouped by slice.
-- totalChats: count of Chat documents by `createdAt` in the slice.
-- donutData: count of Event documents by `ownerType` (space|user) with `createdAt` in the slice.
+- userEngagement: take every `userId` seen in the slice from SessionTracking, every `senderId` from Chat, every creator/owner on Event and Idea, plus the relevant actor on WalkInvite and PeerRequest (created in the slice). Union those IDs, drop duplicates, and count them. Campus/school filters are applied to all underlying queries. **How engagement is calculated:** we count how many different students did anything in the app during that time bucket—sessions, chats, creating events/ideas, sending invites, or peer requests. Engaged = unique students who took a create action in chat, events, ideas, invites, or peer requests.
+- sessionDuration: fetch `SessionTracking` rows inside the slice (and campus/school filters), average `durationMinutes` across them, return one average per slice.
+- totalChats: count Chat documents whose `createdAt` falls in the slice after campus/school filters.
+- donutData: group Event documents in the slice by `ownerType` (space|user), count each group, and compute their percentages over the total events in that slice (respecting campus/school filters).
 
 ---
 
@@ -102,7 +124,13 @@ Calculation notes:
 ```json
 {
   "labels": ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
-  "subLabels": ["Dec 1 - Dec 6", "Dec 7 - Dec 13", "Dec 14 - Dec 20", "Dec 21 - Dec 27", "Dec 28 - Dec 31"],
+  "subLabels": [
+    "Dec 1 - Dec 6",
+    "Dec 7 - Dec 13",
+    "Dec 14 - Dec 20",
+    "Dec 21 - Dec 27",
+    "Dec 28 - Dec 31"
+  ],
   "connectionRate": [37.5, 40, 0, 0, 0],
   "inactiveSignups": [0, 0, 4, 0, 0],
   "newRegistrations": [4, 0, 4, 0, 0],
@@ -114,7 +142,7 @@ Calculation notes:
 <img src="./assets/dash-retention.png" alt="Dashboard retention" />
 </div>
 
-Calculation notes:
+### Calculation notes (how each metric is calculated)
 
 - connectionRate: `PeerRequest.status='accepted'` divided by sent (`createdAt` in slice), expressed in %.
 - inactiveSignups: users with `createdAt` in slice and no SessionTracking or last activity (no `lastLogin`, chats, invites, or logs).
@@ -140,7 +168,10 @@ Calculation notes:
   "totalUsers": 7,
   "studentsChange": { "changePercentage": "133.3%", "changeDirection": "up" },
   "usersChange": { "changePercentage": "133.3%", "changeDirection": "up" },
-  "deactivatedStudentsChange": { "changePercentage": "N/A", "changeDirection": "neutral" },
+  "deactivatedStudentsChange": {
+    "changePercentage": "N/A",
+    "changeDirection": "neutral"
+  },
   "eventsChange": { "changePercentage": "N/A", "changeDirection": "neutral" },
   "spacesChange": { "changePercentage": "25%", "changeDirection": "down" },
   "ideasChange": { "changePercentage": "550%", "changeDirection": "up" }
@@ -151,7 +182,7 @@ Calculation notes:
   <img src="./assets/dash-stats.png" alt="Dashboard stats" />
   </div>
 
-Calculation notes:
+### Calculation notes (how each metric is calculated)
 
 - totalStudents/totalUsers: users with `isDeactivated=false` in scope; deactivatedStudents uses `isDeactivated=true`.
 - totalActiveEvents: events with `status` not canceled whose `startDate`/`endDate` overlap the slice (and pass campus/school filter).
@@ -213,9 +244,19 @@ Calculation notes:
     { "rank": 3, "name": "Reading", "students": 0, "percentage": 0 }
   ],
   "topFieldsOfStudy": [
-    { "rank": 1, "name": "Fashion Merchandising", "students": 1, "avgInteractions": 0.2 },
+    {
+      "rank": 1,
+      "name": "Fashion Merchandising",
+      "students": 1,
+      "avgInteractions": 0.2
+    },
     { "rank": 2, "name": "Greek", "students": 1, "avgInteractions": 0 },
-    { "rank": 3, "name": "Urban Planning", "students": 1, "avgInteractions": 0.3 }
+    {
+      "rank": 3,
+      "name": "Urban Planning",
+      "students": 1,
+      "avgInteractions": 0.3
+    }
   ]
 }
 ```
@@ -226,7 +267,7 @@ Arrays truncated for brevity.
 <img src="./assets/popular-feature.png" alt="Popular features" />
 </div>
 
-Calculation notes:
+### Calculation notes (how each metric is calculated)
 
 - topInterests: counts from `User.interest_ids` joined to Interest documents (`createdAt` in scope for user filters).
 - popularWaysToConnect: `WalkInvite.category` grouped by `createdAt` in the slice.
@@ -439,7 +480,7 @@ Calculation notes:
   <img src="./assets/events-ins-2.png" alt="Events insights 2" />
 </div>
 
-Calculation notes:
+### Calculation notes (how each metric is calculated)
 
 - stats: count Event documents by `isPublic` (or `visibility`) with `createdAt` in window; averages use `participants.length` for public vs private.
 - expandReachData: count events where `expandEventReach=true` vs false; percentage over total events in window.
@@ -566,7 +607,7 @@ Calculation notes:
 <img src="./assets/student-safety.png" alt="Student safety" />
 </div>
 
-Calculation notes:
+### Calculation notes (how each metric is calculated)
 
 - reportedPeople/events/spaces/ideas/messages: counts of Report documents grouped by `type` with `createdAt` in slice and campus/school filters applied.
 
@@ -618,7 +659,7 @@ Calculation notes:
 <img src="./assets/user-interactions.png" alt="User interactions" />
 </div>
 
-Calculation notes:
+### Calculation notes (how each metric is calculated)
 
 - invitationsData.sent/accepted/ignored: counts from Event `invites.status` plus `WalkInvite.status` grouped by `createdAt` in slice.
 - ideasClicksData/eventsClicksData: unique `(userId, entityId)` pairs in UserActivityLog for `entityType=idea|event` (actions view/going/join/click) within the slice.
@@ -719,7 +760,7 @@ Calculation notes:
 <img src="./assets/student-behavior.png" alt="Student behavior" />
 </div>
 
-Calculation notes (what each card/metric means and how it is computed):
+### Calculation notes (how each metric is calculated)
 
 - Average peers per student: mean of `stats.totalPeers` per user (derived from peer graph) for students in the window.
 - Average time to first interaction: days between `User.createdAt` and first qualifying action (WalkInvite accepted+completed, PeerRequest accepted, `UserActivityLog` event_going/space_join/idea_collaborate). If none, stays neutral.
@@ -766,7 +807,7 @@ Calculation notes (what each card/metric means and how it is computed):
 <img src="./assets/ideas-ins.png" alt="Ideas insights" />
 </div>
 
-Calculation notes:
+### Calculation notes (how each metric is calculated)
 
 - data: Idea documents with `is_active=true`, filtered by `campusId`/`schoolId` and optional `period` on `createdAt`, sorted by most recent.
 - owner: populated from User (`name`, `avatar`) via idea `owner` reference.
@@ -863,7 +904,7 @@ Calculation notes:
 <img src="./assets/spaces-ins.png" alt="Spaces insights" />
 </div>
 
-Calculation notes:
+### Calculation notes (how each metric is calculated)
 
 - totalSpaces: count of Space documents in scope (campus/school filters, `createdAt` within period when provided, `is_active`/visibility respected).
 - totalMembers: sum of member counts across spaces in scope, based on Space membership collection (`space_members.count` or aggregate on SpaceMember where `state='joined'`).

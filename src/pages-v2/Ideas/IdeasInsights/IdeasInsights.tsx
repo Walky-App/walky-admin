@@ -334,7 +334,7 @@ export const IdeasInsights: React.FC = () => {
                 name={
                   timeMetrics.timeToFirstCollaborator.trendDirection === "up"
                     ? "trend-up-red"
-                    : "trend-down-green"
+                    : "trend-down-icon"
                 }
                 size={24}
                 color={
@@ -371,7 +371,7 @@ export const IdeasInsights: React.FC = () => {
                 name={
                   timeMetrics.avgResponseTime.trendDirection === "up"
                     ? "trend-up-red"
-                    : "trend-down-green"
+                    : "trend-down-icon"
                 }
                 size={24}
                 color={
