@@ -1,5 +1,9 @@
-import React, { useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useEffect, useRef } from "react";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { CRow, CCol } from "@coreui/react";
 import { AssetIcon, FilterBar, LastUpdated } from "../../../components-v2";
@@ -13,6 +17,7 @@ import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
 const UserInteractions: React.FC = () => {
+  const queryClient = useQueryClient();
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
   const { timePeriod, setTimePeriod } = useDashboard();
@@ -36,14 +41,46 @@ const UserInteractions: React.FC = () => {
         schoolId: selectedSchool?._id,
         campusId: selectedCampus?._id,
       }),
+    placeholderData: keepPreviousData,
   });
+
+  useEffect(() => {
+    const periods: Array<"week" | "month" | "all-time"> = [
+      "week",
+      "month",
+      "all-time",
+    ];
+
+    periods.forEach((period) => {
+      queryClient.prefetchQuery({
+        queryKey: [
+          "userInteractions",
+          period,
+          selectedSchool?._id,
+          selectedCampus?._id,
+        ],
+        queryFn: () =>
+          apiClient.api.adminV2DashboardUserInteractionsList({
+            period,
+            schoolId: selectedSchool?._id,
+            campusId: selectedCampus?._id,
+          }),
+      });
+    });
+  }, [queryClient, selectedCampus?._id, selectedSchool?._id]);
 
   interface InvitationData {
     sent: number;
     accepted: number;
     ignored: number;
   }
-  const data = apiData?.data || { labels: [], subLabels: [], invitationsData: [], ideasClicksData: [], eventsClicksData: [] };
+  const data = apiData?.data || {
+    labels: [],
+    subLabels: [],
+    invitationsData: [],
+    ideasClicksData: [],
+    eventsClicksData: [],
+  };
   const chartLabels = data.labels || [];
   const chartSubLabels = data.subLabels;
   const invitationsData = (data.invitationsData || []) as InvitationData[];
