@@ -21,6 +21,20 @@ import {
   RoleManagement,
   AdministratorSettings,
 } from "../pages-v2/Admin";
+import InterestCloud from "../pages-v2/Playground/InterestCloud";
+import InterestConstellation from "../pages-v2/Playground/InterestConstellation";
+import InterestChord from "../pages-v2/Playground/InterestChord";
+import InterestPyramid from "../pages-v2/Playground/InterestPyramid";
+import ActiveUsersSpiral from "../pages-v2/Playground/ActiveUsersSpiral";
+import ActiveUsersHeat from "../pages-v2/Playground/ActiveUsersHeat";
+import ActiveUsersRings from "../pages-v2/Playground/ActiveUsersRings";
+import ActiveUsersFunnel from "../pages-v2/Playground/ActiveUsersFunnel";
+import ActiveUsersGuitar from "../pages-v2/Playground/ActiveUsersGuitar";
+import ActiveUsersDrums from "../pages-v2/Playground/ActiveUsersDrums";
+import ActiveUsersChimes from "../pages-v2/Playground/ActiveUsersChimes";
+import ActiveUsersWaves from "../pages-v2/Playground/ActiveUsersWaves";
+import ActiveUsersOrbs from "../pages-v2/Playground/ActiveUsersOrbs";
+import ActiveUsersGalaxy from "../pages-v2/Playground/ActiveUsersGalaxy";
 import { CampusProvider } from "../contexts/CampusContext";
 import { DashboardProvider } from "../contexts/DashboardContext";
 import { PermissionGuard } from "../components-v2";
@@ -268,6 +282,64 @@ const V2Routes: React.FC = () => {
             <Route
               path="administrators-roles"
               element={<div>Administrators Roles - Coming Soon</div>}
+            />
+
+            {/* Playground */}
+            <Route
+              path="playground/interest-cloud"
+              element={<InterestCloud />}
+            />
+            <Route
+              path="playground/interest-constellation"
+              element={<InterestConstellation />}
+            />
+            <Route
+              path="playground/interest-chord"
+              element={<InterestChord />}
+            />
+            <Route
+              path="playground/interest-pyramid"
+              element={<InterestPyramid />}
+            />
+            <Route
+              path="playground/active-spiral"
+              element={<ActiveUsersSpiral />}
+            />
+            <Route
+              path="playground/active-heat"
+              element={<ActiveUsersHeat />}
+            />
+            <Route
+              path="playground/active-rings"
+              element={<ActiveUsersRings />}
+            />
+            <Route
+              path="playground/active-funnel"
+              element={<ActiveUsersFunnel />}
+            />
+            <Route
+              path="playground/active-guitar"
+              element={<ActiveUsersGuitar />}
+            />
+            <Route
+              path="playground/active-drums"
+              element={<ActiveUsersDrums />}
+            />
+            <Route
+              path="playground/active-chimes"
+              element={<ActiveUsersChimes />}
+            />
+            <Route
+              path="playground/active-waves"
+              element={<ActiveUsersWaves />}
+            />
+            <Route
+              path="playground/active-orbs"
+              element={<ActiveUsersOrbs />}
+            />
+            <Route
+              path="playground/active-galaxy"
+              element={<ActiveUsersGalaxy />}
             />
 
             {/* 404 */}

@@ -61,6 +61,7 @@ import underEvaluationIcon from '../../assets-v2/svg/under-evaluation-icon.svg?r
 import userInteractionsIcon from '../../assets-v2/svg/user-interactions-icon.svg?react';
 import vertical3DotsIcon from '../../assets-v2/svg/vertical-3-dots-icon.svg?react';
 import visitedPlacesIcon from '../../assets-v2/svg/visited-places-icon.svg?react';
+import waysToConnect from '../../assets-v2/svg/ways-to-connect.svg?react';
 import wbSunnyIcon from '../../assets-v2/svg/wb-sunny-icon.svg?react';
 import xIcon from '../../assets-v2/svg/x-icon.svg?react';
 
@@ -127,6 +128,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'user-interactions-icon': userInteractionsIcon,
   'vertical-3-dots-icon': vertical3DotsIcon,
   'visited-places-icon': visitedPlacesIcon,
+  'ways-to-connect': waysToConnect,
   'wb-sunny-icon': wbSunnyIcon,
   'x-icon': xIcon,
 };

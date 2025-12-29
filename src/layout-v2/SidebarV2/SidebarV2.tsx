@@ -268,6 +268,67 @@ const allMenuSections: MenuSection[] = [
       },
     ],
   },
+  {
+    title: "PLAYGROUND",
+    items: [
+      {
+        label: "Interest Cloud",
+        path: "/playground/interest-cloud",
+      },
+      {
+        label: "Interest Constellation",
+        path: "/playground/interest-constellation",
+      },
+      {
+        label: "Interest Chord",
+        path: "/playground/interest-chord",
+      },
+      {
+        label: "Interest Pyramid",
+        path: "/playground/interest-pyramid",
+      },
+      {
+        label: "Active Spiral",
+        path: "/playground/active-spiral",
+      },
+      {
+        label: "Active Heat Grid",
+        path: "/playground/active-heat",
+      },
+      {
+        label: "Active Rings",
+        path: "/playground/active-rings",
+      },
+      {
+        label: "Active Funnel",
+        path: "/playground/active-funnel",
+      },
+      {
+        label: "Active Guitar",
+        path: "/playground/active-guitar",
+      },
+      {
+        label: "Active Drums",
+        path: "/playground/active-drums",
+      },
+      {
+        label: "Active Chimes",
+        path: "/playground/active-chimes",
+      },
+      {
+        label: "Active Waves",
+        path: "/playground/active-waves",
+      },
+      {
+        label: "Active Orbs",
+        path: "/playground/active-orbs",
+      },
+      {
+        label: "Active Galaxy",
+        path: "/playground/active-galaxy",
+      },
+    ],
+  },
 ];
 
 const SidebarV2: React.FC = () => {

@@ -2,7 +2,6 @@
   --v2-text-muted: #5b6168;
   display: flex;
   flex-direction: column;
-  gap: 30px;
   background-color: var(--v2-bg-page);
   min-height: 100vh;
 }
@@ -51,23 +50,20 @@
 
 .feature-cards-row {
   margin-bottom: 24px;
-  gap: 30px;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
   margin-left: 0;
   margin-right: 0;
 }
 
 .feature-cards-row > [class*="col-"] {
   padding: 0;
-  flex: 0 0 calc(33.333% - 20px);
-  max-width: calc(33.333% - 20px);
+  width: 100%;
 }
 
-.bottom-cards-row > [class*="col-"] {
-  flex: 0 0 calc(50% - 15px);
-  max-width: calc(50% - 15px);
-  padding: 0;
+.bottom-cards-row {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .list-view-section {
@@ -75,9 +71,9 @@
 }
 
 .list-view-row {
-  display: flex;
-  gap: 30px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
   margin-left: 0;
   margin-right: 0;
   align-items: stretch;
@@ -85,11 +81,7 @@
 
 .list-view-row > [class*="col-"] {
   padding: 0;
-}
-
-.list-view-row > .col-lg-6 {
-  flex: 0 0 calc(50% - 15px);
-  max-width: calc(50% - 15px);
+  width: 100%;
 }
 
 .last-updated-container {
@@ -124,13 +116,6 @@ button:focus:not(:focus-visible),
   .popular-features-page {
     padding: 0 16px 0 0;
   }
-
-  .feature-cards-row .col-xs-12,
-  .feature-cards-row .col-md-6,
-  .feature-cards-row .col-lg-4 {
-    flex: 0 0 calc(50% - 12px);
-    max-width: calc(50% - 12px);
-  }
 }
 
 @media (max-width: 992px) {
@@ -147,22 +132,6 @@ button:focus:not(:focus-visible),
   .header-controls {
     width: 100%;
     justify-content: space-between;
-  }
-
-  .list-view-row .col-lg-6 {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-
-  .feature-cards-row {
-    gap: 20px;
-  }
-
-  .feature-cards-row .col-xs-12,
-  .feature-cards-row .col-md-6,
-  .feature-cards-row .col-lg-4 {
-    flex: 0 0 calc(50% - 10px);
-    max-width: calc(50% - 10px);
   }
 
   .header-controls {
@@ -203,19 +172,11 @@ button:focus:not(:focus-visible),
 
   .feature-cards-row {
     gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
 
-  .feature-cards-row .col-xs-12,
-  .feature-cards-row .col-md-6,
-  .feature-cards-row .col-lg-4 {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-
-  .bottom-cards-row .col-xs-12,
-  .bottom-cards-row .col-md-6 {
-    flex: 0 0 100%;
-    max-width: 100%;
+  .bottom-cards-row {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
 }
 
