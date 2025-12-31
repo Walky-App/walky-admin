@@ -1,0 +1,86 @@
+/**
+ * V2 Global Styles
+ * Global CSS rules for the V2 design system
+ */
+
+/* Remove focus outline from all interactive elements */
+button:focus,
+button:active,
+button:focus-visible,
+a:focus,
+a:active,
+a:focus-visible,
+.dropdown-toggle:focus,
+.dropdown-toggle:active,
+.dropdown-toggle:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+}
+
+/* Remove focus ring from CoreUI components */
+.btn:focus,
+.btn:active,
+.btn-link:focus,
+.btn-link:active,
+.dropdown-toggle:focus,
+.dropdown-toggle:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+* {
+  line-height: normal;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Box sizing reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default margin and padding */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Improve text rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Prevent image dragging */
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Accessibility: Keep focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--v2-primary-purple-main, #8280ff);
+  outline-offset: 2px;
+}
+
+/* But remove it for mouse/touch interactions */
+*:focus:not(:focus-visible) {
+  outline: none;
+}

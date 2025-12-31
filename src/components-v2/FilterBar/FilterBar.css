@@ -1,0 +1,117 @@
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.filter-bar-options {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filter-bar-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.filter-bar-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-bar-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.filter-bar-date-range {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  white-space: nowrap;
+  margin-left: 8px;
+}
+
+@media print {
+  .filter-bar {
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    gap: 2px;
+  }
+
+  .filter-bar-options,
+  .filter-bar-controls,
+  .filter-bar-group {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .filter-bar-label {
+    font-size: 11px;
+  }
+
+  .filter-bar-date-range {
+    margin-left: 4px;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .filter-bar-options {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .filter-bar-controls {
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+
+  .filter-bar button,
+  .filter-bar [role="button"],
+  .filter-bar .btn {
+    padding: 3px 6px !important;
+    min-width: auto;
+    font-size: 11px !important;
+    line-height: 1.1;
+  }
+}
+
+/* Responsive breakpoints */
+@media (max-width: 992px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-bar-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+/* Accessibility: Focus-visible styles */
+.filter-bar button:focus-visible,
+.filter-bar a:focus-visible,
+.filter-bar input:focus-visible,
+.filter-bar select:focus-visible,
+.filter-bar [role="button"]:focus-visible,
+.filter-bar [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

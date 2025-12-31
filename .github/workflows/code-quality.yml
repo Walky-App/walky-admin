@@ -1,0 +1,88 @@
+name: Code Quality Check
+
+on:
+  pull_request:
+    branches: [main, develop, staging, feat/*]
+  push:
+    branches: [main, develop, staging]
+
+jobs:
+  test-ids:
+    name: 🔍 Test IDs Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: 📦 Install Dependencies
+        run: yarn install
+
+      - name: 🔍 Validate Test IDs
+        run: yarn check:testids
+
+  accessibility:
+    name: ♿ Accessibility Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: 📦 Install Dependencies
+        run: yarn install
+
+      - name: ♿ Validate Accessibility
+        run: yarn check:a11y
+
+  tests:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: 📦 Install Dependencies
+        run: yarn install
+
+      - name: 🧪 Run Unit Tests
+        run: yarn test --run --reporter=verbose
+
+  lint:
+    name: 🔎 Code Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: 📦 Install Dependencies
+        run: yarn install
+
+      - name: 🔎 Run ESLint
+        run: yarn lint

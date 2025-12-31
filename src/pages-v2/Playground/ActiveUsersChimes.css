@@ -1,0 +1,56 @@
+.active-chimes-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  color: #e5e7eb;
+  background: radial-gradient(
+      circle at 18% 18%,
+      rgba(236, 72, 153, 0.08),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 82% 12%,
+      rgba(34, 211, 238, 0.08),
+      transparent 36%
+    ),
+    #0b1020;
+  min-height: 100%;
+}
+
+.active-chimes-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.active-chimes-header .subtitle {
+  margin: 6px 0 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.status-chip {
+  align-self: center;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: rgba(34, 211, 238, 0.12);
+  border: 1px solid rgba(34, 211, 238, 0.4);
+  color: #67e8f9;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.active-chimes-canvas {
+  height: calc(100vh - 150px);
+  min-height: 520px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.active-chimes-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+}

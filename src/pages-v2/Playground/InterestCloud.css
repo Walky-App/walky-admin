@@ -1,0 +1,103 @@
+.interest-cloud-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-height: 520px;
+}
+
+.interest-cloud-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.interest-cloud-header h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.interest-cloud-header .subtitle {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.interest-cloud-canvas {
+  flex: 1;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at 20% 20%, #1f2937, #0f172a);
+}
+
+.interest-cloud-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.interest-toggle {
+  background: #111827;
+  color: #f9fafb;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.interest-toggle:hover {
+  transform: translateY(-1px);
+  background: #0b1220;
+}
+
+.interest-list {
+  flex: 1;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: auto;
+  background: #0f172a;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.interest-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  background: #111827;
+  color: #e5e7eb;
+}
+
+.interest-list-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.interest-list-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+}
+
+.interest-list-label {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.interest-list-count {
+  color: #9ca3af;
+  font-weight: 700;
+}

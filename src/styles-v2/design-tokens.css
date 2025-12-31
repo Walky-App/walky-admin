@@ -1,0 +1,389 @@
+/**
+ * V2 Design Tokens - Walky Admin Portal
+ * 
+ * Source: Figma Design System
+ * File: https://www.figma.com/design/Kthn7Wm5T1Bhcb5GuzLfV0/Walky-Admin-Portal
+ * 
+ * This file contains all design tokens used exclusively in the V2 layout.
+ * Separated from main design tokens for better organization and theming support.
+ */
+
+:root {
+  /* ========================================
+     V2 COLORS - PRIMARY
+     ======================================== */
+  --v2-primary-purple-main: #526ac9;
+  --v2-primary-purple-variant: #546fd9;
+  --v2-primary-purple-dark: #321fdb;
+  --v2-primary-purple-light: #7c7cff;
+
+  /* ========================================
+     V2 COLORS - NEUTRALS
+     ======================================== */
+  --v2-neutral-white: #ffffff;
+  --v2-neutral-black: #1d1b20;
+  --v2-neutral-dark-grey: #5b6168;
+  --v2-neutral-grey-medium: #acb6ba;
+  --v2-neutral-grey-hover: #575e67;
+  --v2-neutral-placeholder: #676d70;
+  --v2-neutral-disabled: #eef0f1;
+
+  /* ========================================
+     V2 COLORS - BACKGROUNDS
+     ======================================== */
+  --v2-bg-page: #ffffff;
+  --v2-bg-app: #ffffff;
+  --v2-bg-container: #f7f8fa;
+  --v2-bg-card: #ffffff;
+  --v2-bg-select: #edf2ff;
+  --v2-bg-hover: #f8f9fa;
+  --v2-bg-title: #ebf0fa;
+  --v2-bg-dropdown: #fcfdfd;
+  --v2-bg-table: #f1f4f9;
+  --v2-bg-sidebar: #f6f9ff;
+  --v2-bg-topbar: #f6f9ff;
+  --v2-tooltip-bg: #4d4d4d;
+  --v2-tooltip-text: #ffffff;
+  --v2-overlay-bg: rgba(0, 0, 0, 0.5);
+
+  /* ========================================
+     V2 COLORS - BORDERS & LINES
+     ======================================== */
+  --v2-border-default: #e0e0e0;
+  --v2-border-outline: #cac4d0;
+  --v2-border-light: #eef0f1;
+  --v2-border-dark: #d2d2d3;
+  --v2-border-divider: #d2d2d3;
+
+  /* ========================================
+     V2 COLORS - TEXT
+     ======================================== */
+  --v2-text-primary: #1d1b20;
+  --v2-text-secondary: #5b6168;
+  --v2-text-tertiary: #6d747d;
+  --v2-text-muted: #5b6168;
+  --v2-text-link: #526ac9;
+  --v2-text-link-hover: #4865d0;
+
+  /* ========================================
+     V2 COLORS - ICONS
+     ======================================== */
+  --v2-icon-user-bg: #e5e4ff;
+  --v2-icon-user: #8280ff;
+  --v2-icon-events-bg: #ffded1;
+  --v2-icon-events: #ff9871;
+  --v2-icon-spaces-bg: #d9e3f7;
+  --v2-icon-spaces: #4a4cd9;
+  --v2-icon-ideas-bg: #fff3d6;
+  --v2-icon-ideas: #ebb129;
+  --v2-icon-green-bg: #e9fcf4;
+  --v2-icon-green: #00c617;
+  --v2-icon-orange-bg: #fcf3e9;
+  --v2-icon-orange: #f69b39;
+
+  /* ========================================
+     V2 COLORS - STATES
+     ======================================== */
+  --v2-state-success: #00b69b;
+  --v2-state-success-bg: #edffed;
+  --v2-state-success-text: #18682c;
+  --v2-state-error: #d53425;
+  --v2-state-error-bg: #ffebe9;
+  --v2-state-warning: #ff9500;
+  --v2-state-warning-bg: #fff8f7;
+  --v2-state-info: #24aff5;
+  --v2-state-info-bg: #e4eefe;
+
+  /* ========================================
+     V2 COLORS - CHART
+     ======================================== */
+  --v2-chart-green: #00b69b;
+  --v2-chart-lightblue: #24aff5;
+  --v2-chart-darkblue: #4379ee;
+  --v2-chart-purple: #526ac9;
+
+  /* ========================================
+     V2 SPACING
+     ======================================== */
+  --v2-spacing-4: 4px;
+  --v2-spacing-8: 8px;
+  --v2-spacing-12: 12px;
+  --v2-spacing-16: 16px;
+  --v2-spacing-20: 20px;
+  --v2-spacing-24: 24px;
+  --v2-spacing-32: 32px;
+  --v2-spacing-40: 40px;
+  --v2-spacing-77: 77px;
+
+  /* ========================================
+     V2 BORDER RADIUS
+     ======================================== */
+  --v2-radius-xs: 4px;
+  --v2-radius-sm: 6px;
+  --v2-radius-md: 8px;
+  --v2-radius-lg: 12px;
+  --v2-radius-xl: 14px;
+  --v2-radius-xxl: 16px;
+  --v2-radius-round: 999px;
+
+  /* ========================================
+     V2 SHADOWS
+     ======================================== */
+  --v2-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --v2-shadow-md: 6px 6px 54px 0px rgba(0, 0, 0, 0.05);
+  --v2-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --v2-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  /* ========================================
+     V2 TYPOGRAPHY
+     ======================================== */
+  --v2-font-family: "Lato", sans-serif;
+
+  /* Font Weights */
+  --v2-font-weight-regular: 400;
+  --v2-font-weight-semibold: 600;
+  --v2-font-weight-bold: 700;
+  --v2-font-weight-black: 900;
+
+  /* Font Sizes */
+  --v2-font-size-xs: 12px;
+  --v2-font-size-sm: 14px;
+  --v2-font-size-base: 16px;
+  --v2-font-size-md: 16px;
+  --v2-font-size-lg: 18px;
+  --v2-font-size-xl: 20px;
+  --v2-font-size-2xl: 24px;
+  --v2-font-size-xxl: 32px;
+  --v2-font-size-3xl: 32px;
+
+  /* Line Heights */
+  --v2-line-height-tight: 100%;
+  --v2-line-height-normal: 1.5;
+  --v2-line-height-relaxed: 1.75;
+
+  /* ========================================
+     V2 Z-INDEX LAYERS
+     ======================================== */
+  --v2-z-dropdown: 1000;
+  --v2-z-overlay: 1000;
+  --v2-z-sidebar: 1001;
+  --v2-z-topbar: 999;
+  --v2-z-modal: 1050;
+  --v2-z-tooltip: 1060;
+
+  /* ========================================
+     V2 TRANSITIONS
+     ======================================== */
+  --v2-transition-fast: 0.15s ease;
+  --v2-transition-base: 0.2s ease;
+  --v2-transition-slow: 0.3s ease;
+
+  /* ========================================
+     V2 LAYOUT
+     ======================================== */
+  --v2-sidebar-width: 240px;
+  --v2-topbar-height: 74px;
+  --v2-content-max-width: 1480px;
+}
+
+/* ========================================
+   DARK MODE OVERRIDES FOR V2
+   ======================================== */
+:root[data-coreui-theme="dark"],
+[data-theme="dark"] {
+  /* V2 Backgrounds - Dark Mode */
+  --v2-bg-page: #0a0a0b;
+  --v2-bg-app: #0a0a0b;
+  --v2-bg-container: #111113;
+  --v2-bg-card: #141416;
+  --v2-bg-sidebar: #0f0f11;
+  --v2-bg-topbar: #141416;
+  --v2-bg-select: #1a1a1d;
+  --v2-bg-title: #1f1f23;
+  --v2-bg-dropdown: #1a1a1d;
+  --v2-bg-hover: #1f1f23;
+  --v2-bg-table: #1a1a1d;
+  --v2-tooltip-bg: #fafafa;
+  --v2-tooltip-text: #0a0a0b;
+
+  /* V2 Text - Dark Mode */
+  --v2-text-primary: #fafafa;
+  --v2-text-secondary: #a1a1aa;
+  --v2-text-tertiary: #71717a;
+  --v2-text-muted: #52525b;
+
+  /* V2 Borders - Dark Mode */
+  --v2-border-default: #27272a;
+  --v2-border-light: #1f1f23;
+  --v2-border-dark: #27272a;
+  --v2-border-divider: #27272a;
+
+  /* V2 Primary - Dark Mode (lighter for visibility) */
+  --v2-primary-purple-main: #7c7cff;
+  --v2-primary-purple-variant: #8b8bff;
+  --v2-text-link: #7c7cff;
+  --v2-text-link-hover: #9a9aff;
+
+  /* V2 Shadows - Dark Mode */
+  --v2-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --v2-shadow-md: 6px 6px 54px 0px rgba(0, 0, 0, 0.4);
+  --v2-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --v2-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+}
+
+/* ========================================
+   V2 TYPOGRAPHY CLASSES
+   ======================================== */
+.v2-text-h1 {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-3xl);
+  line-height: var(--v2-line-height-tight);
+  color: var(--v2-text-primary);
+}
+
+.v2-text-h2 {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-2xl);
+  line-height: var(--v2-line-height-tight);
+  color: var(--v2-text-primary);
+}
+
+.v2-text-subtitle {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-semibold);
+  font-size: var(--v2-font-size-lg);
+  line-height: var(--v2-line-height-tight);
+  color: var(--v2-text-primary);
+}
+
+.v2-text-body {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-regular);
+  font-size: var(--v2-font-size-base);
+  line-height: var(--v2-line-height-tight);
+  color: var(--v2-text-primary);
+}
+
+.v2-text-body-semibold {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-semibold);
+  font-size: var(--v2-font-size-base);
+  line-height: var(--v2-line-height-tight);
+  color: var(--v2-text-secondary);
+}
+
+.v2-text-small {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-regular);
+  font-size: var(--v2-font-size-sm);
+  line-height: var(--v2-line-height-tight);
+  color: var(--v2-text-secondary);
+}
+
+.v2-text-small-semibold {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-semibold);
+  font-size: var(--v2-font-size-sm);
+  line-height: var(--v2-line-height-tight);
+  color: var(--v2-text-primary);
+}
+
+.v2-text-xs {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-regular);
+  font-size: var(--v2-font-size-xs);
+  line-height: var(--v2-line-height-tight);
+  color: var(--v2-text-secondary);
+}
+
+.v2-text-xs-bold {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-xs);
+  line-height: var(--v2-line-height-tight);
+  color: var(--v2-text-primary);
+}
+
+.v2-text-xs-black {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-black);
+  font-size: var(--v2-font-size-xs);
+  line-height: var(--v2-line-height-tight);
+  color: var(--v2-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========================================
+   V2 UTILITY CLASSES
+   ======================================== */
+.v2-link {
+  color: var(--v2-text-link);
+  text-decoration: none;
+  transition: color var(--v2-transition-fast);
+  cursor: pointer;
+}
+
+.v2-link:hover {
+  color: var(--v2-text-link-hover);
+  text-decoration: none;
+}
+
+.v2-card {
+  background: var(--v2-bg-card);
+  border-radius: var(--v2-radius-xl);
+  box-shadow: var(--v2-shadow-md);
+  border: none;
+  transition: all var(--v2-transition-base);
+}
+
+.v2-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--v2-shadow-lg);
+}
+
+.v2-divider {
+  height: 1px;
+  background-color: var(--v2-border-divider);
+  border: none;
+  margin: 0;
+}
+
+.v2-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: var(--v2-radius-sm);
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-semibold);
+  font-size: var(--v2-font-size-xs);
+  line-height: 1;
+}
+
+.v2-badge-success {
+  background: var(--v2-state-success-bg);
+  color: var(--v2-state-success);
+}
+
+.v2-badge-error {
+  background: var(--v2-state-error-bg);
+  color: var(--v2-state-error);
+}
+
+.v2-badge-warning {
+  background: var(--v2-state-warning-bg);
+  color: var(--v2-state-warning);
+}
+
+.v2-badge-info {
+  background: var(--v2-state-info-bg);
+  color: var(--v2-state-info);
+}
+
+.v2-badge-primary {
+  background: var(--v2-bg-select);
+  color: var(--v2-primary-purple-main);
+}

@@ -1,0 +1,454 @@
+.event-table-wrapper {
+  background-color: #ffffff;
+  border: none;
+  border-radius: 0;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+.event-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 4px;
+}
+
+.event-table thead tr {
+  background-color: #f1f4f9;
+  height: 53px;
+  border-radius: 12px;
+}
+
+.event-table thead th {
+  padding-bottom: 18px;
+}
+
+.event-table th:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.event-table th:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.event-table th {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1d1b20;
+  text-align: left;
+  padding: 16px;
+}
+
+.event-table th:first-child {
+  padding-left: 35px;
+}
+
+.event-table-header {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.event-table-header:hover {
+  opacity: 0.7;
+}
+
+.content-space-divider {
+  height: 18px;
+}
+
+.event-table tbody tr {
+  height: 73px;
+  position: relative;
+}
+
+.event-divider-row {
+  height: 1px !important;
+}
+
+.event-divider-row td {
+  padding: 0 !important;
+  height: 1px;
+}
+
+.event-table tbody tr.event-row-flagged {
+  border-radius: 16px;
+}
+
+.event-table tbody tr.event-row-flagged td {
+  background-color: #fff3f2;
+  border-bottom: none;
+}
+
+.event-table tbody tr.event-row-flagged td:first-child {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  position: relative;
+}
+
+.event-table tbody tr.event-row-flagged td:last-child {
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.event-table td {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d1b20;
+  opacity: 0.8;
+  padding: 12px 16px;
+  vertical-align: middle;
+}
+
+.event-table td:last-child {
+  position: relative;
+  z-index: 100;
+}
+
+/* Dark Mode */
+[data-theme="dark"] .event-table-wrapper {
+  background-color: #1e1e1e;
+}
+
+[data-theme="dark"] .event-table thead {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .event-table thead tr {
+  background-color: #1f1f21;
+}
+
+[data-theme="dark"] .event-table thead th {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .event-table td,
+[data-theme="dark"] .event-name,
+[data-theme="dark"] .organizer-name,
+[data-theme="dark"] .event-date,
+[data-theme="dark"] .event-time {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .organizer-avatar-placeholder {
+  background-color: #3a3a3a;
+  color: #d0d0d0;
+}
+
+.event-table td:first-child {
+  padding-left: 35px;
+}
+
+.event-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+  max-width: 240px;
+  min-width: 240px;
+}
+
+.event-flag-icon {
+  position: absolute;
+  left: 12px;
+  top: 8px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-name {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d1b20;
+  opacity: 0.8;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.organizer-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.organizer-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.organizer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.organizer-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #eef0f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #5b6168;
+}
+
+.organizer-name {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d1b20;
+  opacity: 0.8;
+}
+
+.student-id-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.student-id-badge {
+  background-color: #f1f4f9;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.student-id-badge span {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #321fdb;
+  opacity: 0.8;
+}
+
+.copy-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.copy-btn:hover {
+  opacity: 0.7;
+}
+
+.event-date-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  z-index: 1;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.event-date {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d1b20 !important;
+  opacity: 1;
+  line-height: 100%;
+  position: relative;
+}
+
+.event-time {
+  font-family: "Lato", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #5b6168 !important;
+  opacity: 1;
+  line-height: 100%;
+  position: relative;
+}
+
+.attendees-badge {
+  background-color: #526ac9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 23px;
+  height: 22px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.attendees-badge span {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 100%;
+}
+
+.event-type-text {
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #1d1b20;
+  opacity: 0.8;
+}
+
+.event-dropdown-container {
+  position: relative;
+}
+
+.event-dropdown-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.event-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  min-width: 150px;
+  background-color: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  margin-top: 4px;
+  padding: 8px 0;
+}
+
+.event-dropdown-toggle:hover {
+  opacity: 0.7;
+}
+
+.event-dropdown-toggle:hover {
+  opacity: 0.7;
+}
+
+.event-dropdown-item {
+  cursor: pointer;
+  padding: 12px 16px;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1d1b20;
+  transition: background-color 0.2s;
+}
+
+.event-dropdown-item:hover {
+  background-color: #f7f8fa;
+}
+
+.event-dropdown-item-delete {
+  color: #ff6b35;
+}
+
+.event-dropdown-item-delete:hover {
+  background-color: #ffded1;
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] .event-table-wrapper {
+  background-color: #1e1e1e;
+}
+
+[data-theme="dark"] .event-table thead tr {
+  background-color: #1f1f21;
+}
+
+[data-theme="dark"] .event-table th {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .event-table tbody tr.event-row-flagged {
+  background-color: #2a1f1f;
+}
+
+[data-theme="dark"] .event-table tbody tr.event-row-flagged td {
+  background-color: #2a1f1f;
+}
+
+[data-theme="dark"] .event-table td {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .event-name {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .organizer-avatar-placeholder {
+  background-color: #3a3a3a;
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .organizer-name {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .student-id-badge {
+  background-color: #1a2840;
+}
+
+[data-theme="dark"] .student-id-badge span {
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .event-date {
+  color: #d0d0d0;
+}
+
+[data-theme="dark"] .event-time {
+  color: #b0b0b0 !important;
+}
+
+[data-theme="dark"] .event-dropdown-menu {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .event-dropdown-item {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .event-dropdown-item:hover {
+  background-color: #3a3a3a;
+}
+
+/* Accessibility: Focus-visible styles */
+.event-table button:focus-visible,
+.event-table a:focus-visible,
+.event-table input:focus-visible,
+.event-table select:focus-visible,
+.event-table [role="button"]:focus-visible,
+.event-table [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

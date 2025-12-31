@@ -1,0 +1,140 @@
+.line-chart-container {
+  border: 1px solid var(--v2-border-light);
+  border-radius: 14px;
+  padding: 24px;
+  background-color: var(--v2-bg-card);
+  height: 365px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
+}
+
+.line-chart-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.line-chart-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1;
+  margin: 0;
+  color: var(--v2-text-primary);
+}
+
+.line-chart-title-tooltip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.line-chart-title-tooltip-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.line-chart-title-tooltip-btn:focus-visible {
+  outline: 2px solid #321fdb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.line-chart-title-tooltip-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.line-chart-title-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 12px;
+  min-width: 200px;
+  max-width: 260px;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+  background: #2a2a2a;
+  color: #f5f7fa;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  white-space: normal;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.line-chart-title-tooltip-wrapper:hover .line-chart-title-tooltip,
+.line-chart-title-tooltip-wrapper:focus-within .line-chart-title-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.line-chart-wrapper {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .line-chart-container {
+    height: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  .line-chart-container {
+    padding: 16px;
+    height: 280px;
+  }
+
+  .line-chart-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .line-chart-container {
+    padding: 12px;
+    height: 240px;
+  }
+
+  .line-chart-title {
+    font-size: 16px;
+  }
+}
+
+@media print {
+  .line-chart-container {
+    height: auto;
+    min-height: 260px;
+    padding: 16px;
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    page-break-inside: avoid;
+  }
+
+  .line-chart-title {
+    font-size: 18px;
+  }
+}

@@ -1,0 +1,227 @@
+.ideas-manager-container {
+  padding-bottom: 85px;
+}
+
+.ideas-manager-header {
+  margin-bottom: 40px;
+}
+
+.ideas-manager-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ideas-manager-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 100%;
+  background: linear-gradient(90deg, #555aec 0%, #486cb1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: normal;
+}
+
+.ideas-manager-subtitle {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 100%;
+  color: #5b6168;
+  margin: 0;
+}
+
+.ideas-manager-content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.ideas-manager-list-section {
+  background: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 16px;
+  padding: 32px 26px 26px 26px;
+
+  box-shadow: 0px 1px 8px 0px rgba(84, 111, 217, 0.1);
+}
+
+.ideas-manager-list-header {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+  margin-bottom: 32px;
+}
+
+.ideas-manager-list-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 100%;
+  color: #1d1b20;
+  margin: 0;
+}
+
+.ideas-manager-filters {
+  display: flex;
+  gap: 17px;
+  align-items: center;
+}
+
+.ideas-manager-search {
+  flex: 1;
+  max-width: 375px;
+}
+
+.ideas-manager-search-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #ffffff;
+  border: 1px solid #cac4d0;
+  border-radius: 8px;
+  padding: 0 16px;
+  height: 40px;
+}
+
+.ideas-manager-search-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  color: #1d1b20;
+}
+
+.ideas-manager-search-input input::placeholder {
+  color: #676d70;
+}
+
+.ideas-manager-table-container {
+  margin-bottom: 32px;
+  background: #ffffff;
+}
+
+.ideas-manager-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 24px;
+}
+
+.ideas-manager-pagination-info {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #5b6168;
+  margin: 0;
+}
+
+.ideas-manager-pagination-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ideas-manager-pagination-button {
+  background: #ffffff;
+  border: 1px solid #d2d2d3;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #321fdb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ideas-manager-pagination-button:hover:not(:disabled) {
+  background: #f7f8fa;
+}
+
+.ideas-manager-pagination-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ideas-manager-pagination-page {
+  background: #ebf1ff;
+  border: 1px solid #321fdb;
+  border-radius: 4px;
+  width: 30px;
+  height: 37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #321fdb;
+  cursor: pointer;
+}
+
+.ideas-manager-pagination-page.active {
+  background: #ebf1ff;
+  border: 1px solid #321fdb;
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] .ideas-manager-subtitle {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .ideas-manager-list-section {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .ideas-manager-list-title {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .ideas-manager-search-input {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .ideas-manager-search-input input {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .ideas-manager-search-input input::placeholder {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .ideas-manager-table-container {
+  background-color: #1e1e1e;
+}
+
+[data-theme="dark"] .ideas-manager-pagination-info {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .ideas-manager-pagination-button {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #7a8fff;
+}
+
+[data-theme="dark"] .ideas-manager-pagination-button:hover:not(:disabled) {
+  background-color: #3a3a3a;
+}
+
+[data-theme="dark"] .ideas-manager-pagination-page {
+  background-color: #1a2840;
+  border-color: #7a8fff;
+  color: #7a8fff;
+}

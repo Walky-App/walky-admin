@@ -1,0 +1,150 @@
+.deactivated-students-page {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  background-color: #ffffff;
+  min-height: 100vh;
+  padding-bottom: 85px;
+}
+
+.deactivated-students-stats {
+  display: flex;
+  gap: 50px;
+  width: 100%;
+}
+
+.deactivated-students-content {
+  background-color: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 14px;
+  padding: 32px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.08);
+}
+
+.deactivated-students-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.deactivated-students-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  max-width: 528px;
+}
+
+.deactivated-students-title {
+  font-family: "Lato", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: normal;
+  color: #1d1b20;
+  margin: 0;
+}
+
+.deactivated-students-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  background-color: #ffffff;
+  border: 1px solid #cac4d0;
+  border-radius: 8px;
+  padding: 0 16px;
+  gap: 4px;
+}
+
+.search-icon {
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  color: #1d1b20;
+}
+
+.search-input::placeholder {
+  color: #676d70;
+}
+
+.deactivated-students-pagination {
+  padding: 32px 26px;
+}
+
+/* Dark mode */
+[data-theme="dark"] .deactivated-students-page {
+  background-color: var(--v2-bg-app);
+}
+
+[data-theme="dark"] .deactivated-students-content {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .deactivated-students-title {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .deactivated-students-search {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .search-input {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .search-input::placeholder {
+  color: #9e9e9e;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .deactivated-students-stats {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .deactivated-students-page {
+    padding: var(--v2-space-l);
+    gap: var(--v2-space-2xl);
+  }
+
+  .deactivated-students-content {
+    padding: var(--v2-space-l);
+  }
+
+  .deactivated-students-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--v2-space-l);
+  }
+
+  .deactivated-students-title-section {
+    max-width: none;
+  }
+
+  .deactivated-students-title {
+    font-size: var(--v2-font-size-l);
+  }
+
+  .deactivated-students-pagination {
+    padding: var(--v2-space-l) 0;
+  }
+}

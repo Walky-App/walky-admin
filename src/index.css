@@ -1,3 +1,6 @@
+/* Import Dashboard theme variables */
+@import "./styles-v2/theme-variables.css";
+
 /* Dark mode theming */
 :root[data-coreui-theme="dark"] {
   --cui-body-bg: #1e2125;
@@ -17,7 +20,15 @@
 }
 
 /* Apply dark mode transitions */
-body, button, input, select, textarea, .card, .navbar, .footer, .sidebar {
+body,
+button,
+input,
+select,
+textarea,
+.card,
+.navbar,
+.footer,
+.sidebar {
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
@@ -92,6 +103,7 @@ body {
   min-height: 100vh;
   background-color: #f8f9fa;
   color: #333;
+  overflow-x: hidden;
 }
 
 h1 {
@@ -217,12 +229,22 @@ button:focus-visible {
 }
 
 .sidebar .nav-link.active {
-  background-color: rgba(255, 255, 255, 0.2); /* Lighter gray for active state */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.2
+  ); /* Lighter gray for active state */
   color: #ffffff;
 }
 
 .sidebar .nav-link.active:hover {
-  background-color: rgba(255, 255, 255, 0.25); /* Slightly lighter on hover when active */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.25
+  ); /* Slightly lighter on hover when active */
   color: #ffffff;
 }
 
@@ -242,7 +264,12 @@ button:focus-visible {
 }
 
 [data-coreui-theme="light"] .sidebar .nav-link.active:hover {
-  background-color: rgba(0, 0, 0, 0.15); /* Slightly darker on hover when active */
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.15
+  ); /* Slightly darker on hover when active */
   color: #333333;
 }
 
@@ -353,14 +380,23 @@ button:focus-visible {
     left: -100%;
     height: 100%;
   }
-  
+
   .sidebar.show {
     left: 0;
   }
 }
 
 /* Apply transitions for smooth theme switching */
-body, button, input, select, textarea, .card, .navbar, .footer, .sidebar, .table {
+body,
+button,
+input,
+select,
+textarea,
+.card,
+.navbar,
+.footer,
+.sidebar,
+.table {
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
@@ -395,9 +431,126 @@ body, button, input, select, textarea, .card, .navbar, .footer, .sidebar, .table
 }
 
 :root {
-  --review-bg: #FFF9EE; /* light mode yellow */
+  --review-bg: #fff9ee; /* light mode yellow */
 }
 
 :root[data-coreui-theme="dark"] {
   --review-bg: #2c2c26; /* dark mode match */
+}
+
+/* Print-friendly adjustments */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    width: 100%;
+  }
+
+  /* Remove any extra padding at top in print */
+  .c-navbar,
+  nav,
+  header,
+  .topbar,
+  .navbar,
+  #root,
+  main {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+    position: static !important;
+    break-after: avoid-page;
+    break-before: avoid-page;
+    page-break-after: avoid;
+    page-break-before: avoid;
+    width: 100% !important;
+  }
+
+  #root {
+    max-width: none;
+    width: 100% !important;
+  }
+
+  main,
+  .engagement-page {
+    margin: 0 !important;
+    padding: 4mm 5mm !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    width: auto !important;
+    max-width: 100% !important;
+    break-before: avoid-page;
+    page-break-before: avoid;
+  }
+
+  /* Compact topbar spacing on print */
+  .topbar,
+  .navbar,
+  header,
+  nav,
+  .c-navbar {
+    padding: 0 !important;
+    margin: 0 !important;
+    height: auto !important;
+  }
+
+  /* Ensure body has no inset gap at print edges */
+  body {
+    padding: 0 !important;
+  }
+
+  .export-button,
+  .export-button:focus,
+  .export-button:active {
+    display: none !important;
+  }
+
+  /* Avoid shadows/bleed on cards during print */
+  .card,
+  .st-stats-card,
+  .line-chart,
+  .charts-row > div,
+  .stats-container > div,
+  .section-header {
+    box-shadow: none !important;
+    filter: none !important;
+    background: #ffffff !important;
+  }
+
+  /* Keep sections together to avoid chart cuts */
+  .charts-row,
+  .stats-container {
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+
+  .st-stats-card,
+  .line-chart {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Hide suggestion/footer area when printing */
+  .footer-container {
+    display: none !important;
+  }
+
+  /* Hide hamburger in topbar for print */
+  .sidebar-toggle,
+  .hamburger,
+  button[aria-label="Toggle Sidebar"] {
+    display: none !important;
+  }
+
+  /* Remove scrollbars in print preview */
+  ::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }
 }

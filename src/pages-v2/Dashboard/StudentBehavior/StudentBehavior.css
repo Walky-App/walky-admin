@@ -1,0 +1,396 @@
+.student-behavior-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v2-spacing-8);
+  background-color: var(--v2-bg-page);
+  min-height: 100vh;
+}
+
+/* Page Header */
+.student-behavior-page .page-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--v2-spacing-3);
+  margin-bottom: var(--v2-spacing-6);
+}
+
+.student-behavior-page .icon-circle-std {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e9fcf4;
+  flex-shrink: 0;
+}
+
+.student-behavior-page .icon-container {
+  display: flex;
+  line-height: 0;
+}
+
+.student-behavior-page .icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--v2-icon-purple-bg);
+}
+
+.student-behavior-page .page-title {
+  font-family: var(--v2-font-family-heading);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-3xl);
+  line-height: var(--v2-line-height-tight);
+  margin: 0;
+  color: #1d1b00 !important;
+  text-align: left;
+}
+
+/* Unique title class with higher specificity */
+.student-behavior-page .student-behavior-title {
+  font-family: var(--v2-font-family-heading);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-3xl);
+  line-height: var(--v2-line-height-tight);
+  margin: 0;
+  color: #1d1b00 !important;
+
+  text-align: left !important;
+}
+
+/* Metric Cards */
+.student-behavior-page .metric-cards-row {
+  margin-bottom: 40px;
+}
+
+.student-behavior-page .metric-card-col {
+  margin-bottom: 16px;
+}
+
+.student-behavior-page .metric-card {
+  background-color: var(--v2-bg-card);
+  border: 1px solid var(--v2-border-light);
+  border-radius: var(--v2-radius-xl);
+  padding: var(--v2-spacing-6);
+  min-width: 200px;
+  height: 158px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--v2-spacing-5);
+  position: relative;
+  box-shadow: var(--v2-shadow-card);
+}
+
+.student-behavior-page .metric-card-title {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-normal);
+  font-size: var(--v2-font-size-md);
+  line-height: var(--v2-line-height-tight);
+  margin: 0;
+  color: #1d1b00 !important;
+}
+
+.student-behavior-page .metric-card-value-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.student-behavior-page .metric-card-value {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-3xl);
+  line-height: var(--v2-line-height-tight);
+  color: #1d1b00 !important;
+}
+
+.student-behavior-page .metric-card-unit {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-normal);
+  font-size: var(--v2-font-size-sm);
+  line-height: var(--v2-line-height-tight);
+  padding-bottom: var(--v2-spacing-1);
+  color: #1d1b00 !important;
+}
+
+.student-behavior-page .metric-card-change {
+  display: flex;
+  align-items: center;
+  gap: var(--v2-spacing-1);
+}
+
+.student-behavior-page .metric-card-change-dash {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-lg);
+  line-height: 1;
+  color: #4a4cd9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+}
+
+.student-behavior-page .metric-card-change-text {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-normal);
+  font-size: var(--v2-font-size-sm);
+  line-height: var(--v2-line-height-tight);
+  margin: 0;
+}
+
+.student-behavior-page .change-percentage {
+  font-weight: var(--v2-font-weight-semibold);
+}
+
+.student-behavior-page .change-percentage[data-trend="up"] {
+  color: var(--v2-trend-up-green);
+}
+
+.student-behavior-page .change-percentage[data-trend="down"] {
+  color: var(--v2-trend-down-red);
+}
+
+.student-behavior-page .change-percentage[data-trend="neutral"] {
+  color: #4a4cd9;
+}
+
+.student-behavior-page .change-text {
+  color: #1d1b00 !important;
+}
+
+.student-behavior-page .metric-card-tooltip-wrapper {
+  position: absolute;
+  bottom: var(--v2-spacing-6);
+  right: var(--v2-spacing-6);
+}
+
+.student-behavior-page .metric-card-tooltip-btn {
+  background: none;
+  border: none;
+  color: var(--v2-chart-blue);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.student-behavior-page .metric-card-tooltip-btn:hover {
+  opacity: 0.8;
+}
+
+.student-behavior-page .metric-card-tooltip-btn:focus {
+  outline: 2px solid var(--v2-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--v2-radius-sm);
+}
+
+.student-behavior-page .metric-card-tooltip {
+  position: absolute;
+  bottom: calc(100% + var(--v2-spacing-2));
+  right: 0;
+  min-width: 280px;
+  max-width: 320px;
+  padding: 12px 16px;
+  border-radius: var(--v2-radius-md);
+  border: 1px solid var(--v2-tooltip-bg);
+  background-color: var(--v2-tooltip-bg);
+  color: var(--v2-tooltip-text);
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-normal);
+  font-size: var(--v2-font-size-sm);
+  line-height: var(--v2-line-height-normal);
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  white-space: normal;
+  pointer-events: none;
+}
+
+/* Completion Section */
+.student-behavior-page .completion-section {
+  margin-bottom: 40px;
+}
+
+.student-behavior-page .completion-header {
+  display: flex;
+  align-items: center;
+  gap: var(--v2-spacing-2);
+  margin-bottom: 30px;
+}
+
+.student-behavior-page .completion-title {
+  font-family: var(--v2-font-family-heading);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-2xl);
+  line-height: var(--v2-line-height-tight);
+  margin: 0;
+  color: #1d1b00 !important;
+}
+
+.student-behavior-page .completion-container {
+  background-color: var(--v2-bg-card);
+  border: 1px solid var(--v2-border-light);
+  border-radius: var(--v2-radius-lg);
+  padding: 32px var(--v2-spacing-24);
+  box-shadow: 6px 6px 54px 0px rgba(0, 0, 0, 0.05);
+}
+
+.student-behavior-page .completion-metrics-row {
+  gap: var(--v2-spacing-6);
+  row-gap: var(--v2-spacing-10);
+  margin: 0 calc(-1 * var(--v2-spacing-3));
+}
+
+.student-behavior-page .completion-metric-col {
+  margin-bottom: 0;
+  padding-left: var(--v2-spacing-3);
+  padding-right: var(--v2-spacing-3);
+  flex: 0 0 auto;
+  width: calc(33.333333% - var(--v2-spacing-6));
+}
+
+.student-behavior-page .completion-metric-col.single-metric {
+  margin-bottom: 0;
+}
+
+.student-behavior-page .completion-metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v2-spacing-3);
+  height: 100%;
+}
+
+.student-behavior-page .completion-metric-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.student-behavior-page .completion-metric-label {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-md);
+  line-height: var(--v2-line-height-tight);
+  margin: 0;
+  color: #1d1b00 !important;
+}
+
+.student-behavior-page .completion-metric-percentage {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-bold);
+  font-size: var(--v2-font-size-md);
+  line-height: var(--v2-line-height-tight);
+  margin: 0;
+}
+
+.student-behavior-page .completion-progress-bar-container {
+  width: 100%;
+  height: 21px;
+}
+
+.student-behavior-page .completion-progress-bar-bg {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--v2-radius-xl);
+  position: relative;
+  background-color: #ebf1ff;
+  overflow: hidden;
+}
+
+.student-behavior-page .completion-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.student-behavior-page .completion-metric-description {
+  font-family: var(--v2-font-family);
+  font-weight: var(--v2-font-weight-normal);
+  font-size: var(--v2-font-size-sm);
+  line-height: var(--v2-line-height-normal);
+  margin: 0;
+  max-width: 100%;
+  color: #5b6168;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .student-behavior-page {
+    gap: var(--v2-spacing-5);
+  }
+
+  .student-behavior-page .page-header {
+    gap: var(--v2-spacing-5);
+    margin-bottom: var(--v2-spacing-5);
+  }
+
+  .student-behavior-page .icon-circle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .student-behavior-page .page-title {
+    font-size: var(--v2-font-size-2xl);
+  }
+
+  .student-behavior-page .completion-metrics-row {
+    gap: var(--v2-spacing-5);
+    row-gap: var(--v2-spacing-8);
+    margin: 0 calc(-1 * var(--v2-spacing-2));
+  }
+
+  .student-behavior-page .completion-metric-col {
+    margin-bottom: 0;
+    padding-left: var(--v2-spacing-2);
+    padding-right: var(--v2-spacing-2);
+    width: calc(33.333333% - var(--v2-spacing-5));
+  }
+}
+
+@media (max-width: 768px) {
+  .student-behavior-page {
+    gap: var(--v2-spacing-5);
+    padding: 0 var(--v2-spacing-2) 0 0;
+  }
+
+  .student-behavior-page .page-header {
+    gap: var(--v2-spacing-4);
+    margin-bottom: var(--v2-spacing-4);
+  }
+
+  .student-behavior-page .icon-circle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .student-behavior-page .page-title {
+    font-size: var(--v2-font-size-2xl);
+  }
+
+  .student-behavior-page .completion-container {
+    padding: var(--v2-spacing-6) var(--v2-spacing-4);
+  }
+
+  .student-behavior-page .completion-metrics-row {
+    margin: 0;
+  }
+
+  .student-behavior-page .completion-metric-col {
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+  }
+
+  .student-behavior-page .completion-metric-description {
+    font-size: var(--v2-font-size-xs);
+  }
+}

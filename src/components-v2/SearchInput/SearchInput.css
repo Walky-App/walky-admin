@@ -1,0 +1,126 @@
+/* Search Input Component */
+.search-input-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  background-color: var(--v2-bg-card);
+  border: 1px solid var(--v2-border-outline);
+  border-radius: 8px;
+  transition: border-color 0.2s ease;
+  outline: none !important;
+}
+
+.search-input-container svg {
+  flex-shrink: 0;
+  display: block;
+}
+
+.container-lupa {
+  width: 24px;
+  height: 24px;
+}
+
+.search-icon-color svg {
+  color: var(--v2-neutral-placeholder);
+}
+
+.search-input-container:focus-within {
+  border-color: var(--v2-border-outline);
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Primary variant - for student pages */
+.search-input-container.primary {
+  height: 48px;
+  padding: 12px 10px 12px 12px;
+  gap: 8px;
+}
+
+/* Secondary variant - for other pages */
+.search-input-container.secondary {
+  height: 40px;
+  padding: 8px 12px;
+  gap: 8px;
+}
+
+.search-input-container.bounce-search {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-input-container.bounce-search:focus-within {
+  animation: search-bounce 0.35s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+@keyframes search-bounce {
+  0% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-2px) scale(1.02);
+  }
+  60% {
+    transform: translateY(1px) scale(0.995);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.search-input-field {
+  flex: 1;
+  border: none;
+  outline: none !important;
+  background: transparent;
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--v2-text-primary);
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 0;
+  width: 100%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.search-input-field:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.search-input-field::placeholder {
+  color: var(--v2-neutral-placeholder);
+}
+
+/* Dark mode - remove manual styles since we're using CSS variables */
+[data-theme="dark"] .search-input-container {
+  /* Inherited from CSS variables */
+}
+
+[data-theme="dark"] .search-input-field {
+  /* Inherited from CSS variables */
+}
+
+[data-theme="dark"] .search-input-field::placeholder {
+  /* Inherited from CSS variables */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-input-container.primary {
+    height: 44px;
+  }
+
+  .search-input-container.secondary {
+    height: 38px;
+  }
+
+  .search-input-field {
+    font-size: 14px;
+  }
+}

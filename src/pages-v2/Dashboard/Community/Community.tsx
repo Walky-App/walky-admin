@@ -1,0 +1,132 @@
+import React, { useEffect, useRef } from "react";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { apiClient } from "../../../API";
+import { AssetIcon, FilterBar, LastUpdated } from "../../../components-v2";
+import { BarChart } from "./components/BarChart";
+import { DashboardSkeleton } from "../components";
+import { usePermissions } from "../../../hooks/usePermissions";
+import "./Community.css";
+
+import { useDashboard } from "../../../contexts/DashboardContext";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
+
+const Community: React.FC = () => {
+  const queryClient = useQueryClient();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
+  const { timePeriod, setTimePeriod } = useDashboard();
+  const { canExport } = usePermissions();
+
+  // Check if user can export community data
+  const showExport = canExport("community");
+
+  const { data: apiData, isLoading } = useQuery({
+    queryKey: [
+      "communityCreation",
+      timePeriod,
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2DashboardCommunityCreationList({
+        period: timePeriod,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
+    placeholderData: keepPreviousData,
+  });
+
+  useEffect(() => {
+    const periods: Array<"week" | "month" | "all-time"> = [
+      "week",
+      "month",
+      "all-time",
+    ];
+
+    periods.forEach((period) => {
+      queryClient.prefetchQuery({
+        queryKey: [
+          "communityCreation",
+          period,
+          selectedSchool?._id,
+          selectedCampus?._id,
+        ],
+        queryFn: () =>
+          apiClient.api.adminV2DashboardCommunityCreationList({
+            period,
+            schoolId: selectedSchool?._id,
+            campusId: selectedCampus?._id,
+          }),
+      });
+    });
+  }, [queryClient, selectedCampus?._id, selectedSchool?._id]);
+
+  // ... (inside component)
+
+  const chartLabels = apiData?.data.labels || [];
+  const chartSubLabels = apiData?.data.subLabels;
+  const creationData = (apiData?.data.data || []).map((item) => ({
+    events: item.events || 0,
+    ideas: item.ideas || 0,
+    spaces: item.spaces || 0,
+  }));
+
+  // Keep hooks before any early returns to preserve hook order
+  const exportRef = useRef<HTMLElement | null>(null);
+
+  // Format data for BarChart component
+  const weeksFormatted = chartLabels.map((label: string, index: number) => ({
+    label,
+    dateRange: chartSubLabels?.[index] || "",
+  }));
+
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
+
+  return (
+    <main
+      className="community-page"
+      aria-label="Community Dashboard"
+      ref={exportRef}
+    >
+      {/* Filter Bar */}
+      <FilterBar
+        timePeriod={timePeriod}
+        onTimePeriodChange={setTimePeriod}
+        exportTargetRef={exportRef}
+        exportFileName={`community_${timePeriod}`}
+        showExport={showExport}
+      />
+
+      {/* Header Section */}
+      <div className="page-header">
+        <div className="icon-container" aria-hidden="true">
+          <div className="icon-circle">
+            <AssetIcon name="popular-emoji-icon" color="#f69b39" size={30} />
+          </div>
+        </div>
+        <h1 className="community-title">Community Creation</h1>
+      </div>
+
+      {/* Creation Metrics Bar Chart */}
+      <div className="creation-section">
+        <BarChart
+          title="Creation metrics by type"
+          weeks={weeksFormatted}
+          data={creationData}
+        />
+      </div>
+
+      {/* Last Updated Footer */}
+      <LastUpdated />
+    </main>
+  );
+};
+
+export default Community;

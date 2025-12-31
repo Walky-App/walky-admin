@@ -1,0 +1,433 @@
+/* Ban User Modal Styles */
+
+.ban-user-modal .modal-content {
+  background-color: var(--v2-neutral-white);
+  border: 1px solid var(--v2-border-outline);
+  border-radius: var(--v2-radius-xl);
+  box-shadow: var(--v2-shadow-lg);
+  max-width: 654px;
+  width: 100%;
+  padding: 0;
+  overflow: visible;
+}
+
+.ban-user-modal .modal-dialog {
+  max-width: 654px;
+}
+
+.ban-user-modal-body {
+  padding: var(--v2-spacing-32);
+  position: relative;
+  overflow: visible;
+}
+
+/* Embedded mode improvements */
+.ban-user-modal-body.embedded {
+  padding: 0;
+}
+
+/* Close Icon */
+.ban-modal-close-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--v2-transition-fast);
+  z-index: 10;
+}
+
+.ban-modal-close-icon:hover {
+  opacity: 0.7;
+}
+
+/* Content */
+.ban-modal-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 590px;
+  margin: 0 auto;
+}
+
+/* Embedded mode - adjust content */
+.ban-user-modal-body.embedded .ban-modal-content {
+  width: 100%;
+  gap: 40px;
+  margin: 0;
+}
+
+/* Content Inner */
+.ban-modal-content > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v2-spacing-24);
+}
+
+/* Title */
+.ban-modal-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 130%;
+  color: var(--v2-neutral-black);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Field Container */
+.ban-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--v2-spacing-8);
+}
+
+.ban-modal-field-textarea {
+  height: 171px;
+}
+
+.ban-modal-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 150%;
+  color: var(--v2-neutral-black);
+}
+
+/* Dropdown */
+.ban-modal-dropdown {
+  position: relative;
+  width: 330px;
+  max-width: 100%;
+}
+
+.ban-modal-dropdown-trigger {
+  background-color: var(--v2-neutral-white);
+  border: 1px solid var(--v2-border-outline);
+  border-radius: var(--v2-radius-md);
+  padding: var(--v2-spacing-16);
+  height: 48px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all var(--v2-transition-fast);
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  color: var(--v2-neutral-black);
+  text-align: left;
+}
+
+.ban-modal-dropdown-trigger:hover {
+  border-color: var(--v2-primary-purple-main);
+}
+
+.ban-modal-dropdown-icon {
+  transition: transform var(--v2-transition-fast);
+}
+
+.ban-modal-dropdown-icon.open {
+  transform: rotate(180deg);
+}
+
+.ban-modal-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background-color: var(--v2-neutral-white);
+  border: 1px solid var(--v2-border-outline);
+  border-radius: var(--v2-radius-md);
+  box-shadow: var(--v2-shadow-lg);
+  z-index: 1060;
+  overflow: hidden;
+  padding: var(--v2-spacing-16);
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.ban-modal-dropdown-item {
+  width: 100%;
+  padding: var(--v2-spacing-8) 0;
+  background: none;
+  border: none;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 100%;
+  color: var(--v2-neutral-black);
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--v2-transition-fast);
+}
+
+.ban-modal-dropdown-item:hover {
+  color: var(--v2-primary-purple-main);
+}
+
+.ban-modal-dropdown-item.selected {
+  color: var(--v2-primary-purple-main);
+  background-color: var(--v2-bg-select);
+  padding-left: var(--v2-spacing-16);
+  padding-right: var(--v2-spacing-16);
+  margin-left: calc(var(--v2-spacing-16) * -1);
+  margin-right: calc(var(--v2-spacing-16) * -1);
+  border-radius: var(--v2-radius-xs);
+}
+
+.ban-modal-dropdown-divider {
+  height: 1px;
+  background-color: var(--v2-border-light);
+  margin: 0;
+}
+
+/* Textarea */
+.ban-modal-textarea {
+  background-color: var(--v2-neutral-white);
+  border: 1px solid var(--v2-border-outline);
+  border-radius: var(--v2-radius-md);
+  padding: var(--v2-spacing-16);
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  color: var(--v2-neutral-black);
+  resize: none;
+  transition: border-color var(--v2-transition-fast);
+}
+
+.ban-modal-textarea::placeholder {
+  color: var(--v2-neutral-placeholder);
+}
+
+.ban-modal-textarea:focus {
+  outline: none;
+  border-color: var(--v2-primary-purple-main);
+}
+
+/* Checkbox Container */
+.ban-modal-checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: var(--v2-spacing-16);
+}
+
+.ban-modal-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--v2-spacing-16);
+  cursor: pointer;
+  margin: 0;
+}
+
+.ban-modal-checkbox-input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.ban-modal-checkbox-custom {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  background-color: var(--v2-primary-purple-main);
+  border-radius: var(--v2-radius-xs);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--v2-transition-fast);
+}
+
+.ban-modal-checkbox-input:not(:checked) + .ban-modal-checkbox-custom {
+  background-color: transparent;
+  border: 2px solid var(--v2-border-dark);
+}
+
+.ban-modal-checkbox-input:hover + .ban-modal-checkbox-custom {
+  opacity: 0.9;
+}
+
+.ban-modal-checkbox-text {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  color: var(--v2-neutral-black);
+  user-select: none;
+}
+
+/* Button Container */
+.ban-modal-button-container {
+  display: flex;
+  gap: var(--v2-spacing-20);
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Cancel Button */
+.ban-modal-cancel-button {
+  background-color: var(--v2-neutral-white) !important;
+  border: 1px solid var(--v2-border-dark) !important;
+  border-radius: var(--v2-radius-lg) !important;
+  padding: 9px var(--v2-spacing-32) !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all var(--v2-transition-fast) !important;
+}
+
+.ban-modal-cancel-button span {
+  font-family: "Lato", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  line-height: 100% !important;
+  color: var(--v2-neutral-black) !important;
+  text-align: right !important;
+}
+
+.ban-modal-cancel-button:hover {
+  background-color: var(--v2-bg-hover) !important;
+  border-color: var(--v2-border-dark) !important;
+}
+
+/* Confirm Button */
+.ban-modal-confirm-button {
+  background-color: var(--v2-state-error) !important;
+  border: none !important;
+  border-radius: var(--v2-radius-lg) !important;
+  padding: 9px var(--v2-spacing-20) !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0px 2px 7px 0px rgba(115, 115, 115, 0.2) !important;
+  transition: all var(--v2-transition-fast) !important;
+  color: #ffffff !important;
+}
+
+.ban-modal-confirm-button span {
+  font-family: "Lato", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  line-height: 100% !important;
+  color: #ffffff !important;
+  text-align: right !important;
+}
+
+.ban-modal-confirm-button:hover:not(:disabled) {
+  background-color: #c42d20 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0px 4px 10px 0px rgba(115, 115, 115, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.ban-modal-confirm-button:hover:not(:disabled) span {
+  color: #ffffff !important;
+}
+
+.ban-modal-confirm-button:active:not(:disabled) {
+  transform: translateY(0) !important;
+  color: #ffffff !important;
+}
+
+.ban-modal-confirm-button:focus {
+  color: #ffffff !important;
+}
+
+.ban-modal-confirm-button:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  background-color: var(--v2-state-error) !important;
+  color: #ffffff !important;
+}
+
+/* Dark Mode Support */
+:root[data-coreui-theme="dark"] .ban-user-modal .modal-content,
+[data-theme="dark"] .ban-user-modal .modal-content {
+  background-color: var(--v2-bg-card);
+  border-color: var(--v2-border-default);
+}
+
+:root[data-coreui-theme="dark"] .ban-modal-title,
+[data-theme="dark"] .ban-modal-title,
+:root[data-coreui-theme="dark"] .ban-modal-label,
+[data-theme="dark"] .ban-modal-label,
+:root[data-coreui-theme="dark"] .ban-modal-checkbox-text,
+[data-theme="dark"] .ban-modal-checkbox-text {
+  color: var(--v2-text-primary);
+}
+
+:root[data-coreui-theme="dark"] .ban-modal-dropdown-trigger,
+[data-theme="dark"] .ban-modal-dropdown-trigger,
+:root[data-coreui-theme="dark"] .ban-modal-textarea,
+[data-theme="dark"] .ban-modal-textarea {
+  background-color: var(--v2-bg-container);
+  border-color: var(--v2-border-default);
+  color: var(--v2-text-primary);
+}
+
+:root[data-coreui-theme="dark"] .ban-modal-dropdown-menu,
+[data-theme="dark"] .ban-modal-dropdown-menu {
+  background-color: var(--v2-bg-dropdown);
+  border-color: var(--v2-border-default);
+}
+
+:root[data-coreui-theme="dark"] .ban-modal-dropdown-item,
+[data-theme="dark"] .ban-modal-dropdown-item {
+  color: var(--v2-text-primary);
+}
+
+:root[data-coreui-theme="dark"] .ban-modal-cancel-button,
+[data-theme="dark"] .ban-modal-cancel-button {
+  background-color: transparent;
+  border-color: var(--v2-border-default);
+}
+
+:root[data-coreui-theme="dark"] .ban-modal-cancel-button span,
+[data-theme="dark"] .ban-modal-cancel-button span {
+  color: var(--v2-text-primary);
+}
+
+:root[data-coreui-theme="dark"] .ban-modal-cancel-button:hover,
+[data-theme="dark"] .ban-modal-cancel-button:hover {
+  background-color: var(--v2-bg-hover);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ban-modal-content {
+    width: 100%;
+  }
+
+  .ban-user-modal .modal-content {
+    max-width: 100%;
+    margin: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .ban-modal-button-container {
+    flex-direction: column;
+    gap: var(--v2-spacing-12);
+  }
+
+  .ban-modal-cancel-button,
+  .ban-modal-confirm-button {
+    width: 100%;
+  }
+}

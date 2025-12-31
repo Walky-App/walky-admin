@@ -1,0 +1,225 @@
+.top-fields-container {
+  background-color: var(--v2-card-bg);
+  border: 1px solid var(--v2-border-light);
+  border-radius: 14px;
+  padding: 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 270px;
+  box-shadow: var(--v2-shadow-card);
+}
+
+.top-fields-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 38px;
+}
+
+.top-fields-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-fields-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+  color: var(--v2-text-muted);
+}
+
+.top-fields-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 1;
+}
+
+.top-fields-table-header {
+  background-color: var(--v2-bg-table);
+  display: grid;
+  grid-template-columns: 236px 116px 1fr;
+  align-items: center;
+  padding: 13px 24px;
+  border-radius: 12px;
+  height: 53px;
+}
+
+.table-header-item {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.table-header-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--v2-body-color);
+}
+
+.table-header-sort:focus-visible {
+  outline: 2px solid var(--v2-focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.sort-icon {
+  transition: transform 0.2s ease;
+}
+
+.sort-icon.asc {
+  transform: rotate(180deg);
+}
+
+.table-header-text {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--v2-body-color);
+}
+
+.top-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 21px;
+}
+
+.field-item {
+  display: grid;
+  grid-template-columns: 236px 116px 1fr;
+  align-items: center;
+  padding: 0 24px;
+  min-height: 73px;
+}
+
+.field-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field-rank {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  min-width: 38px;
+  text-align: center;
+}
+
+.field-name {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.8;
+  color: #5b6168;
+}
+
+.field-students,
+.field-interactions {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.8;
+  color: #5b6168;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .top-fields-container {
+    height: auto;
+    min-height: 270px;
+  }
+
+  .top-fields-table-header {
+    grid-template-columns: 1fr 100px 120px;
+  }
+
+  .field-item {
+    grid-template-columns: 1fr 100px 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-fields-container {
+    padding: 24px;
+  }
+
+  .top-fields-header {
+    margin-bottom: 24px;
+  }
+
+  .top-fields-table-header {
+    display: none;
+  }
+
+  .field-item {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 24px;
+    border: 1px solid var(--v2-border-light);
+    border-radius: 12px;
+    min-height: auto;
+  }
+
+  .field-info {
+    width: 100%;
+  }
+
+  .field-students,
+  .field-interactions {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .field-students::before {
+    content: "Students";
+    font-weight: 700;
+    opacity: 1;
+  }
+
+  .field-interactions::before {
+    content: "Avg interactions";
+    font-weight: 700;
+    opacity: 1;
+  }
+
+  .top-fields-list {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-fields-title {
+    font-size: 14px;
+  }
+
+  .table-header-text,
+  .field-name,
+  .field-students,
+  .field-interactions {
+    font-size: 12px;
+  }
+
+  .field-rank {
+    font-size: 14px;
+    min-width: 34px;
+    padding: 4px 8px;
+  }
+}

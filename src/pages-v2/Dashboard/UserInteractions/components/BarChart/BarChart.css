@@ -1,0 +1,219 @@
+.bar-chart-container {
+  border-radius: 14px;
+  border: 1px solid;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.bar-chart-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  margin: 0 0 32px 0;
+}
+
+.bar-chart-wrapper {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  height: 300px;
+}
+
+.y-axis {
+  position: relative;
+  height: 100%;
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.y-axis-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  text-align: right;
+  color: #5b6168;
+  position: absolute;
+  transform: translateY(-50%);
+  right: 0;
+}
+
+.chart-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.grid-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.grid-line {
+  border-top: 1px solid;
+  width: 100%;
+  position: absolute;
+  transform: translateY(-0.5px);
+}
+
+.bars-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+  padding: 0;
+}
+
+.week-bars {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.bars-group {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 100%;
+  max-width: 80px;
+}
+
+.bar {
+  width: 20px;
+  border-radius: 4px 4px 0 0;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+  min-height: 2px;
+  position: relative;
+}
+
+.bar:hover {
+  opacity: 0.8;
+}
+
+.x-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 56px;
+  margin-top: 16px;
+}
+
+.week-label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.week-name {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+  color: #5b6168;
+}
+
+.week-dates {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  margin: 0;
+  color: #5b6168;
+}
+
+.bar-chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 24px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.legend-color {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.legend-text {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #5b6168;
+}
+
+.bar-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid;
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.bar-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: currentColor transparent transparent transparent;
+  opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .bar-chart-container {
+    padding: 20px;
+  }
+
+  .bar-chart-wrapper {
+    height: 250px;
+  }
+
+  .bars-group {
+    max-width: 60px;
+  }
+
+  .bar {
+    width: 16px;
+  }
+
+  .x-axis-labels {
+    padding: 0 40px;
+  }
+
+  .bar-chart-legend {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+}

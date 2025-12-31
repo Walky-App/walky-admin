@@ -1,0 +1,231 @@
+.stacked-bar-chart-container {
+  border-radius: 14px;
+  border: 1px solid;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.stacked-bar-chart-title {
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  margin: 0 0 32px 0;
+}
+
+.stacked-bar-chart-wrapper {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  height: 300px;
+}
+
+.stacked-bar-y-axis {
+  position: relative;
+  height: 100%;
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.stacked-bar-y-axis-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  text-align: right;
+  color: #5b6168;
+  position: absolute;
+  transform: translateY(-50%);
+  right: 0;
+}
+
+.stacked-bar-chart-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.stacked-bar-grid-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.stacked-bar-grid-line {
+  border-top: 1px solid;
+  width: 100%;
+  position: absolute;
+  transform: translateY(-0.5px);
+}
+
+.stacked-bar-bars-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 100%;
+  position: relative;
+  padding: 0;
+}
+
+.stacked-bar-week-bars {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 100%;
+  position: relative;
+}
+
+.stacked-bar-bars-group {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  height: 100%;
+  width: 47px;
+}
+
+.stacked-bar-bar {
+  width: 100%;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+  min-height: 2px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stacked-bar-bar:hover {
+  opacity: 0.85;
+  filter: brightness(1.05);
+}
+
+.stacked-bar-value {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1;
+  z-index: 2;
+}
+
+.stacked-bar-tooltip {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 8px);
+  transform: translateY(-50%);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 9999;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.stacked-bar-tooltip--left {
+  left: auto;
+  right: calc(100% + 8px);
+}
+
+.stacked-bar-x-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 56px;
+  margin-top: 16px;
+}
+
+.stacked-bar-week-label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.stacked-bar-week-name {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+  color: #5b6168;
+}
+
+.stacked-bar-week-dates {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1;
+  transform: translateY(50%);
+  color: #5b6168;
+}
+
+.stacked-bar-chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 24px;
+}
+
+.stacked-bar-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stacked-bar-legend-color {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.stacked-bar-legend-text {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #5b6168;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stacked-bar-chart-container {
+    padding: 20px;
+  }
+
+  .stacked-bar-chart-wrapper {
+    height: 250px;
+  }
+
+  .stacked-bar-bars-group {
+    max-width: 60px;
+  }
+
+  .stacked-bar-bar {
+    width: 16px;
+  }
+
+  .stacked-bar-x-axis-labels {
+    padding: 0 40px;
+  }
+
+  .stacked-bar-chart-legend {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+}
+
+/* Accessibility: Focus-visible styles */
+.stacked-bar-chart button:focus-visible,
+.stacked-bar-chart a:focus-visible,
+.stacked-bar-chart [role="button"]:focus-visible,
+.stacked-bar-chart [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}

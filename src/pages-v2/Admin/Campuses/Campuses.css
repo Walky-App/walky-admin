@@ -1,0 +1,700 @@
+/* Campuses Page Styles */
+.campuses-page {
+  padding-bottom: 85px;
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.page-title {
+  font-family: "Lato", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: normal;
+  background: linear-gradient(90deg, #555aec 0%, #486cb1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  text-align: left;
+}
+
+.page-subtitle {
+  font-family: "Lato", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+  color: #5b6168;
+  margin: 0;
+  text-align: left;
+}
+
+/* Main Container */
+.campuses-container {
+  background-color: #ffffff;
+  border: 1px solid #eef0f1;
+  border-radius: 14px;
+  padding: 32px 27px;
+  box-shadow: 0px 1px 8px 0px rgba(84, 111, 217, 0.1);
+}
+
+/* Directory Info */
+.directory-info {
+  margin-bottom: 24px;
+}
+
+.directory-title {
+  font-family: "Lato", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  color: #1d1b20;
+  margin: 0 0 17px 0;
+}
+
+.directory-count {
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  color: #5b6168;
+  margin: 0;
+}
+
+/* Table Wrapper */
+.campuses-table-wrapper {
+  margin-bottom: 24px;
+}
+
+/* Table */
+.campuses-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.content-space-divider {
+  height: 18px;
+}
+
+/* Table Header */
+.table-header-row {
+  background-color: #f1f4f9;
+  border-radius: 12px;
+}
+
+.table-header {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  color: #1d1b20;
+  text-align: left;
+  padding: 16px;
+}
+
+.table-header:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  padding-left: 35px;
+}
+
+.table-header:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Table Rows */
+.campus-row td {
+  padding: 12px 16px;
+}
+
+.campus-divider-row {
+  height: 1px !important;
+}
+
+.campus-divider-row td {
+  padding: 0 !important;
+  height: 1px;
+}
+
+/* Campus Cell */
+.campus-cell {
+  padding-left: 35px !important;
+}
+
+.campus-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.campus-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.campus-avatar-placeholder {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #d2d2d3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1d1b20;
+  flex-shrink: 0;
+}
+
+.campus-avatar-clickable {
+  cursor: pointer;
+}
+
+.campus-dropdown {
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.dropdown-button .chevron-icon {
+  color: #5b6168;
+  width: 14px;
+  height: 14px;
+}
+
+.dropdown-button:hover .chevron-icon {
+  color: #444a52;
+}
+
+.chevron-icon {
+  transition: transform 0.3s ease;
+}
+
+.chevron-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.campus-name {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: #1d1b20;
+  opacity: 0.8;
+}
+
+/* Campus ID Cell */
+.campus-id-cell {
+  padding: 23px 16px !important;
+}
+
+.campus-id-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.campus-id {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  color: #321fdb;
+  opacity: 0.8;
+  background-color: #f1f4f9;
+  padding: 0 8px;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.copy-button:hover {
+  opacity: 1;
+}
+
+/* Skeleton Loading */
+@keyframes campuses-skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-row td {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.skeleton-block {
+  position: relative;
+  overflow: hidden;
+  background: #e9eef5;
+  border-radius: 10px;
+  background-image: linear-gradient(
+    90deg,
+    #e9eef5 25%,
+    #f4f7fb 50%,
+    #e9eef5 75%
+  );
+  background-size: 200% 100%;
+  animation: campuses-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.dark-mode .skeleton-block {
+  background: #2e3240;
+  background-image: linear-gradient(
+    90deg,
+    #2e3240 25%,
+    #3a3f4f 50%,
+    #2e3240 75%
+  );
+}
+
+.skeleton-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-line {
+  height: 12px;
+  width: 140px;
+  border-radius: 6px;
+}
+
+.skeleton-line.short {
+  width: 90px;
+}
+
+.skeleton-line.wide {
+  width: 200px;
+}
+
+.skeleton-pill {
+  width: 110px;
+  height: 16px;
+  border-radius: 12px;
+}
+
+.skeleton-badge {
+  width: 80px;
+  height: 22px;
+  border-radius: 12px;
+}
+
+.skeleton-action {
+  width: 40px;
+  height: 16px;
+  border-radius: 6px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Location & Address */
+.campus-location,
+.campus-address {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: #1d1b20;
+  opacity: 0.8;
+}
+
+/* Status Badge */
+.campus-status {
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 4px 18px;
+  border-radius: 14px;
+}
+
+.status-badge.active {
+  background-color: #edffed;
+  color: #18682c;
+}
+
+.status-badge.inactive {
+  background-color: #f4f5f7;
+  color: #676d70;
+}
+
+/* Sync Button */
+.campus-sync {
+  text-align: center;
+}
+
+.sync-button {
+  background-color: #ffffff;
+  border: 0.5px solid #f1f4f9;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.sync-button:hover {
+  background-color: #f1f4f9;
+}
+
+.sync-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sync-button--disabled:hover {
+  background-color: #ffffff;
+}
+
+.sync-places-modal .modal-content,
+.sync-places-modal .modal-dialog {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.sync-places-modal-body {
+  position: relative;
+  padding: 28px 28px 24px 28px;
+}
+
+.sync-places-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+}
+
+.sync-places-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  text-align: left;
+  width: 100%;
+}
+
+.sync-places-title {
+  margin: 0;
+  font-family: "Lato", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1d1b20;
+}
+
+.sync-places-subtitle {
+  margin: 0;
+  font-family: "Lato", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #5b6168;
+  line-height: 1.4;
+}
+
+.sync-places-description {
+  margin: 0;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #4a5056;
+  line-height: 1.4;
+}
+
+.sync-places-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.sync-places-btn {
+  border: none;
+  border-radius: 10px;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.sync-places-btn.primary {
+  background: linear-gradient(90deg, #5866e9 0%, #4c58c9 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(88, 102, 233, 0.25);
+}
+
+.sync-places-btn.secondary {
+  background: #eef0f6;
+  color: #1d1b20;
+  border: 1px solid #d9dce7;
+}
+
+.sync-places-btn:active {
+  transform: translateY(1px);
+}
+
+/* Boundary Row */
+.boundary-row {
+}
+
+.boundary-cell {
+  padding: 0 35px 24px 35px !important;
+}
+
+.boundary-container {
+  width: 100%;
+}
+
+.boundary-title {
+  font-family: "Lato", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  color: #1d1b20;
+  opacity: 0.8;
+  margin: 0 0 8px 0;
+}
+
+.boundary-map {
+  width: 100%;
+  border-radius: 8px;
+  overflow: visible;
+}
+
+/* Pagination */
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 26px;
+}
+
+.pagination-info {
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: #5b6168;
+  margin: 0;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-button {
+  background-color: #ffffff;
+  border: 1px solid #d2d2d3;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: #321fdb;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.pagination-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-button:not(:disabled):hover {
+  background-color: #f1f4f9;
+}
+
+.page-number {
+  background-color: #ffffff;
+  border: 1px solid #d2d2d3;
+  border-radius: 4px;
+  padding: 10px;
+  min-width: 30px;
+  height: 37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: #321fdb;
+}
+
+.page-number.active {
+  background-color: #ebf1ff;
+  border-color: #321fdb;
+}
+
+/* Dark Mode Styles */
+.campuses-container.dark-mode {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+.campuses-container.dark-mode .directory-title {
+  color: #e0e0e0;
+}
+
+.campuses-container.dark-mode .directory-count {
+  color: #b0b0b0;
+}
+
+.campuses-container.dark-mode .table-header-row {
+  background-color: #2a2a2a;
+}
+
+.campuses-container.dark-mode .table-header {
+  color: #e0e0e0;
+}
+
+.campuses-container.dark-mode .campus-row {
+  background-color: #1e1e1e;
+}
+
+.campuses-container.dark-mode .campus-name {
+  color: #e0e0e0;
+}
+
+.campuses-container.dark-mode .campus-location,
+.campuses-container.dark-mode .campus-address {
+  color: #d0d0d0;
+}
+
+.campuses-container.dark-mode .campus-avatar-placeholder {
+  background-color: #3a3a3a;
+  color: #d0d0d0;
+}
+
+.campuses-container.dark-mode .campus-id {
+  background-color: #1a2840;
+  color: #7a8fff;
+}
+
+.campuses-container.dark-mode .sync-button {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+.campuses-container.dark-mode .sync-button:hover {
+  background-color: #3a3a3a;
+}
+
+.campuses-container.dark-mode .sync-button--disabled:hover {
+  background-color: #2a2a2a;
+}
+
+.campuses-container.dark-mode .boundary-row {
+  background-color: #1e1e1e;
+}
+
+.campuses-container.dark-mode .boundary-cell {
+  background-color: #1e1e1e;
+}
+
+.campuses-container.dark-mode .boundary-title {
+  color: #e0e0e0;
+}
+
+.campuses-container.dark-mode .pagination-info {
+  color: #b0b0b0;
+}
+
+.campuses-container.dark-mode .pagination-button {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #7a8fff;
+}
+
+.campuses-container.dark-mode .pagination-button:not(:disabled):hover {
+  background-color: #3a3a3a;
+}
+
+.campuses-container.dark-mode .page-number {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #7a8fff;
+}
+
+.campuses-container.dark-mode .page-number.active {
+  background-color: #1a2840;
+  border-color: #7a8fff;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .campuses-page {
+    padding: 24px 20px;
+  }
+
+  .campuses-table {
+    font-size: 13px;
+  }
+}
+
+/* Accessibility: Focus-visible styles */
+.campuses-page button:focus-visible,
+.campuses-page a:focus-visible,
+.campuses-page input:focus-visible,
+.campuses-page select:focus-visible,
+.campuses-page [role="button"]:focus-visible,
+.campuses-page [tabindex]:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}
