@@ -299,9 +299,9 @@
   min-width: 20px;
 }
 
-.idea-owner-avatar {
-  width: 40px;
-  height: 40px;
+.IDP-idea-owner-avatar {
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;

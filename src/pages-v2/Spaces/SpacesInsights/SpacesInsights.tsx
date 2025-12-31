@@ -2,10 +2,11 @@ import React, { useRef, useState } from "react";
 import "./SpacesInsights.css";
 import {
   AssetIcon,
-  ExportButton,
   LastUpdated,
   SkeletonLoader,
+  FilterBar,
 } from "../../../components-v2";
+import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 
 interface SpaceCategory {
   name: string;
@@ -108,10 +109,10 @@ import { usePermissions } from "../../../hooks/usePermissions";
 
 export const SpacesInsights: React.FC = () => {
   const { canExport } = usePermissions();
-  const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
-    "month"
-  );
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const exportRef = useRef<HTMLElement | null>(null);
+
+  const apiPeriod = timePeriod === "all-time" ? "all" : timePeriod;
 
   // Check permissions for this page
   const showExport = canExport("spaces_insights");
@@ -120,7 +121,7 @@ export const SpacesInsights: React.FC = () => {
   const { data: insightsData, isLoading } = useQuery({
     queryKey: ["spacesInsights", timePeriod],
     queryFn: () =>
-      apiClient.api.adminV2SpacesInsightsList({ period: timePeriod }),
+      apiClient.api.adminV2SpacesInsightsList({ period: apiPeriod }),
     placeholderData: keepPreviousData,
   });
 
@@ -131,9 +132,17 @@ export const SpacesInsights: React.FC = () => {
   });
 
   // Type assertion for optional metadata fields not in generated types
-  type InsightsWithMetadata = { lastUpdated?: string; updatedAt?: string; metadata?: { lastUpdated?: string } };
-  const insightsDataExtended = insightsData?.data as InsightsWithMetadata | undefined;
-  const allTimeDataExtended = allTimeInsights?.data as InsightsWithMetadata | undefined;
+  type InsightsWithMetadata = {
+    lastUpdated?: string;
+    updatedAt?: string;
+    metadata?: { lastUpdated?: string };
+  };
+  const insightsDataExtended = insightsData?.data as
+    | InsightsWithMetadata
+    | undefined;
+  const allTimeDataExtended = allTimeInsights?.data as
+    | InsightsWithMetadata
+    | undefined;
   const lastUpdated =
     insightsDataExtended?.lastUpdated ||
     insightsDataExtended?.updatedAt ||
@@ -166,12 +175,15 @@ export const SpacesInsights: React.FC = () => {
 
   return (
     <main className="spaces-insights-page" ref={exportRef}>
-      {/* Header with Export Button */}
-      <div className="insights-header">
-        {showExport && (
-          <ExportButton captureRef={exportRef} filename="spaces_insights" />
-        )}
-      </div>
+      {/* Filter Bar */}
+      <FilterBar
+        timePeriod={timePeriod}
+        onTimePeriodChange={setTimePeriod}
+        exportTargetRef={exportRef}
+        exportFileName={`spaces_insights_${timePeriod}`}
+        showExport={showExport}
+        hideTimeSelector
+      />
 
       {/* Top 2 Stats Cards */}
       <div className="stats-cards-row">
@@ -201,40 +213,6 @@ export const SpacesInsights: React.FC = () => {
           <p className="stats-card-value">
             {allTimeInsights?.data.totalMembers || 0}
           </p>
-        </div>
-      </div>
-
-      {/* Time Period Filter */}
-      <div className="filter-section">
-        <div className="time-period-filter">
-          <p className="filter-label">Time period:</p>
-          <div className="time-selector">
-            <button
-              data-testid="time-all-btn"
-              className={`time-option first ${
-                timePeriod === "all" ? "active" : ""
-              }`}
-              onClick={() => setTimePeriod("all")}
-            >
-              All time
-            </button>
-            <button
-              data-testid="time-week-btn"
-              className={`time-option ${timePeriod === "week" ? "active" : ""}`}
-              onClick={() => setTimePeriod("week")}
-            >
-              Week
-            </button>
-            <button
-              data-testid="time-month-btn"
-              className={`time-option last ${
-                timePeriod === "month" ? "active" : ""
-              }`}
-              onClick={() => setTimePeriod("month")}
-            >
-              Month
-            </button>
-          </div>
         </div>
       </div>
 

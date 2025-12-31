@@ -156,7 +156,7 @@ export const EventsManager: React.FC = () => {
         <div className="events-manager-title-section">
           <h1 className="events-manager-title">Event management</h1>
           <p className="events-manager-subtitle">
-            Manage and create different events for students to attend on campus.
+            Manage different events for students to attend on campus.
           </p>
         </div>
       </div>

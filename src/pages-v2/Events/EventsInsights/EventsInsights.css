@@ -68,63 +68,6 @@
   margin-bottom: 32px;
 }
 
-/* Time Period Filter */
-.time-period-filter {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.filter-label {
-  font-family: "Lato", sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 1;
-  color: #1d1b20;
-}
-
-.time-selector {
-  display: flex;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.time-option {
-  padding: 8px 16px;
-  border: 1px solid #a9abac;
-  background: #ffffff;
-  font-family: "Lato", sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 1;
-  color: #5b6168;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-left: -1px;
-}
-
-.time-option:first-child {
-  border-radius: 8px 0 0 8px;
-  margin-left: 0;
-}
-
-.time-option:last-child {
-  border-radius: 0 8px 8px 0;
-}
-
-.time-option.active {
-  background: #546fd9;
-  color: #ffffff;
-  border-color: #546fd9;
-  position: relative;
-  z-index: 1;
-}
-
-.time-option:hover:not(.active) {
-  background: #f7f8fa;
-}
-
 /* Interests Section */
 .interests-section {
   background: #ffffff;
@@ -221,6 +164,7 @@
   line-height: 1;
   color: #1d1b20;
   margin: 0;
+  text-transform: capitalize;
 }
 
 .interest-students {
@@ -348,11 +292,12 @@
   margin: 0;
   flex: 1;
   min-width: 0;
+  text-transform: capitalize;
 }
 
 .event-attendees {
   font-family: "Lato", sans-serif;
-  font-weight: 600;
+  font-weight: 400;
   font-size: 16px;
   line-height: 1;
   color: #5b6168;

@@ -1,9 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  keepPreviousData,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import React, { useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { CRow, CCol } from "@coreui/react";
 import {
@@ -12,13 +8,13 @@ import {
   LastUpdated,
   SeeAllInterestsModal,
 } from "../../../components-v2";
+import { IconName } from "../../../components-v2/AssetIcon/AssetIcon.types";
 import { useTheme } from "../../../hooks/useTheme";
 import { usePermissions } from "../../../hooks/usePermissions";
 import {
   FeatureCard,
   PopularitySelector,
   CommonInterests,
-  TopFieldsOfStudy,
   DashboardSkeleton,
 } from "../components";
 import "./PopularFeatures.css";
@@ -29,7 +25,6 @@ import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
 const PopularFeatures: React.FC = () => {
-  const queryClient = useQueryClient();
   const { theme } = useTheme();
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
@@ -37,14 +32,9 @@ const PopularFeatures: React.FC = () => {
   const { canExport } = usePermissions();
   const [popularity, setPopularity] = useState<PopularityOption>("most");
   const [interestsModalVisible, setInterestsModalVisible] = useState(false);
-  const [modalData, setModalData] = useState<{
-    title: string;
-    items: any[];
-    subtitle?: string;
-  }>({
+  const [modalData, setModalData] = useState<{ title: string; items: any[] }>({
     title: "Interests",
     items: [],
-    subtitle: "Interests ranked by popularity",
   });
   const exportRef = useRef<HTMLElement | null>(null);
 
@@ -71,49 +61,21 @@ const PopularFeatures: React.FC = () => {
         campusId: selectedCampus?._id,
         sortBy: popularity === "most" ? "most_popular" : "least_popular",
       }),
-    placeholderData: keepPreviousData,
   });
-
-  useEffect(() => {
-    const periods: Array<"week" | "month" | "all-time"> = [
-      "week",
-      "month",
-      "all-time",
-    ];
-    const sorts: Array<"most_popular" | "least_popular"> = [
-      "most_popular",
-      "least_popular",
-    ];
-
-    periods.forEach((period) => {
-      sorts.forEach((sortBy) => {
-        queryClient.prefetchQuery({
-          queryKey: [
-            "popularFeatures",
-            period,
-            selectedSchool?._id,
-            selectedCampus?._id,
-            sortBy === "most_popular" ? "most" : "least",
-          ],
-          queryFn: () =>
-            apiClient.api.adminV2DashboardPopularFeaturesList({
-              period,
-              schoolId: selectedSchool?._id,
-              campusId: selectedCampus?._id,
-              sortBy,
-            }),
-        });
-      });
-    });
-  }, [queryClient, selectedCampus?._id, selectedSchool?._id]);
 
   interface FeatureItem {
     rank: number;
     icon: string;
     label: string;
     iconBgColor?: string;
+    count?: number;
+    percentage?: number;
+    attendees?: number;
+    members?: number;
+    visits?: number;
+    students?: number;
+    score?: number;
   }
-  // Interest type matching CommonInterests component
   interface Interest {
     rank: number;
     name: string;
@@ -123,7 +85,6 @@ const PopularFeatures: React.FC = () => {
     rankColor: string;
     rankBgColor: string;
   }
-  // FieldOfStudy type matching TopFieldsOfStudy component
   interface FieldOfStudy {
     rank: number;
     name: string;
@@ -137,9 +98,11 @@ const PopularFeatures: React.FC = () => {
     popularWaysToConnect?: FeatureItem[];
     visitedPlaces?: FeatureItem[];
     topInvitationCategories?: FeatureItem[];
-    mostEngaged?: FeatureItem[];
     commonInterests?: Interest[];
     topFieldsOfStudy?: FieldOfStudy[];
+    spacesByMembers?: FeatureItem[];
+    popularSpaceCategories?: FeatureItem[];
+    eventsByAttendees?: FeatureItem[];
   };
   const data = (apiData?.data || {}) as PopularFeaturesData;
 
@@ -147,9 +110,107 @@ const PopularFeatures: React.FC = () => {
   const popularWaysToConnect = data.popularWaysToConnect || [];
   const visitedPlaces = data.visitedPlaces || [];
   const topInvitationCategories = data.topInvitationCategories || [];
-  const mostEngaged = data.mostEngaged || [];
   const commonInterests = data.commonInterests || [];
   const topFieldsOfStudy = data.topFieldsOfStudy || [];
+  const spacesByMembers = data.spacesByMembers || [];
+  const popularSpaceCategories = data.popularSpaceCategories || [];
+  const eventsByAttendees = data.eventsByAttendees || [];
+
+  const formatWaysToConnectLabel = (raw: string): {
+    label: string;
+    iconName: IconName;
+  } => {
+    const normalize = (value: string) =>
+      (value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
+    const map: Record<string, { label: string; iconName: IconName }> = {
+      walk: { label: "Walk", iconName: "walk" },
+      walking: { label: "Walk", iconName: "walk" },
+      interests: { label: "Interests", iconName: "interests" },
+      spokenlanguage: { label: "Spoken Language", iconName: "languages" },
+      spokenlanguages: { label: "Spoken Language", iconName: "languages" },
+      language: { label: "Spoken Language", iconName: "languages" },
+      languages: { label: "Spoken Language", iconName: "languages" },
+      relationship: { label: "Relationship", iconName: "heart" },
+      inarelationship: { label: "Relationship", iconName: "heart" },
+      relationshipstatus: { label: "Relationship", iconName: "heart" },
+      classof25: { label: "Class of '25", iconName: "study" },
+      classof2025: { label: "Class of '25", iconName: "study" },
+      class2025: { label: "Class of '25", iconName: "study" },
+      areaofstudy: { label: "Area of Study", iconName: "areaOfStudy" },
+      major: { label: "Area of Study", iconName: "areaOfStudy" },
+      dogowner: { label: "Dog Owner", iconName: "dog" },
+      petowner: { label: "Dog Owner", iconName: "dog" },
+      parent: { label: "Parent", iconName: "parent" },
+      parents: { label: "Parent", iconName: "parent" },
+      peer: { label: "Peers", iconName: "peers" },
+      peers: { label: "Peers", iconName: "peers" },
+      map: { label: "Peers", iconName: "peers" },
+      surprise: { label: "Surprise Me", iconName: "present" },
+      surpriseme: { label: "Surprise Me", iconName: "present" },
+    };
+
+    const normalized = normalize(raw);
+    if (map[normalized]) return map[normalized];
+
+    // Handle free-text "class of XXXX" cases
+    const classMatch = /class\s*of\s*(\d{2,4})/i.exec(raw || "");
+    if (classMatch) {
+      const year = classMatch[1];
+      const shortYear = year.length === 2 ? year : year.slice(-2);
+      return { label: `Class of '${shortYear}`, iconName: "study" };
+    }
+
+    const words = (raw || "")
+      .replace(/[_-]+/g, " ")
+      .replace(/([a-z])([A-Z0-9])/g, "$1 $2")
+      .trim();
+    const capitalizeWord = (word: string) =>
+      word ? word.charAt(0).toUpperCase() + word.slice(1) : "";
+    const humanized = words
+      .split(/\s+/)
+      .filter(Boolean)
+      .map(capitalizeWord)
+      .join(" ");
+
+    const wordCount = humanized ? humanized.split(/\s+/).length : 0;
+    if (wordCount >= 3) {
+      return { label: "Area of Study", iconName: "areaOfStudy" };
+    }
+
+    return { label: humanized || "Area of Study", iconName: "explore" };
+  };
+
+  const formattedWaysToConnect = popularWaysToConnect.map((item) => {
+    const { label, iconName } = formatWaysToConnectLabel(item.label);
+    return {
+      ...item,
+      label,
+      iconName,
+      iconBgColor: item.iconBgColor,
+    };
+  });
+
+  const formatValueLabel = (item: any) => {
+    const toNumber = (value: any, fallback = 0) => {
+      const n = parseFloat(value);
+      return Number.isFinite(n) ? n : fallback;
+    };
+    const value = toNumber(
+      item.value ??
+        item.count ??
+        item.students ??
+        item.attendees ??
+        item.members ??
+        item.visits ??
+        item.score,
+      0
+    );
+    return {
+      value,
+      valueLabel: Number.isFinite(value) ? `${value}` : undefined,
+    };
+  };
 
   console.log("Visited Places data:", visitedPlaces);
 
@@ -187,12 +248,7 @@ const PopularFeatures: React.FC = () => {
               />
             </div>
           </div>
-          <h1
-            className="pf-page-title"
-            style={{ color: theme.colors.bodyColor }}
-          >
-            Popular Features
-          </h1>
+          <h1 className="pf-page-title">Popular Features</h1>
         </div>
         <div className="header-controls">
           <PopularitySelector selected={popularity} onChange={setPopularity} />
@@ -213,12 +269,12 @@ const PopularFeatures: React.FC = () => {
                 />
               }
               items={topInterests}
+              maxItems={5}
               onSeeAll={() => {
                 console.log("See all Interests clicked!");
                 setModalData({
                   title: "Students' interests",
                   items: topInterests,
-                  subtitle: "Students' interests ranked by popularity",
                 });
                 setInterestsModalVisible(true);
               }}
@@ -234,13 +290,14 @@ const PopularFeatures: React.FC = () => {
                   size={30}
                 />
               }
-              items={popularWaysToConnect}
+              items={formattedWaysToConnect}
+              maxItems={5}
+              formatLabel={(raw) => formatWaysToConnectLabel(raw).label}
               onSeeAll={() => {
                 console.log("See all ways clicked!");
                 setModalData({
                   title: "Ways to connect",
-                  items: popularWaysToConnect,
-                  subtitle: "Ways to connect ranked by popularity",
+                  items: formattedWaysToConnect,
                 });
                 setInterestsModalVisible(true);
               }}
@@ -252,66 +309,17 @@ const PopularFeatures: React.FC = () => {
               icon={
                 <AssetIcon
                   name="visited-places-icon"
-                  color={theme.colors.iconGreen}
+                  color={theme.colors.iconPurple}
                   size={30}
                 />
               }
               items={visitedPlaces}
-              maxItems={visitedPlaces.length}
+              maxItems={5}
               onSeeAll={() => {
                 console.log("See all places clicked!");
                 setModalData({
                   title: "Visited places",
                   items: visitedPlaces,
-                  subtitle: "Hot spots ranked by visits",
-                });
-                setInterestsModalVisible(true);
-              }}
-            />
-          </CCol>
-        </CRow>
-
-        {/* Bottom Row Cards */}
-        <CRow className="feature-cards-row bottom-cards-row">
-          <CCol xs={12} md={6}>
-            <FeatureCard
-              title="Invitation categories"
-              icon={
-                <AssetIcon
-                  name="map-icon"
-                  color={theme.colors.iconPurple}
-                  size={30}
-                />
-              }
-              items={topInvitationCategories}
-              onSeeAll={() => {
-                console.log("See all categories clicked!");
-                setModalData({
-                  title: "Invitation categories",
-                  items: topInvitationCategories,
-                  subtitle: "Invitation categories ranked by engagement",
-                });
-                setInterestsModalVisible(true);
-              }}
-            />
-          </CCol>
-          <CCol xs={12} md={6}>
-            <FeatureCard
-              title="Engaged students"
-              icon={
-                <AssetIcon
-                  name="double-users-icon"
-                  color={theme.colors.iconPurple}
-                  size={30}
-                />
-              }
-              items={mostEngaged}
-              onSeeAll={() => {
-                console.log("See all engaged clicked!");
-                setModalData({
-                  title: "Engaged students",
-                  items: mostEngaged,
-                  subtitle: "Most engaged students",
                 });
                 setInterestsModalVisible(true);
               }}
@@ -325,39 +333,22 @@ const PopularFeatures: React.FC = () => {
           <CCol xs={12} lg={6}>
             <CommonInterests
               interests={commonInterests}
-              datasets={(() => {
-                const entries: Array<[string, any[]]> = [];
-
-                if (visitedPlaces?.length) {
-                  entries.push(["Hot spots on campus", visitedPlaces]);
-                }
-
-                if (commonInterests?.length) {
-                  entries.push(["Interests in common", commonInterests]);
-                }
-
-                if (popularWaysToConnect?.length) {
-                  entries.push(["Ways to connect", popularWaysToConnect]);
-                }
-
-                if (topInterests?.length) {
-                  entries.push(["Students' interests", topInterests]);
-                }
-
-                if (topInvitationCategories?.length) {
-                  entries.push([
-                    "Invitation categories",
-                    topInvitationCategories,
-                  ]);
-                }
-
-                return Object.fromEntries(entries);
-              })()}
+              datasets={{
+                "Common interests": commonInterests,
+                "Students' interests": topInterests,
+                "Ways to connect": formattedWaysToConnect,
+                "Visited places": visitedPlaces,
+                "Invitation categories": topInvitationCategories,
+                "Spaces by number of members": spacesByMembers,
+                "Events by number of attendees": eventsByAttendees,
+                "Space categories": popularSpaceCategories,
+                "Area of study": topFieldsOfStudy,
+              }}
             />
           </CCol>
-          <CCol xs={12} lg={6}>
+          {/* <CCol xs={12} lg={6}>
             <TopFieldsOfStudy fields={topFieldsOfStudy} />
-          </CCol>
+          </CCol> */}
         </CRow>
       </section>
 
@@ -372,12 +363,16 @@ const PopularFeatures: React.FC = () => {
           setInterestsModalVisible(false);
         }}
         title={modalData.title}
-        subtitle={modalData.subtitle}
-        interests={modalData.items.map((item, idx) => ({
-          rank: item.rank ?? idx + 1,
-          name: item.label || item.name,
-          icon: item.icon || "",
-        }))}
+        interests={modalData.items.map((item) => {
+          const valueInfo = formatValueLabel(item);
+          return {
+            rank: item.rank,
+            name: item.label || item.name,
+            icon: item.icon || "",
+            iconName: item.iconName,
+            valueLabel: valueInfo.valueLabel,
+          };
+        })}
       />
     </main>
   );

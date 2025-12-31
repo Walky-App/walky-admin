@@ -11,7 +11,6 @@ import {
   Pagination,
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
-import { usePermissions } from "../../../hooks/usePermissions";
 import CampusBoundary from "../../CampusBoundary/CampusBoundary";
 
 interface CampusData {
@@ -41,8 +40,6 @@ const getInitials = (name: string): string => {
 
 export const Campuses: React.FC = () => {
   const { theme } = useTheme();
-  const { canUpdate } = usePermissions();
-  const canSyncPlaces = canUpdate("campuses");
   const [searchQuery, _setSearchQuery] = useState("");
   const [expandedCampusId, setExpandedCampusId] = useState<string | null>(null);
   const [currentPage] = useState(1);
@@ -51,7 +48,7 @@ export const Campuses: React.FC = () => {
     number[][] | undefined
   >();
   const [syncModalOpen, setSyncModalOpen] = useState(false);
-  const [campusToSync, setCampusToSync] = useState<CampusData | null>(null);
+  const [campusToSync] = useState<CampusData | null>(null);
 
   const { data: campusesData, isLoading } = useQuery({
     queryKey: ["campuses"],
@@ -147,13 +144,10 @@ export const Campuses: React.FC = () => {
           <td>
             <div className="skeleton-block skeleton-badge" />
           </td>
-          <td>
-            <div className="skeleton-block skeleton-action" />
-          </td>
         </tr>
         {index < 5 && (
           <tr className="campus-divider-row">
-            <td colSpan={6}>
+            <td colSpan={5}>
               <Divider />
             </td>
           </tr>
@@ -197,7 +191,6 @@ export const Campuses: React.FC = () => {
                 <th className="table-header">Location</th>
                 <th className="table-header">Address</th>
                 <th className="table-header">Status</th>
-                <th className="table-header">Sync places</th>
               </tr>
             </thead>
             <div className="content-space-divider" />
@@ -259,40 +252,12 @@ export const Campuses: React.FC = () => {
                             {campus.status}
                           </span>
                         </td>
-
-                        {/* Sync Column */}
-                        <td className="campus-sync">
-                          <button
-                            data-testid="sync-places-btn"
-                            className={`sync-button${
-                              !canSyncPlaces ? " sync-button--disabled" : ""
-                            }`}
-                            title={
-                              canSyncPlaces
-                                ? "Sync places"
-                                : "You don't have permission to sync places"
-                            }
-                            aria-label="Sync places for campus"
-                            disabled={!canSyncPlaces}
-                            onClick={() => {
-                              if (!canSyncPlaces) return;
-                              setCampusToSync(campus);
-                              setSyncModalOpen(true);
-                            }}
-                          >
-                            <AssetIcon
-                              name="sync-icon"
-                              size={18}
-                              color={canSyncPlaces ? "#1D1B20" : "#5B6168"}
-                            />
-                          </button>
-                        </td>
                       </tr>
 
                       {/* Expanded Boundary Row */}
                       {expandedCampusId === campus.id && (
                         <tr className="boundary-row">
-                          <td colSpan={6} className="boundary-cell">
+                          <td colSpan={5} className="boundary-cell">
                             <div className="boundary-map">
                               <CampusBoundary
                                 readOnly={true}
@@ -307,7 +272,7 @@ export const Campuses: React.FC = () => {
                       )}
                       {index < filteredCampuses.length - 1 && (
                         <tr className="campus-divider-row">
-                          <td colSpan={6}>
+                          <td colSpan={5}>
                             <Divider />
                           </td>
                         </tr>

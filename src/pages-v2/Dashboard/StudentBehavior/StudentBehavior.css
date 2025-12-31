@@ -47,7 +47,7 @@
   font-size: var(--v2-font-size-3xl);
   line-height: var(--v2-line-height-tight);
   margin: 0;
-  color: var(--v2-body-color);
+  color: #1d1b00 !important;
   text-align: left;
 }
 
@@ -58,7 +58,8 @@
   font-size: var(--v2-font-size-3xl);
   line-height: var(--v2-line-height-tight);
   margin: 0;
-  color: var(--v2-body-color);
+  color: #1d1b00 !important;
+
   text-align: left !important;
 }
 
@@ -91,7 +92,7 @@
   font-size: var(--v2-font-size-md);
   line-height: var(--v2-line-height-tight);
   margin: 0;
-  color: var(--v2-body-color);
+  color: #1d1b00 !important;
 }
 
 .student-behavior-page .metric-card-value-container {
@@ -105,7 +106,7 @@
   font-weight: var(--v2-font-weight-bold);
   font-size: var(--v2-font-size-3xl);
   line-height: var(--v2-line-height-tight);
-  color: var(--v2-body-color);
+  color: #1d1b00 !important;
 }
 
 .student-behavior-page .metric-card-unit {
@@ -114,7 +115,7 @@
   font-size: var(--v2-font-size-sm);
   line-height: var(--v2-line-height-tight);
   padding-bottom: var(--v2-spacing-1);
-  color: var(--v2-body-color);
+  color: #1d1b00 !important;
 }
 
 .student-behavior-page .metric-card-change {
@@ -160,7 +161,7 @@
 }
 
 .student-behavior-page .change-text {
-  color: var(--v2-body-color);
+  color: #1d1b00 !important;
 }
 
 .student-behavior-page .metric-card-tooltip-wrapper {
@@ -229,7 +230,7 @@
   font-size: var(--v2-font-size-2xl);
   line-height: var(--v2-line-height-tight);
   margin: 0;
-  color: var(--v2-body-color);
+  color: #1d1b00 !important;
 }
 
 .student-behavior-page .completion-container {
@@ -278,7 +279,7 @@
   font-size: var(--v2-font-size-md);
   line-height: var(--v2-line-height-tight);
   margin: 0;
-  color: var(--v2-body-color);
+  color: #1d1b00 !important;
 }
 
 .student-behavior-page .completion-metric-percentage {

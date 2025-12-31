@@ -7,6 +7,7 @@ import {
   CButton,
 } from "@coreui/react";
 import AssetIcon from "../AssetIcon/AssetIcon";
+import { IconName } from "../AssetIcon/AssetIcon.types";
 import { SearchInput } from "../SearchInput/SearchInput";
 import { NoData } from "../NoData";
 import "./SeeAllInterestsModal.css";
@@ -15,6 +16,8 @@ interface Interest {
   rank: number;
   name: string;
   icon: string;
+  iconName?: IconName;
+  valueLabel?: string;
 }
 
 interface SeeAllInterestsModalProps {
@@ -22,7 +25,6 @@ interface SeeAllInterestsModalProps {
   onClose: () => void;
   interests: Interest[];
   title?: string;
-  subtitle?: string;
 }
 
 const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
@@ -30,7 +32,6 @@ const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
   onClose,
   interests,
   title = "Top interests",
-  subtitle = "Interests ranked by popularity",
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -63,7 +64,7 @@ const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
             </div>
             <h2 className="see-all-interests-title">{title}</h2>
           </div>
-          <p className="see-all-interests-subtitle">{subtitle}</p>
+          {/* <p className="see-all-interests-subtitle">{subtitle}</p> */}
         </div>
       </CModalHeader>
 
@@ -105,6 +106,8 @@ const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
                                   alt={interest.name}
                                   className="see-all-interests-icon-image"
                                 />
+                              ) : interest.iconName ? (
+                                <AssetIcon name={interest.iconName} size={20} />
                               ) : (
                                 <div className="see-all-interests-icon-placeholder">
                                   {interest.name.charAt(0).toUpperCase()}
@@ -115,6 +118,11 @@ const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
                           <span className="see-all-interests-name">
                             {interest.name}
                           </span>
+                          {interest.valueLabel ? (
+                            <span className="see-all-interests-value">
+                              {interest.valueLabel}
+                            </span>
+                          ) : null}
                         </div>
                       </li>
                     ))}

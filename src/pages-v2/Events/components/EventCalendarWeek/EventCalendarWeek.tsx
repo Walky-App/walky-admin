@@ -50,26 +50,8 @@ export const EventCalendarWeek: React.FC<EventCalendarWeekProps> = ({
   };
 
   const computeBounds = () => {
-    let minStart = Number.POSITIVE_INFINITY;
-    let maxEnd = Number.NEGATIVE_INFINITY;
-
-    events.forEach((event) => {
-      const start = parseTimeToMinutes(event.startTime);
-      let end = parseTimeToMinutes(event.endTime);
-      if (end <= start) end += 24 * 60; // handle overnight
-
-      minStart = Math.min(minStart, start);
-      maxEnd = Math.max(maxEnd, end);
-    });
-
-    if (!Number.isFinite(minStart) || !Number.isFinite(maxEnd)) {
-      return { startHour: 8, endHour: 20 };
-    }
-
-    const startHour = Math.max(0, Math.min(8, Math.floor(minStart / 60)));
-    const endHour = Math.min(23, Math.max(20, Math.ceil(maxEnd / 60)));
-
-    return { startHour, endHour };
+    // Always show full-day range (00:00 -> 23:00) so the week view matches the day view
+    return { startHour: 0, endHour: 23 };
   };
 
   const { startHour, endHour } = computeBounds();
@@ -92,7 +74,7 @@ export const EventCalendarWeek: React.FC<EventCalendarWeekProps> = ({
     return day;
   });
 
-  const dayNames = ["MON", "TUE", "WED", "THE", "FRI", "SAT", "SUN"];
+  const dayNames = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
   const formatHour = (hour: number) => {
     if (hour === 12) return "12:00 PM";

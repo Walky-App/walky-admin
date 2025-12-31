@@ -476,6 +476,18 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 </span>
               </div>
 
+              {student.flagReason && (
+                <div className="profile-details-row profile-flag-reason-row">
+                  <span className="profile-detail-label">Flag reason:</span>
+                  <span
+                    className="profile-flag-reason-text"
+                    title={student.flagReason}
+                  >
+                    {student.flagReason}
+                  </span>
+                </div>
+              )}
+
               <div className="profile-interests-section">
                 <span className="profile-detail-label">Interests:</span>
                 {student.interests && student.interests.length > 0 ? (

@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import "./EventsInsights.css";
 import {
   AssetIcon,
-  ExportButton,
   EventDetailsModal,
   EventDetailsData,
   NoData,
 } from "../../../components-v2";
 import { LastUpdated } from "../../../components-v2";
+import { FilterBar } from "../../../components-v2/FilterBar";
+import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import { apiClient } from "../../../API";
 import { usePermissions } from "../../../hooks/usePermissions";
 
@@ -36,9 +37,7 @@ export const EventsInsights: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
   const { canExport } = usePermissions();
-  const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
-    "month"
-  );
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
   const exportRef = useRef<HTMLElement | null>(null);
@@ -86,8 +85,20 @@ export const EventsInsights: React.FC = () => {
         description?: string;
         slots?: number;
         spaceId?: string;
-        organizer?: { name?: string; id?: string; _id?: string; avatar?: string; avatar_url?: string };
-        participants?: Array<{ user_id?: string; _id?: string; name?: string; avatar_url?: string; status?: string }>;
+        organizer?: {
+          name?: string;
+          id?: string;
+          _id?: string;
+          avatar?: string;
+          avatar_url?: string;
+        };
+        participants?: Array<{
+          user_id?: string;
+          _id?: string;
+          name?: string;
+          avatar_url?: string;
+          status?: string;
+        }>;
         isFlagged?: boolean;
         flagReason?: string;
         space?: {
@@ -117,13 +128,14 @@ export const EventsInsights: React.FC = () => {
           avatar: event.organizer?.avatar || event.organizer?.avatar_url,
         },
         date: dateObj ? dateObj.toLocaleDateString() : "",
-        time: dateObj ? dateObj.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }) : "",
+        time: dateObj
+          ? dateObj.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "",
         place: event.location || event.address || "Campus",
-        status:
-          dateObj && dateObj < new Date() ? "finished" : "upcoming",
+        status: dateObj && dateObj < new Date() ? "finished" : "upcoming",
         type: (event.visibility as "public" | "private") || "public",
         description: event.description || "",
         attendees: (event.participants || []).map((p) => ({
@@ -135,13 +147,15 @@ export const EventsInsights: React.FC = () => {
         maxAttendees: event.slots || 0,
         isFlagged: event.isFlagged || false,
         flagReason: event.flagReason || "",
-        space: event.space ? {
-          id: event.space.id || "",
-          name: event.space.name || "",
-          logo: event.space.logo,
-          coverImage: event.space.coverImage,
-          description: event.space.description,
-        } : null,
+        space: event.space
+          ? {
+              id: event.space.id || "",
+              name: event.space.name || "",
+              logo: event.space.logo,
+              coverImage: event.space.coverImage,
+              description: event.space.description,
+            }
+          : null,
       };
 
       setSelectedEvent(eventDetails);
@@ -156,7 +170,7 @@ export const EventsInsights: React.FC = () => {
       setLoading(true);
       try {
         const res = await apiClient.api.adminV2DashboardEventsInsightsList({
-          period: timePeriod === "all" ? "all-time" : timePeriod,
+          period: timePeriod,
           schoolId: selectedSchool?._id,
           campusId: selectedCampus?._id,
         });
@@ -171,8 +185,16 @@ export const EventsInsights: React.FC = () => {
           lastUpdated?: string;
           updatedAt?: string;
           metadata?: { lastUpdated?: string };
-          expandReachData?: Array<{ name: string; value: number; color: string }>;
-          usersVsSpacesData?: Array<{ name: string; value: number; color: string }>;
+          expandReachData?: Array<{
+            name: string;
+            value: number;
+            color: string;
+          }>;
+          usersVsSpacesData?: Array<{
+            name: string;
+            value: number;
+            color: string;
+          }>;
           interests?: Interest[];
           publicEventsList?: EventItem[];
           privateEventsList?: EventItem[];
@@ -215,12 +237,13 @@ export const EventsInsights: React.FC = () => {
 
   return (
     <main className="events-insights-page" ref={exportRef}>
-      {/* Header with Export Button */}
-      <div className="insights-header">
-        {showExport && (
-          <ExportButton captureRef={exportRef} filename="events_insights" />
-        )}
-      </div>
+      <FilterBar
+        timePeriod={timePeriod}
+        onTimePeriodChange={setTimePeriod}
+        exportTargetRef={exportRef}
+        exportFileName={`events_insights_${timePeriod}`}
+        showExport={showExport}
+      />
 
       {/* Top 3 Stats Cards */}
       <div className="stats-cards-row">
@@ -305,34 +328,6 @@ export const EventsInsights: React.FC = () => {
           <p className="stats-card-value">
             {loading ? "..." : stats.avgPrivateAttendees}
           </p>
-        </div>
-      </div>
-
-      {/* Time Period Filter */}
-      <div className="time-period-filter">
-        <span className="filter-label">Time period:</span>
-        <div className="time-selector">
-          <button
-            data-testid="time-all-btn"
-            className={`time-option ${timePeriod === "all" ? "active" : ""}`}
-            onClick={() => setTimePeriod("all")}
-          >
-            All time
-          </button>
-          <button
-            data-testid="time-week-btn"
-            className={`time-option ${timePeriod === "week" ? "active" : ""}`}
-            onClick={() => setTimePeriod("week")}
-          >
-            Week
-          </button>
-          <button
-            data-testid="time-month-btn"
-            className={`time-option ${timePeriod === "month" ? "active" : ""}`}
-            onClick={() => setTimePeriod("month")}
-          >
-            Month
-          </button>
         </div>
       </div>
 

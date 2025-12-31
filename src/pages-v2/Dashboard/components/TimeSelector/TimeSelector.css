@@ -44,7 +44,7 @@
 }
 
 .ts-time-option.selected {
-  background: var(--time-selector-selected-bg, #526ac9);
+  background: var(--time-selector-selected-bg, #546fd9);
   color: var(--time-selector-selected-text, #ffffff);
   box-shadow: none;
 }

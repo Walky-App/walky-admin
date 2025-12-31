@@ -256,7 +256,7 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
             style={{ backgroundColor: "#389001" }}
           />
           <span className="legend-text" style={{ color: "#5b6168" }}>
-            Invitations accepted
+            Clicked "accept"
           </span>
         </div>
         <div className="legend-item">
@@ -265,7 +265,7 @@ export const BarChart: React.FC<BarChartProps> = ({ title, weeks, data }) => {
             style={{ backgroundColor: "#a0a0a0" }}
           />
           <span className="legend-text" style={{ color: "#5b6168" }}>
-            Invitations ignored
+            Clicked "ignore"
           </span>
         </div>
       </div>
