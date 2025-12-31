@@ -116,7 +116,9 @@ const PopularFeatures: React.FC = () => {
   const popularSpaceCategories = data.popularSpaceCategories || [];
   const eventsByAttendees = data.eventsByAttendees || [];
 
-  const formatWaysToConnectLabel = (raw: string): {
+  const formatWaysToConnectLabel = (
+    raw: string
+  ): {
     label: string;
     iconName: IconName;
   } => {
