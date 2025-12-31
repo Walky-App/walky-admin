@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
-import { SearchInput, Pagination } from "../../../components-v2";
+import { SearchInput, Pagination, FilterBar } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
+import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import { StatsCard } from "../components/StatsCard";
 import { BannedStudentTable } from "../components/BannedStudentTable";
 import { StudentData, StudentTableColumn } from "../components/StudentTable";
@@ -20,6 +21,7 @@ export const BannedStudents: React.FC = () => {
   const { selectedCampus } = useCampus();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
 
   // Check permissions for this page
   const showExport = canExport("banned_students");
@@ -231,6 +233,13 @@ export const BannedStudents: React.FC = () => {
 
   return (
     <main className="banned-students-page" ref={exportRef}>
+      <FilterBar
+        timePeriod={timePeriod}
+        onTimePeriodChange={setTimePeriod}
+        showExport={false}
+        hideTimeSelector
+      />
+
       <div className="banned-students-stats">
         <StatsCard
           title="Total banned students"

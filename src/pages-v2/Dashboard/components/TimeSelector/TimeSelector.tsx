@@ -26,7 +26,7 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
     ["--time-selector-border" as string]: theme.colors.borderColor,
     ["--time-selector-text" as string]: theme.colors.bodyColor,
     ["--time-selector-hover-bg" as string]: theme.colors.bgHover,
-    ["--time-selector-selected-bg" as string]: theme.colors.primary,
+    ["--time-selector-selected-bg" as string]: "#546fd9",
     ["--time-selector-selected-text" as string]: theme.colors.white,
     ["--time-selector-focus" as string]: theme.colors.focusRing,
   };

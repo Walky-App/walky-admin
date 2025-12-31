@@ -139,12 +139,15 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
                         legendItem.key ===
                           visibleLegendItems[visibleLegendItems.length - 1].key;
 
+                      const barHeightPercent = getBarHeight(value);
+                      const showValue = barHeightPercent >= 5;
+
                       return (
                         <div
                           key={legendItem.key}
                           className="stacked-bar-bar"
                           style={{
-                            height: `${getBarHeight(value)}%`,
+                            height: `${barHeightPercent}%`,
                             backgroundColor: legendItem.color,
                             borderTopLeftRadius: isTopBar ? "8px" : "0",
                             borderTopRightRadius: isTopBar ? "8px" : "0",
@@ -163,17 +166,19 @@ export const StackedBarChart: React.FC<StackedBarChartProps> = ({
                           onMouseLeave={() => setHoveredBar(null)}
                           data-testid={`bar-${weekIndex}-${legendItem.key}`}
                         >
-                          <span
-                            className="stacked-bar-value"
-                            style={{
-                              color:
-                                legendItem.color === "#576cc2"
-                                  ? "#ffffff"
-                                  : "#1d1b20",
-                            }}
-                          >
-                            {value}
-                          </span>
+                          {showValue && (
+                            <span
+                              className="stacked-bar-value"
+                              style={{
+                                color:
+                                  legendItem.color === "#576cc2"
+                                    ? "#ffffff"
+                                    : "#1d1b20",
+                              }}
+                            >
+                              {value}
+                            </span>
+                          )}
                           {hoveredBar?.weekIndex === weekIndex &&
                             hoveredBar?.barKey === legendItem.key && (
                               <div

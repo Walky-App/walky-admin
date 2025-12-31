@@ -169,7 +169,7 @@ export const EventCalendar: React.FC = () => {
     "December",
   ];
 
-  const dayHeaders = ["MON", "TUE", "WED", "THE", "FRI", "SAT", "SUN"];
+  const dayHeaders = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
   // Calculate date range for fetching
   const getDaysInMonth = (date: Date) => {
@@ -333,8 +333,19 @@ export const EventCalendar: React.FC = () => {
         description?: string;
         slots?: number;
         spaceId?: string;
-        organizer?: { name?: string; id?: string; _id?: string; avatar?: string; avatar_url?: string };
-        participants?: Array<{ user_id?: string; name?: string; avatar_url?: string; status?: string }>;
+        organizer?: {
+          name?: string;
+          id?: string;
+          _id?: string;
+          avatar?: string;
+          avatar_url?: string;
+        };
+        participants?: Array<{
+          user_id?: string;
+          name?: string;
+          avatar_url?: string;
+          status?: string;
+        }>;
         isFlagged?: boolean;
         flagReason?: string;
         space?: {
@@ -354,15 +365,14 @@ export const EventCalendar: React.FC = () => {
           (parsedDate ? parsedDate.toLocaleDateString() : "");
         const displayTime =
           event.eventTime ||
-          (parsedDate ? parsedDate.toLocaleTimeString(
-            [],
-            {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-              timeZone: "UTC",
-            }
-          ) : "");
+          (parsedDate
+            ? parsedDate.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+                timeZone: "UTC",
+              })
+            : "");
 
         const eventDetails: EventDetailsData = {
           id: event.id || event._id || "",
@@ -380,28 +390,34 @@ export const EventCalendar: React.FC = () => {
           time: displayTime,
           place: event.location || "Campus",
           status:
-            parsedDate && parsedDate < new Date()
-              ? "finished"
-              : "upcoming",
-          type: (event.visibility || event.type || "public") as "public" | "private",
+            parsedDate && parsedDate < new Date() ? "finished" : "upcoming",
+          type: (event.visibility || event.type || "public") as
+            | "public"
+            | "private",
           description: event.description || "No description",
           attendees: (event.participants || []).map((p) => ({
             id: p.user_id || "",
             name: p.name || "Unknown",
             avatar: p.avatar_url,
-            status: p.status as "pending" | "confirmed" | "declined" | undefined,
+            status: p.status as
+              | "pending"
+              | "confirmed"
+              | "declined"
+              | undefined,
           })),
           maxAttendees: event.slots || 0,
           eventImage: event.image_url,
           isFlagged: event.isFlagged || false,
           flagReason: event.flagReason || "",
-          space: event.space ? {
-            id: event.space.id || "",
-            name: event.space.name || "",
-            logo: event.space.logo,
-            coverImage: event.space.coverImage,
-            description: event.space.description,
-          } : null,
+          space: event.space
+            ? {
+                id: event.space.id || "",
+                name: event.space.name || "",
+                logo: event.space.logo,
+                coverImage: event.space.coverImage,
+                description: event.space.description,
+              }
+            : null,
         };
         setSelectedEventDetails(eventDetails);
         setEventDetailsModalOpen(true);
@@ -606,7 +622,7 @@ export const EventCalendar: React.FC = () => {
             </button>
           </div>
 
-          <div className="view-toggle">
+          <div className="view-toggle view-toggle-day">
             <button
               data-testid="view-day-btn"
               className="view-option view-option-active"
@@ -724,7 +740,7 @@ export const EventCalendar: React.FC = () => {
             </button>
           </div>
 
-          <div className="view-toggle">
+          <div className="view-toggle view-toggle-week">
             <button
               data-testid="view-day-btn"
               className="view-option"

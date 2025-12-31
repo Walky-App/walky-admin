@@ -12,7 +12,8 @@ import "./CommonInterests.css";
 interface Interest {
   rank: number;
   name: string;
-  students: number;
+  value: number;
+  valueLabel: string;
   percentage: number;
   barWidth: number;
   rankColor: string;
@@ -21,7 +22,7 @@ interface Interest {
 }
 
 interface CommonInterestsProps {
-  interests: Interest[];
+  interests: any[];
   datasets?: Record<string, any[]>;
 }
 
@@ -30,6 +31,10 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
   datasets,
 }) => {
   const { theme } = useTheme();
+  const capitalizeFirst = (value: string) => {
+    if (!value) return value;
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  };
   const filterOptions = useMemo(() => {
     const keys = datasets ? Object.keys(datasets) : [];
     return keys.length ? keys : ["Common Interests"];
@@ -48,10 +53,12 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
     const rankBgPalette = ["#fff3d6", "#d9e3f7", "#ffebe9"]; // top1, top2, top3 backgrounds
     const rankColorPalette = ["#8f5400", "#4a4cd9", "#ba5630"]; // top1, top2, top3 text
     const source = datasets?.[selectedFilter];
+    const isCommonInterests =
+      selectedFilter?.toLowerCase() === "common interests";
     const list =
       source && Array.isArray(source)
         ? source
-        : selectedFilter === "Common Interests"
+        : isCommonInterests
         ? interests
         : [];
 
@@ -60,15 +67,43 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
       return Number.isFinite(n) ? n : fallback;
     };
 
+    const inferUnit = (item: any, filterLabel: string) => {
+      const lowerFilter = (filterLabel || "").toLowerCase();
+      if ("members" in item) return "member";
+      if ("attendees" in item) return "attendee";
+      if ("visits" in item) return "visit";
+      if ("score" in item) return "score";
+      if ("students" in item) return "student";
+      if ("count" in item) {
+        if (lowerFilter.includes("space")) return "space";
+        if (lowerFilter.includes("event")) return "event";
+        if (lowerFilter.includes("place")) return "place";
+        if (lowerFilter.includes("invitation")) return "invitation";
+        if (lowerFilter.includes("connect")) return "connection";
+        return "count";
+      }
+      if ("avgInteractions" in item) return "interaction";
+      return "value";
+    };
+
+    const pluralizeUnit = (unit: string, amount: number) => {
+      if (unit === "score") return "score";
+      if (Math.abs(amount) === 1) return unit;
+      if (unit.endsWith("s")) return unit;
+      return `${unit}s`;
+    };
+
     const counts = list.map((item) =>
       toNumber(
         item.students ??
           item.count ??
+          item.score ??
           item.value ??
           item.total ??
           item.visits ??
           item.attendees ??
-          item.members,
+          item.members ??
+          item.avgInteractions,
         0
       )
     );
@@ -76,8 +111,8 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
 
     return list.map((item: any, idx: number): Interest => {
       const rank = Number(item.rank ?? idx + 1) || idx + 1;
-      const students = counts[idx] ?? 0;
-      const computedPercentage = students ? (students / maxCount) * 100 : 0;
+      const value = counts[idx] ?? 0;
+      const computedPercentage = value ? (value / maxCount) * 100 : 0;
       const percentageRaw = toNumber(item.percentage, computedPercentage);
       const percentage = Number.isFinite(percentageRaw)
         ? Number((percentageRaw as number).toFixed(2))
@@ -94,10 +129,14 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
           ? rankBgPalette[rank - 1]
           : item.rankBgColor ?? "#f4f5f7";
 
+      const unit = inferUnit(item, selectedFilter);
+      const valueLabel = `${value} ${pluralizeUnit(unit, value)}`;
+
       return {
         rank,
-        name: item.name || item.label || "—",
-        students,
+        name: capitalizeFirst(item.name || item.label || "—"),
+        value,
+        valueLabel,
         percentage,
         barWidth,
         rankColor,
@@ -160,8 +199,7 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
               <div className="interest-details">
                 <p className="interest-name">{interest.name}</p>
                 <p className="interest-stats">
-                  {interest.students}
-                  {Number.isFinite(interest.students) ? " students" : ""}
+                  {interest.valueLabel}
                   {Number.isFinite(interest.percentage)
                     ? ` (${interest.percentage}%)`
                     : ""}

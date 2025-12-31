@@ -162,8 +162,7 @@ export const SpacesManager: React.FC = () => {
         <div className="spaces-manager-title-section">
           <h1 className="spaces-manager-title">Spaces management</h1>
           <p className="spaces-manager-subtitle">
-            Manage and create different spaces for students to connect on
-            campus.
+            Manage different spaces for students to connect on campus.
           </p>
         </div>
       </div>

@@ -1,8 +1,9 @@
 import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { Pagination, SearchInput } from "../../../components-v2";
+import { Pagination, SearchInput, FilterBar } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
+import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import { StatsCard } from "../components/StatsCard";
 import {
   StudentTable,
@@ -22,6 +23,7 @@ export const ActiveStudents: React.FC = () => {
   const { selectedCampus } = useCampus();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
 
   // Check permissions for this page
   const showExport = canExport("active_students");
@@ -32,7 +34,7 @@ export const ActiveStudents: React.FC = () => {
   };
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<StudentTableColumn | undefined>(
-    undefined,
+    undefined
   );
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const exportRef = useRef<HTMLElement | null>(null);
@@ -87,11 +89,11 @@ export const ActiveStudents: React.FC = () => {
   };
 
   const totalStudentsTrend = buildTrend(
-    (statsData?.data as any)?.totalStudentsFromLastMonth ?? 0,
+    (statsData?.data as any)?.totalStudentsFromLastMonth ?? 0
   );
 
   const studentsWithAccessTrend = buildTrend(
-    (statsData?.data as any)?.studentsWithAppAccessFromLastMonth ?? 0,
+    (statsData?.data as any)?.studentsWithAppAccessFromLastMonth ?? 0
   );
 
   const students: StudentData[] = (studentsData?.data.data || []).map(
@@ -107,11 +109,11 @@ export const ActiveStudents: React.FC = () => {
       onlineLast: student.onlineLast || "",
       isFlagged: student.isFlagged,
       flagReason: (student as any).flagReason,
-    }),
+    })
   );
 
   const totalPages = Math.ceil(
-    (studentsData?.data.total || 0) / entriesPerPage,
+    (studentsData?.data.total || 0) / entriesPerPage
   );
   const paginatedStudents = students; // API already returns paginated data
 
@@ -125,7 +127,7 @@ export const ActiveStudents: React.FC = () => {
 
   const handleSortChange = (
     field: StudentTableColumn,
-    order: "asc" | "desc",
+    order: "asc" | "desc"
   ) => {
     setSortBy(field);
     setSortOrder(order);
@@ -134,6 +136,13 @@ export const ActiveStudents: React.FC = () => {
 
   return (
     <main className="active-students-page" ref={exportRef}>
+      <FilterBar
+        timePeriod={timePeriod}
+        onTimePeriodChange={setTimePeriod}
+        showExport={false}
+        hideTimeSelector
+      />
+
       <div className="active-students-stats">
         <StatsCard
           title="Total students"

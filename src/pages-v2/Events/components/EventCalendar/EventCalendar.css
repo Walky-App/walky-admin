@@ -122,11 +122,24 @@
   border-radius: 12px;
 }
 
+.view-toggle-week .view-option {
+  border-radius: 0;
+}
+
 .view-option-active {
   background: #546fd9;
   color: #ffffff;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+.view-toggle-week .view-option-active {
+  border-radius: 0;
+}
+
+.view-toggle-day .view-option-active {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .view-divider {

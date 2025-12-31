@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useRef, useState } from "react";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
+import { FilterBar } from "../../../components-v2";
+import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import {
   StudentProfileModal,
   StudentProfileData,
@@ -48,6 +50,7 @@ export const DisengagedStudents: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const entriesPerPage = 10;
 
   // Check permissions for this page
@@ -85,7 +88,7 @@ export const DisengagedStudents: React.FC = () => {
   };
 
   const totalStudentsTrend = buildTrend(
-    statsData?.data.totalStudentsFromLastMonth,
+    statsData?.data.totalStudentsFromLastMonth
   );
   const disengagedTrend = undefined; // API doesn't provide disengaged change
 
@@ -106,7 +109,7 @@ export const DisengagedStudents: React.FC = () => {
       areaOfStudy: student.studyMain,
       totalPeers: student.totalPeers,
       interests: student.interests || [],
-    }),
+    })
   );
   const handleSendOutreach = (student: DisengagedStudent) => {
     window.location.href = `mailto:${student.email}`;
@@ -166,6 +169,13 @@ export const DisengagedStudents: React.FC = () => {
 
   return (
     <main className="disengaged-students-page" ref={exportRef}>
+      <FilterBar
+        timePeriod={timePeriod}
+        onTimePeriodChange={setTimePeriod}
+        showExport={false}
+        hideTimeSelector
+      />
+
       {/* Stats Cards */}
       <div className="disengaged-students-stats">
         <StatsCard
@@ -200,7 +210,10 @@ export const DisengagedStudents: React.FC = () => {
             </p>
           </div>
           {showExport && (
-            <ExportButton captureRef={exportRef} filename="disengaged_students" />
+            <ExportButton
+              captureRef={exportRef}
+              filename="disengaged_students"
+            />
           )}
         </div>
 
@@ -309,7 +322,7 @@ export const DisengagedStudents: React.FC = () => {
             <Pagination
               currentPage={currentPage}
               totalPages={Math.ceil(
-                (studentsData?.data.total || 0) / entriesPerPage,
+                (studentsData?.data.total || 0) / entriesPerPage
               )}
               totalEntries={studentsData?.data.total || 0}
               entriesPerPage={entriesPerPage}

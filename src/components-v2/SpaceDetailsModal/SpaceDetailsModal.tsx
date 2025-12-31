@@ -24,6 +24,9 @@ export interface SpaceEvent {
   time: string;
   location: string;
   image?: string;
+  organizerName?: string;
+  organizerAvatar?: string;
+  organizerStudentId?: string;
 }
 
 export interface SpaceDetailsData {
@@ -82,6 +85,13 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
 
   if (!spaceData) return null;
 
+  const eventsCount = Array.isArray(spaceData.events)
+    ? spaceData.events.length
+    : 0;
+  const membersCount = Array.isArray(spaceData.members)
+    ? spaceData.members.length
+    : 0;
+
   const filteredMembers = spaceData.members.filter((member) => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return true;
@@ -98,9 +108,9 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
       eventName: event.title,
       eventImage: event.image,
       organizer: {
-        name: spaceData.owner.name,
-        studentId: spaceData.owner.studentId,
-        avatar: spaceData.owner.avatar,
+        name: event.organizerName || spaceData.owner.name,
+        studentId: event.organizerStudentId || spaceData.owner.studentId,
+        avatar: event.organizerAvatar || spaceData.owner.avatar,
       },
       date: event.date,
       time: event.time,
@@ -277,7 +287,7 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
                   }`}
                   onClick={() => setActiveTab("members")}
                 >
-                  Members
+                  Members ({membersCount})
                 </button>
                 <button
                   data-testid="space-tab-events-btn"
@@ -286,7 +296,7 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
                   }`}
                   onClick={() => setActiveTab("events")}
                 >
-                  Events
+                  Events ({eventsCount})
                 </button>
               </div>
 

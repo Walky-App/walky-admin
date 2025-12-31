@@ -9,12 +9,12 @@
   font-size: var(--v2-font-size-xs);
   font-weight: var(--v2-font-weight-bold);
   line-height: var(--v2-line-height-normal);
-  color: var(--v2-text-white);
+  color: #ffffff;
   white-space: nowrap;
 }
 
 /* Dark mode */
 [data-theme="dark"] .interest-chip {
   background-color: #7b8fe8;
-  color: #1d1b20;
+  color: #ffffff;
 }

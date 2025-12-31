@@ -1,8 +1,9 @@
 import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { SearchInput, Pagination } from "../../../components-v2";
+import { SearchInput, Pagination, FilterBar } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
+import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import { StatsCard } from "../components/StatsCard";
 import { StudentData, StudentTableColumn } from "../components/StudentTable";
 import { DeactivatedStudentTable } from "../components/DeactivatedStudentTable";
@@ -19,6 +20,7 @@ export const DeactivatedStudents: React.FC = () => {
   const { selectedCampus } = useCampus();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
 
   // Check permissions for this page
   const showExport = canExport("inactive_students");
@@ -141,6 +143,13 @@ export const DeactivatedStudents: React.FC = () => {
 
   return (
     <main className="deactivated-students-page" ref={exportRef}>
+      <FilterBar
+        timePeriod={timePeriod}
+        onTimePeriodChange={setTimePeriod}
+        showExport={false}
+        hideTimeSelector
+      />
+
       <div className="deactivated-students-stats">
         <StatsCard
           title="Total deactivated students"

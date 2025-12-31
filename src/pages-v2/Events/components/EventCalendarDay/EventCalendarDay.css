@@ -134,6 +134,11 @@
   margin-bottom: 8px;
 }
 
+/* Ensure event times stay white even if other global .event-time rules exist */
+.day-event-block .event-time {
+  color: #ffffff !important;
+}
+
 .event-title {
   font-family: "Lato", sans-serif;
   font-weight: 700;

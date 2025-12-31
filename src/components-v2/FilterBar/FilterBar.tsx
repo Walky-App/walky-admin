@@ -20,6 +20,7 @@ interface FilterBarProps {
   showExport?: boolean;
   exportTargetRef?: React.RefObject<HTMLElement | null>;
   exportFileName?: string;
+  hideTimeSelector?: boolean;
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({
@@ -30,6 +31,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   showExport = true,
   exportTargetRef,
   exportFileName,
+  hideTimeSelector = false,
 }) => {
   const { theme } = useTheme();
 
@@ -72,27 +74,43 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
   return (
     <section className="filter-bar" aria-label="Data filters">
-      <div className="filter-bar-options">
-        <div className="filter-bar-controls">
-          <div className="filter-bar-group">
-            <span
-              className="filter-bar-label"
-              style={{ color: theme.colors.bodyColor }}
-            >
-              Filter by
-            </span>
-            <TimeSelector selected={timePeriod} onChange={onTimePeriodChange} />
+      {!hideTimeSelector ? (
+        <div className="filter-bar-options">
+          <div className="filter-bar-controls">
+            <div className="filter-bar-group">
+              <span
+                className="filter-bar-label"
+                style={{ color: theme.colors.bodyColor }}
+              >
+                Filter by
+              </span>
+              <TimeSelector
+                selected={timePeriod}
+                onChange={onTimePeriodChange}
+              />
+            </div>
+            {calculatedDateRange && (
+              <span
+                className="filter-bar-date-range"
+                style={{ color: theme.colors.textSecondary }}
+              >
+                {calculatedDateRange}
+              </span>
+            )}
           </div>
-          {calculatedDateRange && (
+        </div>
+      ) : (
+        calculatedDateRange && (
+          <div className="filter-bar-options">
             <span
               className="filter-bar-date-range"
               style={{ color: theme.colors.textSecondary }}
             >
               {calculatedDateRange}
             </span>
-          )}
-        </div>
-      </div>
+          </div>
+        )
+      )}
       {showExport && (
         <ExportButton
           onClick={onExport}

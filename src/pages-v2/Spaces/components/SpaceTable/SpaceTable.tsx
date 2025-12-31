@@ -27,6 +27,8 @@ export interface SpaceData {
   owner: {
     name: string;
     avatar?: string;
+    organizerName?: string;
+    organizerAvatar?: string;
   };
   studentId: string;
   events: number;
@@ -231,6 +233,18 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
           date?: string;
           location?: string;
           image_url?: string;
+          organizerName?: string;
+          organizerAvatar?: string;
+          organizerStudentId?: string;
+          organizerId?: string;
+          organizer?: {
+            name?: string;
+            avatar?: string;
+            avatar_url?: string;
+            studentId?: string;
+            id?: string;
+            _id?: string;
+          };
         }>;
         members?: Array<{
           user_id?: string;
@@ -291,6 +305,16 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
             : "TBD",
           location: ev.location || "TBD",
           image: ev.image_url,
+          organizerName: ev.organizerName || ev.organizer?.name,
+          organizerAvatar:
+            ev.organizerAvatar ||
+            ev.organizer?.avatar ||
+            ev.organizer?.avatar_url,
+          organizerStudentId:
+            ev.organizerStudentId ||
+            ev.organizer?.studentId ||
+            ev.organizerId ||
+            ev.organizer?._id,
         })),
         members: (details.members || []).map((m) => ({
           id: m.user_id || "",

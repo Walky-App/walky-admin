@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./IdeasInsights.css";
-import { AssetIcon, ExportButton, LastUpdated } from "../../../components-v2";
+import { AssetIcon, LastUpdated, FilterBar } from "../../../components-v2";
+import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import { NoIdeasFound } from "../components/NoIdeasFound/NoIdeasFound";
 import { apiClient } from "../../../API";
 import { usePermissions } from "../../../hooks/usePermissions";
@@ -32,9 +33,7 @@ interface TimeMetrics {
 
 export const IdeasInsights: React.FC = () => {
   const { canExport } = usePermissions();
-  const [timePeriod, setTimePeriod] = useState<"all" | "week" | "month">(
-    "month"
-  );
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
   const exportRef = useRef<HTMLElement | null>(null);
@@ -68,7 +67,7 @@ export const IdeasInsights: React.FC = () => {
       try {
         // Fetch counts with time period filter
         // API types are incomplete - period param is supported by backend
-        const periodParam = timePeriod === "all" ? undefined : timePeriod;
+        const periodParam = timePeriod === "all-time" ? undefined : timePeriod;
         const [totalRes, collaboratedRes, ideasRes, timeMetricsRes] =
           await Promise.all([
             apiClient.api.adminAnalyticsIdeasCountList({
@@ -223,12 +222,15 @@ export const IdeasInsights: React.FC = () => {
 
   return (
     <main className="ideas-insights-page" ref={exportRef}>
-      {/* Header with Export Button */}
-      <div className="insights-header">
-        {showExport && (
-          <ExportButton captureRef={exportRef} filename="ideas_insights" />
-        )}
-      </div>
+      {/* Filter Bar */}
+      <FilterBar
+        timePeriod={timePeriod}
+        onTimePeriodChange={setTimePeriod}
+        exportTargetRef={exportRef}
+        exportFileName={`ideas_insights_${timePeriod}`}
+        showExport={showExport}
+        hideTimeSelector
+      />
 
       {/* Error Warning Banner */}
       {error && (
@@ -276,40 +278,6 @@ export const IdeasInsights: React.FC = () => {
           <p className="stats-card-value">
             {loading ? "..." : `${stats.conversionRate}%`}
           </p>
-        </div>
-      </div>
-
-      {/* Time Period Filter */}
-      <div className="filter-section">
-        <div className="time-period-filter">
-          <p className="filter-label">Time period:</p>
-          <div className="time-selector">
-            <button
-              data-testid="time-all-btn"
-              className={`time-option first ${
-                timePeriod === "all" ? "active" : ""
-              }`}
-              onClick={() => setTimePeriod("all")}
-            >
-              All time
-            </button>
-            <button
-              data-testid="time-week-btn"
-              className={`time-option ${timePeriod === "week" ? "active" : ""}`}
-              onClick={() => setTimePeriod("week")}
-            >
-              Week
-            </button>
-            <button
-              data-testid="time-month-btn"
-              className={`time-option last ${
-                timePeriod === "month" ? "active" : ""
-              }`}
-              onClick={() => setTimePeriod("month")}
-            >
-              Month
-            </button>
-          </div>
         </div>
       </div>
 
@@ -407,11 +375,11 @@ export const IdeasInsights: React.FC = () => {
                       <img
                         src={idea.owner.avatar}
                         alt={idea.owner.name}
-                        className="idea-owner-avatar"
+                        className="IDP-idea-owner-avatar"
                       />
                     ) : (
-                      <div className="idea-owner-avatar placeholder">
-                        <AssetIcon name="double-users-icon" size={24} />
+                      <div className="IDP-idea-owner-avatar placeholder">
+                        <AssetIcon name="double-users-icon" size={20} />
                       </div>
                     )}
                     <p className="idea-title">{idea.title}</p>
