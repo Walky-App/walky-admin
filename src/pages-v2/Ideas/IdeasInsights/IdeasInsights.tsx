@@ -243,7 +243,7 @@ export const IdeasInsights: React.FC = () => {
       <div className="stats-cards-row">
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">Total Ideas created historically</p>
+            <p className="stats-card-title">Total Ideas created </p>
             <div className="stats-card-icon ideas-icon-bg">
               <AssetIcon name="ideia-icon" size={30} color="#FFB800" />
             </div>
@@ -255,9 +255,7 @@ export const IdeasInsights: React.FC = () => {
 
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">
-              Total collaborations historically
-            </p>
+            <p className="stats-card-title">Total collaborations</p>
             <div className="stats-card-icon user-icon-bg">
               <AssetIcon name="double-users-icon" size={24} color="#8280FF" />
             </div>

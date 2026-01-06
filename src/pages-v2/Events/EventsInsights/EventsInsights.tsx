@@ -249,9 +249,7 @@ export const EventsInsights: React.FC = () => {
       <div className="stats-cards-row">
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">
-              Total Events created historically
-            </p>
+            <p className="stats-card-title">Total Events created</p>
             <div className="stats-icon" style={{ backgroundColor: "#FFDED1" }}>
               <AssetIcon name="calendar-icon" size={27} color="#FF6B35" />
             </div>
@@ -263,7 +261,7 @@ export const EventsInsights: React.FC = () => {
 
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">Total public Events historically</p>
+            <p className="stats-card-title">Total public Events </p>
             <div className="stats-icon" style={{ backgroundColor: "#D6E9C7" }}>
               <AssetIcon name="public-event-icon" size={30} color="#3B7809" />
             </div>
@@ -275,9 +273,7 @@ export const EventsInsights: React.FC = () => {
 
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">
-              Total private Events historically
-            </p>
+            <p className="stats-card-title">Total private Events</p>
             <div className="stats-icon" style={{ backgroundColor: "#C1D0F5" }}>
               <AssetIcon name="privite-event-icon" size={30} color="#0E3EB8" />
             </div>
@@ -305,7 +301,7 @@ export const EventsInsights: React.FC = () => {
         <div className="stats-card">
           <div className="stats-card-header">
             <p className="stats-card-title">
-              Average attendees for public Events historically
+              Average attendees for public Events
             </p>
             <div className="stats-icon" style={{ backgroundColor: "#D6E9C7" }}>
               <AssetIcon name="public-event-icon" size={30} color="#3B7809" />
@@ -319,7 +315,7 @@ export const EventsInsights: React.FC = () => {
         <div className="stats-card">
           <div className="stats-card-header">
             <p className="stats-card-title">
-              Average attendees for private Events historically
+              Average attendees for private Events
             </p>
             <div className="stats-icon" style={{ backgroundColor: "#C1D0F5" }}>
               <AssetIcon name="privite-event-icon" size={30} color="#0E3EB8" />

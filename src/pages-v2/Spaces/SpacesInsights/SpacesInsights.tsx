@@ -188,9 +188,7 @@ export const SpacesInsights: React.FC = () => {
       <div className="stats-cards-row">
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">
-              Total Spaces created historically
-            </p>
+            <p className="stats-card-title">Total Spaces created</p>
             <div className="stats-card-icon spaces-icon-bg">
               <AssetIcon name="space-icon" size={35} color="#4A4CD9" />
             </div>
@@ -202,9 +200,7 @@ export const SpacesInsights: React.FC = () => {
 
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">
-              Total members joined Spaces historically
-            </p>
+            <p className="stats-card-title">Total members joined Spaces</p>
             <div className="stats-card-icon user-icon-bg">
               <AssetIcon name="double-users-icon" size={24} color="#8280FF" />
             </div>
