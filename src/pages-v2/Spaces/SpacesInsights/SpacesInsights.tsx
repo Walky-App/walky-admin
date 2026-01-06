@@ -182,7 +182,6 @@ export const SpacesInsights: React.FC = () => {
         exportTargetRef={exportRef}
         exportFileName={`spaces_insights_${timePeriod}`}
         showExport={showExport}
-        hideTimeSelector
       />
 
       {/* Top 2 Stats Cards */}

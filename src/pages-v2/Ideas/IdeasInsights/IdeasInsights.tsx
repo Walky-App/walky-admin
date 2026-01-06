@@ -229,7 +229,6 @@ export const IdeasInsights: React.FC = () => {
         exportTargetRef={exportRef}
         exportFileName={`ideas_insights_${timePeriod}`}
         showExport={showExport}
-        hideTimeSelector
       />
 
       {/* Error Warning Banner */}
