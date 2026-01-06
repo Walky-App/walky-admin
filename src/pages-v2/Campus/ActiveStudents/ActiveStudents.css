@@ -13,6 +13,12 @@
   width: 100%;
 }
 
+.mngs-container-date {
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+
 .active-students-content {
   background-color: #ffffff;
   border: 1px solid #eef0f1;

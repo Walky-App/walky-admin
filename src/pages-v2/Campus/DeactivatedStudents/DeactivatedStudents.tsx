@@ -143,12 +143,15 @@ export const DeactivatedStudents: React.FC = () => {
 
   return (
     <main className="deactivated-students-page" ref={exportRef}>
-      <FilterBar
-        timePeriod={timePeriod}
-        onTimePeriodChange={setTimePeriod}
-        showExport={false}
-        hideTimeSelector
-      />
+      <div className="mngs-container-date">
+        <FilterBar
+          timePeriod={timePeriod}
+          onTimePeriodChange={setTimePeriod}
+          showExport={false}
+          hideTimeSelector
+          periodLabel="Current month"
+        />
+      </div>
 
       <div className="deactivated-students-stats">
         <StatsCard

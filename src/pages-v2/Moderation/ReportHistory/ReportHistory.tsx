@@ -357,28 +357,17 @@ const ReportHistory: React.FC = () => {
     total: (statsData?.data.resolved || 0) + (statsData?.data.dismissed || 0),
   };
 
-  const formatBanDate = (value?: string) => {
-    if (!value) return "Unknown date";
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) return value;
-    return parsed.toLocaleString("en-US", {
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   const mapBanHistory = (banHistory: any[] = []) =>
     banHistory.map((ban) => {
-      const bannedAt =
-        ban.banned_at || ban.bannedAt || ban.date || ban.timestamp;
-
       return {
         duration: ban.duration || ban.length || "—",
         reason: ban.reason || "Not provided",
-        bannedOn: formatBanDate(bannedAt),
+        bannedOn:
+          ban.bannedOn ||
+          ban.banned_at ||
+          ban.bannedAt ||
+          ban.date ||
+          "Unknown date",
         bannedBy: ban.banned_by || ban.bannedBy || ban.admin || "Unknown",
         expiresIn: ban.expires_in || ban.expiresIn,
       };

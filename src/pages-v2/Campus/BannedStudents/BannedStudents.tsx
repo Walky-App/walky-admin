@@ -233,12 +233,15 @@ export const BannedStudents: React.FC = () => {
 
   return (
     <main className="banned-students-page" ref={exportRef}>
-      <FilterBar
-        timePeriod={timePeriod}
-        onTimePeriodChange={setTimePeriod}
-        showExport={false}
-        hideTimeSelector
-      />
+      <div className="mngs-container-date">
+        <FilterBar
+          timePeriod={timePeriod}
+          onTimePeriodChange={setTimePeriod}
+          showExport={false}
+          hideTimeSelector
+          periodLabel="Current month"
+        />
+      </div>
 
       <div className="banned-students-stats">
         <StatsCard

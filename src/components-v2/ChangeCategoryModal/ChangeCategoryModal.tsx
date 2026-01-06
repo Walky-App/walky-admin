@@ -120,10 +120,15 @@ const ChangeCategoryModal: React.FC<ChangeCategoryModalProps> = ({
         <div className="change-category-body">
           <h2 className="change-category-title">Change category</h2>
 
-          <p className="change-category-description">
-            Update the category for <strong>{spaceName}</strong>. This will help
-            users find the space more easily.
-          </p>
+          <div>
+            <p className="change-category-description">
+              Update the category for <strong>{spaceName}</strong>.
+            </p>
+            <br />
+            <p className="change-category-description-secondary">
+              This will help users find the space more easily.
+            </p>
+          </div>
 
           <div className="change-category-select-container">
             <label className="change-category-label">Select a category</label>
@@ -166,7 +171,6 @@ const ChangeCategoryModal: React.FC<ChangeCategoryModalProps> = ({
                 )}
             </div>
           </div>
-
           <div className="change-category-buttons">
             <button
               data-testid="change-category-cancel-btn"
