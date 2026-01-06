@@ -533,7 +533,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
                       ...(canFlagSpaces
                         ? [
                             {
-                              label: "Edit Category",
+                              label: "Change Category",
                               onClick: (e: React.MouseEvent) =>
                                 handleEditCategory(space, e),
                             },
