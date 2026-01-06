@@ -95,7 +95,8 @@ const ReportHistory: React.FC = () => {
 
   const normalizeFlagType = (value?: string) => {
     const t = (value || "").toLowerCase();
-    if (t.includes("user") || t.includes("student")) return "user" as const;
+    if (t.includes("user") || t.includes("student") || t.includes("message"))
+      return "user" as const;
     if (t.includes("idea")) return "idea" as const;
     if (t.includes("space")) return "space" as const;
     return "event" as const;
