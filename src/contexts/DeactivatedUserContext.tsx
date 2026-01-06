@@ -29,6 +29,7 @@ export const DeactivatedUserProvider: React.FC<{ children: React.ReactNode }> = 
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useDeactivatedUser = () => {
   const context = useContext(DeactivatedUserContext);
   if (context === undefined) {
@@ -40,10 +41,12 @@ export const useDeactivatedUser = () => {
 // Global setter for use in API interceptor (outside React)
 let globalSetDeactivated: ((value: boolean) => void) | null = null;
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const registerDeactivatedSetter = (setter: (value: boolean) => void) => {
   globalSetDeactivated = setter;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const triggerDeactivatedModal = () => {
   if (globalSetDeactivated) {
     globalSetDeactivated(true);

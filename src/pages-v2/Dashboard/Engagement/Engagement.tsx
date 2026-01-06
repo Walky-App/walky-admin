@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   useQuery,
   keepPreviousData,
@@ -41,26 +41,35 @@ const Engagement: React.FC = () => {
   // Check if user can export engagement data
   const showExport = canExport("engagement");
 
-  const fetchDashboardStats = (period: "week" | "month" | "all-time") =>
-    apiClient.api.adminV2DashboardStatsList({
-      period,
-      schoolId: selectedSchool?._id,
-      campusId: selectedCampus?._id,
-    });
+  const fetchDashboardStats = useCallback(
+    (period: "week" | "month" | "all-time") =>
+      apiClient.api.adminV2DashboardStatsList({
+        period,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
+    [selectedSchool?._id, selectedCampus?._id]
+  );
 
-  const fetchEngagementStats = (period: "week" | "month" | "all-time") =>
-    apiClient.api.adminV2DashboardEngagementList({
-      period,
-      schoolId: selectedSchool?._id,
-      campusId: selectedCampus?._id,
-    });
+  const fetchEngagementStats = useCallback(
+    (period: "week" | "month" | "all-time") =>
+      apiClient.api.adminV2DashboardEngagementList({
+        period,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
+    [selectedSchool?._id, selectedCampus?._id]
+  );
 
-  const fetchRetentionStats = (period: "week" | "month" | "all-time") =>
-    apiClient.api.adminV2DashboardRetentionList({
-      period,
-      schoolId: selectedSchool?._id,
-      campusId: selectedCampus?._id,
-    });
+  const fetchRetentionStats = useCallback(
+    (period: "week" | "month" | "all-time") =>
+      apiClient.api.adminV2DashboardRetentionList({
+        period,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
+    [selectedSchool?._id, selectedCampus?._id]
+  );
 
   const { data: engagementData, isLoading: isEngagementLoading } = useQuery({
     queryKey: [
@@ -134,7 +143,7 @@ const Engagement: React.FC = () => {
         queryFn: () => fetchRetentionStats(period),
       });
     });
-  }, [queryClient, selectedCampus?._id, selectedSchool?._id]);
+  }, [queryClient, selectedCampus?._id, selectedSchool?._id, fetchDashboardStats, fetchEngagementStats, fetchRetentionStats]);
 
   const isLoading = isEngagementLoading || isRetentionLoading || isStatsLoading;
 

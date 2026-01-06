@@ -5015,6 +5015,39 @@ export class Api<
       }),
 
     /**
+     * @description Verify OTP code before password reset
+     *
+     * @name VerifyOtpCreate
+     * @summary Verify OTP code
+     * @request POST:/api/verify-otp
+     */
+    verifyOtpCreate: (
+      data: {
+        email: string;
+        otp: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          message: string;
+          verified: boolean;
+        },
+        {
+          message: string;
+          remainingAttempts?: number;
+          locked?: boolean;
+          expired?: boolean;
+        }
+      >({
+        path: `/api/verify-otp`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
      * @description Reset password
      *
      * @name ResetPasswordCreate

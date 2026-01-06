@@ -120,10 +120,10 @@ function DrumStage({ data }: { data: { label: string; count: number }[] }) {
   };
 
   useEffect(() => {
+    const audioCtx = audioCtxRef.current;
     return () => {
-      const ctx = audioCtxRef.current;
-      if (ctx) {
-        void ctx.close().catch(() => {});
+      if (audioCtx) {
+        void audioCtx.close().catch(() => {});
       }
     };
   }, []);

@@ -94,10 +94,10 @@ function Chime({
 function ChimeRow({ data }: { data: { label: string; count: number }[] }) {
   const audioCtxRef = useRef<AudioContext | null>(null);
   useEffect(() => {
+    const audioCtx = audioCtxRef.current;
     return () => {
-      const ctx = audioCtxRef.current;
-      if (ctx) {
-        void ctx.close().catch(() => {});
+      if (audioCtx) {
+        void audioCtx.close().catch(() => {});
       }
     };
   }, []);

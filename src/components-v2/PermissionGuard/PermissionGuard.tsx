@@ -94,6 +94,7 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
 /**
  * Higher-order component version for wrapping entire components
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function withPermission<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   resource: PermissionResource,
