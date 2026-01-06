@@ -6,6 +6,7 @@ import { CustomToast } from "../CustomToast/CustomToast";
 import { BanUserModal } from "../BanUserModal/BanUserModal";
 import { DeactivateUserModal } from "../DeactivateUserModal/DeactivateUserModal";
 import { UnbanUserModal } from "../UnbanUserModal/UnbanUserModal";
+import { ActivateUserModal } from "../ActivateUserModal/ActivateUserModal";
 import { CopyableId } from "../CopyableId/CopyableId";
 import { formatMemberSince } from "../../lib/utils/dateUtils";
 import "./StudentProfileModal.css";
@@ -75,6 +76,7 @@ interface StudentProfileModalProps {
   ) => void;
   onDeactivateUser?: (student: StudentProfileData) => void;
   onUnbanUser?: (student: StudentProfileData) => void;
+  onActivateUser?: (student: StudentProfileData) => void;
 }
 
 type HistoryTab = "ban" | "report" | "block";
@@ -87,6 +89,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   onBanUser,
   onDeactivateUser,
   onUnbanUser,
+  onActivateUser,
 }) => {
   const [activeTab, setActiveTab] = useState<HistoryTab>("ban");
   const [showToast, setShowToast] = useState(false);
@@ -94,6 +97,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [isUnbanModalOpen, setIsUnbanModalOpen] = useState(false);
+  const [isActivateModalOpen, setIsActivateModalOpen] = useState(false);
 
   const formatEmail = (email: string) => {
     const MAX_LENGTH = 32;
@@ -167,10 +171,20 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
     setIsUnbanModalOpen(false);
   };
 
+  const handleActivateClick = () => {
+    setIsActivateModalOpen(true);
+  };
+
+  const handleConfirmActivate = () => {
+    onActivateUser?.(student);
+    setIsActivateModalOpen(false);
+  };
+
   const handleModalClose = () => {
     setIsBanModalOpen(false);
     setIsDeactivateModalOpen(false);
     setIsUnbanModalOpen(false);
+    setIsActivateModalOpen(false);
     onClose();
   };
 
@@ -340,7 +354,9 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
         alignment="center"
         size="lg"
         className={`student-profile-modal ${
-          isBanModalOpen || isDeactivateModalOpen ? "profile-hidden" : ""
+          isBanModalOpen || isDeactivateModalOpen || isActivateModalOpen
+            ? "profile-hidden"
+            : ""
         }`}
       >
         <CModalBody className="student-profile-modal-body">
@@ -422,6 +438,14 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                     onClick={handleUnbanClick}
                   >
                     Unban user
+                  </button>
+                ) : student.status === "deactivated" ? (
+                  <button
+                    data-testid="profile-activate-btn"
+                    className="profile-btn profile-btn-activate"
+                    onClick={handleActivateClick}
+                  >
+                    Activate user
                   </button>
                 ) : (
                   <button
@@ -603,6 +627,13 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
         visible={isUnbanModalOpen}
         onClose={() => setIsUnbanModalOpen(false)}
         onConfirm={handleConfirmUnban}
+        userName={student.name}
+      />
+
+      <ActivateUserModal
+        visible={isActivateModalOpen}
+        onClose={() => setIsActivateModalOpen(false)}
+        onConfirm={handleConfirmActivate}
         userName={student.name}
       />
     </>
