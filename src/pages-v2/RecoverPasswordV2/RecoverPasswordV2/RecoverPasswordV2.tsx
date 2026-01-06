@@ -52,21 +52,16 @@ const RecoverPasswordV2: React.FC = () => {
     }
   };
 
-  const handleVerify = async (code: string) => {
-    setIsLoading(true);
-    setError("");
-    try {
-      const otpValue = parseInt(code, 10);
-      await apiClient.api.verifyCreate({ email, otp: otpValue });
-      setOtp(otpValue);
-      setCurrentStep("reset");
-    } catch (err: any) {
-      console.error("Verification failed:", err);
-      setError(err?.response?.data?.message || "Invalid code.");
-      throw err; // Let child component handle loading state reset
-    } finally {
-      setIsLoading(false);
+  // OTP verification is now handled by VerifyCodeStep via backend API
+  // This callback is called after successful verification
+  const handleVerify = (code: string) => {
+    const parsedOtp = parseInt(code, 10);
+    if (isNaN(parsedOtp) || parsedOtp <= 0) {
+      setError("Invalid verification code");
+      return;
     }
+    setOtp(parsedOtp);
+    setCurrentStep("reset");
   };
 
   const handleResendCode = async () => {

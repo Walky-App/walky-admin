@@ -43,6 +43,11 @@
   color: #1d1b20;
 }
 
+.change-category-close:focus-visible {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}
+
 /* Body */
 .change-category-body {
   display: flex;
@@ -123,6 +128,16 @@
   border-color: #1d1b20;
 }
 
+.change-category-select:focus-visible {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}
+
+.change-category-option:focus-visible {
+  outline: 2px solid #526ac9;
+  outline-offset: -2px;
+}
+
 .change-category-dropdown {
   background: var(--v2-bg-dropdown, #ffffff);
   border: 1px solid var(--v2-border-dark, #d2d2d3);
@@ -194,6 +209,11 @@
   cursor: not-allowed;
 }
 
+.change-category-cancel:focus-visible {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}
+
 .change-category-confirm {
   background: #526ac9;
   border: none;
@@ -216,6 +236,11 @@
 .change-category-confirm:disabled {
   background: #a0a0a0;
   cursor: not-allowed;
+}
+
+.change-category-confirm:focus-visible {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }
 
 /* Dark Mode Styles */

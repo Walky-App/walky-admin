@@ -70,7 +70,7 @@ export default function ActiveUsersRings() {
   const { data, loading, error } = useActiveUsersData(timePeriod as any);
 
   return (
-    <div className="active-rings-page">
+    <main className="active-rings-page" aria-label="Active Users Rings">
       <div className="active-rings-header">
         <div>
           <h1>Active Users Rings</h1>
@@ -96,6 +96,6 @@ export default function ActiveUsersRings() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }

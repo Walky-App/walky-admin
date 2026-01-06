@@ -58,7 +58,7 @@ export default function ActiveUsersGuitar() {
   };
 
   return (
-    <div className="active-guitar-page">
+    <main className="active-guitar-page" aria-label="Active Users Guitar">
       <div className="active-guitar-header">
         <div>
           <h1>Active Users Guitar</h1>
@@ -123,6 +123,6 @@ export default function ActiveUsersGuitar() {
           })}
         </svg>
       </div>
-    </div>
+    </main>
   );
 }
