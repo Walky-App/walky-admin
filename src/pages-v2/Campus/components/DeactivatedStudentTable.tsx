@@ -403,7 +403,6 @@ export const DeactivatedStudentTable: React.FC<
                               },
                               {
                                 label: "Activate user",
-                                variant: "danger" as const,
                                 onClick: (e: React.MouseEvent) => {
                                   e.stopPropagation();
                                   handleActivateUser(student);
@@ -434,6 +433,10 @@ export const DeactivatedStudentTable: React.FC<
         onClose={handleCloseProfile}
         onBanUser={(student) => console.log("Ban user", student)}
         onDeactivateUser={(student) => console.log("Deactivate user", student)}
+        onActivateUser={(student) => {
+          activateMutation.mutate(student.id);
+          handleCloseProfile();
+        }}
       />
 
       <ActivateUserModal
