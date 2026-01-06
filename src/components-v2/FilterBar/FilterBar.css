@@ -1,10 +1,14 @@
 .filter-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 24px;
+}
+
+.filter-bar:has(.export-button) {
+  justify-content: space-between;
 }
 
 .filter-bar-options {

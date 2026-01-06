@@ -21,6 +21,7 @@ interface FilterBarProps {
   exportTargetRef?: React.RefObject<HTMLElement | null>;
   exportFileName?: string;
   hideTimeSelector?: boolean;
+  periodLabel?: string;
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({
@@ -32,6 +33,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   exportTargetRef,
   exportFileName,
   hideTimeSelector = false,
+  periodLabel,
 }) => {
   const { theme } = useTheme();
 
@@ -100,14 +102,29 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           </div>
         </div>
       ) : (
-        calculatedDateRange && (
+        (calculatedDateRange || periodLabel) && (
           <div className="filter-bar-options">
-            <span
-              className="filter-bar-date-range"
-              style={{ color: theme.colors.textSecondary }}
+            <div
+              className="filter-bar-controls"
+              style={{ alignItems: "baseline" }}
             >
-              {calculatedDateRange}
-            </span>
+              {periodLabel && (
+                <span
+                  className="filter-bar-label"
+                  style={{ color: theme.colors.bodyColor }}
+                >
+                  {periodLabel}:
+                </span>
+              )}
+              {calculatedDateRange && (
+                <span
+                  className="filter-bar-date-range"
+                  style={{ color: theme.colors.textSecondary }}
+                >
+                  {calculatedDateRange}
+                </span>
+              )}
+            </div>
           </div>
         )
       )}
