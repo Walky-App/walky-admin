@@ -330,7 +330,7 @@ function RingGraph() {
 
 export default function InterestChord() {
   return (
-    <div className="interest-chord-page">
+    <main className="interest-chord-page" aria-label="Interest Chord">
       <div className="interest-chord-header">
         <div>
           <h1>Interest Chord</h1>
@@ -354,6 +354,6 @@ export default function InterestChord() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }

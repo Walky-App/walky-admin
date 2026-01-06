@@ -371,7 +371,7 @@ function Constellation() {
 
 export default function InterestConstellation() {
   return (
-    <div className="interest-constellation-page">
+    <main className="interest-constellation-page" aria-label="Interest Constellation">
       <div className="interest-constellation-header">
         <div>
           <h1>Interest Constellation</h1>
@@ -395,6 +395,6 @@ export default function InterestConstellation() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }

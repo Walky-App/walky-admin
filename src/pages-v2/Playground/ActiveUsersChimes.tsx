@@ -127,7 +127,7 @@ export default function ActiveUsersChimes() {
   const top = useMemo(() => data.slice(0, 8), [data]);
 
   return (
-    <div className="active-chimes-page">
+    <main className="active-chimes-page" aria-label="Active Users Chimes">
       <div className="active-chimes-header">
         <div>
           <h1>Active Users Chimes</h1>
@@ -153,6 +153,6 @@ export default function ActiveUsersChimes() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }

@@ -491,7 +491,7 @@ export default function InterestCloud() {
   const [mode, setMode] = useState<"cloud" | "list">("cloud");
 
   return (
-    <div className="interest-cloud-page">
+    <main className="interest-cloud-page" aria-label="Interest Cloud">
       <div className="interest-cloud-header">
         <div>
           <h1>Interest Cloud</h1>
@@ -545,6 +545,6 @@ export default function InterestCloud() {
             ))}
         </div>
       )}
-    </div>
+    </main>
   );
 }

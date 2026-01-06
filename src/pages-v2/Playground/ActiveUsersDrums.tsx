@@ -156,7 +156,7 @@ export default function ActiveUsersDrums() {
   const { data, loading, error } = useActiveUsersData(timePeriod as any);
 
   return (
-    <div className="active-drums-page">
+    <main className="active-drums-page" aria-label="Active Users Drums">
       <div className="active-drums-header">
         <div>
           <h1>Active Users Drums</h1>
@@ -182,6 +182,6 @@ export default function ActiveUsersDrums() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }

@@ -61,7 +61,7 @@ export default function ActiveUsersWaves() {
   const { data, loading, error } = useActiveUsersData(timePeriod as any);
 
   return (
-    <div className="active-waves-page">
+    <main className="active-waves-page" aria-label="Active Users Wavefield">
       <div className="active-waves-header">
         <div>
           <h1>Active Users Wavefield</h1>
@@ -87,6 +87,6 @@ export default function ActiveUsersWaves() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }

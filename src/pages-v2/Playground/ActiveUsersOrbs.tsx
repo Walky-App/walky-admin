@@ -86,7 +86,7 @@ export default function ActiveUsersOrbs() {
   const top = useMemo(() => data.slice(0, 10), [data]);
 
   return (
-    <div className="active-orbs-page">
+    <main className="active-orbs-page" aria-label="Active Users Orbs">
       <div className="active-orbs-header">
         <div>
           <h1>Active Users Orbs</h1>
@@ -110,6 +110,6 @@ export default function ActiveUsersOrbs() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }

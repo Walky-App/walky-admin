@@ -66,7 +66,7 @@ export default function ActiveUsersHeat() {
   const { data, loading, error } = useActiveUsersData(timePeriod as any);
 
   return (
-    <div className="active-heat-page">
+    <main className="active-heat-page" aria-label="Active Users Heat Grid">
       <div className="active-heat-header">
         <div>
           <h1>Active Users Heat Grid</h1>
@@ -92,6 +92,6 @@ export default function ActiveUsersHeat() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }
