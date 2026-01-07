@@ -86,6 +86,10 @@ export const useAuth = () => {
     return user?.role === "super_admin";
   };
 
+  const isSchoolAdmin = (): boolean => {
+    return user?.role === "school_admin";
+  };
+
   const isCampusAdmin = (): boolean => {
     return user?.role === "campus_admin";
   };
@@ -96,6 +100,7 @@ export const useAuth = () => {
     isLoading,
     hasRole,
     isSuperAdmin,
+    isSchoolAdmin,
     isCampusAdmin,
     updateUser,
   };
