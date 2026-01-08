@@ -2878,6 +2878,8 @@ export class Api<SecurityDataType extends unknown> {
         period?: "week" | "month" | "all-time";
         schoolId?: string;
         campusId?: string;
+        /** Filter by profile completion status */
+        profileStatus?: "all" | "complete" | "incomplete";
       },
       params: RequestParams = {},
     ) =>
@@ -4155,6 +4157,14 @@ export class Api<SecurityDataType extends unknown> {
           totalPermanentBans?: number;
           /** Change in permanent bans from last month */
           totalPermanentBansFromLastMonth?: number;
+          /** Students with incomplete profiles */
+          incompleteProfiles?: number;
+          /** Change in incomplete profiles from last month */
+          incompleteProfilesFromLastMonth?: number;
+          /** Students with complete profiles */
+          activeProfiles?: number;
+          /** Change in complete profiles from last month */
+          activeProfilesFromLastMonth?: number;
         },
         any
       >({
