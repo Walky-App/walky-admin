@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import { NoData } from "../NoData/NoData";
 import { SearchInput } from "../SearchInput/SearchInput";
@@ -37,6 +37,30 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleClose = () => {
+    setSearchQuery("");
+    setSearchResults([]);
+    setSelectedStudents([]);
+    setHasSearched(false);
+    onClose();
+  };
+
+  // Close modal on ESC key
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -102,14 +126,6 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
     );
     onConfirm(selected);
     handleClose();
-  };
-
-  const handleClose = () => {
-    setSearchQuery("");
-    setSearchResults([]);
-    setSelectedStudents([]);
-    setHasSearched(false);
-    onClose();
   };
 
   return (
