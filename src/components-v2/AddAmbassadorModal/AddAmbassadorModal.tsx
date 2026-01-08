@@ -5,6 +5,8 @@ import { SearchInput } from "../SearchInput/SearchInput";
 import "./AddAmbassadorModal.css";
 import { apiClient } from "../../API";
 import { CSpinner } from "@coreui/react";
+import { useSchool } from "../../contexts/SchoolContext";
+import { useCampus } from "../../contexts/CampusContext";
 
 interface Student {
   id: string;
@@ -17,13 +19,19 @@ interface AddAmbassadorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (selectedStudents: Student[]) => void;
+  schoolId?: string;
+  campusId?: string;
 }
 
 export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
+  schoolId,
+  campusId,
 }) => {
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Student[]>([]);
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
@@ -42,6 +50,8 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
         role: "student",
         limit: 20,
         exactMatch: true, // Only return exact first name or last name matches
+        schoolId: schoolId || selectedSchool?._id,
+        campusId: campusId || selectedCampus?._id,
       });
 
       const data = res.data.data || [];

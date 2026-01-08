@@ -96,7 +96,9 @@ export const IdeasInsights: React.FC = () => {
         const timeMetricsRes = await apiClient.api
           .adminAnalyticsIdeasTimeMetricsList({
             period: periodParam,
-          } as Parameters<typeof apiClient.api.adminAnalyticsIdeasTimeMetricsList>[0])
+            schoolId: selectedSchool?._id,
+            campusId: selectedCampus?._id,
+          })
           .catch(() => ({ data: null }));
 
         const timeMetricsData = (

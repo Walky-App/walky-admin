@@ -11,6 +11,7 @@ import {
   Pagination,
 } from "../../../components-v2";
 import { useTheme } from "../../../hooks/useTheme";
+import { useSchool } from "../../../contexts/SchoolContext";
 import CampusBoundary from "../../CampusBoundary/CampusBoundary";
 
 interface CampusData {
@@ -40,6 +41,7 @@ const getInitials = (name: string): string => {
 
 export const Campuses: React.FC = () => {
   const { theme } = useTheme();
+  const { selectedSchool } = useSchool();
   const [searchQuery, _setSearchQuery] = useState("");
   const [expandedCampusId, setExpandedCampusId] = useState<string | null>(null);
   const [currentPage] = useState(1);
@@ -51,8 +53,10 @@ export const Campuses: React.FC = () => {
   const [campusToSync] = useState<CampusData | null>(null);
 
   const { data: campusesData, isLoading } = useQuery({
-    queryKey: ["campuses"],
-    queryFn: () => apiClient.api.adminV2CampusesList(),
+    queryKey: ["campuses", selectedSchool?._id],
+    queryFn: () => apiClient.api.adminV2CampusesList(
+      selectedSchool?._id ? { school_id: selectedSchool._id } : undefined
+    ),
   });
 
   const campuses: CampusData[] = (campusesData?.data || []).map((campus) => ({

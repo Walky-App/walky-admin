@@ -126,6 +126,16 @@ export interface User {
   /** One-time password for verification */
   otp?: number;
   /**
+   * OTP expiration timestamp
+   * @format date-time
+   */
+  otp_expires_at?: string;
+  /**
+   * Number of failed OTP verification attempts
+   * @default 0
+   */
+  otp_attempts?: number;
+  /**
    * User password (hashed)
    * @minLength 8
    */
@@ -470,6 +480,11 @@ export interface Event {
     avatar_url?: string;
     /** Participation status */
     status?: "confirmed" | "pending" | "notgoing";
+    /**
+     * Timestamp when the user joined the event
+     * @format date-time
+     */
+    joinedAt?: string;
   }[];
   /**
    * School ID that the event is associated with
@@ -1638,6 +1653,10 @@ export class Api<
     adminAnalyticsIdeasCountList: (
       query?: {
         school_id?: string;
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
         type?: "total" | "active" | "inactive" | "collaborated";
         /** Group results by month to get time-series data */
         groupBy?: "month";
@@ -1678,6 +1697,10 @@ export class Api<
      */
     adminAnalyticsIdeasTimeMetricsList: (
       query?: {
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
         /** Time period filter */
         period?: "week" | "month" | "all";
       },
@@ -2657,18 +2680,39 @@ export class Api<
      * @request GET:/api/admin/ambassadors
      * @secure
      */
-    adminAmbassadorsList: (params: RequestParams = {}) =>
+    adminAmbassadorsList: (
+      query?: {
+        /** Page number (default 1) */
+        page?: number;
+        /** Items per page (default 10) */
+        limit?: number;
+        /** Search by name or email */
+        search?: string;
+        /** Field to sort by */
+        sortBy?: "name" | "email" | "major" | "graduationYear" | "createdAt";
+        /** Sort order */
+        sortOrder?: "asc" | "desc";
+        /** Filter ambassadors by school ID */
+        schoolId?: string;
+        /** Filter ambassadors by campus ID */
+        campusId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
         {
           success?: boolean;
           message?: string;
           data?: Ambassador[];
-          count?: number;
+          total?: number;
+          page?: number;
+          limit?: number;
         },
         void
       >({
         path: `/api/admin/ambassadors`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2850,6 +2894,8 @@ export class Api<
         period?: "week" | "month" | "all-time";
         schoolId?: string;
         campusId?: string;
+        /** Filter by profile completion status */
+        profileStatus?: "all" | "complete" | "incomplete";
       },
       params: RequestParams = {},
     ) =>
@@ -3297,6 +3343,10 @@ export class Api<
         sortOrder?: "asc" | "desc";
         /** Filter by time period */
         period?: "week" | "month";
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -3433,6 +3483,59 @@ export class Api<
       }),
 
     /**
+     * @description Returns ideas insights with period-over-period percentage changes
+     *
+     * @tags AdminV2
+     * @name AdminV2IdeasInsightsList
+     * @summary Get ideas insights statistics
+     * @request GET:/api/admin/v2/ideas/insights
+     * @secure
+     */
+    adminV2IdeasInsightsList: (
+      query?: {
+        /** Time period for insights (week, month, or all-time if not specified) */
+        period?: "week" | "month";
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          totalIdeas?: number;
+          totalIdeasChange?: {
+            changePercentage?: string;
+            changeDirection?: "up" | "down" | "neutral";
+          };
+          collaboratedIdeas?: number;
+          collaboratedIdeasChange?: {
+            changePercentage?: string;
+            changeDirection?: "up" | "down" | "neutral";
+          };
+          topIdeas?: {
+            rank?: number;
+            id?: string;
+            title?: string;
+            collaborators?: number;
+            creator?: {
+              name?: string;
+              avatar?: string;
+            };
+          }[];
+        },
+        any
+      >({
+        path: `/api/admin/v2/ideas/insights`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * No description
      *
      * @tags AdminV2
@@ -3495,7 +3598,15 @@ export class Api<
      * @request GET:/api/admin/v2/reports/stats
      * @secure
      */
-    adminV2ReportsStatsList: (params: RequestParams = {}) =>
+    adminV2ReportsStatsList: (
+      query?: {
+        /** Filter stats by school ID */
+        schoolId?: string;
+        /** Filter stats by campus ID */
+        campusId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
         {
           total?: number;
@@ -3508,6 +3619,7 @@ export class Api<
       >({
         path: `/api/admin/v2/reports/stats`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -3762,8 +3874,17 @@ export class Api<
         limit?: number;
         search?: string;
         category?: string;
-        sortBy?: "spaceName" | "members" | "creationDate" | "category";
+        sortBy?:
+          | "spaceName"
+          | "members"
+          | "events"
+          | "creationDate"
+          | "category";
         sortOrder?: "asc" | "desc";
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -3811,6 +3932,10 @@ export class Api<
     adminV2SpacesInsightsList: (
       query?: {
         period?: "all" | "week" | "month";
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -3971,6 +4096,10 @@ export class Api<
         status?: "active" | "deactivated" | "banned" | "disengaged";
         sortBy?: "name" | "email" | "memberSince" | "onlineLast" | "status";
         sortOrder?: "asc" | "desc";
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -4049,6 +4178,14 @@ export class Api<
           totalPermanentBans?: number;
           /** Change in permanent bans from last month */
           totalPermanentBansFromLastMonth?: number;
+          /** Students with incomplete profiles */
+          incompleteProfiles?: number;
+          /** Change in incomplete profiles from last month */
+          incompleteProfilesFromLastMonth?: number;
+          /** Students with complete profiles */
+          activeProfiles?: number;
+          /** Change in complete profiles from last month */
+          activeProfilesFromLastMonth?: number;
         },
         any
       >({
@@ -4950,6 +5087,12 @@ export class Api<
     ) =>
       this.request<
         {
+          /** Status of the login (e.g., not_verified if user needs verification) */
+          status?: string;
+          /** Redirect URL if verification is needed */
+          redirect?: string;
+          /** Phone number for verification if needed */
+          phoneNumber?: string;
           access_token?: string;
           _id?: string;
           email?: string;
@@ -5008,6 +5151,37 @@ export class Api<
         body: data,
         secure: true,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Verify the OTP code before password reset. Returns success if OTP is valid.
+     *
+     * @tags Authentication
+     * @name VerifyOtpCreate
+     * @summary Verify OTP code
+     * @request POST:/api/verify-otp
+     */
+    verifyOtpCreate: (
+      data: {
+        /** @format email */
+        email: string;
+        otp: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          message?: string;
+          verified?: boolean;
+        },
+        void
+      >({
+        path: `/api/verify-otp`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 

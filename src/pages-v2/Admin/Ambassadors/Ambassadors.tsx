@@ -512,6 +512,8 @@ export const Ambassadors: React.FC = () => {
         isOpen={addModalOpen}
         onClose={() => setAddModalOpen(false)}
         onConfirm={confirmAddAmbassadors}
+        schoolId={selectedSchool?._id}
+        campusId={selectedCampus?._id}
       />
 
       {/* Delete Confirmation Modal */}
