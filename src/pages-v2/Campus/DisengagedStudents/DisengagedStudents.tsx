@@ -58,12 +58,20 @@ export const DisengagedStudents: React.FC = () => {
 
   const exportRef = useRef<HTMLElement | null>(null);
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ["students", currentPage, "disengaged"],
+    queryKey: [
+      "students",
+      currentPage,
+      "disengaged",
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
     queryFn: () =>
       apiClient.api.adminV2StudentsList({
         page: currentPage,
         limit: entriesPerPage,
         status: "disengaged",
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
       }),
   });
 

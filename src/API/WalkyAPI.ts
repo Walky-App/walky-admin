@@ -126,6 +126,16 @@ export interface User {
   /** One-time password for verification */
   otp?: number;
   /**
+   * OTP expiration timestamp
+   * @format date-time
+   */
+  otp_expires_at?: string;
+  /**
+   * Number of failed OTP verification attempts
+   * @default 0
+   */
+  otp_attempts?: number;
+  /**
    * User password (hashed)
    * @minLength 8
    */
@@ -470,6 +480,11 @@ export interface Event {
     avatar_url?: string;
     /** Participation status */
     status?: "confirmed" | "pending" | "notgoing";
+    /**
+     * Timestamp when the user joined the event
+     * @format date-time
+     */
+    joinedAt?: string;
   }[];
   /**
    * School ID that the event is associated with
@@ -2141,6 +2156,31 @@ export class Api<SecurityDataType extends unknown> {
       }),
 
     /**
+     * @description Uploads a new avatar image for the admin account
+     *
+     * @tags Admin - Profile
+     * @name AdminProfileAvatarCreate
+     * @summary Upload avatar
+     * @request POST:/api/admin/profile/avatar
+     * @secure
+     */
+    adminProfileAvatarCreate: (
+      data: {
+        /** @format binary */
+        avatar?: File;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<void, void>({
+        path: `/api/admin/profile/avatar`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.FormData,
+        ...params,
+      }),
+
+    /**
      * @description Retrieves paginated list of spaces (campus admins see only their campus, super admins see all)
      *
      * @tags Admin - Spaces
@@ -2180,6 +2220,36 @@ export class Api<SecurityDataType extends unknown> {
         path: `/api/admin/spaces/${spaceId}`,
         method: "GET",
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Admin endpoint to update any field of a space including category, campusId, and ownerId
+     *
+     * @tags Admin - Spaces
+     * @name AdminSpacesPartialUpdate
+     * @summary Update a space (admin)
+     * @request PATCH:/api/admin/spaces/{spaceId}
+     * @secure
+     */
+    adminSpacesPartialUpdate: (
+      spaceId: string,
+      data: {
+        title?: string;
+        description?: string;
+        /** Category ID reference */
+        category?: string;
+        campusId?: string;
+        ownerId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<void, void>({
+        path: `/api/admin/spaces/${spaceId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         ...params,
       }),
 
@@ -3246,6 +3316,10 @@ export class Api<SecurityDataType extends unknown> {
         sortOrder?: "asc" | "desc";
         /** Filter by time period */
         period?: "week" | "month";
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -3344,6 +3418,93 @@ export class Api<SecurityDataType extends unknown> {
         body: data,
         secure: true,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Returns a list of ideas that have at least one collaborator, for use in filter dropdowns
+     *
+     * @tags AdminV2
+     * @name AdminV2IdeasFilterOptionsCollaboratedList
+     * @summary Get collaborated ideas for filter dropdown
+     * @request GET:/api/admin/v2/ideas/filter-options/collaborated
+     * @secure
+     */
+    adminV2IdeasFilterOptionsCollaboratedList: (
+      query?: {
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          id?: string;
+          title?: string;
+          collaboratorCount?: number;
+        }[],
+        any
+      >({
+        path: `/api/admin/v2/ideas/filter-options/collaborated`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Returns ideas insights with period-over-period percentage changes
+     *
+     * @tags AdminV2
+     * @name AdminV2IdeasInsightsList
+     * @summary Get ideas insights statistics
+     * @request GET:/api/admin/v2/ideas/insights
+     * @secure
+     */
+    adminV2IdeasInsightsList: (
+      query?: {
+        /** Time period for insights (week, month, or all-time if not specified) */
+        period?: "week" | "month";
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          totalIdeas?: number;
+          totalIdeasChange?: {
+            changePercentage?: string;
+            changeDirection?: "up" | "down" | "neutral";
+          };
+          collaboratedIdeas?: number;
+          collaboratedIdeasChange?: {
+            changePercentage?: string;
+            changeDirection?: "up" | "down" | "neutral";
+          };
+          topIdeas?: {
+            rank?: number;
+            id?: string;
+            title?: string;
+            collaborators?: number;
+            creator?: {
+              name?: string;
+              avatar?: string;
+            };
+          }[];
+        },
+        any
+      >({
+        path: `/api/admin/v2/ideas/insights`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -3679,6 +3840,10 @@ export class Api<SecurityDataType extends unknown> {
         category?: string;
         sortBy?: "spaceName" | "members" | "creationDate" | "category";
         sortOrder?: "asc" | "desc";
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -3842,6 +4007,34 @@ export class Api<SecurityDataType extends unknown> {
       }),
 
     /**
+     * @description Update space details including category
+     *
+     * @tags Admin - Spaces
+     * @name AdminV2SpacesPartialUpdate
+     * @summary Update a space
+     * @request PATCH:/api/admin/v2/spaces/{id}
+     * @secure
+     */
+    adminV2SpacesPartialUpdate: (
+      id: string,
+      data: {
+        /** Category ID */
+        category?: string;
+        title?: string;
+        description?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<void, void>({
+        path: `/api/admin/v2/spaces/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
      * No description
      *
      * @tags AdminV2
@@ -3858,6 +4051,10 @@ export class Api<SecurityDataType extends unknown> {
         status?: "active" | "deactivated" | "banned" | "disengaged";
         sortBy?: "name" | "email" | "memberSince" | "onlineLast" | "status";
         sortOrder?: "asc" | "desc";
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -4231,6 +4428,20 @@ export class Api<SecurityDataType extends unknown> {
         role?: string;
         /** If true, search will match exact first name or last name only */
         exactMatch?: boolean;
+        /** Field to sort by */
+        sortBy?:
+          | "name"
+          | "email"
+          | "role"
+          | "lastActive"
+          | "invitationStatus"
+          | "createdAt";
+        /** Sort order */
+        sortOrder?: "asc" | "desc";
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -4823,6 +5034,12 @@ export class Api<SecurityDataType extends unknown> {
     ) =>
       this.http.request<
         {
+          /** Status of the login (e.g., not_verified if user needs verification) */
+          status?: string;
+          /** Redirect URL if verification is needed */
+          redirect?: string;
+          /** Phone number for verification if needed */
+          phoneNumber?: string;
           access_token?: string;
           _id?: string;
           email?: string;
@@ -4881,6 +5098,37 @@ export class Api<SecurityDataType extends unknown> {
         body: data,
         secure: true,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Verify the OTP code before password reset. Returns success if OTP is valid.
+     *
+     * @tags Authentication
+     * @name VerifyOtpCreate
+     * @summary Verify OTP code
+     * @request POST:/api/verify-otp
+     */
+    verifyOtpCreate: (
+      data: {
+        /** @format email */
+        email: string;
+        otp: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          message?: string;
+          verified?: boolean;
+        },
+        void
+      >({
+        path: `/api/verify-otp`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -6089,7 +6337,7 @@ export class Api<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Returns newest events in user's school (admins see all schools)
+     * @description Returns upcoming events (keeps today visible until midnight) in user's school (admins see all schools)
      *
      * @tags Discovery
      * @name DiscoverEventsList

@@ -44,6 +44,8 @@ export const DeactivatedStudents: React.FC = () => {
       "deactivated",
       sortBy,
       sortOrder,
+      selectedSchool?._id,
+      selectedCampus?._id,
     ],
     queryFn: () =>
       apiClient.api.adminV2StudentsList({
@@ -59,6 +61,8 @@ export const DeactivatedStudents: React.FC = () => {
           | "status"
           | undefined,
         sortOrder,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
       }),
   });
 

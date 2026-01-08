@@ -3,7 +3,7 @@ import axios, {
   AxiosResponse,
   AxiosError,
 } from "axios";
-import { Api } from "./Api";
+import { Api, HttpClient } from "./WalkyAPI";
 import { triggerDeactivatedModal } from "../contexts/DeactivatedUserContext";
 
 /**
@@ -103,22 +103,22 @@ API.interceptors.response.use(
 const baseURL =
   import.meta.env.VITE_API_BASE_URL ?? "https://staging.walkyapp.com/api";
 
-// Create Api directly with config (Api extends HttpClient, so it creates its own axios instance)
-export const apiClient = new Api({
+// Create HttpClient with config, then pass to Api
+const httpClientInstance = new HttpClient({
   baseURL: baseURL.replace(/\/api\/?$/, ""),
-}) as Api<unknown> & { http: { instance: typeof Api.prototype.instance } };
+});
 
-// Add http property for backward compatibility (some code uses apiClient.http.instance)
-(apiClient as any).http = { instance: apiClient.instance };
+// Create Api with the HttpClient
+export const apiClient = new Api(httpClientInstance);
 
 // Expose httpClient for backward compatibility
-export const httpClient = { instance: apiClient.instance };
+export const httpClient = { instance: apiClient.http.instance };
 
 // Enable cookies for CSRF
-apiClient.instance.defaults.withCredentials = true;
+apiClient.http.instance.defaults.withCredentials = true;
 
 // Apply interceptors to the Api's axios instance
-apiClient.instance.interceptors.request.use(
+apiClient.http.instance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -141,7 +141,7 @@ apiClient.instance.interceptors.request.use(
   },
 );
 
-apiClient.instance.interceptors.response.use(
+apiClient.http.instance.interceptors.response.use(
   (response: AxiosResponse) => {
     console.log(
       "✅ API Response:",

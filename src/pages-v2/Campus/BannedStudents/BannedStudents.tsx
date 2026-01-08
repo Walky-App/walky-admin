@@ -55,6 +55,8 @@ export const BannedStudents: React.FC = () => {
       "banned",
       sortBy,
       sortOrder,
+      selectedSchool?._id,
+      selectedCampus?._id,
     ],
     queryFn: () =>
       apiClient.api.adminV2StudentsList({
@@ -64,6 +66,8 @@ export const BannedStudents: React.FC = () => {
         status: "banned",
         sortBy: apiSortBy,
         sortOrder,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
       }),
   });
 

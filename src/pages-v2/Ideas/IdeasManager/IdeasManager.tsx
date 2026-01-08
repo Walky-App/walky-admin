@@ -6,10 +6,14 @@ import { IdeasTable } from "../components/IdeasTable/IdeasTable";
 import { IdeasTableSkeleton } from "../components/IdeasTableSkeleton/IdeasTableSkeleton";
 import { SearchInput, Pagination, NoData } from "../../../components-v2";
 import { useDebounce } from "../../../hooks/useDebounce";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 
 export type IdeaSortField = "ideaTitle" | "collaborated" | "creationDate";
 
 export const IdeasManager: React.FC = () => {
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,7 +26,15 @@ export const IdeasManager: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const { data: ideasData, isLoading } = useQuery({
-    queryKey: ["ideas", currentPage, debouncedSearchQuery, sortBy, sortOrder],
+    queryKey: [
+      "ideas",
+      currentPage,
+      debouncedSearchQuery,
+      sortBy,
+      sortOrder,
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
     queryFn: () =>
       apiClient.api.adminV2IdeasList({
         page: currentPage,
@@ -30,6 +42,8 @@ export const IdeasManager: React.FC = () => {
         search: debouncedSearchQuery,
         sortBy,
         sortOrder,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
       }),
     placeholderData: keepPreviousData,
   });
