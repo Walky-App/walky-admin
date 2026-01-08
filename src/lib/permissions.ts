@@ -364,3 +364,84 @@ export function canAccessRoute(role: string, path: string): boolean {
   }
   return hasPermission(role, resource, 'read');
 }
+
+// Display name type for roles (used in UI)
+export type RoleDisplayName = 'Walky Admin' | 'School Admin' | 'Campus Admin' | 'Moderator' | 'Walky Internal';
+
+// Mapping between internal role names and display names
+export const roleDisplayNameMap: Record<RoleName, RoleDisplayName> = {
+  super_admin: 'Walky Admin',
+  school_admin: 'School Admin',
+  campus_admin: 'Campus Admin',
+  moderator: 'Moderator',
+  walky_internal: 'Walky Internal',
+};
+
+// Mapping from display names to internal role names
+export const displayNameToRoleMap: Record<RoleDisplayName, RoleName> = {
+  'Walky Admin': 'super_admin',
+  'School Admin': 'school_admin',
+  'Campus Admin': 'campus_admin',
+  'Moderator': 'moderator',
+  'Walky Internal': 'walky_internal',
+};
+
+/**
+ * Role hierarchy for member creation/role assignment
+ * Defines which roles each role can assign to new or existing members:
+ * - Walky Admin (super_admin): can add School Admin, Campus Admin, Moderator
+ * - School Admin (school_admin): can add Campus Admin, Moderator
+ * - Campus Admin (campus_admin): can add Moderator
+ * - Moderator: cannot add anyone
+ * - Walky Internal: cannot add anyone
+ */
+const roleHierarchy: Record<RoleName, RoleName[]> = {
+  super_admin: ['school_admin', 'campus_admin', 'moderator'],
+  school_admin: ['campus_admin', 'moderator'],
+  campus_admin: ['moderator'],
+  moderator: [],
+  walky_internal: [],
+};
+
+/**
+ * Get the roles that a user with the given role can assign to others
+ * @param userRole - The current user's role (internal name like 'super_admin')
+ * @returns Array of internal role names that can be assigned
+ */
+export function getAssignableRoles(userRole: string): RoleName[] {
+  const normalizedRole = userRole as RoleName;
+  return roleHierarchy[normalizedRole] || [];
+}
+
+/**
+ * Get the display names of roles that a user can assign
+ * @param userRole - The current user's role (internal name like 'super_admin')
+ * @returns Array of display role names (like 'School Admin')
+ */
+export function getAssignableRoleDisplayNames(userRole: string): RoleDisplayName[] {
+  const assignableRoles = getAssignableRoles(userRole);
+  return assignableRoles.map(role => roleDisplayNameMap[role]);
+}
+
+/**
+ * Check if a user with the given role can assign a specific role
+ * @param userRole - The current user's role (internal name)
+ * @param targetRole - The role to check if assignable (internal name)
+ * @returns Boolean indicating if the role can be assigned
+ */
+export function canAssignRole(userRole: string, targetRole: string): boolean {
+  const assignableRoles = getAssignableRoles(userRole);
+  return assignableRoles.includes(targetRole as RoleName);
+}
+
+/**
+ * Check if a user can assign a role using display names
+ * @param userRole - The current user's role (internal name like 'super_admin')
+ * @param targetRoleDisplayName - The target role display name (like 'School Admin')
+ * @returns Boolean indicating if the role can be assigned
+ */
+export function canAssignRoleByDisplayName(userRole: string, targetRoleDisplayName: string): boolean {
+  const targetRole = displayNameToRoleMap[targetRoleDisplayName as RoleDisplayName];
+  if (!targetRole) return false;
+  return canAssignRole(userRole, targetRole);
+}

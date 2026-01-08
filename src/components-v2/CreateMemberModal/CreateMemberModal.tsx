@@ -1,8 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import { useSchool, School } from "../../contexts/SchoolContext";
 import { useCampus, Campus } from "../../contexts/CampusContext";
+import { usePermissions } from "../../hooks/usePermissions";
+import { getAssignableRoleDisplayNames } from "../../lib/permissions";
 import "./CreateMemberModal.css";
 
 type RoleType = "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator";
@@ -22,13 +24,6 @@ interface CreateMemberModalProps {
   onConfirm: (memberData: MemberFormData) => void;
 }
 
-const roleOptions: RoleType[] = [
-  "Walky Admin",
-  "School Admin",
-  "Campus Admin",
-  "Moderator",
-];
-
 const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
   isOpen,
   onClose,
@@ -36,6 +31,20 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
 }) => {
   const { availableSchools, selectedSchool } = useSchool();
   const { availableCampuses, selectedCampus } = useCampus();
+  const { userRole } = usePermissions();
+
+  // Get available roles based on the current user's role hierarchy
+  const roleOptions = useMemo(() => {
+    const assignableRoles = getAssignableRoleDisplayNames(userRole);
+    // Filter to only include RoleType values (excluding "Walky Internal")
+    return assignableRoles.filter(
+      (role): role is RoleType =>
+        role === "Walky Admin" ||
+        role === "School Admin" ||
+        role === "Campus Admin" ||
+        role === "Moderator"
+    );
+  }, [userRole]);
 
   const [formData, setFormData] = useState<MemberFormData>({
     firstName: "",
@@ -296,16 +305,26 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
                         minWidth: `${roleMenuPosition.width}px`,
                       }}
                     >
-                      {roleOptions.map((role) => (
+                      {roleOptions.length > 0 ? (
+                        roleOptions.map((role) => (
+                          <button
+                            data-testid="create-member-role-option-btn"
+                            key={role}
+                            className="create-member-option"
+                            onClick={() => handleRoleSelect(role)}
+                          >
+                            {role}
+                          </button>
+                        ))
+                      ) : (
                         <button
-                          data-testid="create-member-role-option-btn"
-                          key={role}
+                          data-testid="create-member-role-option-empty"
                           className="create-member-option"
-                          onClick={() => handleRoleSelect(role)}
+                          disabled
                         >
-                          {role}
+                          No roles available
                         </button>
-                      ))}
+                      )}
                     </div>,
                     document.body
                   )}

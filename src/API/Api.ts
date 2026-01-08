@@ -2657,7 +2657,15 @@ export class Api<
      * @request GET:/api/admin/ambassadors
      * @secure
      */
-    adminAmbassadorsList: (params: RequestParams = {}) =>
+    adminAmbassadorsList: (
+      query?: {
+        /** Filter ambassadors by school ID */
+        schoolId?: string;
+        /** Filter ambassadors by campus ID */
+        campusId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
         {
           success?: boolean;
@@ -2669,6 +2677,7 @@ export class Api<
       >({
         path: `/api/admin/ambassadors`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -3495,7 +3504,15 @@ export class Api<
      * @request GET:/api/admin/v2/reports/stats
      * @secure
      */
-    adminV2ReportsStatsList: (params: RequestParams = {}) =>
+    adminV2ReportsStatsList: (
+      query?: {
+        /** Filter stats by school ID */
+        schoolId?: string;
+        /** Filter stats by campus ID */
+        campusId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<
         {
           total?: number;
@@ -3508,6 +3525,7 @@ export class Api<
       >({
         path: `/api/admin/v2/reports/stats`,
         method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -3811,6 +3829,10 @@ export class Api<
     adminV2SpacesInsightsList: (
       query?: {
         period?: "all" | "week" | "month";
+        /** Filter by school ID */
+        schoolId?: string;
+        /** Filter by campus ID */
+        campusId?: string;
       },
       params: RequestParams = {}
     ) =>

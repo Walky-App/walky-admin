@@ -25,6 +25,8 @@ import {
 } from "../../../components-v2";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 import ReportsTable, { ReportRow } from "../components/ReportsTable";
 import "./ReportHistory.css";
 
@@ -45,6 +47,8 @@ interface HistoryReportData {
 const ReportHistory: React.FC = () => {
   const queryClient = useQueryClient();
   const { canExport, canUpdate } = usePermissions();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
 
   // Check permissions for this page
   const showExport = canExport("report_history");
@@ -115,6 +119,8 @@ const ReportHistory: React.FC = () => {
       selectedTypes,
       selectedStatus,
       sortOrder,
+      selectedSchool?._id,
+      selectedCampus?._id,
     ],
     queryFn: () =>
       apiClient.api.adminV2ReportsList({
@@ -125,6 +131,8 @@ const ReportHistory: React.FC = () => {
         status: selectedStatus,
         sortBy: "reportDate",
         sortOrder,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
       }),
     placeholderData: keepPreviousData,
     staleTime: 30_000,
@@ -133,8 +141,12 @@ const ReportHistory: React.FC = () => {
   });
 
   const { data: statsData, refetch: refetchStats } = useQuery({
-    queryKey: ["history-report-stats"],
-    queryFn: () => apiClient.api.adminV2ReportsStatsList(),
+    queryKey: ["history-report-stats", selectedSchool?._id, selectedCampus?._id],
+    queryFn: () =>
+      apiClient.api.adminV2ReportsStatsList({
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
     placeholderData: keepPreviousData,
     staleTime: 30_000,
     refetchOnMount: false,
@@ -179,6 +191,8 @@ const ReportHistory: React.FC = () => {
         selectedTypes,
         selectedStatus,
         sortOrder,
+        selectedSchool?._id,
+        selectedCampus?._id,
       ]);
 
       queryClient.setQueryData(
@@ -189,6 +203,8 @@ const ReportHistory: React.FC = () => {
           selectedTypes,
           selectedStatus,
           sortOrder,
+          selectedSchool?._id,
+          selectedCampus?._id,
         ],
         (old: any) => {
           if (!old?.data?.data) return old;
@@ -224,6 +240,8 @@ const ReportHistory: React.FC = () => {
             selectedTypes,
             selectedStatus,
             sortOrder,
+            selectedSchool?._id,
+            selectedCampus?._id,
           ],
           context.previousReports
         );
@@ -259,6 +277,8 @@ const ReportHistory: React.FC = () => {
         selectedTypes,
         selectedStatus,
         sortOrder,
+        selectedSchool?._id,
+        selectedCampus?._id,
       ]);
 
       queryClient.setQueryData(
@@ -269,6 +289,8 @@ const ReportHistory: React.FC = () => {
           selectedTypes,
           selectedStatus,
           sortOrder,
+          selectedSchool?._id,
+          selectedCampus?._id,
         ],
         (old: any) => {
           if (!old?.data?.data) return old;
@@ -303,6 +325,8 @@ const ReportHistory: React.FC = () => {
             selectedTypes,
             selectedStatus,
             sortOrder,
+            selectedSchool?._id,
+            selectedCampus?._id,
           ],
           context.previousReports
         );
