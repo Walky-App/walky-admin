@@ -310,3 +310,112 @@ button:focus:not(:focus-visible),
 a:focus:not(:focus-visible) {
   outline: none;
 }
+
+/* ========== PRINT STYLES ========== */
+@media print {
+  .engagement-page {
+    display: block !important;
+  }
+
+  /* Stats cards row - print in a 2-2-1 grid */
+  .stats-container {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+    justify-content: center !important;
+  }
+
+  .stats-container > div {
+    flex: 0 0 calc(50% - 8px) !important;
+    max-width: calc(50% - 8px) !important;
+    min-width: unset !important;
+  }
+
+  /* 5th card full width on its own row */
+  .stats-container > div:nth-child(5) {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Section header */
+  .section-header {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    margin-top: 30px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .section-icon-container {
+  }
+
+  .section-title {
+  }
+
+  /* Show dropdown in print, aligned to the right */
+  .selector-dropdown,
+  .engagement-metric-toggle {
+    display: flex !important;
+  }
+
+  /* Charts row - stack vertically for print */
+  .charts-row {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .charts-row > div {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
+    margin-bottom: 30px !important;
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  /* Last chart in each row doesn't need page break after */
+  .charts-row > div:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  /* Line chart container adjustments for print */
+  .line-chart-container {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    height: 300px !important;
+    max-height: 300px !important;
+    width: 100% !important;
+    padding-bottom: 50px !important;
+  }
+
+  .line-chart-title {
+  }
+
+  .line-chart-wrapper {
+    margin-bottom: 40px !important;
+  }
+
+  /* Donut chart */
+  .donut-chart-container {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 350px !important;
+  }
+
+  /* Stats card for print */
+  .st-stats-card {
+  }
+
+  .st-card-value {
+  }
+
+  .st-card-title {
+  }
+}

@@ -203,3 +203,41 @@ button:focus:not(:focus-visible),
     font-size: 14px;
   }
 }
+
+/* ========== PRINT STYLES ========== */
+@media print {
+  .popular-features-page {
+    display: block !important;
+  }
+
+  .popular-features-header {
+    margin-bottom: 20px !important;
+  }
+
+  .feature-cards-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+  }
+
+  .feature-cards-row > [class*="col-"] {
+    flex: 0 0 calc(50% - 8px) !important;
+    max-width: calc(50% - 8px) !important;
+  }
+
+  /* List view section (Common Interests) starts on page 2 */
+  .list-view-section {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  .list-view-row {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .list-view-row > [class*="col-"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

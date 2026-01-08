@@ -94,6 +94,13 @@
   width: 100%;
 }
 
+.line-chart-no-data {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .line-chart-container {
@@ -125,16 +132,44 @@
 
 @media print {
   .line-chart-container {
-    height: auto;
-    min-height: 260px;
-    padding: 16px;
+    height: auto !important;
+    min-height: 300px;
+    padding: 16px 60px 50px 16px !important;
     box-shadow: none;
     border: 1px solid #e5e7eb;
     background: #ffffff;
-    page-break-inside: avoid;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: visible !important;
+  }
+
+  .line-chart-title-row {
+    display: flex !important;
+    margin-bottom: 12px;
   }
 
   .line-chart-title {
     font-size: 18px;
+    display: block !important;
+  }
+
+  .line-chart-wrapper {
+    flex: 1;
+    min-height: 220px;
+    overflow: visible !important;
+    margin-bottom: 40px !important;
+    margin-right: 30px !important;
+    padding-right: 30px !important;
+  }
+
+  /* Ensure Recharts ResponsiveContainer doesn't clip */
+  .line-chart-wrapper .recharts-responsive-container {
+    overflow: visible !important;
+  }
+
+  .line-chart-wrapper svg {
+    overflow: visible !important;
   }
 }
