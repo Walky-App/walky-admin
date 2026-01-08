@@ -106,9 +106,13 @@ const SpacesInsightsSkeleton = () => (
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 
 export const SpacesInsights: React.FC = () => {
   const { canExport } = usePermissions();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const exportRef = useRef<HTMLElement | null>(null);
 
@@ -119,16 +123,25 @@ export const SpacesInsights: React.FC = () => {
 
   // Filtered data for categories/top spaces
   const { data: insightsData, isLoading } = useQuery({
-    queryKey: ["spacesInsights", timePeriod],
+    queryKey: ["spacesInsights", timePeriod, selectedSchool?._id, selectedCampus?._id],
     queryFn: () =>
-      apiClient.api.adminV2SpacesInsightsList({ period: apiPeriod }),
+      apiClient.api.adminV2SpacesInsightsList({
+        period: apiPeriod,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
     placeholderData: keepPreviousData,
   });
 
   // All-time totals should remain constant regardless of filter selection
   const { data: allTimeInsights, isLoading: isAllTimeLoading } = useQuery({
-    queryKey: ["spacesInsights", "all"],
-    queryFn: () => apiClient.api.adminV2SpacesInsightsList({ period: "all" }),
+    queryKey: ["spacesInsights", "all", selectedSchool?._id, selectedCampus?._id],
+    queryFn: () =>
+      apiClient.api.adminV2SpacesInsightsList({
+        period: "all",
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
   });
 
   // Type assertion for optional metadata fields not in generated types

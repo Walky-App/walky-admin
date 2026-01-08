@@ -1,6 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import AssetIcon from "../AssetIcon/AssetIcon";
+import { usePermissions } from "../../hooks/usePermissions";
+import { getAssignableRoleDisplayNames } from "../../lib/permissions";
 import "./ChangeRoleModal.css";
 
 type RoleType = "Walky Admin" | "Walky Internal" | "School Admin" | "Campus Admin" | "Moderator";
@@ -12,22 +14,22 @@ interface ChangeRoleModalProps {
   currentRole: RoleType;
 }
 
-const roleOptions: RoleType[] = [
-  "Walky Admin",
-  "Walky Internal",
-  "School Admin",
-  "Campus Admin",
-  "Moderator",
-];
-
 const ChangeRoleModal: React.FC<ChangeRoleModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
   currentRole,
 }) => {
+  const { userRole } = usePermissions();
   const [selectedRole, setSelectedRole] = useState<RoleType>(currentRole);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Get available roles based on the current user's role hierarchy
+  const roleOptions = useMemo(() => {
+    const assignableRoles = getAssignableRoleDisplayNames(userRole);
+    // Cast to RoleType array - the assignable roles will be valid RoleType values
+    return assignableRoles as RoleType[];
+  }, [userRole]);
 
   const roleButtonRef = useRef<HTMLButtonElement>(null);
   const roleDropdownRef = useRef<HTMLDivElement>(null);
@@ -133,18 +135,28 @@ const ChangeRoleModal: React.FC<ChangeRoleModalProps> = ({
                       minWidth: `${roleMenuPosition.width}px`,
                     }}
                   >
-                    {roleOptions.map((role) => (
+                    {roleOptions.length > 0 ? (
+                      roleOptions.map((role) => (
+                        <button
+                          data-testid="change-role-option-btn"
+                          key={role}
+                          className={`change-role-option ${
+                            role === selectedRole ? "selected" : ""
+                          }`}
+                          onClick={() => handleRoleSelect(role)}
+                        >
+                          {role}
+                        </button>
+                      ))
+                    ) : (
                       <button
-                        data-testid="change-role-option-btn"
-                        key={role}
-                        className={`change-role-option ${
-                          role === selectedRole ? "selected" : ""
-                        }`}
-                        onClick={() => handleRoleSelect(role)}
+                        data-testid="change-role-option-empty"
+                        className="change-role-option"
+                        disabled
                       >
-                        {role}
+                        No roles available
                       </button>
-                    ))}
+                    )}
                   </div>,
                   document.body
                 )}
