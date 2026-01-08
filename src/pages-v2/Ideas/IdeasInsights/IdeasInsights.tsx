@@ -5,6 +5,8 @@ import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import { NoIdeasFound } from "../components/NoIdeasFound/NoIdeasFound";
 import { apiClient } from "../../../API";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 
 interface PopularIdea {
   rank: number;
@@ -33,6 +35,8 @@ interface TimeMetrics {
 
 export const IdeasInsights: React.FC = () => {
   const { canExport } = usePermissions();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
@@ -65,44 +69,18 @@ export const IdeasInsights: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        // Fetch counts with time period filter
-        // API types are incomplete - period param is supported by backend
+        // Use the proper insights endpoint with campus/school filtering
         const periodParam = timePeriod === "all-time" ? undefined : timePeriod;
-        const [totalRes, collaboratedRes, ideasRes, timeMetricsRes] =
-          await Promise.all([
-            apiClient.api.adminAnalyticsIdeasCountList({
-              type: "total",
-              period: periodParam,
-            } as Parameters<typeof apiClient.api.adminAnalyticsIdeasCountList>[0]),
-            apiClient.api.adminAnalyticsIdeasCountList({
-              type: "collaborated",
-              period: periodParam,
-            } as Parameters<typeof apiClient.api.adminAnalyticsIdeasCountList>[0]),
-            apiClient.api.adminV2IdeasList({
-              limit: 100,
-              period: periodParam,
-            } as Parameters<typeof apiClient.api.adminV2IdeasList>[0]),
-            apiClient.api
-              .adminAnalyticsIdeasTimeMetricsList({
-                period: periodParam,
-              } as Parameters<typeof apiClient.api.adminAnalyticsIdeasTimeMetricsList>[0])
-              .catch(() => ({ data: null })),
-          ]);
 
-        // Extract count from response - API returns different fields based on type
-        const totalData = totalRes.data as {
-          totalIdeasCreated?: number;
-          count?: number;
-        };
-        const collaboratedData = collaboratedRes.data as {
-          collaboratedIdeasCount?: number;
-          count?: number;
-        };
-        const total = totalData.totalIdeasCreated || totalData.count || 0;
-        const collaborated =
-          collaboratedData.collaboratedIdeasCount ||
-          collaboratedData.count ||
-          0;
+        const insightsRes = await apiClient.api.adminV2IdeasInsightsList({
+          period: periodParam,
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id,
+        });
+
+        const insightsData = insightsRes.data;
+        const total = insightsData.totalIdeas || 0;
+        const collaborated = insightsData.collaboratedIdeas || 0;
 
         // Calculate conversion rate (collaborated / total) * 100
         const conversion =
@@ -110,11 +88,17 @@ export const IdeasInsights: React.FC = () => {
 
         setStats({
           totalIdeas: total,
-          totalCollaborations: collaborated, // Assuming this endpoint returns total collaborations or ideas with collaborations
+          totalCollaborations: collaborated,
           conversionRate: conversion,
         });
 
-        // Process time metrics if available
+        // Process time metrics - fetch separately if needed
+        const timeMetricsRes = await apiClient.api
+          .adminAnalyticsIdeasTimeMetricsList({
+            period: periodParam,
+          } as Parameters<typeof apiClient.api.adminAnalyticsIdeasTimeMetricsList>[0])
+          .catch(() => ({ data: null }));
+
         const timeMetricsData = (
           timeMetricsRes as {
             data: (TimeMetrics & { lastUpdated?: string }) | null;
@@ -141,71 +125,25 @@ export const IdeasInsights: React.FC = () => {
           }
         }
 
-        // Type assertion for accessing optional metadata fields
-        const ideasData = ideasRes.data as {
-          lastUpdated?: string;
-          updatedAt?: string;
-          metadata?: { lastUpdated?: string };
-        };
-        setLastUpdated(
-          (totalData as { lastUpdated?: string }).lastUpdated ||
-            (totalData as { updatedAt?: string }).updatedAt ||
-            (collaboratedData as { lastUpdated?: string }).lastUpdated ||
-            (collaboratedData as { updatedAt?: string }).updatedAt ||
-            ideasData.lastUpdated ||
-            ideasData.updatedAt ||
-            ideasData.metadata?.lastUpdated
-        );
-
-        // Fetch popular ideas
-        const allIdeas = ideasRes.data.data || [];
-
-        // Type for extended idea data from API
-        type ExtendedIdea = {
-          id?: string;
-          ideaTitle?: string;
-          owner?: { name?: string; avatar?: string };
-          studentId?: string;
-          collaborated?: number;
-          creationDate?: string;
-          creationTime?: string;
-          isFlagged?: boolean;
-          flagReason?: string;
-        };
-
-        // Sort by collaborations
-        const normalizedIdeas = (allIdeas as ExtendedIdea[])
-          .map((idea) => {
-            const collaborations = idea.collaborated || 0;
-
-            return {
-              ...idea,
-              collaborations,
-              ownerName: idea.owner?.name || "Unknown",
-              ownerAvatar: idea.owner?.avatar || "",
-            };
-          })
-          .filter((idea) => idea.collaborations > 0);
-
-        const sortedIdeas = normalizedIdeas
-          .sort((a, b) => b.collaborations - a.collaborations)
-          .slice(0, 4)
-          .map((idea, index: number) => ({
-            rank: index + 1,
-            title: idea.ideaTitle || "",
-            owner: {
-              name: idea.ownerName,
-              avatar: idea.ownerAvatar,
-            },
-            collaborations: idea.collaborations,
-          }));
+        // Set popular ideas from insights response
+        const topIdeas = insightsData.topIdeas || [];
+        const sortedIdeas = topIdeas.map((idea, index: number) => ({
+          rank: index + 1,
+          title: idea.title || "",
+          owner: {
+            name: idea.creator?.name || "Unknown",
+            avatar: idea.creator?.avatar || "",
+          },
+          collaborations: idea.collaborators || 0,
+        }));
 
         setPopularIdeas(sortedIdeas);
-      } catch (err: any) {
+        setLastUpdated(new Date().toISOString());
+      } catch (err: unknown) {
         console.error("Failed to fetch ideas insights:", err);
-        // Check for school configuration error
-        const errorMessage = err?.response?.data?.error || err?.message || "";
-        if (errorMessage.includes("school") || err?.response?.status === 400) {
+        const error = err as { response?: { data?: { error?: string }; status?: number }; message?: string };
+        const errorMessage = error?.response?.data?.error || error?.message || "";
+        if (errorMessage.includes("school") || error?.response?.status === 400) {
           setError(
             "Your account is not associated with a school. Please contact an administrator to configure your school access."
           );
@@ -218,7 +156,7 @@ export const IdeasInsights: React.FC = () => {
     };
 
     fetchData();
-  }, [timePeriod]);
+  }, [timePeriod, selectedSchool?._id, selectedCampus?._id]);
 
   return (
     <main className="ideas-insights-page" ref={exportRef}>
