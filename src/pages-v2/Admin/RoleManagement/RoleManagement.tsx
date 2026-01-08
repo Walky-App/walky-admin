@@ -27,6 +27,7 @@ import {
 import { useTheme } from "../../../hooks/useTheme";
 import { usePermissions } from "../../../hooks/usePermissions";
 import { useCampus } from "../../../contexts/CampusContext";
+import { useAuth } from "../../../hooks/useAuth";
 import { apiClient } from "../../../API";
 import "./RoleManagement.css";
 
@@ -68,7 +69,15 @@ export const RoleManagement: React.FC = () => {
   const { theme } = useTheme();
   const { canCreate, canUpdate, canDelete, canManage } = usePermissions();
   const { selectedCampus } = useCampus();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
+
+  // Check if user is a super_admin or walky_internal who can view all campuses
+  const isSuperAdminOrInternal =
+    user?.role === "super_admin" || user?.role === "walky_internal";
+
+  // Require campus selection for super_admin/walky_internal users
+  const requiresCampusSelection = isSuperAdminOrInternal && !selectedCampus;
 
   // Permission checks for actions
   const canCreateMember = canCreate("role_management");
@@ -334,6 +343,43 @@ export const RoleManagement: React.FC = () => {
         </td>
       </tr>
     ));
+
+  // Show campus selection required message for super_admin/walky_internal users
+  if (requiresCampusSelection) {
+    return (
+      <main className="role-management-page">
+        <div className="page-header">
+          <h1 className="page-title">Role Management</h1>
+          <p className="page-subtitle">Manage user role assignments</p>
+        </div>
+
+        <div className={`members-container ${theme.isDark ? "dark-mode" : ""}`}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "60px 20px",
+              textAlign: "center",
+            }}
+          >
+            <AssetIcon
+              name="campus-icon"
+              style={{ width: 64, height: 64, marginBottom: 16, opacity: 0.5 }}
+            />
+            <h3 style={{ marginBottom: 8, color: theme.colors.bodyColor }}>
+              Select a Campus
+            </h3>
+            <p style={{ color: theme.colors.textMuted, maxWidth: 400 }}>
+              Please select a campus from the dropdown in the navigation bar to
+              view and manage members for that campus.
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="role-management-page">
