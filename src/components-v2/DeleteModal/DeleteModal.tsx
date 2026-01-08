@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CModal, CModalBody } from "@coreui/react";
 import "./DeleteModal.css";
 import { AssetIcon } from "../../components-v2";
@@ -41,6 +41,22 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({
     setReason("");
     onClose();
   };
+
+  // Close modal on ESC key
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
 
   return (
     <CModal

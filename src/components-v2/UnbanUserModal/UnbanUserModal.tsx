@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CModal, CModalBody, CButton } from "@coreui/react";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import "./UnbanUserModal.css";
@@ -16,6 +16,22 @@ export const UnbanUserModal: React.FC<UnbanUserModalProps> = ({
   onConfirm,
   userName,
 }) => {
+  // Close modal on ESC key
+  useEffect(() => {
+    if (!visible) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [visible, onClose]);
+
   const handleConfirm = () => {
     onConfirm();
   };

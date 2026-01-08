@@ -57,13 +57,11 @@ export const BanUserModal: React.FC<BanUserModalProps> = ({
     };
   }, [dropdownOpen]);
 
-  const handleConfirm = () => {
-    if (!reason.trim()) {
-      // Could show an error message here
-      return;
-    }
-    onConfirm(duration, reason, resolveReports);
-    handleReset();
+  const handleReset = () => {
+    setDuration("1 Day");
+    setReason("");
+    setResolveReports(true);
+    setDropdownOpen(false);
   };
 
   const handleCancel = () => {
@@ -71,11 +69,29 @@ export const BanUserModal: React.FC<BanUserModalProps> = ({
     onClose();
   };
 
-  const handleReset = () => {
-    setDuration("1 Day");
-    setReason("");
-    setResolveReports(true);
-    setDropdownOpen(false);
+  // Close modal on ESC key
+  useEffect(() => {
+    if (!visible) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleCancel();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [visible]);
+
+  const handleConfirm = () => {
+    if (!reason.trim()) {
+      // Could show an error message here
+      return;
+    }
+    onConfirm(duration, reason, resolveReports);
+    handleReset();
   };
 
   const handleDurationSelect = (selectedDuration: string) => {
