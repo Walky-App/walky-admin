@@ -16,7 +16,7 @@ export const useSchoolFilter = () => {
 
   useEffect(() => {
     // Add request interceptor
-    const requestInterceptor = apiClient.http.instance.interceptors.request.use(
+    const requestInterceptor = apiClient.instance.interceptors.request.use(
       (config: any) => {
         // Only add school_id if a school is selected
         if (schoolId) {
@@ -84,7 +84,7 @@ export const useSchoolFilter = () => {
 
     // Cleanup interceptor on unmount or when school ID changes
     return () => {
-      apiClient.http.instance.interceptors.request.eject(requestInterceptor);
+      apiClient.instance.interceptors.request.eject(requestInterceptor);
     };
   }, [schoolId, queryClient]);
 

@@ -27,6 +27,7 @@ import {
 import { useTheme } from "../../../hooks/useTheme";
 import { usePermissions } from "../../../hooks/usePermissions";
 import { useCampus } from "../../../contexts/CampusContext";
+import { useSchool } from "../../../contexts/SchoolContext";
 import { useAuth } from "../../../hooks/useAuth";
 import { apiClient } from "../../../API";
 import "./RoleManagement.css";
@@ -68,6 +69,7 @@ const getInitials = (name: string): string =>
 export const RoleManagement: React.FC = () => {
   const { theme } = useTheme();
   const { canCreate, canUpdate, canDelete, canManage } = usePermissions();
+  const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -113,6 +115,7 @@ export const RoleManagement: React.FC = () => {
       roleFilter,
       sortField,
       sortOrder,
+      selectedSchool?._id,
       selectedCampus?._id,
     ],
     queryFn: () =>
@@ -123,6 +126,7 @@ export const RoleManagement: React.FC = () => {
         role: roleFilter !== "All Roles" ? roleFilter : undefined,
         sortBy: sortField,
         sortOrder: sortOrder,
+        schoolId: selectedSchool?._id,
         campusId: selectedCampus?._id,
       }),
     placeholderData: keepPreviousData,
