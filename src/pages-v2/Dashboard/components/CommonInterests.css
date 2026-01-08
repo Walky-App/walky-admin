@@ -240,3 +240,25 @@
     gap: var(--v2-spacing-1);
   }
 }
+
+/* ========== PRINT STYLES ========== */
+@media print {
+  .common-interests-container {
+    padding: 24px 24px 40px 24px !important;
+    margin: 16px !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .common-interests-list {
+    max-height: none !important;
+    overflow: visible !important;
+    padding-bottom: 20px !important;
+  }
+
+  .interest-item:last-child {
+    margin-bottom: 20px !important;
+  }
+}
