@@ -1049,7 +1049,7 @@ export type RequestParams = Omit<
 export interface ApiConfig<SecurityDataType = unknown>
   extends Omit<AxiosRequestConfig, "data" | "cancelToken"> {
   securityWorker?: (
-    securityData: SecurityDataType | null
+    securityData: SecurityDataType | null,
   ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void;
   secure?: boolean;
   format?: ResponseType;
@@ -1091,7 +1091,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
   protected mergeRequestParams(
     params1: AxiosRequestConfig,
-    params2?: AxiosRequestConfig
+    params2?: AxiosRequestConfig,
   ): AxiosRequestConfig {
     const method = params1.method || (params2 && params2.method);
 
@@ -1132,7 +1132,7 @@ export class HttpClient<SecurityDataType = unknown> {
         const isFileType = formItem instanceof Blob || formItem instanceof File;
         formData.append(
           key,
-          isFileType ? formItem : this.stringifyFormItem(formItem)
+          isFileType ? formItem : this.stringifyFormItem(formItem),
         );
       }
 
@@ -1197,7 +1197,7 @@ export class HttpClient<SecurityDataType = unknown> {
  * REST API for Walky App
  */
 export class Api<
-  SecurityDataType extends unknown
+  SecurityDataType extends unknown,
 > extends HttpClient<SecurityDataType> {
   api = {
     /**
@@ -1226,7 +1226,7 @@ export class Api<
         /** Filter by school ID (injected by middleware or user's school) */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -1263,7 +1263,7 @@ export class Api<
         metadata?: object;
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -1292,7 +1292,7 @@ export class Api<
      */
     adminAlertsDismissPartialUpdate: (
       alertId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -1322,7 +1322,7 @@ export class Api<
         /** Filter by school ID (injected by middleware or user's school) */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -1378,7 +1378,7 @@ export class Api<
         period?: "all" | "week" | "month" | "7d" | "30d" | "90d";
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/social-health`,
@@ -1401,7 +1401,7 @@ export class Api<
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/wellbeing`,
@@ -1431,7 +1431,7 @@ export class Api<
         status?: "all" | "active" | "inactive";
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/students`,
@@ -1473,7 +1473,7 @@ export class Api<
         /** Group results by month to get time-series data */
         groupBy?: "month";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         | {
@@ -1509,7 +1509,7 @@ export class Api<
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/walks/active`,
@@ -1532,7 +1532,7 @@ export class Api<
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/walks/pending`,
@@ -1555,7 +1555,7 @@ export class Api<
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/walks/completed`,
@@ -1578,7 +1578,7 @@ export class Api<
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/walks/cancelled`,
@@ -1604,7 +1604,7 @@ export class Api<
         /** Get time-series data for specified timeframe */
         timeFrame?: "last6months" | "last12months" | "last30days";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         | {
@@ -1642,7 +1642,7 @@ export class Api<
         /** Group results by month to get time-series data */
         groupBy?: "month";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         | {
@@ -1681,7 +1681,7 @@ export class Api<
         /** Time period filter */
         period?: "week" | "month" | "all";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/analytics/ideas/time-metrics`,
@@ -1703,7 +1703,7 @@ export class Api<
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/walks/distribution`,
@@ -1728,7 +1728,7 @@ export class Api<
         /** @default "month" */
         period?: "week" | "month" | "all";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/messaging`,
@@ -1753,7 +1753,7 @@ export class Api<
         /** @default "month" */
         period?: "week" | "month" | "all";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/profile-views`,
@@ -1778,7 +1778,7 @@ export class Api<
         /** @default "month" */
         period?: "week" | "month" | "all";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/engagement`,
@@ -1801,7 +1801,7 @@ export class Api<
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/session-analytics`,
@@ -1824,7 +1824,7 @@ export class Api<
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/user-lifecycle`,
@@ -1847,7 +1847,7 @@ export class Api<
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/social-graph`,
@@ -1870,7 +1870,7 @@ export class Api<
       query?: {
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/referrals`,
@@ -1895,7 +1895,7 @@ export class Api<
         /** @default "month" */
         period?: "week" | "month" | "all";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/analytics/safety`,
@@ -1940,7 +1940,7 @@ export class Api<
         /** Filter by school (super admins only) */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/events`,
@@ -2000,7 +2000,7 @@ export class Api<
         /** @format email */
         email?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/profile`,
@@ -2025,7 +2025,7 @@ export class Api<
         currentPassword: string;
         newPassword: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/profile/change-password`,
@@ -2050,7 +2050,7 @@ export class Api<
         emailNotifications?: boolean;
         pushNotifications?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/profile/notifications`,
@@ -2125,7 +2125,7 @@ export class Api<
       data: {
         password: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/profile/delete`,
@@ -2150,7 +2150,7 @@ export class Api<
         /** @format binary */
         avatar?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/profile/avatar`,
@@ -2177,7 +2177,7 @@ export class Api<
         /** @default 15 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/spaces`,
@@ -2223,7 +2223,7 @@ export class Api<
         campusId?: string;
         ownerId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/spaces/${spaceId}`,
@@ -2295,7 +2295,7 @@ export class Api<
          */
         logoDefault?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/space-categories`,
@@ -2326,7 +2326,7 @@ export class Api<
         /** Filter by school */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -2395,7 +2395,7 @@ export class Api<
          */
         clearAttempts?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -2436,7 +2436,7 @@ export class Api<
         /** @default true */
         clearAttempts?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -2473,7 +2473,7 @@ export class Api<
         /** Filter by school */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -2521,7 +2521,7 @@ export class Api<
          */
         lockDurationHours?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -2566,7 +2566,7 @@ export class Api<
         /** Filter by campus ID */
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -2602,7 +2602,7 @@ export class Api<
         /** Search query */
         q: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -2657,15 +2657,7 @@ export class Api<
      * @request GET:/api/admin/ambassadors
      * @secure
      */
-    adminAmbassadorsList: (
-      query?: {
-        /** Filter ambassadors by school ID */
-        schoolId?: string;
-        /** Filter ambassadors by campus ID */
-        campusId?: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    adminAmbassadorsList: (params: RequestParams = {}) =>
       this.request<
         {
           success?: boolean;
@@ -2677,7 +2669,6 @@ export class Api<
       >({
         path: `/api/admin/ambassadors`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -2707,7 +2698,7 @@ export class Api<
         major?: string;
         user_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/ambassadors`,
@@ -2760,7 +2751,7 @@ export class Api<
         graduation_year?: number;
         major?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/ambassadors/${id}`,
@@ -2799,7 +2790,7 @@ export class Api<
      */
     adminAmbassadorsCampusDetail: (
       campusId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/ambassadors/campus/${campusId}`,
@@ -2823,7 +2814,7 @@ export class Api<
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -2860,7 +2851,7 @@ export class Api<
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -2901,7 +2892,7 @@ export class Api<
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -2937,7 +2928,7 @@ export class Api<
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -2988,7 +2979,7 @@ export class Api<
         campusId?: string;
         sortBy?: "most_popular" | "least_popular";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -3025,7 +3016,7 @@ export class Api<
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -3057,7 +3048,7 @@ export class Api<
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -3093,7 +3084,7 @@ export class Api<
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -3126,7 +3117,7 @@ export class Api<
         schoolId?: string;
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -3177,7 +3168,7 @@ export class Api<
         sortBy?: "eventName" | "eventDate" | "attendeesCount" | "type";
         sortOrder?: "asc" | "desc";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -3307,7 +3298,7 @@ export class Api<
         /** Filter by time period */
         period?: "week" | "month";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -3396,7 +3387,7 @@ export class Api<
         /** Reason for deleting the idea (sent to owner via email) */
         reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/ideas/${id}`,
@@ -3423,7 +3414,7 @@ export class Api<
         /** Filter by campus ID */
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -3464,7 +3455,7 @@ export class Api<
         sortBy?: "reportDate" | "type" | "status" | "reason";
         sortOrder?: "asc" | "desc";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -3504,15 +3495,7 @@ export class Api<
      * @request GET:/api/admin/v2/reports/stats
      * @secure
      */
-    adminV2ReportsStatsList: (
-      query?: {
-        /** Filter stats by school ID */
-        schoolId?: string;
-        /** Filter stats by campus ID */
-        campusId?: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    adminV2ReportsStatsList: (params: RequestParams = {}) =>
       this.request<
         {
           total?: number;
@@ -3525,7 +3508,6 @@ export class Api<
       >({
         path: `/api/admin/v2/reports/stats`,
         method: "GET",
-        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -3545,7 +3527,7 @@ export class Api<
         reportIds?: string[];
         status?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/reports/bulk-update`,
@@ -3600,7 +3582,7 @@ export class Api<
       data: {
         status?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/reports/${id}/status`,
@@ -3625,7 +3607,7 @@ export class Api<
       data: {
         note?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/reports/${id}/note`,
@@ -3651,7 +3633,7 @@ export class Api<
         reason?: string;
         duration?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/reports/${id}/ban-user`,
@@ -3677,7 +3659,7 @@ export class Api<
         lastName?: string;
         position?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/settings/profile`,
@@ -3702,7 +3684,7 @@ export class Api<
         currentPassword?: string;
         newPassword?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/settings/password`,
@@ -3754,7 +3736,7 @@ export class Api<
       data: {
         reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/settings/delete-account`,
@@ -3783,7 +3765,7 @@ export class Api<
         sortBy?: "spaceName" | "members" | "creationDate" | "category";
         sortOrder?: "asc" | "desc";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -3829,12 +3811,8 @@ export class Api<
     adminV2SpacesInsightsList: (
       query?: {
         period?: "all" | "week" | "month";
-        /** Filter by school ID */
-        schoolId?: string;
-        /** Filter by campus ID */
-        campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -3937,7 +3915,7 @@ export class Api<
       data?: {
         reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/spaces/${id}`,
@@ -3965,7 +3943,7 @@ export class Api<
         title?: string;
         description?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/v2/spaces/${id}`,
@@ -3994,7 +3972,7 @@ export class Api<
         sortBy?: "name" | "email" | "memberSince" | "onlineLast" | "status";
         sortOrder?: "asc" | "desc";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -4055,7 +4033,7 @@ export class Api<
         /** Filter by campus ID */
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -4259,7 +4237,7 @@ export class Api<
         /** Lock duration in days */
         lockDuration?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/students/${id}/lock-settings`,
@@ -4284,7 +4262,7 @@ export class Api<
         /** Filter campuses by school ID */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -4381,7 +4359,7 @@ export class Api<
         /** Filter by campus ID */
         campusId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -4429,7 +4407,7 @@ export class Api<
         role?: string;
         title?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/members`,
@@ -4471,7 +4449,7 @@ export class Api<
       data: {
         isActive?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/members/${id}/status`,
@@ -4496,7 +4474,7 @@ export class Api<
       data: {
         role?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/members/${id}/role`,
@@ -4518,7 +4496,7 @@ export class Api<
      */
     adminV2MembersPasswordResetCreate: (
       id: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/members/${id}/password-reset`,
@@ -4541,7 +4519,7 @@ export class Api<
       data: {
         reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/events/${id}/flag`,
@@ -4583,7 +4561,7 @@ export class Api<
       data: {
         reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/ideas/${id}/flag`,
@@ -4625,7 +4603,7 @@ export class Api<
       data: {
         reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/spaces/${id}/flag`,
@@ -4667,7 +4645,7 @@ export class Api<
       data: {
         reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/v2/students/${id}/flag`,
@@ -4715,7 +4693,7 @@ export class Api<
         entityType?: "idea" | "event" | "space" | "user";
         details?: object;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/analytics/log`,
@@ -4823,7 +4801,7 @@ export class Api<
         password_confirmed?: string;
         role?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -4887,7 +4865,7 @@ export class Api<
         otp?: number;
         email?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -4968,13 +4946,10 @@ export class Api<
         email?: string;
         password?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
-          status: string;
-          redirect: any;
-          phoneNumber: any;
           access_token?: string;
           _id?: string;
           email?: string;
@@ -5025,46 +5000,13 @@ export class Api<
       data: {
         email?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/forgot-password`,
         method: "POST",
         body: data,
         secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * @description Verify OTP code before password reset
-     *
-     * @name VerifyOtpCreate
-     * @summary Verify OTP code
-     * @request POST:/api/verify-otp
-     */
-    verifyOtpCreate: (
-      data: {
-        email: string;
-        otp: number;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<
-        {
-          message: string;
-          verified: boolean;
-        },
-        {
-          message: string;
-          remainingAttempts?: number;
-          locked?: boolean;
-          expired?: boolean;
-        }
-      >({
-        path: `/api/verify-otp`,
-        method: "POST",
-        body: data,
         type: ContentType.Json,
         ...params,
       }),
@@ -5084,7 +5026,7 @@ export class Api<
         password_confirmed?: string;
         otp?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/reset-password`,
@@ -5106,7 +5048,7 @@ export class Api<
       data: {
         refresh_token?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -5141,7 +5083,7 @@ export class Api<
         /** Secret from BOOTSTRAP_SECRET env variable */
         bootstrap_secret: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/bootstrap/super-admin`,
@@ -5189,7 +5131,7 @@ export class Api<
         /** Filter campuses by school ID */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -5247,7 +5189,7 @@ export class Api<
         time_zone: string;
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -5301,7 +5243,7 @@ export class Api<
         time_zone?: string;
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -5438,7 +5380,7 @@ export class Api<
          */
         period?: "7d" | "30d" | "90d";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -5512,7 +5454,7 @@ export class Api<
          */
         period?: "7d" | "30d" | "90d";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -5563,7 +5505,7 @@ export class Api<
      */
     adminCampusMetricsKpisList: (
       campusId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -5611,7 +5553,7 @@ export class Api<
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/campus/${campusId}/metrics/activity-timeline`,
@@ -5641,7 +5583,7 @@ export class Api<
         /** Filter by severity level */
         severity?: "info" | "warning" | "critical";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/campus/${campusId}/alerts`,
@@ -5663,7 +5605,7 @@ export class Api<
     adminCampusAlertsMarkReadPartialUpdate: (
       campusId: string,
       alertId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/campus/${campusId}/alerts/${alertId}/mark-read`,
@@ -5683,7 +5625,7 @@ export class Api<
      */
     adminCampusAlertsMarkAllReadPartialUpdate: (
       campusId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/campus/${campusId}/alerts/mark-all-read`,
@@ -5711,7 +5653,7 @@ export class Api<
         /** Maximum number of API calls to use */
         maxApiCalls?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -5805,7 +5747,7 @@ export class Api<
          */
         offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -5897,7 +5839,7 @@ export class Api<
      */
     adminCampusSyncCampusPreviewList: (
       campusId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -5965,7 +5907,7 @@ export class Api<
         /** The ID of the user to get or create a chat with */
         user_id: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -6156,7 +6098,7 @@ export class Api<
         /** Type of deeplink */
         type: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -6195,7 +6137,7 @@ export class Api<
         /** User ID to track */
         userId: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -6263,7 +6205,7 @@ export class Api<
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/discover/spaces`,
@@ -6290,7 +6232,7 @@ export class Api<
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/discover/events`,
@@ -6317,7 +6259,7 @@ export class Api<
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/discover/ideas`,
@@ -6358,7 +6300,7 @@ export class Api<
         /** Two-digit graduation year suffix (e.g., 25) */
         classOf?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/discover/users`,
@@ -6475,7 +6417,7 @@ export class Api<
         /** Optional array of participant user IDs */
         participants?: string[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -6518,7 +6460,7 @@ export class Api<
         /** Include detailed participant information (id, avatar_url, name) instead of just user IDs */
         include_participant_details?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -6569,7 +6511,7 @@ export class Api<
         /** Time frame to filter engagement data by. If omitted, all timeframes are returned in one response. */
         timeFrame?: "day" | "week" | "month" | "last6months" | "all";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         (
@@ -6635,7 +6577,7 @@ export class Api<
         /** Optional. If provided, only returns the count for that filter. */
         filter?: "outdoor" | "indoor" | "public" | "private" | "total";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         | {
@@ -6687,7 +6629,7 @@ export class Api<
          */
         include_past?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -6740,7 +6682,7 @@ export class Api<
         visibility?: "public" | "private";
         isCustom?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -6794,7 +6736,7 @@ export class Api<
         slots?: number;
         visibility?: "public" | "private";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -6927,7 +6869,7 @@ export class Api<
         /** @format binary */
         eventImage?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -7005,7 +6947,7 @@ export class Api<
         /** @default 100 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/events/profile/${type}`,
@@ -7036,7 +6978,7 @@ export class Api<
         /** Filter by deletion reason (optional) */
         deleteReason?: "user" | "admin" | "auto_cleanup";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/events/deleted`,
@@ -7060,7 +7002,7 @@ export class Api<
         receiver_id: string;
         event_id: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         EventInvite,
@@ -7099,7 +7041,7 @@ export class Api<
         /** Filter by event ID */
         event_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         EventInvite[],
@@ -7155,7 +7097,7 @@ export class Api<
       data: {
         status: "accepted" | "rejected" | "cancelled";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         EventInvite,
@@ -7338,7 +7280,7 @@ export class Api<
         growth?: "monthly";
         groupBy?: "month";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/ideas/count`,
@@ -7380,7 +7322,7 @@ export class Api<
         description: string;
         looking_for: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/ideas`,
@@ -7577,7 +7519,7 @@ export class Api<
         description: string;
         looking_for: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/ideas/${ideaId}`,
@@ -7620,7 +7562,7 @@ export class Api<
         ideaId: string;
         description: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/ideas/report`,
@@ -7645,7 +7587,7 @@ export class Api<
       data: {
         collaborate_id: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/ideas/${ideaId}/collaborate`,
@@ -7673,7 +7615,7 @@ export class Api<
         /** @default 100 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/ideas/profile/${type}`,
@@ -7729,7 +7671,7 @@ export class Api<
         icon_url: string;
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -7800,7 +7742,7 @@ export class Api<
         icon_url?: string;
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -7941,7 +7883,7 @@ export class Api<
         /** Type of image being uploaded */
         type: "image" | "icon";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -7995,7 +7937,7 @@ export class Api<
           order?: number;
         }[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/interest-groups`,
@@ -8044,7 +7986,7 @@ export class Api<
         }[];
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/interest-groups/${groupId}`,
@@ -8087,7 +8029,7 @@ export class Api<
         interestId: string;
         order: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/interest-groups/${groupId}/interests`,
@@ -8110,7 +8052,7 @@ export class Api<
     interestGroupsInterestsDelete: (
       groupId: string,
       interestId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/interest-groups/${groupId}/interests/${interestId}`,
@@ -8133,7 +8075,7 @@ export class Api<
         groupId?: string;
         order?: number;
       }[],
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/interest-groups/reorder`,
@@ -8159,7 +8101,7 @@ export class Api<
         interestId?: string;
         order?: number;
       }[],
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/interest-groups/${groupId}/reorder-interests`,
@@ -8216,7 +8158,7 @@ export class Api<
         /** Type of invites to filter by */
         invite_type?: "real_time" | "event";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -8273,7 +8215,7 @@ export class Api<
           };
         };
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -8317,7 +8259,7 @@ export class Api<
         /** Filter by invite status */
         status?: "pending" | "accepted" | "rejected";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -8390,7 +8332,7 @@ export class Api<
         /** The response to the invite */
         response: "accepted" | "rejected" | "cancelled" | "expired";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -8495,7 +8437,7 @@ export class Api<
     locationRoomUserDetail: (
       roomId: string,
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/location/room/${roomId}/user/${userId}`,
@@ -8519,7 +8461,7 @@ export class Api<
         longitude: number;
         clientTimestamp?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/location/room/${roomId}/user/${userId}`,
@@ -8540,7 +8482,7 @@ export class Api<
     locationRoomUserDelete: (
       roomId: string,
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/location/room/${roomId}/user/${userId}`,
@@ -8596,7 +8538,7 @@ export class Api<
         longitude: number;
         clientTimestamp?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/location/explore/${roomId}/${userId}/${walkType}/${schoolId}`,
@@ -8621,7 +8563,7 @@ export class Api<
         longitude: number;
         clientTimestamp?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/location/background`,
@@ -8648,7 +8590,7 @@ export class Api<
          */
         email: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -8683,7 +8625,7 @@ export class Api<
         /** Deep link to return to after authentication */
         returnTo?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -8716,7 +8658,7 @@ export class Api<
         refresh_token?: string;
         error?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<any, void>({
         path: `/api/saml/mobile/callback`,
@@ -8765,7 +8707,7 @@ export class Api<
         /** @default "direct" */
         typeOfRequest?: "direct" | "invite";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         PeerRequest,
@@ -8802,7 +8744,7 @@ export class Api<
         /** Filter by status */
         status?: "pending" | "accepted" | "rejected" | "cancelled";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         PeerRequest[],
@@ -8858,7 +8800,7 @@ export class Api<
       data: {
         status: "accepted" | "rejected" | "cancelled";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         PeerRequest,
@@ -8955,7 +8897,7 @@ export class Api<
       data: {
         response: "accepted" | "rejected";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/users/peers/response/${userId}`,
@@ -9114,7 +9056,7 @@ export class Api<
         /** MongoDB ObjectId of the peer to add */
         peerId: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -9151,7 +9093,7 @@ export class Api<
         /** ID of the peer to check status */
         user: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -9194,7 +9136,7 @@ export class Api<
          */
         include_parents?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/places/${placeId}/hierarchy`,
@@ -9227,7 +9169,7 @@ export class Api<
          */
         offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/places/${placeId}/children`,
@@ -9256,7 +9198,7 @@ export class Api<
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/places/containers`,
@@ -9288,7 +9230,7 @@ export class Api<
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/places/${placeId}/search`,
@@ -9310,7 +9252,7 @@ export class Api<
         /** Filter by campus ID */
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/places/hierarchy/stats`,
@@ -9337,7 +9279,7 @@ export class Api<
          */
         logo?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -9376,7 +9318,7 @@ export class Api<
          */
         cover?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -9520,7 +9462,7 @@ export class Api<
          */
         sort?: "name" | "rating";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -9597,7 +9539,7 @@ export class Api<
          */
         sort?: "name" | "rating";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/places/school/${schoolId}`,
@@ -9635,7 +9577,7 @@ export class Api<
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -9761,7 +9703,7 @@ export class Api<
         /** Filter categories by campus (optional) - only categories with top-level places in the campus will be returned */
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -9821,7 +9763,7 @@ export class Api<
         /** ID of the item being checked */
         reported_item_id: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/reports/check`,
@@ -9847,7 +9789,7 @@ export class Api<
         reason: string;
         description?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/reports`,
@@ -9877,7 +9819,7 @@ export class Api<
         /** @default 20 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -9954,7 +9896,7 @@ export class Api<
         status: "pending" | "under_review" | "resolved" | "dismissed";
         admin_notes?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -10038,7 +9980,7 @@ export class Api<
         ban_reason?: string;
         resolve_related_reports?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -10084,7 +10026,7 @@ export class Api<
       data: {
         unban_reason?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -10127,7 +10069,7 @@ export class Api<
         search?: string;
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -10207,7 +10149,7 @@ export class Api<
         action: "resolve" | "dismiss" | "under_review";
         admin_notes?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -10238,7 +10180,7 @@ export class Api<
         includeInactive?: "true" | "false";
         type?: "user" | "event" | "space" | "idea" | "message";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/report-reasons`,
@@ -10259,7 +10201,7 @@ export class Api<
       query?: {
         type?: "user" | "event" | "space" | "idea" | "message";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/report-reasons/active`,
@@ -10300,7 +10242,7 @@ export class Api<
         order?: number;
         isActive?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/report-reasons`,
@@ -10329,7 +10271,7 @@ export class Api<
         order?: number;
         isActive?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/report-reasons/${id}`,
@@ -10355,7 +10297,7 @@ export class Api<
         /** Set to 'true' for permanent deletion */
         permanent?: "true" | "false";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/report-reasons/${id}`,
@@ -10381,7 +10323,7 @@ export class Api<
           order?: number;
         }[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/report-reasons/bulk-order`,
@@ -10420,7 +10362,7 @@ export class Api<
         /** Required for school-scoped roles */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/users/${userId}/assign-role`,
@@ -10479,7 +10421,7 @@ export class Api<
         permissions?: string[];
         scope: "global" | "school" | "campus";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/roles`,
@@ -10536,7 +10478,7 @@ export class Api<
         action: "create" | "read" | "update" | "delete" | "manage" | "assign";
         description: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/permissions`,
@@ -10566,7 +10508,7 @@ export class Api<
         /** Optional school scope */
         school_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/users/${userId}/check-permission`,
@@ -10630,7 +10572,7 @@ export class Api<
         role: string;
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, any>({
         path: `/api/admin/users/${userId}/remove-role`,
@@ -10658,7 +10600,7 @@ export class Api<
         permissions?: string[];
         scope?: "global" | "school" | "campus";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/roles/${roleId}`,
@@ -10697,7 +10639,7 @@ export class Api<
      */
     adminPermissionsDelete: (
       permissionId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/permissions/${permissionId}`,
@@ -10718,7 +10660,7 @@ export class Api<
         school_name?: string;
         email_domain?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         void,
@@ -10806,7 +10748,7 @@ export class Api<
         disallowed_staff_emails?: string[];
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         void,
@@ -10833,7 +10775,7 @@ export class Api<
     schoolCampusCreate: (
       schoolId: string,
       campusId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/school/${schoolId}/campus/${campusId}`,
@@ -10851,7 +10793,7 @@ export class Api<
     schoolCampusDelete: (
       schoolId: string,
       campusId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/school/${schoolId}/campus/${campusId}`,
@@ -10901,7 +10843,7 @@ export class Api<
         /** Optional campus ID to assign the user to */
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/school/${schoolId}/user/${userId}`,
@@ -10921,7 +10863,7 @@ export class Api<
     schoolUserDelete: (
       schoolId: string,
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/school/${schoolId}/user/${userId}`,
@@ -10949,7 +10891,7 @@ export class Api<
         contactEmail?: string;
         memberCountRange?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces`,
@@ -10984,7 +10926,7 @@ export class Api<
         /** Admin only - view spaces from all campuses */
         allCampuses?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces`,
@@ -11030,7 +10972,7 @@ export class Api<
         category?: string;
         contactEmail?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces/${spaceId}`,
@@ -11073,7 +11015,7 @@ export class Api<
         /** Space ID to exclude from check (for editing) */
         excludeSpaceId?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces/check-name`,
@@ -11117,7 +11059,7 @@ export class Api<
         /** @default 100 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces/profile/${type}`,
@@ -11199,7 +11141,7 @@ export class Api<
          */
         logoDefault?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/space-categories/${id}`,
@@ -11243,7 +11185,7 @@ export class Api<
           order?: number;
         }[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/space-categories/reorder`,
@@ -11314,7 +11256,7 @@ export class Api<
         isCustom?: boolean;
         participants?: string[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces/${spaceId}/events`,
@@ -11344,7 +11286,7 @@ export class Api<
         /** Include private events (requires member or owner access) */
         includePrivate?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces/${spaceId}/events`,
@@ -11374,7 +11316,7 @@ export class Api<
         slots?: number;
         visibility?: "public" | "private";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces/events/${eventId}`,
@@ -11431,7 +11373,7 @@ export class Api<
     spacesRequestsApproveCreate: (
       spaceId: string,
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces/${spaceId}/requests/${userId}/approve`,
@@ -11452,7 +11394,7 @@ export class Api<
     spacesRequestsRejectCreate: (
       spaceId: string,
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces/${spaceId}/requests/${userId}/reject`,
@@ -11478,7 +11420,7 @@ export class Api<
         /** @default 100 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces/${spaceId}/requests`,
@@ -11505,7 +11447,7 @@ export class Api<
         /** @default 100 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces/${spaceId}/members`,
@@ -11527,7 +11469,7 @@ export class Api<
     spacesMembersDelete: (
       spaceId: string,
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/spaces/${spaceId}/members/${userId}`,
@@ -11597,7 +11539,7 @@ export class Api<
          */
         logo?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -11635,7 +11577,7 @@ export class Api<
          */
         cover?: File;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -11734,7 +11676,7 @@ export class Api<
         /** The ID of the selected user */
         selectedUserId: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/surprise/roll-end`,
@@ -11800,7 +11742,7 @@ export class Api<
          */
         endDate?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/surprise/admin/stats`,
@@ -11838,7 +11780,7 @@ export class Api<
      */
     surpriseAdminResetDailyRollsCreate: (
       userId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -11874,7 +11816,7 @@ export class Api<
         /** Filter by active status */
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/type-mappings`,
@@ -11900,7 +11842,7 @@ export class Api<
         description?: string;
         priority?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/type-mappings`,
@@ -11929,7 +11871,7 @@ export class Api<
         priority?: number;
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/admin/type-mappings/${id}`,
@@ -12112,7 +12054,7 @@ export class Api<
          */
         count?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -12250,7 +12192,7 @@ export class Api<
         /** Enable/disable event reminder notifications */
         event_reminders?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/api/users/notification-settings`,
@@ -12280,7 +12222,7 @@ export class Api<
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -12354,7 +12296,7 @@ export class Api<
         receiver_location?: number[];
         place_image?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         WalkInvite,
@@ -12390,7 +12332,7 @@ export class Api<
         /** Filter by status */
         status?: "pending" | "accepted" | "rejected" | "cancelled";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         WalkInvite[],
@@ -12446,7 +12388,7 @@ export class Api<
       data: {
         status: "accepted" | "rejected" | "cancelled";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         WalkInvite,
@@ -12514,7 +12456,7 @@ export class Api<
         /** Calculate monthly growth percentage */
         growth?: "monthly";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -12757,7 +12699,7 @@ export class Api<
          */
         order?: "asc" | "desc";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -12796,7 +12738,7 @@ export class Api<
         /** Array of app categories */
         app_categories: string[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -12832,7 +12774,7 @@ export class Api<
         include_details?: boolean;
         max_api_calls?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/sync/campus/${campusId}`,
@@ -12862,7 +12804,7 @@ export class Api<
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/sync/status`,
@@ -12962,7 +12904,7 @@ export class Api<
          */
         force_resync?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -13015,7 +12957,7 @@ export class Api<
          */
         concurrency?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -13111,7 +13053,7 @@ export class Api<
          */
         offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -13159,7 +13101,7 @@ export class Api<
         /** Campus ID (optional, for campus-specific popular places) */
         campus_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/places/popular`,
@@ -13187,7 +13129,7 @@ export class Api<
           order: number;
         }[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/places/popular`,
@@ -13231,7 +13173,7 @@ export class Api<
           order: number;
         }[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/places/popular/reorder`,
@@ -13256,7 +13198,7 @@ export class Api<
         /** Return only active categories */
         active_only?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/app-categories`,
@@ -13285,7 +13227,7 @@ export class Api<
         google_types: string[];
         sort_order?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/app-categories`,
@@ -13316,7 +13258,7 @@ export class Api<
         sort_order?: number;
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/app-categories/${id}`,
@@ -13469,7 +13411,7 @@ export class Api<
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/monitoring/alerts`,
@@ -13490,7 +13432,7 @@ export class Api<
      */
     monitoringAlertsAcknowledgeCreate: (
       alertId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/monitoring/alerts/${alertId}/acknowledge`,
@@ -13510,7 +13452,7 @@ export class Api<
      */
     monitoringAlertsResolveCreate: (
       alertId: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/monitoring/alerts/${alertId}/resolve`,
@@ -13541,7 +13483,7 @@ export class Api<
          */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/monitoring/errors`,
@@ -13570,7 +13512,7 @@ export class Api<
          */
         days?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<string, void>({
         path: `/admin/monitoring/metrics/export`,
@@ -13596,7 +13538,7 @@ export class Api<
         /** Search in name and description */
         search?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -13644,7 +13586,7 @@ export class Api<
         google_types: string[];
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -13726,7 +13668,7 @@ export class Api<
         google_types?: string[];
         is_active?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -13857,7 +13799,7 @@ export class Api<
          */
         offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/regions/campus/${campusId}/places`,
@@ -13888,7 +13830,7 @@ export class Api<
         /** @default 50 */
         limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/regions/nearby`,
@@ -13935,7 +13877,7 @@ export class Api<
         include_details?: boolean;
         max_api_calls?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/sync/trigger`,
@@ -13989,7 +13931,7 @@ export class Api<
          */
         offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/sync/logs`,
@@ -14068,7 +14010,7 @@ export class Api<
         retryFailedSyncs?: boolean;
         syncTimeoutMs?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/sync/scheduler/config`,
@@ -14233,7 +14175,7 @@ export class Api<
         /** User ID to create ambassador from existing user */
         user_id?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -14316,7 +14258,7 @@ export class Api<
         graduation_year?: number;
         major?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -14460,7 +14402,7 @@ export class Api<
          */
         offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -14495,7 +14437,7 @@ export class Api<
         endDate: string;
         severity?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/audit/security-events`,
@@ -14523,7 +14465,7 @@ export class Api<
          */
         days?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/audit/user-activity/${userId}`,
@@ -14551,7 +14493,7 @@ export class Api<
         endDate?: string;
         eventTypes?: string[];
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/audit/export`,
@@ -14586,7 +14528,7 @@ export class Api<
         /** Mobile platform */
         platform?: "ios" | "android";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<string, void>({
         path: `/auth/landing`,
@@ -14614,7 +14556,7 @@ export class Api<
         /** Confirmation of new password */
         new_password_confirmed: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -14649,7 +14591,7 @@ export class Api<
         /** Password to validate */
         password: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
@@ -14687,7 +14629,7 @@ export class Api<
          */
         period?: "month" | "week" | "day";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<
         {
