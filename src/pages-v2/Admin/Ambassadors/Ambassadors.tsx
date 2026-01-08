@@ -158,6 +158,8 @@ export const Ambassadors: React.FC = () => {
             name: student.name || "",
             email: student.email || "",
             user_id: student.id,
+            school_id: selectedSchool?._id,
+            campuses_id: selectedCampus?._id ? [selectedCampus._id] : [],
           })
         )
       );
