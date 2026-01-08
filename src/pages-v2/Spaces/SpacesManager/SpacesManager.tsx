@@ -10,6 +10,8 @@ import {
 import { useDebounce } from "../../../hooks/useDebounce";
 import { SpaceTable } from "../components/SpaceTable/SpaceTable";
 import { SpaceTableSkeleton } from "../components/SpaceTableSkeleton/SpaceTableSkeleton";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 import "./SpacesManager.css";
 
 interface SpaceCategory {
@@ -25,6 +27,8 @@ export type SpaceSortField =
   | "creationDate";
 
 export const SpacesManager: React.FC = () => {
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -82,6 +86,8 @@ export const SpacesManager: React.FC = () => {
       categoryFilter,
       sortBy === "events" ? undefined : sortBy,
       sortBy === "events" ? undefined : sortOrder,
+      selectedSchool?._id,
+      selectedCampus?._id,
     ],
     queryFn: () =>
       apiClient.api.adminV2SpacesList({
@@ -91,6 +97,8 @@ export const SpacesManager: React.FC = () => {
         category: categoryFilter,
         sortBy: sortBy === "events" ? undefined : sortBy,
         sortOrder: sortBy === "events" ? undefined : sortOrder,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
       }),
     placeholderData: keepPreviousData,
   });

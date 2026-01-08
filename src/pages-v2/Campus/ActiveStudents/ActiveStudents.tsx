@@ -57,6 +57,8 @@ export const ActiveStudents: React.FC = () => {
       "active",
       sortBy,
       sortOrder,
+      selectedSchool?._id,
+      selectedCampus?._id,
     ],
     queryFn: () =>
       apiClient.api.adminV2StudentsList({
@@ -66,6 +68,8 @@ export const ActiveStudents: React.FC = () => {
         status: "active",
         sortBy: apiSortBy,
         sortOrder,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
       }),
   });
 
