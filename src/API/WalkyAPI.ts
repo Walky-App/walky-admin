@@ -4543,6 +4543,10 @@ export class Api<
         email?: string;
         role?: string;
         title?: string;
+        /** School ID to assign the member to */
+        school_id?: string;
+        /** Campus ID to assign the member to */
+        campus_id?: string;
       },
       params: RequestParams = {},
     ) =>

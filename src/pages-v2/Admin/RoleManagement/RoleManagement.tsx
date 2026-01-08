@@ -325,6 +325,8 @@ export const RoleManagement: React.FC = () => {
         email: memberData.email,
         role: memberData.role,
         title: memberData.role || "Administrator",
+        school_id: selectedSchool?._id,
+        campus_id: selectedCampus?._id,
       });
       toast.success("Member created successfully");
       setToastMessage("Member created successfully");
