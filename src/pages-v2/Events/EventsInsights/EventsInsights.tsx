@@ -118,18 +118,20 @@ export const EventsInsights: React.FC = () => {
   // Extract other data and transform for DonutChart
   const rawExpandReachData = insightsData?.expandReachData || [];
   const rawUsersVsSpacesData = insightsData?.usersVsSpacesData || [];
-  
+
   // Transform data to match DonutChartData type (needs label, value, percentage, color)
-  const transformDonutData = (data: Array<{ name: string; value: number; color: string }>) => {
+  const transformDonutData = (
+    data: Array<{ name: string; value: number; color: string }>
+  ) => {
     const total = data.reduce((sum, item) => sum + item.value, 0);
-    return data.map(item => ({
+    return data.map((item) => ({
       label: item.name,
       value: item.value,
       percentage: total > 0 ? Math.round((item.value / total) * 100) : 0,
       color: item.color,
     }));
   };
-  
+
   const expandReachData = transformDonutData(rawExpandReachData);
   const usersVsSpacesData = transformDonutData(rawUsersVsSpacesData);
   const interests = insightsData?.interests || [];
