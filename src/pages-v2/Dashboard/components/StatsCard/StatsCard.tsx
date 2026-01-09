@@ -13,6 +13,7 @@ interface StatsCardProps {
     direction: "up" | "down" | "neutral";
     text: string;
   };
+  hideComparison?: boolean;
 }
 
 export const StatsCard: React.FC<StatsCardProps> = ({
@@ -21,6 +22,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   icon,
   iconBgColor,
   trend,
+  hideComparison = false,
 }) => {
   const { theme } = useTheme();
   const trendColor =
@@ -56,7 +58,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
         {value}
       </p>
 
-      {trend && (
+      {trend && !hideComparison && (
         <div className="st-stats-change-container">
           <div className={`st-trend-icon st-trend-${trend.direction}`}>
             {trend.direction === "neutral" ? (
@@ -81,6 +83,19 @@ export const StatsCard: React.FC<StatsCardProps> = ({
               {trend.value}
             </span>{" "}
             <span style={{ color: "5b6168" }}>{trend.text}</span>
+          </p>
+        </div>
+      )}
+      {trend && hideComparison && (
+        <div
+          className="st-stats-change-container"
+          style={{ visibility: "hidden" }}
+        >
+          <div className="st-trend-icon">
+            <AssetIcon name="trend-up-icon" size={24} color="transparent" />
+          </div>
+          <p className="st-stats-change-text">
+            <span>0%</span> <span>placeholder</span>
           </p>
         </div>
       )}

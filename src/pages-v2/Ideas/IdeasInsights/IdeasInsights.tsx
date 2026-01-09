@@ -33,6 +33,11 @@ interface TimeMetrics {
   };
 }
 
+type ChangeData = {
+  changePercentage?: string;
+  changeDirection?: "up" | "down" | "neutral";
+};
+
 export const IdeasInsights: React.FC = () => {
   const { canExport } = usePermissions();
   const { selectedSchool } = useSchool();
@@ -45,7 +50,13 @@ export const IdeasInsights: React.FC = () => {
   // Check permissions for this page
   const showExport = canExport("ideas_insights");
 
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<{
+    totalIdeas: number;
+    totalCollaborations: number;
+    conversionRate: number;
+    totalIdeasChange?: ChangeData;
+    collaboratedIdeasChange?: ChangeData;
+  }>({
     totalIdeas: 0,
     totalCollaborations: 0,
     conversionRate: 0,
@@ -78,7 +89,17 @@ export const IdeasInsights: React.FC = () => {
           campusId: selectedCampus?._id,
         });
 
-        const insightsData = insightsRes.data;
+        const insightsData = insightsRes.data as {
+          totalIdeas?: number;
+          collaboratedIdeas?: number;
+          totalIdeasChange?: ChangeData;
+          collaboratedIdeasChange?: ChangeData;
+          topIdeas?: Array<{
+            title?: string;
+            creator?: { name?: string; avatar?: string };
+            collaborators?: number;
+          }>;
+        };
         const total = insightsData.totalIdeas || 0;
         const collaborated = insightsData.collaboratedIdeas || 0;
 
@@ -90,6 +111,8 @@ export const IdeasInsights: React.FC = () => {
           totalIdeas: total,
           totalCollaborations: collaborated,
           conversionRate: conversion,
+          totalIdeasChange: insightsData.totalIdeasChange,
+          collaboratedIdeasChange: insightsData.collaboratedIdeasChange,
         });
 
         // Process time metrics - fetch separately if needed
@@ -143,9 +166,16 @@ export const IdeasInsights: React.FC = () => {
         setLastUpdated(new Date().toISOString());
       } catch (err: unknown) {
         console.error("Failed to fetch ideas insights:", err);
-        const error = err as { response?: { data?: { error?: string }; status?: number }; message?: string };
-        const errorMessage = error?.response?.data?.error || error?.message || "";
-        if (errorMessage.includes("school") || error?.response?.status === 400) {
+        const error = err as {
+          response?: { data?: { error?: string }; status?: number };
+          message?: string;
+        };
+        const errorMessage =
+          error?.response?.data?.error || error?.message || "";
+        if (
+          errorMessage.includes("school") ||
+          error?.response?.status === 400
+        ) {
           setError(
             "Your account is not associated with a school. Please contact an administrator to configure your school access."
           );
@@ -159,6 +189,48 @@ export const IdeasInsights: React.FC = () => {
 
     fetchData();
   }, [timePeriod, selectedSchool?._id, selectedCampus?._id]);
+
+  // Helper to get trend text based on time period
+  const getTrendText = () => {
+    switch (timePeriod) {
+      case "week":
+        return "from last week";
+      case "month":
+        return "from last month";
+      case "all-time":
+        return "all time";
+      default:
+        return "from last period";
+    }
+  };
+
+  // Helper to format trend data from API
+  const formatTrend = (changeData: ChangeData | undefined) => {
+    if (!changeData) {
+      return {
+        value: "0%",
+        direction: "neutral" as const,
+        text: getTrendText(),
+      };
+    }
+    const direction: "up" | "down" | "neutral" =
+      changeData.changeDirection === "neutral" ||
+      changeData.changePercentage === "0%" ||
+      changeData.changePercentage === "N/A"
+        ? "neutral"
+        : changeData.changeDirection === "up"
+        ? "up"
+        : "down";
+    const value =
+      changeData.changePercentage === "N/A"
+        ? "0%"
+        : changeData.changePercentage || "0%";
+    return {
+      value,
+      direction,
+      text: getTrendText(),
+    };
+  };
 
   return (
     <main className="ideas-insights-page" ref={exportRef}>
@@ -191,11 +263,49 @@ export const IdeasInsights: React.FC = () => {
           <p className="stats-card-value">
             {loading ? "..." : stats.totalIdeas.toLocaleString()}
           </p>
+          <div
+            className="stats-card-trend"
+            style={
+              timePeriod === "all-time" ? { visibility: "hidden" } : undefined
+            }
+          >
+            {formatTrend(stats.totalIdeasChange).direction === "neutral" ? (
+              <span className="trend-dash">—</span>
+            ) : (
+              <AssetIcon
+                name={
+                  formatTrend(stats.totalIdeasChange).direction === "up"
+                    ? "trend-up-icon"
+                    : "trend-down-icon"
+                }
+                size={20}
+                color={
+                  formatTrend(stats.totalIdeasChange).direction === "up"
+                    ? "#00C943"
+                    : "#D53425"
+                }
+              />
+            )}
+            <span
+              className="trend-value"
+              style={{
+                color:
+                  formatTrend(stats.totalIdeasChange).direction === "neutral"
+                    ? "#4318FF"
+                    : formatTrend(stats.totalIdeasChange).direction === "up"
+                    ? "#00C943"
+                    : "#D53425",
+              }}
+            >
+              {formatTrend(stats.totalIdeasChange).value}
+            </span>
+            <span className="trend-label">{getTrendText()}</span>
+          </div>
         </div>
 
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">Total collaborations</p>
+            <p className="stats-card-title">Total ideas collaborated</p>
             <div className="stats-card-icon user-icon-bg">
               <AssetIcon name="double-users-icon" size={24} color="#8280FF" />
             </div>
@@ -203,6 +313,47 @@ export const IdeasInsights: React.FC = () => {
           <p className="stats-card-value">
             {loading ? "..." : stats.totalCollaborations.toLocaleString()}
           </p>
+          <div
+            className="stats-card-trend"
+            style={
+              timePeriod === "all-time" ? { visibility: "hidden" } : undefined
+            }
+          >
+            {formatTrend(stats.collaboratedIdeasChange).direction ===
+            "neutral" ? (
+              <span className="trend-dash">—</span>
+            ) : (
+              <AssetIcon
+                name={
+                  formatTrend(stats.collaboratedIdeasChange).direction === "up"
+                    ? "trend-up-icon"
+                    : "trend-down-icon"
+                }
+                size={20}
+                color={
+                  formatTrend(stats.collaboratedIdeasChange).direction === "up"
+                    ? "#00C943"
+                    : "#D53425"
+                }
+              />
+            )}
+            <span
+              className="trend-value"
+              style={{
+                color:
+                  formatTrend(stats.collaboratedIdeasChange).direction ===
+                  "neutral"
+                    ? "#4318FF"
+                    : formatTrend(stats.collaboratedIdeasChange).direction ===
+                      "up"
+                    ? "#00C943"
+                    : "#D53425",
+              }}
+            >
+              {formatTrend(stats.collaboratedIdeasChange).value}
+            </span>
+            <span className="trend-label">{getTrendText()}</span>
+          </div>
         </div>
 
         <div className="stats-card">
@@ -213,7 +364,13 @@ export const IdeasInsights: React.FC = () => {
             </div>
           </div>
           <p className="stats-card-value">
-            {loading ? "..." : `${stats.conversionRate}%`}
+            {loading ? (
+              "..."
+            ) : stats.conversionRate === 0 ? (
+              <span className="trend-dash">—</span>
+            ) : (
+              `${stats.conversionRate}%`
+            )}
           </p>
         </div>
       </div>
@@ -234,7 +391,12 @@ export const IdeasInsights: React.FC = () => {
                 ? "..."
                 : `${timeMetrics.timeToFirstCollaborator.value} Days`}
             </p>
-            <div className="time-card-trend">
+            <div
+              className="time-card-trend"
+              style={
+                timePeriod === "all-time" ? { visibility: "hidden" } : undefined
+              }
+            >
               <AssetIcon
                 name={
                   timeMetrics.timeToFirstCollaborator.trendDirection === "up"
@@ -271,7 +433,12 @@ export const IdeasInsights: React.FC = () => {
             <p className="time-card-value">
               {loading ? "..." : `${timeMetrics.avgResponseTime.value} Days`}
             </p>
-            <div className="time-card-trend">
+            <div
+              className="time-card-trend"
+              style={
+                timePeriod === "all-time" ? { visibility: "hidden" } : undefined
+              }
+            >
               <AssetIcon
                 name={
                   timeMetrics.avgResponseTime.trendDirection === "up"

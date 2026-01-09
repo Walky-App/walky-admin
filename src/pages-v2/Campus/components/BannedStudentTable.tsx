@@ -182,11 +182,6 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     }
   };
 
-  const handleDeactivateUser = (student: StudentData) => {
-    setStudentToDeactivate(student);
-    setDeactivateModalVisible(true);
-  };
-
   const handleConfirmDeactivate = () => {
     if (!studentToDeactivate) return;
     deactivateMutation.mutate(studentToDeactivate.id);
@@ -671,14 +666,6 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
                                 onClick: (e: React.MouseEvent) => {
                                   e.stopPropagation();
                                   handleUnbanUser(student);
-                                },
-                              },
-                              {
-                                label: "Deactivate user",
-                                variant: "danger" as const,
-                                onClick: (e: React.MouseEvent) => {
-                                  e.stopPropagation();
-                                  handleDeactivateUser(student);
                                 },
                               },
                             ]
