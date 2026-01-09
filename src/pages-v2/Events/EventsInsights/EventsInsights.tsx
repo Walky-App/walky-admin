@@ -56,12 +56,14 @@ type InsightsData = {
   updatedAt?: string;
   metadata?: { lastUpdated?: string };
   expandReachData?: Array<{
-    name: string;
+    name?: string;
+    label?: string;
     value: number;
     color: string;
   }>;
   usersVsSpacesData?: Array<{
-    name: string;
+    name?: string;
+    label?: string;
     value: number;
     color: string;
   }>;
@@ -121,11 +123,11 @@ export const EventsInsights: React.FC = () => {
 
   // Transform data to match DonutChartData type (needs label, value, percentage, color)
   const transformDonutData = (
-    data: Array<{ name: string; value: number; color: string }>
+    data: Array<{ name?: string; label?: string; value: number; color: string }>
   ) => {
     const total = data.reduce((sum, item) => sum + item.value, 0);
     return data.map((item) => ({
-      label: item.name,
+      label: item.label || item.name || "",
       value: item.value,
       percentage: total > 0 ? Math.round((item.value / total) * 100) : 0,
       color: item.color,
