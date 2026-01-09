@@ -114,6 +114,37 @@
   margin: 0;
 }
 
+/* Stats Card Trend */
+.ideas-insights-page .stats-card-trend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.ideas-insights-page .stats-card-trend .trend-value {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ideas-insights-page .stats-card-trend .trend-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #5b6168;
+}
+
+.ideas-insights-page .stats-card-trend .trend-dash {
+  color: #4318ff;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+[data-theme="dark"] .ideas-insights-page .stats-card-trend .trend-label {
+  color: #9ca3af;
+}
+
 /* Filter Section */
 .filter-section {
   margin-bottom: 24px;

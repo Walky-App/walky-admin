@@ -28,8 +28,8 @@ export const EventsManager: React.FC = () => {
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState<EventSortField | undefined>(undefined);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortBy, setSortBy] = useState<EventSortField>("eventDate");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Debounce search input
   useEffect(() => {

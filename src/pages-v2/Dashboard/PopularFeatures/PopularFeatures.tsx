@@ -336,7 +336,6 @@ const PopularFeatures: React.FC = () => {
             <CommonInterests
               interests={commonInterests}
               datasets={{
-                "Common interests": commonInterests,
                 "Students' interests": topInterests,
                 "Ways to connect": formattedWaysToConnect,
                 "Visited places": visitedPlaces,

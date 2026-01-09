@@ -16,6 +16,7 @@ interface StatsCardProps {
   tooltip?: string;
   showTooltip?: boolean;
   onTooltipHover?: (show: boolean) => void;
+  hideComparison?: boolean;
 }
 
 export const StatsCard: React.FC<StatsCardProps> = ({
@@ -28,6 +29,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   tooltip,
   showTooltip,
   onTooltipHover,
+  hideComparison = false,
 }) => {
   const hasIcon = Boolean(iconName);
   const iconContainerStyle = hasIcon
@@ -70,7 +72,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
         </div>
       </div>
       <div className="stats-card-value">{value}</div>
-      {trend && (
+      {trend && !hideComparison && (
         <div className="stats-card-trend">
           <AssetIcon
             name={trend.isPositive ? "trend-up-icon" : "trend-up-red"}
@@ -85,6 +87,17 @@ export const StatsCard: React.FC<StatsCardProps> = ({
             {trend.value}
           </span>
           <span className="stats-card-trend-label">{trend.label}</span>
+        </div>
+      )}
+      {trend && hideComparison && (
+        <div className="stats-card-trend" style={{ visibility: "hidden" }}>
+          <AssetIcon
+            name="trend-up-icon"
+            size={24}
+            className="stats-card-trend-icon"
+          />
+          <span className="stats-card-trend-value">0%</span>
+          <span className="stats-card-trend-label">placeholder</span>
         </div>
       )}
     </div>

@@ -173,8 +173,21 @@ export const SpacesInsights: React.FC = () => {
 
   // Helper to calculate and format trend data
   const calculateTrend = (current: number, allTime: number) => {
-    if (timePeriod === "all-time" || allTime === 0) {
-      return undefined;
+    if (timePeriod === "all-time") {
+      // Return placeholder trend for layout consistency
+      return {
+        value: "0%",
+        direction: "neutral" as const,
+        text: "placeholder",
+      };
+    }
+
+    if (allTime === 0) {
+      return {
+        value: "0%",
+        direction: "neutral" as const,
+        text: getTrendText(),
+      };
     }
 
     // Calculate what percentage of all-time this period represents
@@ -257,6 +270,7 @@ export const SpacesInsights: React.FC = () => {
             insightsData?.data.totalSpaces || 0,
             allTimeInsights?.data.totalSpaces || 0
           )}
+          hideComparison={timePeriod === "all-time"}
         />
         <StatsCard
           title="Total members joined Spaces"
@@ -273,6 +287,7 @@ export const SpacesInsights: React.FC = () => {
             insightsData?.data.totalMembers || 0,
             allTimeInsights?.data.totalMembers || 0
           )}
+          hideComparison={timePeriod === "all-time"}
         />
       </div>
 
