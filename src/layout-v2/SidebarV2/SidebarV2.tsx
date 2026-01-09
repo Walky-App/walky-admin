@@ -147,11 +147,11 @@ const allMenuSections: MenuSection[] = [
             path: "/dashboard/community",
             resource: "community",
           },
-          {
-            label: "Student Behavior",
-            path: "/dashboard/student-behavior",
-            resource: "student_behavior",
-          },
+          // {
+          //   label: "Student Behavior",
+          //   path: "/dashboard/student-behavior",
+          //   resource: "student_behavior",
+          // },
           {
             label: "Student Safety",
             path: "/dashboard/student-safety",

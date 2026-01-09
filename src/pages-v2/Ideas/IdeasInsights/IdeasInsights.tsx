@@ -397,27 +397,35 @@ export const IdeasInsights: React.FC = () => {
                 timePeriod === "all-time" ? { visibility: "hidden" } : undefined
               }
             >
-              <AssetIcon
-                name={
-                  timeMetrics.timeToFirstCollaborator.trendDirection === "up"
-                    ? "trend-up-red"
-                    : "trend-down-icon"
-                }
-                size={24}
-                color={
-                  timeMetrics.timeToFirstCollaborator.trendDirection === "up"
-                    ? "#D53425"
-                    : "#00C943"
-                }
-              />
-              <p className="trend-text">
-                <span className="trend-percentage">
-                  {Math.abs(timeMetrics.timeToFirstCollaborator.trend)}%
-                </span>{" "}
-                <span className="trend-label">
-                  from last {timePeriod === "week" ? "week" : "month"}
-                </span>
-              </p>
+              {timeMetrics.timeToFirstCollaborator.trend === 0 ? (
+                <span className="trend-dash">—</span>
+              ) : (
+                <>
+                  <AssetIcon
+                    name={
+                      timeMetrics.timeToFirstCollaborator.trendDirection ===
+                      "up"
+                        ? "trend-up-red"
+                        : "trend-down-icon"
+                    }
+                    size={24}
+                    color={
+                      timeMetrics.timeToFirstCollaborator.trendDirection ===
+                      "up"
+                        ? "#D53425"
+                        : "#00C943"
+                    }
+                  />
+                  <p className="trend-text">
+                    <span className="trend-percentage">
+                      {Math.abs(timeMetrics.timeToFirstCollaborator.trend)}%
+                    </span>{" "}
+                    <span className="trend-label">
+                      from last {timePeriod === "week" ? "week" : "month"}
+                    </span>
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
@@ -439,27 +447,33 @@ export const IdeasInsights: React.FC = () => {
                 timePeriod === "all-time" ? { visibility: "hidden" } : undefined
               }
             >
-              <AssetIcon
-                name={
-                  timeMetrics.avgResponseTime.trendDirection === "up"
-                    ? "trend-up-red"
-                    : "trend-down-icon"
-                }
-                size={24}
-                color={
-                  timeMetrics.avgResponseTime.trendDirection === "up"
-                    ? "#D53425"
-                    : "#00C943"
-                }
-              />
-              <p className="trend-text">
-                <span className="trend-percentage">
-                  {Math.abs(timeMetrics.avgResponseTime.trend)}%
-                </span>{" "}
-                <span className="trend-label">
-                  from last {timePeriod === "week" ? "week" : "month"}
-                </span>
-              </p>
+              {timeMetrics.avgResponseTime.trend === 0 ? (
+                <span className="trend-dash">—</span>
+              ) : (
+                <>
+                  <AssetIcon
+                    name={
+                      timeMetrics.avgResponseTime.trendDirection === "up"
+                        ? "trend-up-red"
+                        : "trend-down-icon"
+                    }
+                    size={24}
+                    color={
+                      timeMetrics.avgResponseTime.trendDirection === "up"
+                        ? "#D53425"
+                        : "#00C943"
+                    }
+                  />
+                  <p className="trend-text">
+                    <span className="trend-percentage">
+                      {Math.abs(timeMetrics.avgResponseTime.trend)}%
+                    </span>{" "}
+                    <span className="trend-label">
+                      from last {timePeriod === "week" ? "week" : "month"}
+                    </span>
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>
