@@ -22,8 +22,7 @@ function getCsrfToken(): string | null {
 }
 
 const API = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_BASE_URL ?? "https://staging.walkyapp.com/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api",
   // baseURL: "http://localhost:8081/api", // Use this for local development with /api prefix
   withCredentials: true, // Enable cookies for CSRF
 });
@@ -37,7 +36,10 @@ API.interceptors.request.use((config) => {
   }
 
   // Add CSRF token for non-GET requests
-  if (config.method && !["get", "head", "options"].includes(config.method.toLowerCase())) {
+  if (
+    config.method &&
+    !["get", "head", "options"].includes(config.method.toLowerCase())
+  ) {
     const csrfToken = getCsrfToken();
     if (csrfToken) {
       // Try multiple common CSRF header names
@@ -56,7 +58,7 @@ API.interceptors.response.use(
       "✅ API Response:",
       response.config.method?.toUpperCase(),
       response.config.url,
-      response.status,
+      response.status
     );
     return response;
   },
@@ -66,7 +68,7 @@ API.interceptors.response.use(
       error.config?.method?.toUpperCase(),
       error.config?.url,
       error.response?.status,
-      error.response?.statusText,
+      error.response?.statusText
     );
     if (error.response?.data) {
       console.error("📄 Error data:", error.response.data);
@@ -86,13 +88,16 @@ API.interceptors.response.use(
     if (error.response?.status === 403) {
       const errorCode = (error.response?.data as any)?.code;
       // Only trigger deactivated modal for actual account deactivation, not permission errors
-      if (errorCode === 'ACCOUNT_DEACTIVATED' || errorCode === 'USER_DEACTIVATED') {
+      if (
+        errorCode === "ACCOUNT_DEACTIVATED" ||
+        errorCode === "USER_DEACTIVATED"
+      ) {
         triggerDeactivatedModal();
       }
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
 // Initialize OpenAPI Client
@@ -101,7 +106,7 @@ API.interceptors.response.use(
 // - Admin routes (/api/admin/...) work as-is
 // - Legacy routes (/ambassadors, etc.) hit the legacy router at root
 const baseURL =
-  import.meta.env.VITE_API_BASE_URL ?? "https://staging.walkyapp.com/api";
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api";
 
 // Create Api directly with config (Api extends HttpClient)
 export const apiClient = new Api({
@@ -125,7 +130,10 @@ apiClient.instance.interceptors.request.use(
     }
 
     // Add CSRF token for non-GET requests
-    if (config.method && !["get", "head", "options"].includes(config.method.toLowerCase())) {
+    if (
+      config.method &&
+      !["get", "head", "options"].includes(config.method.toLowerCase())
+    ) {
       const csrfToken = getCsrfToken();
       if (csrfToken) {
         // Try multiple common CSRF header names
@@ -135,7 +143,7 @@ apiClient.instance.interceptors.request.use(
     }
 
     return config;
-  },
+  }
 );
 
 apiClient.instance.interceptors.response.use(
@@ -144,7 +152,7 @@ apiClient.instance.interceptors.response.use(
       "✅ API Response:",
       response.config.method?.toUpperCase(),
       response.config.url,
-      response.status,
+      response.status
     );
     return response;
   },
@@ -154,7 +162,7 @@ apiClient.instance.interceptors.response.use(
       error.config?.method?.toUpperCase(),
       error.config?.url,
       error.response?.status,
-      error.response?.statusText,
+      error.response?.statusText
     );
     if (error.response?.data) {
       console.error("📄 Error data:", error.response.data);
@@ -172,13 +180,16 @@ apiClient.instance.interceptors.response.use(
     if (error.response?.status === 403) {
       const errorCode = (error.response?.data as any)?.code;
       // Only trigger deactivated modal for actual account deactivation, not permission errors
-      if (errorCode === 'ACCOUNT_DEACTIVATED' || errorCode === 'USER_DEACTIVATED') {
+      if (
+        errorCode === "ACCOUNT_DEACTIVATED" ||
+        errorCode === "USER_DEACTIVATED"
+      ) {
         triggerDeactivatedModal();
       }
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
 export default API;

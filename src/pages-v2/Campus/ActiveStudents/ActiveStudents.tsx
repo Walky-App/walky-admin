@@ -1,9 +1,8 @@
 import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { Pagination, SearchInput, FilterBar } from "../../../components-v2";
+import { Pagination, SearchInput } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
-import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import { StatsCard } from "../components/StatsCard";
 import {
   StudentTable,
@@ -23,7 +22,6 @@ export const ActiveStudents: React.FC = () => {
   const { selectedCampus } = useCampus();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
 
   // Check permissions for this page
   const showExport = canExport("active_students");
@@ -83,37 +81,34 @@ export const ActiveStudents: React.FC = () => {
   });
 
   const isLoading = isStudentsLoading || isStatsLoading;
-  const buildTrend = (change?: number | null) => {
-    const safeChange = Number.isFinite(change ?? NaN) ? (change as number) : 0;
-    return {
-      value: `${Math.abs(safeChange)}`,
-      isPositive: safeChange >= 0,
-      label: "from last month",
-    } as const;
-  };
-
-  const totalStudentsTrend = buildTrend(
-    (statsData?.data as any)?.totalStudentsFromLastMonth ?? 0
-  );
-
-  const studentsWithAccessTrend = buildTrend(
-    (statsData?.data as any)?.studentsWithAppAccessFromLastMonth ?? 0
-  );
 
   const students: StudentData[] = (studentsData?.data.data || []).map(
-    (student) => ({
-      id: student.id || "",
-      userId: student.userId || "",
-      name: student.name || "",
-      email: student.email || "",
-      interests: student.interests || [],
-      avatar: student.avatar,
-      status: (student.status || "active") as StudentData["status"],
-      memberSince: formatMemberSince(student.memberSince),
-      onlineLast: student.onlineLast || "",
-      isFlagged: student.isFlagged,
-      flagReason: (student as any).flagReason,
-    })
+    (student) => {
+      const isOnboarded =
+        (student as any).isOnboarded ?? (student as any).is_onboarded;
+      const rawStatus = (student.status || "active") as StudentData["status"];
+      const interestCount = Array.isArray(student.interests)
+        ? student.interests.length
+        : 0;
+      const derivedStatus =
+        isOnboarded === false || interestCount < 3
+          ? ("incomplete" as StudentData["status"])
+          : rawStatus;
+
+      return {
+        id: student.id || "",
+        userId: student.userId || "",
+        name: student.name || "",
+        email: student.email || "",
+        interests: student.interests || [],
+        avatar: student.avatar,
+        status: derivedStatus,
+        memberSince: formatMemberSince(student.memberSince),
+        onlineLast: student.onlineLast || "",
+        isFlagged: student.isFlagged,
+        flagReason: (student as any).flagReason,
+      };
+    }
   );
 
   const totalPages = Math.ceil(
@@ -140,27 +135,9 @@ export const ActiveStudents: React.FC = () => {
 
   return (
     <main className="active-students-page" ref={exportRef}>
-      <div className="mngs-container-date">
-        <FilterBar
-          timePeriod={timePeriod}
-          onTimePeriodChange={setTimePeriod}
-          showExport={false}
-          hideTimeSelector
-          periodLabel="Current month"
-        />
-      </div>
-
       <div className="active-students-stats">
         <StatsCard
-          title="Total students"
-          value={statsData?.data.totalStudents?.toString() || "0"}
-          iconName="double-users-icon"
-          iconBgColor="#E9FCF4"
-          iconColor="#00C617"
-          trend={totalStudentsTrend}
-        />
-        <StatsCard
-          title="Students with app access"
+          title="Total Active students"
           value={statsData?.data.studentsWithAppAccess?.toString() || "0"}
           iconName="check-icon"
           iconBgColor="#E9FCF4"
@@ -170,7 +147,12 @@ export const ActiveStudents: React.FC = () => {
           onTooltipHover={(show) =>
             setHoveredTooltip(show ? "app-access" : null)
           }
-          trend={studentsWithAccessTrend}
+        />
+        <StatsCard
+          title="Total students"
+          value={statsData?.data.totalStudents?.toString() || "0"}
+          iconBgColor="#E9FCF4"
+          iconColor="#00C617"
         />
       </div>
 

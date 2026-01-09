@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
-import { SearchInput, Pagination, FilterBar } from "../../../components-v2";
+import { SearchInput, Pagination } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
-import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import { StatsCard } from "../components/StatsCard";
 import { BannedStudentTable } from "../components/BannedStudentTable";
 import { StudentData, StudentTableColumn } from "../components/StudentTable";
@@ -21,7 +20,6 @@ export const BannedStudents: React.FC = () => {
   const { selectedCampus } = useCampus();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
 
   // Check permissions for this page
   const showExport = canExport("banned_students");
@@ -30,7 +28,6 @@ export const BannedStudents: React.FC = () => {
     setSearchQuery(value);
     setCurrentPage(1); // Reset to first page when searching
   };
-  const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<StudentTableColumn | undefined>(
     undefined
   );
@@ -81,40 +78,6 @@ export const BannedStudents: React.FC = () => {
   });
 
   const isLoading = isStudentsLoading;
-
-  const parseChange = (value?: number | string | null) => {
-    if (value === undefined || value === null) return undefined;
-    if (typeof value === "number")
-      return Number.isFinite(value) ? value : undefined;
-    const parsed = parseFloat(value);
-    return Number.isFinite(parsed) ? parsed : undefined;
-  };
-
-  const buildTrend = (change?: number) => {
-    const safeChange = change ?? 0;
-    return {
-      value: `${Math.abs(safeChange).toFixed(1)}%`,
-      isPositive: safeChange >= 0,
-      label: "from last month",
-    } as const;
-  };
-
-  const stats = (statsData?.data || {}) as Record<string, unknown>;
-  const totalBannedChange = parseChange(
-    (stats["totalBannedChangePercentage"] as number | string | null) ??
-      (stats["totalBannedChange"] as number | string | null) ??
-      (stats["totalBannedTrend"] as number | string | null) ??
-      (stats["totalBannedMoM"] as number | string | null)
-  );
-  const permanentBansChange = parseChange(
-    (stats["totalPermanentBansChangePercentage"] as number | string | null) ??
-      (stats["totalPermanentBansChange"] as number | string | null) ??
-      (stats["totalPermanentBansTrend"] as number | string | null) ??
-      (stats["totalPermanentBansMoM"] as number | string | null)
-  );
-
-  const totalBannedTrend = buildTrend(totalBannedChange);
-  const permanentBansTrend = buildTrend(permanentBansChange);
 
   // Extended type for additional fields that may come from API
   type ExtendedStudent = {
@@ -237,37 +200,19 @@ export const BannedStudents: React.FC = () => {
 
   return (
     <main className="banned-students-page" ref={exportRef}>
-      <div className="mngs-container-date">
-        <FilterBar
-          timePeriod={timePeriod}
-          onTimePeriodChange={setTimePeriod}
-          showExport={false}
-          hideTimeSelector
-          periodLabel="Current month"
-        />
-      </div>
-
       <div className="banned-students-stats">
         <StatsCard
           title="Total banned students"
           value={studentsData?.data.total?.toString() || "0"}
-          iconName="double-users-icon"
-          iconBgColor="#E9FCF4"
-          iconColor="#00C617"
-          trend={totalBannedTrend}
+          iconName="lock-icon"
+          iconBgColor="#FCE9E9"
+          iconColor="#FF8082"
         />
         <StatsCard
-          title="Permanent bans"
-          value={statsData?.data.totalPermanentBans?.toString() || "0"}
-          iconName="lock-icon"
-          iconBgColor="#FFF3E0"
-          iconColor="#F69B39"
-          tooltip="Students with permanent ban status"
-          showTooltip={hoveredTooltip === "permanent-bans"}
-          trend={permanentBansTrend}
-          onTooltipHover={(show) =>
-            setHoveredTooltip(show ? "permanent-bans" : null)
-          }
+          title="Total students"
+          value={statsData?.data.totalStudents?.toString() || "0"}
+          iconBgColor="#E9FCF4"
+          iconColor="#00C617"
         />
       </div>
 

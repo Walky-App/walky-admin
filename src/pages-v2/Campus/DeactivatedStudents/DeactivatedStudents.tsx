@@ -1,9 +1,8 @@
 import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
-import { SearchInput, Pagination, FilterBar } from "../../../components-v2";
+import { SearchInput, Pagination } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
-import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import { StatsCard } from "../components/StatsCard";
 import { StudentData, StudentTableColumn } from "../components/StudentTable";
 import { DeactivatedStudentTable } from "../components/DeactivatedStudentTable";
@@ -20,7 +19,6 @@ export const DeactivatedStudents: React.FC = () => {
   const { selectedCampus } = useCampus();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
 
   // Check permissions for this page
   const showExport = canExport("inactive_students");
@@ -77,40 +75,6 @@ export const DeactivatedStudents: React.FC = () => {
 
   const isListLoading = isStudentsLoading;
 
-  const parseChange = (value?: number | string | null) => {
-    if (value === undefined || value === null) return undefined;
-    if (typeof value === "number")
-      return Number.isFinite(value) ? value : undefined;
-    const parsed = parseFloat(value);
-    return Number.isFinite(parsed) ? parsed : undefined;
-  };
-
-  const buildTrend = (change?: number) => {
-    const safeChange = change ?? 0;
-    return {
-      value: `${Math.abs(safeChange).toFixed(1)}%`,
-      isPositive: safeChange >= 0,
-      label: "from last month",
-    } as const;
-  };
-
-  const stats = (statsData?.data || {}) as Record<string, unknown>;
-  const totalDeactivatedChange = parseChange(
-    (stats["totalDeactivatedChangePercentage"] as number | string | null) ??
-      (stats["totalDeactivatedChange"] as number | string | null) ??
-      (stats["totalDeactivatedTrend"] as number | string | null) ??
-      (stats["totalDeactivatedMoM"] as number | string | null)
-  );
-  const permanentBansChange = parseChange(
-    (stats["totalPermanentBansChangePercentage"] as number | string | null) ??
-      (stats["totalPermanentBansChange"] as number | string | null) ??
-      (stats["totalPermanentBansTrend"] as number | string | null) ??
-      (stats["totalPermanentBansMoM"] as number | string | null)
-  );
-
-  const totalDeactivatedTrend = buildTrend(totalDeactivatedChange);
-  const permanentBansTrend = buildTrend(permanentBansChange);
-
   const students: StudentData[] = (studentsData?.data.data || []).map(
     (student) => ({
       id: student.id || "",
@@ -147,32 +111,19 @@ export const DeactivatedStudents: React.FC = () => {
 
   return (
     <main className="deactivated-students-page" ref={exportRef}>
-      <div className="mngs-container-date">
-        <FilterBar
-          timePeriod={timePeriod}
-          onTimePeriodChange={setTimePeriod}
-          showExport={false}
-          hideTimeSelector
-          periodLabel="Current month"
-        />
-      </div>
-
       <div className="deactivated-students-stats">
         <StatsCard
           title="Total deactivated students"
           value={studentsData?.data.total?.toString() || "0"}
-          iconName="double-users-icon"
-          iconBgColor="#E9FCF4"
-          iconColor="#00C617"
-          trend={totalDeactivatedTrend}
-        />
-        <StatsCard
-          title="Permanent bans"
-          value={statsData?.data.totalPermanentBans?.toString() || "0"}
           iconName="lock-icon"
           iconBgColor="#FCE9E9"
           iconColor="#FF8082"
-          trend={permanentBansTrend}
+        />
+        <StatsCard
+          title="Total students"
+          value={statsData?.data.totalStudents?.toString() || "0"}
+          iconBgColor="#E9FCF4"
+          iconColor="#00C617"
         />
       </div>
 

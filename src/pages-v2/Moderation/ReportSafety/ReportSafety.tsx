@@ -108,7 +108,6 @@ const ReportSafety: React.FC = () => {
   const {
     data: reportsData,
     isLoading: isReportsLoading,
-    isFetching,
     refetch,
   } = useQuery({
     queryKey: [
@@ -411,6 +410,7 @@ const ReportSafety: React.FC = () => {
   const totalReports = statsData?.data.total || 0;
   const pendingReports = statsData?.data.pending || 0;
   const underEvaluationReports = statsData?.data.underEvaluation || 0;
+  const showTableSkeleton = isReportsLoading && !reportsData;
 
   const handleStatusChange = async (reportId: string, newStatus: string) => {
     await apiClient.api.adminV2ReportsStatusPartialUpdate(reportId, {
@@ -425,7 +425,12 @@ const ReportSafety: React.FC = () => {
       });
     }
 
-    refetch();
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["reports"] }),
+      queryClient.invalidateQueries({ queryKey: ["reportStats"] }),
+      queryClient.invalidateQueries({ queryKey: ["history-reports"] }),
+      queryClient.invalidateQueries({ queryKey: ["history-report-stats"] }),
+    ]);
   };
 
   const handleNoteRequired = (reportId: string, newStatus: string) => {
@@ -739,7 +744,7 @@ const ReportSafety: React.FC = () => {
         <div className="reports-table-wrapper">
           <ReportsTable
             rows={tableRows}
-            loading={isFetching || isReportsLoading}
+            loading={showTableSkeleton}
             renderSkeletonRows={renderTableSkeletonRows}
             emptyState={{
               message: "No reported users or content",

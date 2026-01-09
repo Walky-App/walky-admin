@@ -68,7 +68,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
                 name={
                   trend.direction === "up" ? "trend-up-icon" : "trend-down-icon"
                 }
-                size={16}
+                size={24}
                 color={trendColor}
               />
             )}

@@ -3,6 +3,7 @@ import areaOfStudy from '../../assets-v2/svg/areaOfStudy.svg?react';
 import arrowDown from '../../assets-v2/svg/arrow-down.svg?react';
 import arrowLargeLeftIcon from '../../assets-v2/svg/arrow-large-left-icon.svg?react';
 import arrowUp from '../../assets-v2/svg/arrow-up.svg?react';
+import bannedStudentIcon from '../../assets-v2/svg/banned-student-icon.svg?react';
 import braannedStudentsIcon from '../../assets-v2/svg/braanned-students-icon.svg?react';
 import calendarIcon from '../../assets-v2/svg/calendar-icon.svg?react';
 import cameraIcon from '../../assets-v2/svg/camera-icon.svg?react';
@@ -81,6 +82,7 @@ const IconMap: Record<string, FC<SVGProps<SVGSVGElement>>> = {
   'arrow-down': arrowDown,
   'arrow-large-left-icon': arrowLargeLeftIcon,
   'arrow-up': arrowUp,
+  'banned-student-icon': bannedStudentIcon,
   'braanned-students-icon': braannedStudentsIcon,
   'calendar-icon': calendarIcon,
   'camera-icon': cameraIcon,

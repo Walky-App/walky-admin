@@ -1,5 +1,18 @@
-.event-table-skeleton {
+.event-table-skeleton,
+.space-table-skeleton {
   width: 100%;
+}
+
+.space-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.space-table-skeleton .space-table th {
+  padding: 16px;
+  text-align: left;
+  line-height: 1.4;
+  vertical-align: middle;
 }
 
 .skeleton {

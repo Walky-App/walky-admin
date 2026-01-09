@@ -29,7 +29,13 @@ export interface StudentData {
   email: string;
   avatar?: string;
   interests?: string[];
-  status: "active" | "banned" | "deactivated" | "disengaged";
+  status:
+    | "active"
+    | "banned"
+    | "deactivated"
+    | "disengaged"
+    | "inactive"
+    | "incomplete";
   memberSince: string;
   onlineLast: string;
   isFlagged?: boolean;
