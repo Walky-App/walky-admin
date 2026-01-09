@@ -331,6 +331,11 @@
   color: #ffffff;
 }
 
+.profile-btn-activate {
+  background-color: #526ac9;
+  color: #ffffff;
+}
+
 .profile-details-container {
   background-color: #f7f8fa;
   border: 1px solid #d2d2d3;

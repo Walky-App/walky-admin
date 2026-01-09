@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useRef, useState } from "react";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
-import { FilterBar } from "../../../components-v2";
-import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import {
   StudentProfileModal,
   StudentProfileData,
@@ -50,7 +48,6 @@ export const DisengagedStudents: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const entriesPerPage = 10;
 
   // Check permissions for this page
@@ -58,12 +55,20 @@ export const DisengagedStudents: React.FC = () => {
 
   const exportRef = useRef<HTMLElement | null>(null);
   const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
-    queryKey: ["students", currentPage, "disengaged"],
+    queryKey: [
+      "students",
+      currentPage,
+      "disengaged",
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
     queryFn: () =>
       apiClient.api.adminV2StudentsList({
         page: currentPage,
         limit: entriesPerPage,
         status: "disengaged",
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
       }),
   });
 
@@ -77,20 +82,6 @@ export const DisengagedStudents: React.FC = () => {
   });
 
   const isLoading = isStudentsLoading || isStatsLoading;
-
-  const buildTrend = (change?: number) => {
-    if (change === undefined) return undefined;
-    return {
-      value: `+${change}`,
-      isPositive: true,
-      label: "from last month",
-    } as const;
-  };
-
-  const totalStudentsTrend = buildTrend(
-    statsData?.data.totalStudentsFromLastMonth
-  );
-  const disengagedTrend = undefined; // API doesn't provide disengaged change
 
   const students: DisengagedStudent[] = (studentsData?.data.data || []).map(
     (student) => ({
@@ -169,31 +160,21 @@ export const DisengagedStudents: React.FC = () => {
 
   return (
     <main className="disengaged-students-page" ref={exportRef}>
-      <FilterBar
-        timePeriod={timePeriod}
-        onTimePeriodChange={setTimePeriod}
-        showExport={false}
-        hideTimeSelector
-      />
-
       {/* Stats Cards */}
       <div className="disengaged-students-stats">
         <StatsCard
-          title="Total students"
-          value={statsData?.data.totalStudents?.toString() || "0"}
-          iconName="double-users-icon"
-          iconBgColor="#E9FCF4"
-          iconColor="#00C617"
-          trend={totalStudentsTrend}
-        />
-        <StatsCard
-          title="Disengaged students"
+          title="Total disengaged students"
           value={studentsData?.data.total?.toString() || "0"}
           // @ts-ignore
           iconName="x-icon"
           iconBgColor="#FCE9E9"
           iconColor="#FF8082"
-          trend={disengagedTrend}
+        />
+        <StatsCard
+          title="Total students"
+          value={statsData?.data.totalStudents?.toString() || "0"}
+          iconBgColor="#E9FCF4"
+          iconColor="#00C617"
         />
       </div>
 

@@ -266,11 +266,10 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                   Number of attendees
                 </span>
                 <span className="event-attendees-count">
-                  {eventData.type === "public"
-                    ? eventData.attendees.filter(
-                        (a) => a.status === "confirmed"
-                      ).length
-                    : eventData.attendees.length}
+                  {/* Always count only confirmed attendees */}
+                  {eventData.attendees.filter(
+                    (a) => a.status === "confirmed"
+                  ).length}
                   /{eventData.maxAttendees}
                 </span>
               </div>

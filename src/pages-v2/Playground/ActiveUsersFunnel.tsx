@@ -102,7 +102,7 @@ export default function ActiveUsersFunnel() {
   const { data, loading, error } = useActiveUsersData(timePeriod as any);
 
   return (
-    <div className="active-funnel-page">
+    <main className="active-funnel-page" aria-label="Active Users Funnel">
       <div className="active-funnel-header">
         <div>
           <h1>Active Users Funnel</h1>
@@ -128,6 +128,6 @@ export default function ActiveUsersFunnel() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }

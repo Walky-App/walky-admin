@@ -19,7 +19,7 @@
   border-radius: 14px;
   padding: 32px;
   width: 100%;
-  max-width: 521px;
+  max-width: 600px;
   position: relative;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
 }
@@ -43,11 +43,16 @@
   color: #1d1b20;
 }
 
+.change-category-close:focus-visible {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}
+
 /* Body */
 .change-category-body {
   display: flex;
   flex-direction: column;
-  gap: 46px;
+  gap: 20px;
 }
 
 /* Title */
@@ -65,11 +70,17 @@
   font-family: "Lato", sans-serif;
   font-weight: 400;
   font-size: 18px;
-  line-height: 1.4;
+  line-height: normal;
   color: #1d1b20;
-  opacity: 0.826;
   margin: 0;
-  margin-top: -22px;
+}
+
+.change-category-description-secondary {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: normal;
+  color: #5b6168;
 }
 
 .change-category-description strong {
@@ -115,6 +126,16 @@
 
 .change-category-select:hover {
   border-color: #1d1b20;
+}
+
+.change-category-select:focus-visible {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}
+
+.change-category-option:focus-visible {
+  outline: 2px solid #526ac9;
+  outline-offset: -2px;
 }
 
 .change-category-dropdown {
@@ -188,6 +209,11 @@
   cursor: not-allowed;
 }
 
+.change-category-cancel:focus-visible {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
+}
+
 .change-category-confirm {
   background: #526ac9;
   border: none;
@@ -210,6 +236,11 @@
 .change-category-confirm:disabled {
   background: #a0a0a0;
   cursor: not-allowed;
+}
+
+.change-category-confirm:focus-visible {
+  outline: 2px solid #526ac9;
+  outline-offset: 2px;
 }
 
 /* Dark Mode Styles */

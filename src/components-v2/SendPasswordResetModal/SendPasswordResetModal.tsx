@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import "./SendPasswordResetModal.css";
 
@@ -14,6 +14,22 @@ const SendPasswordResetModal: React.FC<SendPasswordResetModalProps> = ({
   onConfirm,
 }) => {
   const [dontShowAgain, setDontShowAgain] = useState(false);
+
+  // Close modal on ESC key
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

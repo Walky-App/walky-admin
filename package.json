@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
     "dev": "vite",
@@ -23,7 +23,7 @@
     "check:testids": "node scripts/check-test-ids.js",
     "check:a11y": "node scripts/check-accessibility.js",
     "check:all": "npm run check:testids && npm run check:a11y && npm run test -- --run",
-    "generate:api": "npx swagger-typescript-api generate -p ../walky-backend/swagger.json -o ./src/API --axios --name Api.ts"
+    "generate:api": "npx swagger-typescript-api generate -p ../walky-backend/swagger.json -o ./src/API --axios --name WalkyAPI.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

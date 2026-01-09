@@ -7,7 +7,7 @@ export const SpaceTableSkeleton: React.FC = () => {
       <table className="space-table">
         <thead>
           <tr>
-            <th>Space name</th>
+            <th style={{ lineHeight: "normal" }}>Space name</th>
             <th>Owner</th>
             <th>Events</th>
             <th>Members</th>

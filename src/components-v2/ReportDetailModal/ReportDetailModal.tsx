@@ -593,8 +593,8 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
       ? "This user is currently deactivated"
       : null;
 
-  const disableBanUser = isUserBanned;
-  const disableDeactivateUser = isUserBanned || isUserDeactivated;
+  const disableBanUser = isUserBanned || isUserDeactivated;
+  const disableDeactivateUser = isUserDeactivated || isUserBanned;
 
   const renderContentSkeleton = () => {
     const wrapContent = (body: React.ReactNode) => (
@@ -921,10 +921,10 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                         disabled={disableDeactivateUser}
                         aria-disabled={disableDeactivateUser}
                         title={
-                          isUserBanned
-                            ? "User is banned"
-                            : isUserDeactivated
+                          isUserDeactivated
                             ? "User is already deactivated"
+                            : isUserBanned
+                            ? "User is already banned"
                             : "Deactivate user"
                         }
                       >
@@ -937,7 +937,11 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                         disabled={disableBanUser}
                         aria-disabled={disableBanUser}
                         title={
-                          isUserBanned ? "User is already banned" : "Ban user"
+                          isUserDeactivated
+                            ? "User is deactivated"
+                            : isUserBanned
+                            ? "User is already banned"
+                            : "Ban user"
                         }
                       >
                         Ban user

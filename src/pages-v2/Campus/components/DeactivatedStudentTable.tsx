@@ -257,7 +257,13 @@ export const DeactivatedStudentTable: React.FC<
     status: {
       label: "Status",
       sortable: false,
-      render: (student) => <StatusBadge status={student.status} />,
+      render: (student) => (
+        <StatusBadge
+          status={
+            student.status as "active" | "deactivated" | "banned" | "disengaged"
+          }
+        />
+      ),
     },
     memberSince: {
       label: "Member since",
@@ -403,7 +409,6 @@ export const DeactivatedStudentTable: React.FC<
                               },
                               {
                                 label: "Activate user",
-                                variant: "danger" as const,
                                 onClick: (e: React.MouseEvent) => {
                                   e.stopPropagation();
                                   handleActivateUser(student);
@@ -434,6 +439,10 @@ export const DeactivatedStudentTable: React.FC<
         onClose={handleCloseProfile}
         onBanUser={(student) => console.log("Ban user", student)}
         onDeactivateUser={(student) => console.log("Deactivate user", student)}
+        onActivateUser={(student) => {
+          activateMutation.mutate(student.id);
+          handleCloseProfile();
+        }}
       />
 
       <ActivateUserModal

@@ -1,8 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import AssetIcon from "../AssetIcon/AssetIcon";
-import { useSchool, School } from "../../contexts/SchoolContext";
-import { useCampus, Campus } from "../../contexts/CampusContext";
+import { useSchool } from "../../contexts/SchoolContext";
+import { useCampus } from "../../contexts/CampusContext";
+import { usePermissions } from "../../hooks/usePermissions";
+import { getAssignableRoleDisplayNames } from "../../lib/permissions";
 import "./CreateMemberModal.css";
 
 type RoleType = "Walky Admin" | "School Admin" | "Campus Admin" | "Moderator";
@@ -22,20 +24,27 @@ interface CreateMemberModalProps {
   onConfirm: (memberData: MemberFormData) => void;
 }
 
-const roleOptions: RoleType[] = [
-  "Walky Admin",
-  "School Admin",
-  "Campus Admin",
-  "Moderator",
-];
-
 const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
 }) => {
-  const { availableSchools, selectedSchool } = useSchool();
-  const { availableCampuses, selectedCampus } = useCampus();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
+  const { userRole } = usePermissions();
+
+  // Get available roles based on the current user's role hierarchy
+  const roleOptions = useMemo(() => {
+    const assignableRoles = getAssignableRoleDisplayNames(userRole);
+    // Filter to only include RoleType values (excluding "Walky Internal")
+    return assignableRoles.filter(
+      (role): role is RoleType =>
+        role === "Walky Admin" ||
+        role === "School Admin" ||
+        role === "Campus Admin" ||
+        role === "Moderator"
+    );
+  }, [userRole]);
 
   const [formData, setFormData] = useState<MemberFormData>({
     firstName: "",
@@ -47,27 +56,11 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
   });
 
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
-  const [isSchoolDropdownOpen, setIsSchoolDropdownOpen] = useState(false);
-  const [isCampusDropdownOpen, setIsCampusDropdownOpen] = useState(false);
 
   const roleButtonRef = useRef<HTMLButtonElement>(null);
   const roleDropdownRef = useRef<HTMLDivElement>(null);
-  const schoolButtonRef = useRef<HTMLButtonElement>(null);
-  const schoolDropdownRef = useRef<HTMLDivElement>(null);
-  const campusButtonRef = useRef<HTMLButtonElement>(null);
-  const campusDropdownRef = useRef<HTMLDivElement>(null);
 
   const [roleMenuPosition, setRoleMenuPosition] = useState({
-    top: 0,
-    left: 0,
-    width: 0,
-  });
-  const [schoolMenuPosition, setSchoolMenuPosition] = useState({
-    top: 0,
-    left: 0,
-    width: 0,
-  });
-  const [campusMenuPosition, setCampusMenuPosition] = useState({
     top: 0,
     left: 0,
     width: 0,
@@ -83,6 +76,22 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
     }));
   }, [isOpen, selectedSchool, selectedCampus]);
 
+  // Close modal on ESC key
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   useEffect(() => {
     if (isRoleDropdownOpen && roleButtonRef.current) {
       const rect = roleButtonRef.current.getBoundingClientRect();
@@ -95,28 +104,6 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
   }, [isRoleDropdownOpen]);
 
   useEffect(() => {
-    if (isSchoolDropdownOpen && schoolButtonRef.current) {
-      const rect = schoolButtonRef.current.getBoundingClientRect();
-      setSchoolMenuPosition({
-        top: rect.bottom + window.scrollY + 8,
-        left: rect.left + window.scrollX,
-        width: rect.width,
-      });
-    }
-  }, [isSchoolDropdownOpen]);
-
-  useEffect(() => {
-    if (isCampusDropdownOpen && campusButtonRef.current) {
-      const rect = campusButtonRef.current.getBoundingClientRect();
-      setCampusMenuPosition({
-        top: rect.bottom + window.scrollY + 8,
-        left: rect.left + window.scrollX,
-        width: rect.width,
-      });
-    }
-  }, [isCampusDropdownOpen]);
-
-  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         roleDropdownRef.current &&
@@ -126,32 +113,16 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
       ) {
         setIsRoleDropdownOpen(false);
       }
-      if (
-        schoolDropdownRef.current &&
-        !schoolDropdownRef.current.contains(event.target as Node) &&
-        schoolButtonRef.current &&
-        !schoolButtonRef.current.contains(event.target as Node)
-      ) {
-        setIsSchoolDropdownOpen(false);
-      }
-      if (
-        campusDropdownRef.current &&
-        !campusDropdownRef.current.contains(event.target as Node) &&
-        campusButtonRef.current &&
-        !campusButtonRef.current.contains(event.target as Node)
-      ) {
-        setIsCampusDropdownOpen(false);
-      }
     };
 
-    if (isRoleDropdownOpen || isSchoolDropdownOpen || isCampusDropdownOpen) {
+    if (isRoleDropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isRoleDropdownOpen, isSchoolDropdownOpen, isCampusDropdownOpen]);
+  }, [isRoleDropdownOpen]);
 
   if (!isOpen) return null;
 
@@ -170,23 +141,6 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
   const handleRoleSelect = (role: RoleType) => {
     setFormData((prev) => ({ ...prev, role }));
     setIsRoleDropdownOpen(false);
-  };
-
-  const handleSchoolSelect = (school: School) => {
-    setFormData((prev) => ({
-      ...prev,
-      school: school.school_name || school.name || "",
-      campus: "",
-    }));
-    setIsSchoolDropdownOpen(false);
-  };
-
-  const handleCampusSelect = (campus: Campus) => {
-    setFormData((prev) => ({
-      ...prev,
-      campus: campus.campus_name || campus.name || "",
-    }));
-    setIsCampusDropdownOpen(false);
   };
 
   const handleCreate = () => {
@@ -296,126 +250,62 @@ const CreateMemberModal: React.FC<CreateMemberModalProps> = ({
                         minWidth: `${roleMenuPosition.width}px`,
                       }}
                     >
-                      {roleOptions.map((role) => (
+                      {roleOptions.length > 0 ? (
+                        roleOptions.map((role) => (
+                          <button
+                            data-testid="create-member-role-option-btn"
+                            key={role}
+                            className="create-member-option"
+                            onClick={() => handleRoleSelect(role)}
+                          >
+                            {role}
+                          </button>
+                        ))
+                      ) : (
                         <button
-                          data-testid="create-member-role-option-btn"
-                          key={role}
+                          data-testid="create-member-role-option-empty"
                           className="create-member-option"
-                          onClick={() => handleRoleSelect(role)}
+                          disabled
                         >
-                          {role}
+                          No roles available
                         </button>
-                      ))}
+                      )}
                     </div>,
                     document.body
                   )}
               </div>
             </div>
 
-            {/* School and Campus Row */}
+            {/* School and Campus Row - Display only (uses current selection) */}
             <div className="create-member-row">
               <div className="create-member-field">
                 <label className="create-member-label">School</label>
                 <div className="create-member-dropdown-wrapper">
                   <button
-                    ref={schoolButtonRef}
                     data-testid="create-member-school-dropdown-btn"
-                    className="create-member-select"
-                    onClick={() =>
-                      setIsSchoolDropdownOpen(!isSchoolDropdownOpen)
-                    }
+                    className="create-member-select disabled"
+                    disabled
                   >
-                    <span className={formData.school ? "" : "placeholder"}>
-                      {formData.school || "Select a school"}
+                    <span>
+                      {selectedSchool?.school_name || selectedSchool?.name || "No school selected"}
                     </span>
                     <AssetIcon name="arrow-down" size={16} />
                   </button>
-                  {isSchoolDropdownOpen &&
-                    createPortal(
-                      <div
-                        ref={schoolDropdownRef}
-                        className="create-member-dropdown"
-                        style={{
-                          position: "absolute",
-                          top: `${schoolMenuPosition.top}px`,
-                          left: `${schoolMenuPosition.left}px`,
-                          minWidth: `${schoolMenuPosition.width}px`,
-                        }}
-                      >
-                        {availableSchools.map((school) => (
-                          <button
-                            data-testid="create-member-school-option-btn"
-                            key={school._id || school.id}
-                            className="create-member-option"
-                            onClick={() => handleSchoolSelect(school)}
-                          >
-                            {school.school_name || school.name || "School"}
-                          </button>
-                        ))}
-                        {availableSchools.length === 0 && (
-                          <button
-                            data-testid="create-member-school-option-empty"
-                            className="create-member-option"
-                            disabled
-                          >
-                            No schools available
-                          </button>
-                        )}
-                      </div>,
-                      document.body
-                    )}
                 </div>
               </div>
               <div className="create-member-field">
                 <label className="create-member-label">Campus</label>
                 <div className="create-member-dropdown-wrapper">
                   <button
-                    ref={campusButtonRef}
                     data-testid="create-member-campus-dropdown-btn"
-                    className="create-member-select"
-                    onClick={() =>
-                      setIsCampusDropdownOpen(!isCampusDropdownOpen)
-                    }
+                    className="create-member-select disabled"
+                    disabled
                   >
-                    <span className={formData.campus ? "" : "placeholder"}>
-                      {formData.campus || "Select a campus"}
+                    <span>
+                      {selectedCampus?.campus_name || selectedCampus?.name || "No campus selected"}
                     </span>
                     <AssetIcon name="arrow-down" size={16} />
                   </button>
-                  {isCampusDropdownOpen &&
-                    createPortal(
-                      <div
-                        ref={campusDropdownRef}
-                        className="create-member-dropdown"
-                        style={{
-                          position: "absolute",
-                          top: `${campusMenuPosition.top}px`,
-                          left: `${campusMenuPosition.left}px`,
-                          minWidth: `${campusMenuPosition.width}px`,
-                        }}
-                      >
-                        {availableCampuses.map((campus) => (
-                          <button
-                            data-testid="create-member-campus-option-btn"
-                            key={campus._id || campus.id}
-                            className="create-member-option"
-                            onClick={() => handleCampusSelect(campus)}
-                          >
-                            {campus.campus_name || campus.name || "Campus"}
-                          </button>
-                        ))}
-                        {availableCampuses.length === 0 && (
-                          <button
-                            data-testid="create-member-campus-option-empty"
-                            className="create-member-option"
-                            disabled
-                          >
-                            No campuses available
-                          </button>
-                        )}
-                      </div>,
-                      document.body
-                    )}
                 </div>
               </div>
             </div>

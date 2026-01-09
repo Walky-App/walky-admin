@@ -55,6 +55,11 @@
   background: #0b1220;
 }
 
+.interest-toggle:focus-visible {
+  outline: 2px solid #22d3ee;
+  outline-offset: 2px;
+}
+
 .interest-list {
   flex: 1;
   border: 1px solid #e5e7eb;

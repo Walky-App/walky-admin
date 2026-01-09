@@ -243,11 +243,7 @@ export const LineChart: React.FC<LineChartProps> = ({
         </div>
       ) : (
         <div className="line-chart-no-data">
-          <NoData
-            type="primary"
-            message="No data yet"
-            iconName="nd-grafs-empty"
-          />
+          <NoData type="graph" message="No data yet" />
         </div>
       )}
     </div>

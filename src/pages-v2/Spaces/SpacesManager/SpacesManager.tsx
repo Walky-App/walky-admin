@@ -10,6 +10,8 @@ import {
 import { useDebounce } from "../../../hooks/useDebounce";
 import { SpaceTable } from "../components/SpaceTable/SpaceTable";
 import { SpaceTableSkeleton } from "../components/SpaceTableSkeleton/SpaceTableSkeleton";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 import "./SpacesManager.css";
 
 interface SpaceCategory {
@@ -25,6 +27,8 @@ export type SpaceSortField =
   | "creationDate";
 
 export const SpacesManager: React.FC = () => {
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -80,8 +84,10 @@ export const SpacesManager: React.FC = () => {
       currentPage,
       debouncedSearchQuery,
       categoryFilter,
-      sortBy === "events" ? undefined : sortBy,
-      sortBy === "events" ? undefined : sortOrder,
+      sortBy,
+      sortOrder,
+      selectedSchool?._id,
+      selectedCampus?._id,
     ],
     queryFn: () =>
       apiClient.api.adminV2SpacesList({
@@ -89,8 +95,10 @@ export const SpacesManager: React.FC = () => {
         limit: 10,
         search: debouncedSearchQuery,
         category: categoryFilter,
-        sortBy: sortBy === "events" ? undefined : sortBy,
-        sortOrder: sortBy === "events" ? undefined : sortOrder,
+        sortBy,
+        sortOrder,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
       }),
     placeholderData: keepPreviousData,
   });
@@ -142,15 +150,8 @@ export const SpacesManager: React.FC = () => {
     };
   });
 
-  // Local sort fallback for fields the API cannot sort (e.g., events)
-  const displayedSpaces = React.useMemo(() => {
-    if (sortBy === "events") {
-      return [...filteredSpaces].sort((a, b) =>
-        sortOrder === "asc" ? a.events - b.events : b.events - a.events
-      );
-    }
-    return filteredSpaces;
-  }, [filteredSpaces, sortBy, sortOrder]);
+  // Server-side sorting is used for all fields including events
+  const displayedSpaces = filteredSpaces;
 
   const totalPages = Math.ceil((spacesData?.data.total || 0) / 10);
   const totalEntries = spacesData?.data.total || 0;

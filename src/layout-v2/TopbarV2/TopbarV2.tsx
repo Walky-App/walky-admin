@@ -47,7 +47,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
     setIsLoadingCampuses,
   } = useCampus();
   const { toggleTheme, theme } = useTheme();
-  const { user, isSuperAdmin } = useAuth();
+  const { user, isSuperAdmin, isSchoolAdmin } = useAuth();
 
   // Track if initial fetch has been done
   const hasInitializedSchools = useRef(false);
@@ -153,10 +153,21 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
 
       try {
         const isSuper = isSuperAdmin();
+        const isSchool = isSchoolAdmin();
         let campuses: Campus[] = [];
 
-        if (isSuper) {
-          const schoolId = selectedSchool?._id || selectedSchool?.id;
+        if (isSuper || isSchool) {
+          // For super_admin: use selected school
+          // For school_admin: use their assigned school_id
+          let schoolId: string | undefined;
+          if (isSuper) {
+            schoolId = selectedSchool?._id || selectedSchool?.id;
+          } else {
+            // school_admin uses their own school_id
+            schoolId = typeof user.school_id === 'object' && user.school_id !== null
+              ? (user.school_id as any)._id || (user.school_id as any).id
+              : user.school_id;
+          }
 
           const response = await apiClient.api.adminV2CampusesList(
             schoolId ? { school_id: schoolId } : undefined
@@ -178,9 +189,9 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             campus_name: c.campus_name || c.name || "Unknown Campus",
             _id: c._id || c.id || "",
           })) as Campus[];
-        } else {
+        } else if (user.campus_id) {
           const response = await apiClient.api.campusesDetail(
-            user.campus_id!
+            user.campus_id
           );
           type RawCampus = { _id?: string; id?: string; campus_name?: string; name?: string; data?: RawCampus; campus?: RawCampus };
           const data = response.data as RawCampus | undefined;
@@ -402,8 +413,95 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
                   </div>
                 </>
               )
+            ) : isSchoolAdmin() ? (
+              // School admin: Read-only school, but can select campus
+              <>
+                <div className="selector-group">
+                  <div className="selector-icon">
+                    <AssetIcon
+                      name="school-icon"
+                      color={theme.colors.bodyColor}
+                    />
+                  </div>
+                  <div className="selector-info">
+                    <span className="selector-label">Your school</span>
+                    <span className="selector-value-readonly">
+                      {isLoadingSchools ? (
+                        <CSpinner size="sm" />
+                      ) : (
+                        selectedSchool?.school_name || "Not assigned"
+                      )}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="selector-group">
+                  <div className="selector-icon">
+                    <AssetIcon
+                      name="campus-icon"
+                      color={theme.colors.bodyColor}
+                    />
+                  </div>
+                  <div className="selector-info">
+                    <span className="selector-label">Your campus</span>
+                    {isMobile ? (
+                      <button
+                        className="selector-icon-btn"
+                        onClick={() => setCampusModalOpen(true)}
+                        aria-label="Select campus"
+                        style={{ padding: 0, minWidth: 'auto' }}
+                      >
+                        <span className="selector-btn-text">
+                          {selectedCampus?.campus_name || "Select Campus"}
+                        </span>
+                        <AssetIcon
+                          name="arrow-down"
+                          size={18}
+                          fill="var(--v2-neutral-black-main-500)"
+                        />
+                      </button>
+                    ) : (
+                      <CDropdown className="selector-dropdown">
+                        <CDropdownToggle color="link" className="selector-toggle">
+                          {isLoadingCampuses ? (
+                            <CSpinner size="sm" />
+                          ) : (
+                            <>
+                              <span className="selector-value">
+                                {selectedCampus?.campus_name || "Select Campus"}
+                              </span>
+                              <AssetIcon
+                                name="arrow-down"
+                                size={20}
+                                fill="var(--v2-neutral-black-main-500)"
+                              />
+                            </>
+                          )}
+                        </CDropdownToggle>
+                        <CDropdownMenu>
+                          {availableCampuses.map((campus: Campus) => (
+                            <CDropdownItem
+                              key={campus._id}
+                              onClick={() => setSelectedCampus(campus)}
+                              active={selectedCampus?._id === campus._id}
+                            >
+                              {campus.campus_name}
+                            </CDropdownItem>
+                          ))}
+                          {availableCampuses.length === 0 &&
+                            !isLoadingCampuses && (
+                              <CDropdownItem disabled>
+                                No campuses available
+                              </CDropdownItem>
+                            )}
+                        </CDropdownMenu>
+                      </CDropdown>
+                    )}
+                  </div>
+                </div>
+              </>
             ) : (
-              // Non-super admin: Read-only display of school and campus
+              // Other admins: Read-only display of school and campus
               <>
                 <div className="selector-group">
                   <div className="selector-icon">
@@ -552,8 +650,8 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
         </CModal>
       )}
 
-      {/* Campus Modal (Mobile) - Only for super admins */}
-      {isSuperAdmin() && (
+      {/* Campus Modal (Mobile) - For super admins and school admins */}
+      {(isSuperAdmin() || isSchoolAdmin()) && (
         <CModal
           visible={campusModalOpen}
           onClose={() => setCampusModalOpen(false)}

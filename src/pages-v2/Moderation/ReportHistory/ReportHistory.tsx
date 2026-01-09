@@ -25,6 +25,8 @@ import {
 } from "../../../components-v2";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 import ReportsTable, { ReportRow } from "../components/ReportsTable";
 import "./ReportHistory.css";
 
@@ -45,6 +47,8 @@ interface HistoryReportData {
 const ReportHistory: React.FC = () => {
   const queryClient = useQueryClient();
   const { canExport, canUpdate } = usePermissions();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
 
   // Check permissions for this page
   const showExport = canExport("report_history");
@@ -95,7 +99,8 @@ const ReportHistory: React.FC = () => {
 
   const normalizeFlagType = (value?: string) => {
     const t = (value || "").toLowerCase();
-    if (t.includes("user") || t.includes("student")) return "user" as const;
+    if (t.includes("user") || t.includes("student") || t.includes("message"))
+      return "user" as const;
     if (t.includes("idea")) return "idea" as const;
     if (t.includes("space")) return "space" as const;
     return "event" as const;
@@ -104,7 +109,6 @@ const ReportHistory: React.FC = () => {
   const {
     data: reportsData,
     isLoading,
-    isFetching,
     refetch,
   } = useQuery({
     queryKey: [
@@ -114,6 +118,8 @@ const ReportHistory: React.FC = () => {
       selectedTypes,
       selectedStatus,
       sortOrder,
+      selectedSchool?._id,
+      selectedCampus?._id,
     ],
     queryFn: () =>
       apiClient.api.adminV2ReportsList({
@@ -124,6 +130,8 @@ const ReportHistory: React.FC = () => {
         status: selectedStatus,
         sortBy: "reportDate",
         sortOrder,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
       }),
     placeholderData: keepPreviousData,
     staleTime: 30_000,
@@ -132,13 +140,23 @@ const ReportHistory: React.FC = () => {
   });
 
   const { data: statsData, refetch: refetchStats } = useQuery({
-    queryKey: ["history-report-stats"],
-    queryFn: () => apiClient.api.adminV2ReportsStatsList(),
+    queryKey: [
+      "history-report-stats",
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2ReportsStatsList({
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
     placeholderData: keepPreviousData,
     staleTime: 30_000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
+
+  const showTableSkeleton = isLoading && !reportsData;
 
   const flagMutation = useMutation({
     mutationFn: (data: {
@@ -178,6 +196,8 @@ const ReportHistory: React.FC = () => {
         selectedTypes,
         selectedStatus,
         sortOrder,
+        selectedSchool?._id,
+        selectedCampus?._id,
       ]);
 
       queryClient.setQueryData(
@@ -188,6 +208,8 @@ const ReportHistory: React.FC = () => {
           selectedTypes,
           selectedStatus,
           sortOrder,
+          selectedSchool?._id,
+          selectedCampus?._id,
         ],
         (old: any) => {
           if (!old?.data?.data) return old;
@@ -223,6 +245,8 @@ const ReportHistory: React.FC = () => {
             selectedTypes,
             selectedStatus,
             sortOrder,
+            selectedSchool?._id,
+            selectedCampus?._id,
           ],
           context.previousReports
         );
@@ -258,6 +282,8 @@ const ReportHistory: React.FC = () => {
         selectedTypes,
         selectedStatus,
         sortOrder,
+        selectedSchool?._id,
+        selectedCampus?._id,
       ]);
 
       queryClient.setQueryData(
@@ -268,6 +294,8 @@ const ReportHistory: React.FC = () => {
           selectedTypes,
           selectedStatus,
           sortOrder,
+          selectedSchool?._id,
+          selectedCampus?._id,
         ],
         (old: any) => {
           if (!old?.data?.data) return old;
@@ -302,6 +330,8 @@ const ReportHistory: React.FC = () => {
             selectedTypes,
             selectedStatus,
             sortOrder,
+            selectedSchool?._id,
+            selectedCampus?._id,
           ],
           context.previousReports
         );
@@ -357,28 +387,17 @@ const ReportHistory: React.FC = () => {
     total: (statsData?.data.resolved || 0) + (statsData?.data.dismissed || 0),
   };
 
-  const formatBanDate = (value?: string) => {
-    if (!value) return "Unknown date";
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) return value;
-    return parsed.toLocaleString("en-US", {
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   const mapBanHistory = (banHistory: any[] = []) =>
     banHistory.map((ban) => {
-      const bannedAt =
-        ban.banned_at || ban.bannedAt || ban.date || ban.timestamp;
-
       return {
         duration: ban.duration || ban.length || "—",
         reason: ban.reason || "Not provided",
-        bannedOn: formatBanDate(bannedAt),
+        bannedOn:
+          ban.bannedOn ||
+          ban.banned_at ||
+          ban.bannedAt ||
+          ban.date ||
+          "Unknown date",
         bannedBy: ban.banned_by || ban.bannedBy || ban.admin || "Unknown",
         expiresIn: ban.expires_in || ban.expiresIn,
       };
@@ -389,8 +408,12 @@ const ReportHistory: React.FC = () => {
     await apiClient.api.adminV2ReportsStatusPartialUpdate(reportId, {
       status: apiStatus,
     });
-    refetch();
-    refetchStats();
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["history-reports"] }),
+      queryClient.invalidateQueries({ queryKey: ["history-report-stats"] }),
+      queryClient.invalidateQueries({ queryKey: ["reports"] }),
+      queryClient.invalidateQueries({ queryKey: ["reportStats"] }),
+    ]);
   };
 
   const handleNoteRequired = (reportId: string, newStatus: string) => {
@@ -675,7 +698,7 @@ const ReportHistory: React.FC = () => {
         <div className="reports-table-wrapper">
           <ReportsTable
             rows={tableRows}
-            loading={isFetching || isLoading}
+            loading={showTableSkeleton}
             renderSkeletonRows={renderTableSkeletonRows}
             emptyState={{
               message: "No history of reported users or content.",

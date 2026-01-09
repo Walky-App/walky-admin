@@ -60,6 +60,35 @@
   margin: 0;
 }
 
+/* Stats Card Trend */
+.stats-card-trend {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 4px;
+}
+
+.stats-card-trend .trend-value {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.stats-card-trend .trend-label {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #5b6168;
+}
+
+.stats-card-trend .trend-dash {
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #8280ff;
+  line-height: 1;
+}
+
 /* Donut Charts Row */
 .donut-charts-row {
   display: grid;
@@ -362,6 +391,10 @@
 
 [data-theme="dark"] .stats-card-value {
   color: #e0e0e0;
+}
+
+[data-theme="dark"] .stats-card-trend .trend-label {
+  color: #b0b0b0;
 }
 
 [data-theme="dark"] .filter-label {

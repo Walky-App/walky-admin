@@ -18,19 +18,9 @@ export const FlagModal: React.FC<FlagModalProps> = ({
   onClose,
   onConfirm,
   itemName,
-  type,
 }) => {
   const [reason, setReason] = useState("");
   const maxChars = 500;
-
-  const typeLabels = {
-    event: "Event",
-    space: "Space",
-    idea: "Idea",
-    user: "User",
-  };
-
-  const typeLabel = typeLabels[type];
 
   const handleConfirm = () => {
     onConfirm(reason);
@@ -62,17 +52,15 @@ export const FlagModal: React.FC<FlagModalProps> = ({
         </button>
 
         <div className="flag-modal-content">
-          <h2 className="flag-modal-title">Flag {typeLabel}</h2>
+          <h2 className="flag-modal-title">Flag Report</h2>
 
           <div className="flag-modal-message">
             <p className="flag-modal-question">
-              Are you sure you want to flag <strong>{itemName}</strong>{" "}
-              {typeLabel}?
+              Are you sure you want to flag <strong>{itemName}</strong>?
             </p>
             <p className="flag-modal-warning">
-              This action will mark the {typeLabel} for review. The content will
-              be reviewed by administrators and appropriate action will be
-              taken.
+              This action will mark the report for review. The content will be
+              reviewed by administrators and appropriate action will be taken.
             </p>
           </div>
 
@@ -105,7 +93,7 @@ export const FlagModal: React.FC<FlagModalProps> = ({
               className="flag-modal-confirm-btn"
               onClick={handleConfirm}
             >
-              Flag {typeLabel}
+              Flag Report
             </button>
           </div>
         </div>

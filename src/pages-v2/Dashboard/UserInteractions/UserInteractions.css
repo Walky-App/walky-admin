@@ -150,3 +150,46 @@
     gap: 12px;
   }
 }
+
+/* ========== PRINT STYLES ========== */
+@media print {
+  .user-interactions-page {
+    display: block !important;
+  }
+
+  /* Charts row starts on page 2 */
+  .charts-row {
+    display: block !important;
+    width: 100% !important;
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  .charts-row > div {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 15px !important;
+  }
+
+  .user-interactions-page .line-chart-container {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    height: 230px !important;
+    max-height: 230px !important;
+    min-height: 220px !important;
+    padding: 12px 20px 50px 12px !important;
+  }
+
+  .user-interactions-page .line-chart-wrapper {
+    min-height: 130px !important;
+    max-height: 140px !important;
+    margin-bottom: 30px !important;
+  }
+
+  .user-interactions-page .line-chart-title {
+    font-size: 14px !important;
+    margin-bottom: 8px !important;
+  }
+}

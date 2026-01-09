@@ -338,7 +338,7 @@ function Pyramid() {
 
 export default function InterestPyramid() {
   return (
-    <div className="interest-pyramid-page">
+    <main className="interest-pyramid-page" aria-label="Interest Pyramid">
       <div className="interest-pyramid-header">
         <div>
           <h1>Interest Pyramid</h1>
@@ -362,6 +362,6 @@ export default function InterestPyramid() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }

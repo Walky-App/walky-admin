@@ -94,10 +94,10 @@ function Chime({
 function ChimeRow({ data }: { data: { label: string; count: number }[] }) {
   const audioCtxRef = useRef<AudioContext | null>(null);
   useEffect(() => {
+    const audioCtx = audioCtxRef.current;
     return () => {
-      const ctx = audioCtxRef.current;
-      if (ctx) {
-        void ctx.close().catch(() => {});
+      if (audioCtx) {
+        void audioCtx.close().catch(() => {});
       }
     };
   }, []);
@@ -127,7 +127,7 @@ export default function ActiveUsersChimes() {
   const top = useMemo(() => data.slice(0, 8), [data]);
 
   return (
-    <div className="active-chimes-page">
+    <main className="active-chimes-page" aria-label="Active Users Chimes">
       <div className="active-chimes-header">
         <div>
           <h1>Active Users Chimes</h1>
@@ -153,6 +153,6 @@ export default function ActiveUsersChimes() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }

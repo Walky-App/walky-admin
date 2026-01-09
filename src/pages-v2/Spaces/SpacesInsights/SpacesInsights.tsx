@@ -7,6 +7,8 @@ import {
   FilterBar,
 } from "../../../components-v2";
 import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
+import { StatsCard } from "../../Dashboard/components";
+import { useTheme } from "../../../hooks/useTheme";
 
 interface SpaceCategory {
   name: string;
@@ -106,9 +108,14 @@ const SpacesInsightsSkeleton = () => (
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 
 export const SpacesInsights: React.FC = () => {
   const { canExport } = usePermissions();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
+  const { theme } = useTheme();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const exportRef = useRef<HTMLElement | null>(null);
 
@@ -119,17 +126,94 @@ export const SpacesInsights: React.FC = () => {
 
   // Filtered data for categories/top spaces
   const { data: insightsData, isLoading } = useQuery({
-    queryKey: ["spacesInsights", timePeriod],
+    queryKey: [
+      "spacesInsights",
+      timePeriod,
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
     queryFn: () =>
-      apiClient.api.adminV2SpacesInsightsList({ period: apiPeriod }),
+      apiClient.api.adminV2SpacesInsightsList({
+        period: apiPeriod,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
     placeholderData: keepPreviousData,
   });
 
-  // All-time totals should remain constant regardless of filter selection
+  // All-time totals for comparison
   const { data: allTimeInsights, isLoading: isAllTimeLoading } = useQuery({
-    queryKey: ["spacesInsights", "all"],
-    queryFn: () => apiClient.api.adminV2SpacesInsightsList({ period: "all" }),
+    queryKey: [
+      "spacesInsights",
+      "all",
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2SpacesInsightsList({
+        period: "all",
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
   });
+
+  // Helper to get trend text based on time period
+  const getTrendText = () => {
+    switch (timePeriod) {
+      case "week":
+        return "from last week";
+      case "month":
+        return "from last month";
+      case "all-time":
+        return "all time";
+      default:
+        return "from last period";
+    }
+  };
+
+  // Helper to calculate and format trend data
+  const calculateTrend = (current: number, allTime: number) => {
+    if (timePeriod === "all-time") {
+      // Return placeholder trend for layout consistency
+      return {
+        value: "0%",
+        direction: "neutral" as const,
+        text: "placeholder",
+      };
+    }
+
+    if (allTime === 0 || current === allTime) {
+      return {
+        value: "0%",
+        direction: "neutral" as const,
+        text: getTrendText(),
+      };
+    }
+
+    // Calculate percentage change from previous period
+    // previous = allTime - current (what existed before this period)
+    const previous = allTime - current;
+    if (previous === 0) {
+      // All values are from this period (new)
+      return {
+        value: "100%",
+        direction: "up" as const,
+        text: getTrendText(),
+      };
+    }
+
+    const percentageChange = Math.round(
+      ((current - previous) / previous) * 100
+    );
+    const direction =
+      percentageChange > 0 ? "up" : percentageChange < 0 ? "down" : "neutral";
+
+    return {
+      value: `${Math.abs(percentageChange)}%`,
+      direction: direction as "up" | "down" | "neutral",
+      text: getTrendText(),
+    };
+  };
 
   // Type assertion for optional metadata fields not in generated types
   type InsightsWithMetadata = {
@@ -182,38 +266,44 @@ export const SpacesInsights: React.FC = () => {
         exportTargetRef={exportRef}
         exportFileName={`spaces_insights_${timePeriod}`}
         showExport={showExport}
-        hideTimeSelector
       />
 
       {/* Top 2 Stats Cards */}
       <div className="stats-cards-row">
-        <div className="stats-card">
-          <div className="stats-card-header">
-            <p className="stats-card-title">
-              Total Spaces created historically
-            </p>
-            <div className="stats-card-icon spaces-icon-bg">
-              <AssetIcon name="space-icon" size={35} color="#4A4CD9" />
-            </div>
-          </div>
-          <p className="stats-card-value">
-            {allTimeInsights?.data.totalSpaces || 0}
-          </p>
-        </div>
-
-        <div className="stats-card">
-          <div className="stats-card-header">
-            <p className="stats-card-title">
-              Total members joined Spaces historically
-            </p>
-            <div className="stats-card-icon user-icon-bg">
-              <AssetIcon name="double-users-icon" size={24} color="#8280FF" />
-            </div>
-          </div>
-          <p className="stats-card-value">
-            {allTimeInsights?.data.totalMembers || 0}
-          </p>
-        </div>
+        <StatsCard
+          title="Total Spaces created"
+          value={insightsData?.data.totalSpaces?.toString() || "0"}
+          icon={
+            <AssetIcon
+              name="space-icon"
+              size={24}
+              color={theme.colors.iconBlue}
+            />
+          }
+          iconBgColor="#d9e3f7"
+          trend={calculateTrend(
+            insightsData?.data.totalSpaces || 0,
+            allTimeInsights?.data.totalSpaces || 0
+          )}
+          hideComparison={timePeriod === "all-time"}
+        />
+        <StatsCard
+          title="Total members joined Spaces"
+          value={insightsData?.data.totalMembers?.toString() || "0"}
+          icon={
+            <AssetIcon
+              name="double-users-icon"
+              size={24}
+              color={theme.colors.iconPurple}
+            />
+          }
+          iconBgColor={theme.colors.iconPurpleBg}
+          trend={calculateTrend(
+            insightsData?.data.totalMembers || 0,
+            allTimeInsights?.data.totalMembers || 0
+          )}
+          hideComparison={timePeriod === "all-time"}
+        />
       </div>
 
       {/* Two Column Layout */}

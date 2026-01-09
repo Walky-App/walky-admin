@@ -13,6 +13,8 @@ import { getStatusChipStyle } from "../../../components-v2/utils/chipStyles";
 import "./Ambassadors.css";
 import { useTheme } from "../../../hooks/useTheme";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 import { apiClient } from "../../../API";
 import { formatMemberSince } from "../../../lib/utils/dateUtils";
 
@@ -42,6 +44,8 @@ interface Student {
 export const Ambassadors: React.FC = () => {
   const { theme } = useTheme();
   const { canCreate, canDelete } = usePermissions();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
 
   // Permission checks for actions
   const canAddAmbassador = canCreate("ambassadors");
@@ -69,7 +73,10 @@ export const Ambassadors: React.FC = () => {
     setLoading(true);
     try {
       // Note: Backend doesn't support pagination, fetches all ambassadors
-      const res = await apiClient.api.adminAmbassadorsList();
+      const res = await apiClient.api.adminAmbassadorsList({
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      });
 
       const data = res.data.data || [];
 
@@ -127,7 +134,7 @@ export const Ambassadors: React.FC = () => {
 
   useEffect(() => {
     fetchAmbassadors();
-  }, [currentPage]);
+  }, [currentPage, selectedSchool?._id, selectedCampus?._id]);
 
   // Get initials from name
   const getInitials = (name: string) => {
@@ -151,6 +158,8 @@ export const Ambassadors: React.FC = () => {
             name: student.name || "",
             email: student.email || "",
             user_id: student.id,
+            school_id: selectedSchool?._id,
+            campuses_id: selectedCampus?._id ? [selectedCampus._id] : [],
           })
         )
       );
@@ -505,6 +514,8 @@ export const Ambassadors: React.FC = () => {
         isOpen={addModalOpen}
         onClose={() => setAddModalOpen(false)}
         onConfirm={confirmAddAmbassadors}
+        schoolId={selectedSchool?._id}
+        campusId={selectedCampus?._id}
       />
 
       {/* Delete Confirmation Modal */}

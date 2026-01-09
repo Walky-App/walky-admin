@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import "./EventsInsights.css";
 import {
   AssetIcon,
@@ -33,34 +34,157 @@ import "./EventsInsights.css";
 import { useSchool } from "../../../contexts/SchoolContext";
 import { useCampus } from "../../../contexts/CampusContext";
 
+type ChangeData = {
+  changePercentage?: string;
+  changeDirection?: "up" | "down" | "neutral";
+};
+
+type InsightsData = {
+  stats?: {
+    totalEvents?: number;
+    totalEventsChange?: ChangeData;
+    publicEvents?: number;
+    publicEventsChange?: ChangeData;
+    privateEvents?: number;
+    privateEventsChange?: ChangeData;
+    avgPublicAttendees?: number;
+    avgPublicAttendeesChange?: ChangeData;
+    avgPrivateAttendees?: number;
+    avgPrivateAttendeesChange?: ChangeData;
+  };
+  lastUpdated?: string;
+  updatedAt?: string;
+  metadata?: { lastUpdated?: string };
+  expandReachData?: Array<{
+    name?: string;
+    label?: string;
+    value: number;
+    color: string;
+  }>;
+  usersVsSpacesData?: Array<{
+    name?: string;
+    label?: string;
+    value: number;
+    color: string;
+  }>;
+  interests?: Interest[];
+  publicEventsList?: EventItem[];
+  privateEventsList?: EventItem[];
+};
+
 export const EventsInsights: React.FC = () => {
   const { selectedSchool } = useSchool();
   const { selectedCampus } = useCampus();
   const { canExport } = usePermissions();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
-  const [loading, setLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState<string | undefined>();
   const exportRef = useRef<HTMLElement | null>(null);
 
   // Check permissions for this page
   const showExport = canExport("events_insights");
 
-  // Stats state
-  const [stats, setStats] = useState({
-    totalEvents: 0,
-    publicEvents: 0,
-    privateEvents: 0,
-    avgPublicAttendees: 0,
-    avgPrivateAttendees: 0,
+  const apiPeriod = timePeriod === "all-time" ? "all-time" : timePeriod;
+
+  // Fetch current period data
+  const { data: insightsResponse, isLoading: loading } = useQuery({
+    queryKey: [
+      "eventsInsights",
+      timePeriod,
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
+    queryFn: () =>
+      apiClient.api.adminV2DashboardEventsInsightsList({
+        period: apiPeriod as "week" | "month" | "all-time",
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
+    placeholderData: keepPreviousData,
   });
 
-  // Data for donut charts
-  const [expandReachData, setExpandReachData] = useState<any[]>([]);
-  const [usersVsSpacesData, setUsersVsSpacesData] = useState<any[]>([]);
+  const insightsData = insightsResponse?.data as InsightsData | undefined;
 
-  const [interests, setInterests] = useState<Interest[]>([]);
-  const [privateEvents, setPrivateEvents] = useState<EventItem[]>([]);
-  const [publicEvents, setPublicEvents] = useState<EventItem[]>([]);
+  // Extract stats
+  const stats = {
+    totalEvents: insightsData?.stats?.totalEvents || 0,
+    totalEventsChange: insightsData?.stats?.totalEventsChange,
+    publicEvents: insightsData?.stats?.publicEvents || 0,
+    publicEventsChange: insightsData?.stats?.publicEventsChange,
+    privateEvents: insightsData?.stats?.privateEvents || 0,
+    privateEventsChange: insightsData?.stats?.privateEventsChange,
+    avgPublicAttendees: insightsData?.stats?.avgPublicAttendees || 0,
+    avgPublicAttendeesChange: insightsData?.stats?.avgPublicAttendeesChange,
+    avgPrivateAttendees: insightsData?.stats?.avgPrivateAttendees || 0,
+    avgPrivateAttendeesChange: insightsData?.stats?.avgPrivateAttendeesChange,
+  };
+
+  // Extract other data and transform for DonutChart
+  const rawExpandReachData = insightsData?.expandReachData || [];
+  const rawUsersVsSpacesData = insightsData?.usersVsSpacesData || [];
+
+  // Transform data to match DonutChartData type (needs label, value, percentage, color)
+  const transformDonutData = (
+    data: Array<{ name?: string; label?: string; value: number; color: string }>
+  ) => {
+    const total = data.reduce((sum, item) => sum + item.value, 0);
+    return data.map((item) => ({
+      label: item.label || item.name || "",
+      value: item.value,
+      percentage: total > 0 ? Math.round((item.value / total) * 100) : 0,
+      color: item.color,
+    }));
+  };
+
+  const expandReachData = transformDonutData(rawExpandReachData);
+  const usersVsSpacesData = transformDonutData(rawUsersVsSpacesData);
+  const interests = insightsData?.interests || [];
+  const privateEvents = insightsData?.privateEventsList || [];
+  const publicEvents = insightsData?.publicEventsList || [];
+  const lastUpdated =
+    insightsData?.lastUpdated ||
+    insightsData?.updatedAt ||
+    insightsData?.metadata?.lastUpdated;
+
+  // Helper to get trend text based on time period
+  const getTrendText = () => {
+    switch (timePeriod) {
+      case "week":
+        return "from last week";
+      case "month":
+        return "from last month";
+      case "all-time":
+        return "all time";
+      default:
+        return "from last period";
+    }
+  };
+
+  // Helper to format trend data from API (like Engagement page)
+  const formatTrend = (changeData: ChangeData | undefined) => {
+    if (!changeData) {
+      return {
+        value: "0%",
+        direction: "neutral" as const,
+        text: getTrendText(),
+      };
+    }
+    const direction: "up" | "down" | "neutral" =
+      changeData.changeDirection === "neutral" ||
+      changeData.changePercentage === "0%" ||
+      changeData.changePercentage === "N/A"
+        ? "neutral"
+        : changeData.changeDirection === "up"
+        ? "up"
+        : "down";
+    const value =
+      changeData.changePercentage === "N/A"
+        ? "0%"
+        : changeData.changePercentage || "0%";
+    return {
+      value,
+      direction,
+      text: getTrendText(),
+    };
+  };
 
   // Modal state
   const [selectedEvent, setSelectedEvent] = useState<EventDetailsData | null>(
@@ -165,72 +289,6 @@ export const EventsInsights: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await apiClient.api.adminV2DashboardEventsInsightsList({
-          period: timePeriod,
-          schoolId: selectedSchool?._id,
-          campusId: selectedCampus?._id,
-        });
-        type InsightsData = {
-          stats?: {
-            totalEvents?: number;
-            publicEvents?: number;
-            privateEvents?: number;
-            avgPublicAttendees?: number;
-            avgPrivateAttendees?: number;
-          };
-          lastUpdated?: string;
-          updatedAt?: string;
-          metadata?: { lastUpdated?: string };
-          expandReachData?: Array<{
-            name: string;
-            value: number;
-            color: string;
-          }>;
-          usersVsSpacesData?: Array<{
-            name: string;
-            value: number;
-            color: string;
-          }>;
-          interests?: Interest[];
-          publicEventsList?: EventItem[];
-          privateEventsList?: EventItem[];
-        };
-        const data = res.data as InsightsData;
-
-        console.log("Fetched events insights data:", data);
-
-        if (data) {
-          setStats({
-            totalEvents: data.stats?.totalEvents || 0,
-            publicEvents: data.stats?.publicEvents || 0,
-            privateEvents: data.stats?.privateEvents || 0,
-            avgPublicAttendees: data.stats?.avgPublicAttendees || 0,
-            avgPrivateAttendees: data.stats?.avgPrivateAttendees || 0,
-          });
-          setLastUpdated(
-            data?.lastUpdated || data?.updatedAt || data?.metadata?.lastUpdated
-          );
-
-          setExpandReachData(data.expandReachData || []);
-          setUsersVsSpacesData(data.usersVsSpacesData || []);
-          setInterests(data.interests || []);
-          setPublicEvents(data.publicEventsList || []);
-          setPrivateEvents(data.privateEventsList || []);
-        }
-      } catch (error) {
-        console.error("Failed to fetch events insights:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [timePeriod, selectedSchool, selectedCampus]);
-
   if (loading) {
     return <DashboardSkeleton />;
   }
@@ -249,9 +307,7 @@ export const EventsInsights: React.FC = () => {
       <div className="stats-cards-row">
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">
-              Total Events created historically
-            </p>
+            <p className="stats-card-title">Total Events created</p>
             <div className="stats-icon" style={{ backgroundColor: "#FFDED1" }}>
               <AssetIcon name="calendar-icon" size={27} color="#FF6B35" />
             </div>
@@ -259,11 +315,49 @@ export const EventsInsights: React.FC = () => {
           <p className="stats-card-value">
             {loading ? "..." : stats.totalEvents.toLocaleString()}
           </p>
+          <div
+            className="stats-card-trend"
+            style={
+              timePeriod === "all-time" ? { visibility: "hidden" } : undefined
+            }
+          >
+            {formatTrend(stats.totalEventsChange).direction === "neutral" ? (
+              <span className="trend-dash">—</span>
+            ) : (
+              <AssetIcon
+                name={
+                  formatTrend(stats.totalEventsChange).direction === "up"
+                    ? "trend-up-icon"
+                    : "trend-down-icon"
+                }
+                size={20}
+                color={
+                  formatTrend(stats.totalEventsChange).direction === "up"
+                    ? "#00C943"
+                    : "#D53425"
+                }
+              />
+            )}
+            <span
+              className="trend-value"
+              style={{
+                color:
+                  formatTrend(stats.totalEventsChange).direction === "neutral"
+                    ? "#8280FF"
+                    : formatTrend(stats.totalEventsChange).direction === "up"
+                    ? "#00C943"
+                    : "#D53425",
+              }}
+            >
+              {formatTrend(stats.totalEventsChange).value}
+            </span>
+            <span className="trend-label">{getTrendText()}</span>
+          </div>
         </div>
 
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">Total public Events historically</p>
+            <p className="stats-card-title">Total public Events </p>
             <div className="stats-icon" style={{ backgroundColor: "#D6E9C7" }}>
               <AssetIcon name="public-event-icon" size={30} color="#3B7809" />
             </div>
@@ -271,13 +365,49 @@ export const EventsInsights: React.FC = () => {
           <p className="stats-card-value">
             {loading ? "..." : stats.publicEvents.toLocaleString()}
           </p>
+          <div
+            className="stats-card-trend"
+            style={
+              timePeriod === "all-time" ? { visibility: "hidden" } : undefined
+            }
+          >
+            {formatTrend(stats.publicEventsChange).direction === "neutral" ? (
+              <span className="trend-dash">—</span>
+            ) : (
+              <AssetIcon
+                name={
+                  formatTrend(stats.publicEventsChange).direction === "up"
+                    ? "trend-up-icon"
+                    : "trend-down-icon"
+                }
+                size={20}
+                color={
+                  formatTrend(stats.publicEventsChange).direction === "up"
+                    ? "#00C943"
+                    : "#D53425"
+                }
+              />
+            )}
+            <span
+              className="trend-value"
+              style={{
+                color:
+                  formatTrend(stats.publicEventsChange).direction === "neutral"
+                    ? "#8280FF"
+                    : formatTrend(stats.publicEventsChange).direction === "up"
+                    ? "#00C943"
+                    : "#D53425",
+              }}
+            >
+              {formatTrend(stats.publicEventsChange).value}
+            </span>
+            <span className="trend-label">{getTrendText()}</span>
+          </div>
         </div>
 
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">
-              Total private Events historically
-            </p>
+            <p className="stats-card-title">Total private Events</p>
             <div className="stats-icon" style={{ backgroundColor: "#C1D0F5" }}>
               <AssetIcon name="privite-event-icon" size={30} color="#0E3EB8" />
             </div>
@@ -285,6 +415,44 @@ export const EventsInsights: React.FC = () => {
           <p className="stats-card-value">
             {loading ? "..." : stats.privateEvents.toLocaleString()}
           </p>
+          <div
+            className="stats-card-trend"
+            style={
+              timePeriod === "all-time" ? { visibility: "hidden" } : undefined
+            }
+          >
+            {formatTrend(stats.privateEventsChange).direction === "neutral" ? (
+              <span className="trend-dash">—</span>
+            ) : (
+              <AssetIcon
+                name={
+                  formatTrend(stats.privateEventsChange).direction === "up"
+                    ? "trend-up-icon"
+                    : "trend-down-icon"
+                }
+                size={20}
+                color={
+                  formatTrend(stats.privateEventsChange).direction === "up"
+                    ? "#00C943"
+                    : "#D53425"
+                }
+              />
+            )}
+            <span
+              className="trend-value"
+              style={{
+                color:
+                  formatTrend(stats.privateEventsChange).direction === "neutral"
+                    ? "#8280FF"
+                    : formatTrend(stats.privateEventsChange).direction === "up"
+                    ? "#00C943"
+                    : "#D53425",
+              }}
+            >
+              {formatTrend(stats.privateEventsChange).value}
+            </span>
+            <span className="trend-label">{getTrendText()}</span>
+          </div>
         </div>
       </div>
 
@@ -305,7 +473,7 @@ export const EventsInsights: React.FC = () => {
         <div className="stats-card">
           <div className="stats-card-header">
             <p className="stats-card-title">
-              Average attendees for public Events historically
+              Average attendees for public Events
             </p>
             <div className="stats-icon" style={{ backgroundColor: "#D6E9C7" }}>
               <AssetIcon name="public-event-icon" size={30} color="#3B7809" />
@@ -319,7 +487,7 @@ export const EventsInsights: React.FC = () => {
         <div className="stats-card">
           <div className="stats-card-header">
             <p className="stats-card-title">
-              Average attendees for private Events historically
+              Average attendees for private Events
             </p>
             <div className="stats-icon" style={{ backgroundColor: "#C1D0F5" }}>
               <AssetIcon name="privite-event-icon" size={30} color="#0E3EB8" />

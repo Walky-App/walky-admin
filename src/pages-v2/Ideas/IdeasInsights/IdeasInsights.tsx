@@ -5,6 +5,8 @@ import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import { NoIdeasFound } from "../components/NoIdeasFound/NoIdeasFound";
 import { apiClient } from "../../../API";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 
 interface PopularIdea {
   rank: number;
@@ -31,8 +33,15 @@ interface TimeMetrics {
   };
 }
 
+type ChangeData = {
+  changePercentage?: string;
+  changeDirection?: "up" | "down" | "neutral";
+};
+
 export const IdeasInsights: React.FC = () => {
   const { canExport } = usePermissions();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | undefined>();
@@ -41,7 +50,13 @@ export const IdeasInsights: React.FC = () => {
   // Check permissions for this page
   const showExport = canExport("ideas_insights");
 
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<{
+    totalIdeas: number;
+    totalCollaborations: number;
+    conversionRate: number;
+    totalIdeasChange?: ChangeData;
+    collaboratedIdeasChange?: ChangeData;
+  }>({
     totalIdeas: 0,
     totalCollaborations: 0,
     conversionRate: 0,
@@ -65,44 +80,28 @@ export const IdeasInsights: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        // Fetch counts with time period filter
-        // API types are incomplete - period param is supported by backend
+        // Use the proper insights endpoint with campus/school filtering
         const periodParam = timePeriod === "all-time" ? undefined : timePeriod;
-        const [totalRes, collaboratedRes, ideasRes, timeMetricsRes] =
-          await Promise.all([
-            apiClient.api.adminAnalyticsIdeasCountList({
-              type: "total",
-              period: periodParam,
-            } as Parameters<typeof apiClient.api.adminAnalyticsIdeasCountList>[0]),
-            apiClient.api.adminAnalyticsIdeasCountList({
-              type: "collaborated",
-              period: periodParam,
-            } as Parameters<typeof apiClient.api.adminAnalyticsIdeasCountList>[0]),
-            apiClient.api.adminV2IdeasList({
-              limit: 100,
-              period: periodParam,
-            } as Parameters<typeof apiClient.api.adminV2IdeasList>[0]),
-            apiClient.api
-              .adminAnalyticsIdeasTimeMetricsList({
-                period: periodParam,
-              } as Parameters<typeof apiClient.api.adminAnalyticsIdeasTimeMetricsList>[0])
-              .catch(() => ({ data: null })),
-          ]);
 
-        // Extract count from response - API returns different fields based on type
-        const totalData = totalRes.data as {
-          totalIdeasCreated?: number;
-          count?: number;
+        const insightsRes = await apiClient.api.adminV2IdeasInsightsList({
+          period: periodParam,
+          schoolId: selectedSchool?._id,
+          campusId: selectedCampus?._id,
+        });
+
+        const insightsData = insightsRes.data as {
+          totalIdeas?: number;
+          collaboratedIdeas?: number;
+          totalIdeasChange?: ChangeData;
+          collaboratedIdeasChange?: ChangeData;
+          topIdeas?: Array<{
+            title?: string;
+            creator?: { name?: string; avatar?: string };
+            collaborators?: number;
+          }>;
         };
-        const collaboratedData = collaboratedRes.data as {
-          collaboratedIdeasCount?: number;
-          count?: number;
-        };
-        const total = totalData.totalIdeasCreated || totalData.count || 0;
-        const collaborated =
-          collaboratedData.collaboratedIdeasCount ||
-          collaboratedData.count ||
-          0;
+        const total = insightsData.totalIdeas || 0;
+        const collaborated = insightsData.collaboratedIdeas || 0;
 
         // Calculate conversion rate (collaborated / total) * 100
         const conversion =
@@ -110,11 +109,21 @@ export const IdeasInsights: React.FC = () => {
 
         setStats({
           totalIdeas: total,
-          totalCollaborations: collaborated, // Assuming this endpoint returns total collaborations or ideas with collaborations
+          totalCollaborations: collaborated,
           conversionRate: conversion,
+          totalIdeasChange: insightsData.totalIdeasChange,
+          collaboratedIdeasChange: insightsData.collaboratedIdeasChange,
         });
 
-        // Process time metrics if available
+        // Process time metrics - fetch separately if needed
+        const timeMetricsRes = await apiClient.api
+          .adminAnalyticsIdeasTimeMetricsList({
+            period: periodParam,
+            schoolId: selectedSchool?._id,
+            campusId: selectedCampus?._id,
+          })
+          .catch(() => ({ data: null }));
+
         const timeMetricsData = (
           timeMetricsRes as {
             data: (TimeMetrics & { lastUpdated?: string }) | null;
@@ -141,71 +150,32 @@ export const IdeasInsights: React.FC = () => {
           }
         }
 
-        // Type assertion for accessing optional metadata fields
-        const ideasData = ideasRes.data as {
-          lastUpdated?: string;
-          updatedAt?: string;
-          metadata?: { lastUpdated?: string };
-        };
-        setLastUpdated(
-          (totalData as { lastUpdated?: string }).lastUpdated ||
-            (totalData as { updatedAt?: string }).updatedAt ||
-            (collaboratedData as { lastUpdated?: string }).lastUpdated ||
-            (collaboratedData as { updatedAt?: string }).updatedAt ||
-            ideasData.lastUpdated ||
-            ideasData.updatedAt ||
-            ideasData.metadata?.lastUpdated
-        );
-
-        // Fetch popular ideas
-        const allIdeas = ideasRes.data.data || [];
-
-        // Type for extended idea data from API
-        type ExtendedIdea = {
-          id?: string;
-          ideaTitle?: string;
-          owner?: { name?: string; avatar?: string };
-          studentId?: string;
-          collaborated?: number;
-          creationDate?: string;
-          creationTime?: string;
-          isFlagged?: boolean;
-          flagReason?: string;
-        };
-
-        // Sort by collaborations
-        const normalizedIdeas = (allIdeas as ExtendedIdea[])
-          .map((idea) => {
-            const collaborations = idea.collaborated || 0;
-
-            return {
-              ...idea,
-              collaborations,
-              ownerName: idea.owner?.name || "Unknown",
-              ownerAvatar: idea.owner?.avatar || "",
-            };
-          })
-          .filter((idea) => idea.collaborations > 0);
-
-        const sortedIdeas = normalizedIdeas
-          .sort((a, b) => b.collaborations - a.collaborations)
-          .slice(0, 4)
-          .map((idea, index: number) => ({
-            rank: index + 1,
-            title: idea.ideaTitle || "",
-            owner: {
-              name: idea.ownerName,
-              avatar: idea.ownerAvatar,
-            },
-            collaborations: idea.collaborations,
-          }));
+        // Set popular ideas from insights response
+        const topIdeas = insightsData.topIdeas || [];
+        const sortedIdeas = topIdeas.map((idea, index: number) => ({
+          rank: index + 1,
+          title: idea.title || "",
+          owner: {
+            name: idea.creator?.name || "Unknown",
+            avatar: idea.creator?.avatar || "",
+          },
+          collaborations: idea.collaborators || 0,
+        }));
 
         setPopularIdeas(sortedIdeas);
-      } catch (err: any) {
+        setLastUpdated(new Date().toISOString());
+      } catch (err: unknown) {
         console.error("Failed to fetch ideas insights:", err);
-        // Check for school configuration error
-        const errorMessage = err?.response?.data?.error || err?.message || "";
-        if (errorMessage.includes("school") || err?.response?.status === 400) {
+        const error = err as {
+          response?: { data?: { error?: string }; status?: number };
+          message?: string;
+        };
+        const errorMessage =
+          error?.response?.data?.error || error?.message || "";
+        if (
+          errorMessage.includes("school") ||
+          error?.response?.status === 400
+        ) {
           setError(
             "Your account is not associated with a school. Please contact an administrator to configure your school access."
           );
@@ -218,7 +188,49 @@ export const IdeasInsights: React.FC = () => {
     };
 
     fetchData();
-  }, [timePeriod]);
+  }, [timePeriod, selectedSchool?._id, selectedCampus?._id]);
+
+  // Helper to get trend text based on time period
+  const getTrendText = () => {
+    switch (timePeriod) {
+      case "week":
+        return "from last week";
+      case "month":
+        return "from last month";
+      case "all-time":
+        return "all time";
+      default:
+        return "from last period";
+    }
+  };
+
+  // Helper to format trend data from API
+  const formatTrend = (changeData: ChangeData | undefined) => {
+    if (!changeData) {
+      return {
+        value: "0%",
+        direction: "neutral" as const,
+        text: getTrendText(),
+      };
+    }
+    const direction: "up" | "down" | "neutral" =
+      changeData.changeDirection === "neutral" ||
+      changeData.changePercentage === "0%" ||
+      changeData.changePercentage === "N/A"
+        ? "neutral"
+        : changeData.changeDirection === "up"
+        ? "up"
+        : "down";
+    const value =
+      changeData.changePercentage === "N/A"
+        ? "0%"
+        : changeData.changePercentage || "0%";
+    return {
+      value,
+      direction,
+      text: getTrendText(),
+    };
+  };
 
   return (
     <main className="ideas-insights-page" ref={exportRef}>
@@ -229,7 +241,6 @@ export const IdeasInsights: React.FC = () => {
         exportTargetRef={exportRef}
         exportFileName={`ideas_insights_${timePeriod}`}
         showExport={showExport}
-        hideTimeSelector
       />
 
       {/* Error Warning Banner */}
@@ -244,7 +255,7 @@ export const IdeasInsights: React.FC = () => {
       <div className="stats-cards-row">
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">Total Ideas created historically</p>
+            <p className="stats-card-title">Total Ideas created </p>
             <div className="stats-card-icon ideas-icon-bg">
               <AssetIcon name="ideia-icon" size={30} color="#FFB800" />
             </div>
@@ -252,13 +263,49 @@ export const IdeasInsights: React.FC = () => {
           <p className="stats-card-value">
             {loading ? "..." : stats.totalIdeas.toLocaleString()}
           </p>
+          <div
+            className="stats-card-trend"
+            style={
+              timePeriod === "all-time" ? { visibility: "hidden" } : undefined
+            }
+          >
+            {formatTrend(stats.totalIdeasChange).direction === "neutral" ? (
+              <span className="trend-dash">—</span>
+            ) : (
+              <AssetIcon
+                name={
+                  formatTrend(stats.totalIdeasChange).direction === "up"
+                    ? "trend-up-icon"
+                    : "trend-down-icon"
+                }
+                size={20}
+                color={
+                  formatTrend(stats.totalIdeasChange).direction === "up"
+                    ? "#00C943"
+                    : "#D53425"
+                }
+              />
+            )}
+            <span
+              className="trend-value"
+              style={{
+                color:
+                  formatTrend(stats.totalIdeasChange).direction === "neutral"
+                    ? "#4318FF"
+                    : formatTrend(stats.totalIdeasChange).direction === "up"
+                    ? "#00C943"
+                    : "#D53425",
+              }}
+            >
+              {formatTrend(stats.totalIdeasChange).value}
+            </span>
+            <span className="trend-label">{getTrendText()}</span>
+          </div>
         </div>
 
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">
-              Total collaborations historically
-            </p>
+            <p className="stats-card-title">Total Ideas Collaborated</p>
             <div className="stats-card-icon user-icon-bg">
               <AssetIcon name="double-users-icon" size={24} color="#8280FF" />
             </div>
@@ -266,17 +313,64 @@ export const IdeasInsights: React.FC = () => {
           <p className="stats-card-value">
             {loading ? "..." : stats.totalCollaborations.toLocaleString()}
           </p>
+          <div
+            className="stats-card-trend"
+            style={
+              timePeriod === "all-time" ? { visibility: "hidden" } : undefined
+            }
+          >
+            {formatTrend(stats.collaboratedIdeasChange).direction ===
+            "neutral" ? (
+              <span className="trend-dash">—</span>
+            ) : (
+              <AssetIcon
+                name={
+                  formatTrend(stats.collaboratedIdeasChange).direction === "up"
+                    ? "trend-up-icon"
+                    : "trend-down-icon"
+                }
+                size={20}
+                color={
+                  formatTrend(stats.collaboratedIdeasChange).direction === "up"
+                    ? "#00C943"
+                    : "#D53425"
+                }
+              />
+            )}
+            <span
+              className="trend-value"
+              style={{
+                color:
+                  formatTrend(stats.collaboratedIdeasChange).direction ===
+                  "neutral"
+                    ? "#4318FF"
+                    : formatTrend(stats.collaboratedIdeasChange).direction ===
+                      "up"
+                    ? "#00C943"
+                    : "#D53425",
+              }}
+            >
+              {formatTrend(stats.collaboratedIdeasChange).value}
+            </span>
+            <span className="trend-label">{getTrendText()}</span>
+          </div>
         </div>
 
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">Historical conversion rate</p>
+            <p className="stats-card-title">Conversion rate</p>
             <div className="stats-card-icon conversion-icon-bg">
               <AssetIcon name="stats-icon" size={30} color="#00C943" />
             </div>
           </div>
           <p className="stats-card-value">
-            {loading ? "..." : `${stats.conversionRate}%`}
+            {loading ? (
+              "..."
+            ) : stats.conversionRate === 0 ? (
+              <span className="trend-dash">—</span>
+            ) : (
+              `${stats.conversionRate}%`
+            )}
           </p>
         </div>
       </div>
@@ -297,28 +391,41 @@ export const IdeasInsights: React.FC = () => {
                 ? "..."
                 : `${timeMetrics.timeToFirstCollaborator.value} Days`}
             </p>
-            <div className="time-card-trend">
-              <AssetIcon
-                name={
-                  timeMetrics.timeToFirstCollaborator.trendDirection === "up"
-                    ? "trend-up-red"
-                    : "trend-down-icon"
-                }
-                size={24}
-                color={
-                  timeMetrics.timeToFirstCollaborator.trendDirection === "up"
-                    ? "#D53425"
-                    : "#00C943"
-                }
-              />
-              <p className="trend-text">
-                <span className="trend-percentage">
-                  {Math.abs(timeMetrics.timeToFirstCollaborator.trend)}%
-                </span>{" "}
-                <span className="trend-label">
-                  from last {timePeriod === "week" ? "week" : "month"}
-                </span>
-              </p>
+            <div
+              className="time-card-trend"
+              style={
+                timePeriod === "all-time" ? { visibility: "hidden" } : undefined
+              }
+            >
+              {timeMetrics.timeToFirstCollaborator.trend === 0 ? (
+                <span className="trend-dash">—</span>
+              ) : (
+                <>
+                  <AssetIcon
+                    name={
+                      timeMetrics.timeToFirstCollaborator.trendDirection ===
+                      "up"
+                        ? "trend-up-red"
+                        : "trend-down-icon"
+                    }
+                    size={24}
+                    color={
+                      timeMetrics.timeToFirstCollaborator.trendDirection ===
+                      "up"
+                        ? "#D53425"
+                        : "#00C943"
+                    }
+                  />
+                  <p className="trend-text">
+                    <span className="trend-percentage">
+                      {Math.abs(timeMetrics.timeToFirstCollaborator.trend)}%
+                    </span>{" "}
+                    <span className="trend-label">
+                      from last {timePeriod === "week" ? "week" : "month"}
+                    </span>
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
@@ -334,28 +441,39 @@ export const IdeasInsights: React.FC = () => {
             <p className="time-card-value">
               {loading ? "..." : `${timeMetrics.avgResponseTime.value} Days`}
             </p>
-            <div className="time-card-trend">
-              <AssetIcon
-                name={
-                  timeMetrics.avgResponseTime.trendDirection === "up"
-                    ? "trend-up-red"
-                    : "trend-down-icon"
-                }
-                size={24}
-                color={
-                  timeMetrics.avgResponseTime.trendDirection === "up"
-                    ? "#D53425"
-                    : "#00C943"
-                }
-              />
-              <p className="trend-text">
-                <span className="trend-percentage">
-                  {Math.abs(timeMetrics.avgResponseTime.trend)}%
-                </span>{" "}
-                <span className="trend-label">
-                  from last {timePeriod === "week" ? "week" : "month"}
-                </span>
-              </p>
+            <div
+              className="time-card-trend"
+              style={
+                timePeriod === "all-time" ? { visibility: "hidden" } : undefined
+              }
+            >
+              {timeMetrics.avgResponseTime.trend === 0 ? (
+                <span className="trend-dash">—</span>
+              ) : (
+                <>
+                  <AssetIcon
+                    name={
+                      timeMetrics.avgResponseTime.trendDirection === "up"
+                        ? "trend-up-red"
+                        : "trend-down-icon"
+                    }
+                    size={24}
+                    color={
+                      timeMetrics.avgResponseTime.trendDirection === "up"
+                        ? "#D53425"
+                        : "#00C943"
+                    }
+                  />
+                  <p className="trend-text">
+                    <span className="trend-percentage">
+                      {Math.abs(timeMetrics.avgResponseTime.trend)}%
+                    </span>{" "}
+                    <span className="trend-label">
+                      from last {timePeriod === "week" ? "week" : "month"}
+                    </span>
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>

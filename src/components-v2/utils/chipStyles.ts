@@ -254,6 +254,29 @@ const getStatusChipStyle = (status?: string): ChipStyle => {
       size: "regular",
     },
     {
+      labels: ["incomplete"],
+      bg: "#eef0f1",
+      text: "#5b6168",
+      fallbackLabel: "Incomplete",
+      padding: "8px 16px",
+      size: "regular",
+    },
+    {
+      labels: ["inactive"],
+      bg: "#e7ecef",
+      text: "#4f565d",
+      fallbackLabel: "Inactive",
+      padding: "8px 16px",
+      size: "regular",
+    },
+    {
+      labels: ["deactivated"],
+      bg: "#1d1b20",
+      text: "#ffffff",
+      padding: "8px 16px",
+      size: "regular",
+    },
+    {
       labels: ["active"],
       bg: "#edffed",
       text: "#18682c",
@@ -263,13 +286,6 @@ const getStatusChipStyle = (status?: string): ChipStyle => {
     {
       labels: ["banned"],
       bg: "#d53425",
-      text: "#ffffff",
-      padding: "8px 16px",
-      size: "regular",
-    },
-    {
-      labels: ["deactivated", "inactive"],
-      bg: "#1d1b20",
       text: "#ffffff",
       padding: "8px 16px",
       size: "regular",

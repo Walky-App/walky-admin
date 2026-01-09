@@ -25,6 +25,8 @@ import {
 import { ReportStatus, ReportType } from "../../../components-v2";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { usePermissions } from "../../../hooks/usePermissions";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 import ReportsTable, { ReportRow } from "../components/ReportsTable";
 import "./ReportSafety.css";
 
@@ -46,6 +48,8 @@ const ReportSafety: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { canExport, canUpdate } = usePermissions();
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
 
   // Check permissions for this page
   const showExport = canExport("report_safety");
@@ -94,7 +98,8 @@ const ReportSafety: React.FC = () => {
 
   const normalizeFlagType = (value?: string) => {
     const t = (value || "").toLowerCase();
-    if (t.includes("user") || t.includes("student")) return "user" as const;
+    if (t.includes("user") || t.includes("student") || t.includes("message"))
+      return "user" as const;
     if (t.includes("idea")) return "idea" as const;
     if (t.includes("space")) return "space" as const;
     return "event" as const;
@@ -103,7 +108,6 @@ const ReportSafety: React.FC = () => {
   const {
     data: reportsData,
     isLoading: isReportsLoading,
-    isFetching,
     refetch,
   } = useQuery({
     queryKey: [
@@ -113,6 +117,8 @@ const ReportSafety: React.FC = () => {
       selectedTypes,
       selectedStatus,
       sortOrder,
+      selectedSchool?._id,
+      selectedCampus?._id,
     ],
     queryFn: () =>
       apiClient.api.adminV2ReportsList({
@@ -123,13 +129,19 @@ const ReportSafety: React.FC = () => {
         status: selectedStatus,
         sortBy: "reportDate",
         sortOrder: sortOrder,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
       }),
     placeholderData: keepPreviousData,
   });
 
   const { data: statsData } = useQuery({
-    queryKey: ["reportStats"],
-    queryFn: () => apiClient.api.adminV2ReportsStatsList(),
+    queryKey: ["reportStats", selectedSchool?._id, selectedCampus?._id],
+    queryFn: () =>
+      apiClient.api.adminV2ReportsStatsList({
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
+      }),
     placeholderData: keepPreviousData,
   });
 
@@ -206,6 +218,8 @@ const ReportSafety: React.FC = () => {
         selectedTypes,
         selectedStatus,
         sortOrder,
+        selectedSchool?._id,
+        selectedCampus?._id,
       ]);
 
       // Optimistically update the cache
@@ -217,6 +231,8 @@ const ReportSafety: React.FC = () => {
           selectedTypes,
           selectedStatus,
           sortOrder,
+          selectedSchool?._id,
+          selectedCampus?._id,
         ],
         (old: any) => {
           if (!old?.data?.data) return old;
@@ -253,6 +269,8 @@ const ReportSafety: React.FC = () => {
             selectedTypes,
             selectedStatus,
             sortOrder,
+            selectedSchool?._id,
+            selectedCampus?._id,
           ],
           context.previousReports
         );
@@ -290,6 +308,8 @@ const ReportSafety: React.FC = () => {
         selectedTypes,
         selectedStatus,
         sortOrder,
+        selectedSchool?._id,
+        selectedCampus?._id,
       ]);
 
       // Optimistically update the cache
@@ -301,6 +321,8 @@ const ReportSafety: React.FC = () => {
           selectedTypes,
           selectedStatus,
           sortOrder,
+          selectedSchool?._id,
+          selectedCampus?._id,
         ],
         (old: any) => {
           if (!old?.data?.data) return old;
@@ -336,6 +358,8 @@ const ReportSafety: React.FC = () => {
             selectedTypes,
             selectedStatus,
             sortOrder,
+            selectedSchool?._id,
+            selectedCampus?._id,
           ],
           context.previousReports
         );
@@ -386,6 +410,7 @@ const ReportSafety: React.FC = () => {
   const totalReports = statsData?.data.total || 0;
   const pendingReports = statsData?.data.pending || 0;
   const underEvaluationReports = statsData?.data.underEvaluation || 0;
+  const showTableSkeleton = isReportsLoading && !reportsData;
 
   const handleStatusChange = async (reportId: string, newStatus: string) => {
     await apiClient.api.adminV2ReportsStatusPartialUpdate(reportId, {
@@ -400,7 +425,12 @@ const ReportSafety: React.FC = () => {
       });
     }
 
-    refetch();
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["reports"] }),
+      queryClient.invalidateQueries({ queryKey: ["reportStats"] }),
+      queryClient.invalidateQueries({ queryKey: ["history-reports"] }),
+      queryClient.invalidateQueries({ queryKey: ["history-report-stats"] }),
+    ]);
   };
 
   const handleNoteRequired = (reportId: string, newStatus: string) => {
@@ -714,7 +744,7 @@ const ReportSafety: React.FC = () => {
         <div className="reports-table-wrapper">
           <ReportsTable
             rows={tableRows}
-            loading={isFetching || isReportsLoading}
+            loading={showTableSkeleton}
             renderSkeletonRows={renderTableSkeletonRows}
             emptyState={{
               message: "No reported users or content",

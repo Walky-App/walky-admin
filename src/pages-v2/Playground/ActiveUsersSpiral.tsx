@@ -88,7 +88,7 @@ export default function ActiveUsersSpiral() {
   const { data, loading, error } = useActiveUsersData(timePeriod as any);
 
   return (
-    <div className="active-spiral-page">
+    <main className="active-spiral-page" aria-label="Active Users Spiral">
       <div className="active-spiral-header">
         <div>
           <h1>Active Users Spiral</h1>
@@ -122,6 +122,6 @@ export default function ActiveUsersSpiral() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }

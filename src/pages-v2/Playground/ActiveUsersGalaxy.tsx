@@ -97,7 +97,7 @@ export default function ActiveUsersGalaxy() {
   const { data, loading, error } = useActiveUsersData(timePeriod as any);
 
   return (
-    <div className="active-galaxy-page">
+    <main className="active-galaxy-page" aria-label="Active Users Galaxy">
       <div className="active-galaxy-header">
         <div>
           <h1>Active Users Galaxy</h1>
@@ -123,6 +123,6 @@ export default function ActiveUsersGalaxy() {
           />
         </Canvas>
       </div>
-    </div>
+    </main>
   );
 }

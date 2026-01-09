@@ -8,6 +8,8 @@ import {
   NoData,
 } from "../../../components-v2";
 import { useDebounce } from "../../../hooks/useDebounce";
+import { useSchool } from "../../../contexts/SchoolContext";
+import { useCampus } from "../../../contexts/CampusContext";
 import { EventTable } from "../components/EventTable/EventTable";
 import { EventTableSkeleton } from "../components/EventTableSkeleton/EventTableSkeleton";
 import { EventCalendar } from "../components/EventCalendar/EventCalendar";
@@ -17,6 +19,8 @@ type ViewMode = "list" | "calendar";
 type EventSortField = "eventName" | "eventDate" | "attendeesCount";
 
 export const EventsManager: React.FC = () => {
+  const { selectedSchool } = useSchool();
+  const { selectedCampus } = useCampus();
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,8 +28,8 @@ export const EventsManager: React.FC = () => {
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState<EventSortField | undefined>(undefined);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortBy, setSortBy] = useState<EventSortField>("eventDate");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Debounce search input
   useEffect(() => {
@@ -46,6 +50,8 @@ export const EventsManager: React.FC = () => {
       statusFilter,
       sortBy,
       sortOrder,
+      selectedSchool?._id,
+      selectedCampus?._id,
     ],
     queryFn: () =>
       apiClient.api.adminV2EventsList({
@@ -61,6 +67,8 @@ export const EventsManager: React.FC = () => {
           | undefined,
         sortBy,
         sortOrder,
+        schoolId: selectedSchool?._id,
+        campusId: selectedCampus?._id,
       }),
     placeholderData: keepPreviousData,
   });
