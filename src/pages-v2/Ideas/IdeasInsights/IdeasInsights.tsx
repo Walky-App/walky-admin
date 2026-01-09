@@ -305,7 +305,7 @@ export const IdeasInsights: React.FC = () => {
 
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">Total ideas collaborated</p>
+            <p className="stats-card-title">Total Ideas Collaborated</p>
             <div className="stats-card-icon user-icon-bg">
               <AssetIcon name="double-users-icon" size={24} color="#8280FF" />
             </div>

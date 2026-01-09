@@ -37,7 +37,11 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
   };
   const filterOptions = useMemo(() => {
     const keys = datasets ? Object.keys(datasets) : [];
-    return keys.length ? keys : ["Common Interests"];
+    // Filter out "Common interests" from the dropdown options
+    const filteredKeys = keys.filter(
+      (key) => key.toLowerCase() !== "common interests"
+    );
+    return filteredKeys.length ? filteredKeys : [];
   }, [datasets]);
 
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
@@ -158,29 +162,31 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
               color={theme.colors.iconPurple}
             />
           </div>
-          <h3 className="common-interests-title">{selectedFilter}</h3>
+          <h3 className="common-interests-title">{selectedFilter || "Top Rankings"}</h3>
         </div>
-        <CDropdown className="common-interests-dropdown">
-          <CDropdownToggle color="light" className="dropdown-toggle-custom">
-            {selectedFilter}
-            <AssetIcon
-              name="arrow-down"
-              size={18}
-              color={theme.colors.dropdownText}
-            />
-          </CDropdownToggle>
-          <CDropdownMenu>
-            {filterOptions.map((option) => (
-              <CDropdownItem
-                key={option}
-                onClick={() => setSelectedFilter(option)}
-                active={selectedFilter === option}
-              >
-                {option}
-              </CDropdownItem>
-            ))}
-          </CDropdownMenu>
-        </CDropdown>
+        {filterOptions.length > 1 && (
+          <CDropdown className="common-interests-dropdown">
+            <CDropdownToggle color="light" className="dropdown-toggle-custom">
+              {selectedFilter}
+              <AssetIcon
+                name="arrow-down"
+                size={18}
+                color={theme.colors.dropdownText}
+              />
+            </CDropdownToggle>
+            <CDropdownMenu>
+              {filterOptions.map((option) => (
+                <CDropdownItem
+                  key={option}
+                  onClick={() => setSelectedFilter(option)}
+                  active={selectedFilter === option}
+                >
+                  {option}
+                </CDropdownItem>
+              ))}
+            </CDropdownMenu>
+          </CDropdown>
+        )}
       </div>
 
       <div className="common-interests-list">

@@ -594,7 +594,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
       : null;
 
   const disableBanUser = isUserBanned || isUserDeactivated;
-  const disableDeactivateUser = isUserDeactivated;
+  const disableDeactivateUser = isUserDeactivated || isUserBanned;
 
   const renderContentSkeleton = () => {
     const wrapContent = (body: React.ReactNode) => (
@@ -923,6 +923,8 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
                         title={
                           isUserDeactivated
                             ? "User is already deactivated"
+                            : isUserBanned
+                            ? "User is already banned"
                             : "Deactivate user"
                         }
                       >
