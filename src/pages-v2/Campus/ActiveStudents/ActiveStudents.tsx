@@ -138,7 +138,12 @@ export const ActiveStudents: React.FC = () => {
       <div className="active-students-stats">
         <StatsCard
           title="Total Active students"
-          value={statsData?.data.studentsWithAppAccess?.toString() || "0"}
+          value={
+            (
+              (statsData?.data as any)?.studentsWhoCompletedOnboarding ??
+              statsData?.data.studentsWithAppAccess
+            )?.toString() || "0"
+          }
           iconName="check-icon"
           iconBgColor="#E9FCF4"
           iconColor="#00C617"

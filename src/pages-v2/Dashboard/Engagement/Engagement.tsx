@@ -154,6 +154,20 @@ const Engagement: React.FC = () => {
 
   const isLoading = isEngagementLoading || isRetentionLoading || isStatsLoading;
 
+  // Helper to get trend text based on time period
+  const getTrendText = () => {
+    switch (timePeriod) {
+      case "week":
+        return "from last week";
+      case "month":
+        return "from last month";
+      case "all-time":
+        return "all time";
+      default:
+        return "from last period";
+    }
+  };
+
   // Helper to format trend data for StatsCard
   const formatTrend = (
     changeData:
@@ -178,7 +192,7 @@ const Engagement: React.FC = () => {
     return {
       value,
       direction,
-      text: "from last period",
+      text: getTrendText(),
     };
   };
 

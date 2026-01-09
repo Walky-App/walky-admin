@@ -182,7 +182,7 @@ export const SpacesInsights: React.FC = () => {
       };
     }
 
-    if (allTime === 0) {
+    if (allTime === 0 || current === allTime) {
       return {
         value: "0%",
         direction: "neutral" as const,
@@ -190,12 +190,27 @@ export const SpacesInsights: React.FC = () => {
       };
     }
 
-    // Calculate what percentage of all-time this period represents
-    const percentage = Math.round((current / allTime) * 100);
+    // Calculate percentage change from previous period
+    // previous = allTime - current (what existed before this period)
+    const previous = allTime - current;
+    if (previous === 0) {
+      // All values are from this period (new)
+      return {
+        value: "100%",
+        direction: "up" as const,
+        text: getTrendText(),
+      };
+    }
+
+    const percentageChange = Math.round(
+      ((current - previous) / previous) * 100
+    );
+    const direction =
+      percentageChange > 0 ? "up" : percentageChange < 0 ? "down" : "neutral";
 
     return {
-      value: `${percentage}%`,
-      direction: "neutral" as const,
+      value: `${Math.abs(percentageChange)}%`,
+      direction: direction as "up" | "down" | "neutral",
       text: getTrendText(),
     };
   };
