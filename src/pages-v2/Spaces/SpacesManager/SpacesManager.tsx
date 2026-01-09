@@ -150,15 +150,8 @@ export const SpacesManager: React.FC = () => {
     };
   });
 
-  // Local sort fallback for fields the API cannot sort (e.g., events)
-  const displayedSpaces = React.useMemo(() => {
-    if (sortBy === "events") {
-      return [...filteredSpaces].sort((a, b) =>
-        sortOrder === "asc" ? a.events - b.events : b.events - a.events
-      );
-    }
-    return filteredSpaces;
-  }, [filteredSpaces, sortBy, sortOrder]);
+  // Server-side sorting is used for all fields including events
+  const displayedSpaces = filteredSpaces;
 
   const totalPages = Math.ceil((spacesData?.data.total || 0) / 10);
   const totalEntries = spacesData?.data.total || 0;

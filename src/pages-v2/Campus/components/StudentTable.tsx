@@ -793,14 +793,19 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                                   handleBanUser(student);
                                 },
                               },
-                              {
-                                label: "Deactivate user",
-                                variant: "danger" as const,
-                                onClick: (e: React.MouseEvent) => {
-                                  e.stopPropagation();
-                                  handleDeactivateUser(student);
-                                },
-                              },
+                              // Hide deactivate option for banned users
+                              ...(student.status !== "banned"
+                                ? [
+                                    {
+                                      label: "Deactivate user",
+                                      variant: "danger" as const,
+                                      onClick: (e: React.MouseEvent) => {
+                                        e.stopPropagation();
+                                        handleDeactivateUser(student);
+                                      },
+                                    },
+                                  ]
+                                : []),
                             ]
                           : []),
                       ]}
