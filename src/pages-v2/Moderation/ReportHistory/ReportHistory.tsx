@@ -109,7 +109,6 @@ const ReportHistory: React.FC = () => {
   const {
     data: reportsData,
     isLoading,
-    isFetching,
     refetch,
   } = useQuery({
     queryKey: [
@@ -141,7 +140,11 @@ const ReportHistory: React.FC = () => {
   });
 
   const { data: statsData, refetch: refetchStats } = useQuery({
-    queryKey: ["history-report-stats", selectedSchool?._id, selectedCampus?._id],
+    queryKey: [
+      "history-report-stats",
+      selectedSchool?._id,
+      selectedCampus?._id,
+    ],
     queryFn: () =>
       apiClient.api.adminV2ReportsStatsList({
         schoolId: selectedSchool?._id,
@@ -152,6 +155,8 @@ const ReportHistory: React.FC = () => {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
+
+  const showTableSkeleton = isLoading && !reportsData;
 
   const flagMutation = useMutation({
     mutationFn: (data: {
@@ -403,8 +408,12 @@ const ReportHistory: React.FC = () => {
     await apiClient.api.adminV2ReportsStatusPartialUpdate(reportId, {
       status: apiStatus,
     });
-    refetch();
-    refetchStats();
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["history-reports"] }),
+      queryClient.invalidateQueries({ queryKey: ["history-report-stats"] }),
+      queryClient.invalidateQueries({ queryKey: ["reports"] }),
+      queryClient.invalidateQueries({ queryKey: ["reportStats"] }),
+    ]);
   };
 
   const handleNoteRequired = (reportId: string, newStatus: string) => {
@@ -689,7 +698,7 @@ const ReportHistory: React.FC = () => {
         <div className="reports-table-wrapper">
           <ReportsTable
             rows={tableRows}
-            loading={isFetching || isLoading}
+            loading={showTableSkeleton}
             renderSkeletonRows={renderTableSkeletonRows}
             emptyState={{
               message: "No history of reported users or content.",

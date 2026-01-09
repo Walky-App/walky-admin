@@ -10,6 +10,7 @@ import {
 import { Chip } from "../../components-v2/Chip";
 import type { EventDetailsData } from "../../components-v2/EventDetailsModal/EventDetailsModal";
 import { getFirstName } from "../../lib/utils/nameUtils";
+import { apiClient } from "../../API";
 
 export interface SpaceMember {
   id: string;
@@ -101,29 +102,137 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
     );
   });
 
-  const handleEventClick = (event: SpaceEvent) => {
-    // Convert SpaceEvent to EventDetailsData
-    const eventDetails: EventDetailsData = {
-      id: event.id,
-      eventName: event.title,
-      eventImage: event.image,
-      organizer: {
-        name: event.organizerName || spaceData.owner.name,
-        studentId: event.organizerStudentId || spaceData.owner.studentId,
-        avatar: event.organizerAvatar || spaceData.owner.avatar,
-      },
-      date: event.date,
-      time: event.time,
-      place: event.location,
-      status: "upcoming",
-      type: "public",
-      description: `Join us for ${event.title} at ${event.location}`,
-      attendees: [],
-      maxAttendees: 50,
-      isFlagged: false,
-    };
-    setSelectedEvent(eventDetails);
-    setEventDetailsModalOpen(true);
+  const handleEventClick = async (event: SpaceEvent) => {
+    try {
+      const res = await apiClient.api.adminV2EventsDetail(event.id);
+
+      type EventDetailsApi = {
+        id?: string;
+        _id?: string;
+        name?: string;
+        image_url?: string;
+        date_and_time?: string;
+        location?: string;
+        address?: string;
+        visibility?: string;
+        description?: string;
+        slots?: number;
+        spaceId?: string;
+        organizer?: {
+          name?: string;
+          id?: string;
+          _id?: string;
+          avatar?: string;
+          avatar_url?: string;
+        };
+        participants?: Array<{
+          user_id?: string;
+          _id?: string;
+          name?: string;
+          avatar_url?: string;
+          status?: string;
+        }>;
+        isFlagged?: boolean;
+        flagReason?: string;
+        space?: {
+          id?: string;
+          name?: string;
+          logo?: string;
+          coverImage?: string;
+          description?: string;
+        } | null;
+      };
+
+      const apiEvent = res.data as EventDetailsApi;
+      const hasDateTime = Boolean(apiEvent.date_and_time);
+      const dateObj = hasDateTime ? new Date(apiEvent.date_and_time!) : null;
+
+      const mappedEvent: EventDetailsData = {
+        id: apiEvent.id || apiEvent._id || event.id,
+        eventName: apiEvent.name || event.title,
+        eventImage: apiEvent.image_url || event.image,
+        organizer: {
+          name:
+            apiEvent.organizer?.name ||
+            event.organizerName ||
+            spaceData.owner.name,
+          studentId:
+            apiEvent.organizer?.id ||
+            apiEvent.organizer?._id ||
+            apiEvent.spaceId ||
+            event.organizerStudentId ||
+            spaceData.owner.studentId,
+          avatar:
+            apiEvent.organizer?.avatar ||
+            apiEvent.organizer?.avatar_url ||
+            event.organizerAvatar ||
+            spaceData.owner.avatar,
+        },
+        date: dateObj ? dateObj.toLocaleDateString() : event.date,
+        time: dateObj
+          ? dateObj.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : event.time,
+        place: apiEvent.location || apiEvent.address || event.location,
+        status: dateObj && dateObj < new Date() ? "finished" : "upcoming",
+        type: (apiEvent.visibility as "public" | "private") || "public",
+        description: apiEvent.description || event.title,
+        attendees: (apiEvent.participants || []).map((p) => ({
+          id: p.user_id || p._id || "",
+          name: p.name || "Unknown",
+          avatar: p.avatar_url,
+          status: p.status as "pending" | "confirmed" | "declined" | undefined,
+        })),
+        maxAttendees: apiEvent.slots ?? 0,
+        isFlagged: apiEvent.isFlagged || false,
+        flagReason: apiEvent.flagReason,
+        space: apiEvent.space
+          ? {
+              id: apiEvent.space.id || "",
+              name: apiEvent.space.name || spaceData.spaceName,
+              logo: apiEvent.space.logo,
+              coverImage: apiEvent.space.coverImage,
+              description: apiEvent.space.description,
+            }
+          : null,
+      };
+
+      setSelectedEvent(mappedEvent);
+      setEventDetailsModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch event details for space event:", error);
+      // Fallback to minimal data if API fails
+      const fallback: EventDetailsData = {
+        id: event.id,
+        eventName: event.title,
+        eventImage: event.image,
+        organizer: {
+          name: event.organizerName || spaceData.owner.name,
+          studentId: event.organizerStudentId || spaceData.owner.studentId,
+          avatar: event.organizerAvatar || spaceData.owner.avatar,
+        },
+        date: event.date,
+        time: event.time,
+        place: event.location,
+        status: "upcoming",
+        type: "public",
+        description: `Join us for ${event.title} at ${event.location}`,
+        attendees: [],
+        maxAttendees: 0,
+        isFlagged: false,
+        space: {
+          id: spaceData.id,
+          name: spaceData.spaceName,
+          logo: spaceData.spaceLogo,
+          coverImage: spaceData.spaceImage,
+          description: spaceData.description,
+        },
+      };
+      setSelectedEvent(fallback);
+      setEventDetailsModalOpen(true);
+    }
   };
 
   return (

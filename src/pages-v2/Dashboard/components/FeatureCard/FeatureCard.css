@@ -112,6 +112,9 @@
 
 .feature-item-img {
   width: 32px;
+  .feature-no-data {
+    padding: 8px 0;
+  }
   height: 32px;
   border-radius: 50%;
   object-fit: cover;

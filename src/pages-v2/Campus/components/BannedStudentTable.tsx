@@ -465,7 +465,13 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
     status: {
       label: "Status",
       sortable: false,
-      render: (student) => <StatusBadge status={student.status} />,
+      render: (student) => (
+        <StatusBadge
+          status={
+            student.status as "active" | "deactivated" | "banned" | "disengaged"
+          }
+        />
+      ),
     },
     memberSince: {
       label: "Member since",

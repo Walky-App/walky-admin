@@ -207,7 +207,7 @@ export const IdeasInsights: React.FC = () => {
 
         <div className="stats-card">
           <div className="stats-card-header">
-            <p className="stats-card-title">Historical conversion rate</p>
+            <p className="stats-card-title">Conversion rate</p>
             <div className="stats-card-icon conversion-icon-bg">
               <AssetIcon name="stats-icon" size={30} color="#00C943" />
             </div>

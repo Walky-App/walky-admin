@@ -29,6 +29,11 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   showTooltip,
   onTooltipHover,
 }) => {
+  const hasIcon = Boolean(iconName);
+  const iconContainerStyle = hasIcon
+    ? { backgroundColor: iconBgColor }
+    : { backgroundColor: "transparent" };
+
   return (
     <div className="stats-card">
       <div className="stats-card-header">
@@ -56,16 +61,13 @@ export const StatsCard: React.FC<StatsCardProps> = ({
             </div>
           )}
         </div>
-        {iconName && (
-          <div className="stats-card-icon-container-main">
-            <div
-              className="stats-card-icon-container"
-              style={{ backgroundColor: iconBgColor }}
-            >
-              <AssetIcon name={iconName} size={33} color={iconColor} />
-            </div>
+        <div className="stats-card-icon-container-main">
+          <div className="stats-card-icon-container" style={iconContainerStyle}>
+            {hasIcon ? (
+              <AssetIcon name={iconName!} size={24} color={iconColor} />
+            ) : null}
           </div>
-        )}
+        </div>
       </div>
       <div className="stats-card-value">{value}</div>
       {trend && (
