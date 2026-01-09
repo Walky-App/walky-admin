@@ -140,7 +140,7 @@ export const ActiveStudents: React.FC = () => {
           title="Total Active students"
           value={
             (
-              statsData?.data.studentsWhoCompletedOnboarding ??
+              (statsData?.data as any)?.studentsWhoCompletedOnboarding ??
               statsData?.data.studentsWithAppAccess
             )?.toString() || "0"
           }
