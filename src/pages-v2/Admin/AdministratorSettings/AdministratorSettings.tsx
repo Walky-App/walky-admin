@@ -63,10 +63,10 @@ export const AdministratorSettings: React.FC = () => {
           email: data.email || "",
         });
         // Update notification settings from profile
-        setNotificationData({
-          emailNotifications: data.emailNotifications ?? false,
-          securityAlerts: data.securityAlerts ?? false,
-        });
+        // setNotificationData({
+        //   emailNotifications: data.emailNotifications ?? false,
+        //   securityAlerts: data.securityAlerts ?? false,
+        // });
         // Update security settings
         setSecurityData((prev) => ({
           ...prev,
@@ -112,10 +112,10 @@ export const AdministratorSettings: React.FC = () => {
   });
 
   // Notification settings state
-  const [notificationData, setNotificationData] = useState({
-    emailNotifications: false,
-    securityAlerts: false,
-  });
+  // const [notificationData, setNotificationData] = useState({
+  //   emailNotifications: false,
+  //   securityAlerts: false,
+  // });
 
   // Danger zone state
   const [deleteReason, setDeleteReason] = useState("");
@@ -243,43 +243,43 @@ export const AdministratorSettings: React.FC = () => {
     }
   };
 
-  const handleNotificationChange = async (
-    field: keyof typeof notificationData,
-    value: boolean
-  ) => {
-    // Store previous state for potential rollback
-    const previousState = { ...notificationData };
+  // const handleNotificationChange = async (
+  //   field: keyof typeof notificationData,
+  //   value: boolean
+  // ) => {
+  //   // Store previous state for potential rollback
+  //   const previousState = { ...notificationData };
 
-    // Optimistically update local state
-    const newState = { ...notificationData, [field]: value };
-    setNotificationData(newState);
+  //   // Optimistically update local state
+  //   const newState = { ...notificationData, [field]: value };
+  //   setNotificationData(newState);
 
-    try {
-      // Save to API using the new values
-      await apiClient.api.adminProfileNotificationsUpdate({
-        emailNotifications: newState.emailNotifications,
-        pushNotifications: newState.securityAlerts,
-      });
+  //   try {
+  //     // Save to API using the new values
+  //     await apiClient.api.adminProfileNotificationsUpdate({
+  //       emailNotifications: newState.emailNotifications,
+  //       pushNotifications: newState.securityAlerts,
+  //     });
 
-      // Update profileData to keep everything in sync
-      setProfileData((prev) =>
-        prev
-          ? {
-              ...prev,
-              emailNotifications: newState.emailNotifications,
-              securityAlerts: newState.securityAlerts,
-            }
-          : null
-      );
+  //     // Update profileData to keep everything in sync
+  //     setProfileData((prev) =>
+  //       prev
+  //         ? {
+  //             ...prev,
+  //             emailNotifications: newState.emailNotifications,
+  //             securityAlerts: newState.securityAlerts,
+  //           }
+  //         : null
+  //     );
 
-      toast.success("Notification settings saved");
-    } catch (error) {
-      console.error("Error saving notification settings:", error);
-      // Revert on error
-      setNotificationData(previousState);
-      toast.error("Failed to save notification settings");
-    }
-  };
+  //     toast.success("Notification settings saved");
+  //   } catch (error) {
+  //     console.error("Error saving notification settings:", error);
+  //     // Revert on error
+  //     setNotificationData(previousState);
+  //     toast.error("Failed to save notification settings");
+  //   }
+  // };
 
   // ... (imports)
 
@@ -317,9 +317,9 @@ export const AdministratorSettings: React.FC = () => {
     }
   };
 
-  const handleLogoutAllDevices = () => {
-    setShowLogoutAllModal(true);
-  };
+  // const handleLogoutAllDevices = () => {
+  //   setShowLogoutAllModal(true);
+  // };
 
   const handleConfirmLogoutAll = async () => {
     try {
@@ -450,7 +450,8 @@ export const AdministratorSettings: React.FC = () => {
         >
           Security Settings
         </button>
-        <button
+        {/* Notification Preferences Tab - Hidden */}
+        {/* <button
           data-testid="tab-notifications"
           className={`settings-tab ${
             activeTab === "notifications" ? "active" : ""
@@ -458,7 +459,7 @@ export const AdministratorSettings: React.FC = () => {
           onClick={() => setActiveTab("notifications")}
         >
           Notification Preferences
-        </button>
+        </button> */}
         <button
           data-testid="tab-danger"
           className={`settings-tab ${activeTab === "danger" ? "active" : ""}`}
@@ -695,8 +696,8 @@ export const AdministratorSettings: React.FC = () => {
 
             <div className="content-divider" />
 
-            {/* Two-Factor Authentication */}
-            <div className="security-option">
+            {/* Two-Factor Authentication - Hidden */}
+            {/* <div className="security-option">
               <div className="option-header">
                 <h3 className="option-title">Two-factor authentication</h3>
                 <label className="toggle-switch">
@@ -714,10 +715,10 @@ export const AdministratorSettings: React.FC = () => {
               <p className="option-description">
                 Add an extra layer of security to your account
               </p>
-            </div>
+            </div> */}
 
-            {/* Logout All Devices */}
-            <div className="security-option danger">
+            {/* Logout All Devices - Hidden */}
+            {/* <div className="security-option danger">
               <div className="option-header">
                 <h3 className="option-title">Logout all devices</h3>
                 <button
@@ -731,17 +732,18 @@ export const AdministratorSettings: React.FC = () => {
               <p className="option-description">
                 Log out of all devices except this one
               </p>
-            </div>
+            </div> */}
           </div>
         )}
 
-        {activeTab === "notifications" && (
+        {/* Notification Preferences Content - Hidden */}
+        {/* {activeTab === "notifications" && (
           <div className="settings-content">
             <h2 className="content-section-title">Notification preferences</h2>
             <div className="content-divider" />
 
             {/* Email Notifications */}
-            <div className="security-option">
+        {/* <div className="security-option">
               <div className="option-header">
                 <h3 className="option-title">Email notifications</h3>
                 <label className="toggle-switch">
@@ -762,10 +764,10 @@ export const AdministratorSettings: React.FC = () => {
               <p className="option-description">
                 Receive email about important updates
               </p>
-            </div>
+            </div> */}
 
-            {/* Security Alerts */}
-            <div className="security-option">
+        {/* Security Alerts */}
+        {/* <div className="security-option">
               <div className="option-header">
                 <h3 className="option-title">Security alerts</h3>
                 <label className="toggle-switch">
@@ -788,7 +790,7 @@ export const AdministratorSettings: React.FC = () => {
               </p>
             </div>
           </div>
-        )}
+        )} */}
 
         {activeTab === "danger" && (
           <div className="settings-content">
