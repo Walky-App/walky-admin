@@ -108,7 +108,7 @@ API.interceptors.response.use(
 const baseURL =
   import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api";
 
-// Create Api directly with config (Api extends HttpClient)
+// Create Api with config (Api extends HttpClient)
 export const apiClient = new Api({
   baseURL: baseURL.replace(/\/api\/?$/, ""),
 });
