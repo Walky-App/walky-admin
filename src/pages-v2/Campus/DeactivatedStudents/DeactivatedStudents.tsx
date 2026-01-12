@@ -88,6 +88,8 @@ export const DeactivatedStudents: React.FC = () => {
       memberSince: formatMemberSince(student.memberSince),
       onlineLast: student.onlineLast || "",
       avatar: student.avatar,
+      isFlagged: student.isFlagged,
+      flagReason: student.flagReason,
     })
   );
 

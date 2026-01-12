@@ -181,7 +181,7 @@ export const reportService = {
   removeUser: async (userId: string, reason: string, sendEmail = true) => {
     try {
       console.log("🚀 Removing user:", userId);
-      const response = await apiClient.instance.delete(
+      const response = await apiClient.http.instance.delete(
         `/api/admin/users/${userId}/remove`,
         {
           data: { reason, sendEmail },
