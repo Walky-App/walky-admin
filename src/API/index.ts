@@ -3,7 +3,7 @@ import axios, {
   AxiosResponse,
   AxiosError,
 } from "axios";
-import { Api } from "./WalkyAPI";
+import { Api, HttpClient } from "./WalkyAPI";
 import { triggerDeactivatedModal } from "../contexts/DeactivatedUserContext";
 
 /**
@@ -112,15 +112,16 @@ const baseURL =
 export const apiClient = new Api({
   baseURL: baseURL.replace(/\/api\/?$/, ""),
 });
+export const apiClient = new Api(httpClientInstance);
 
 // Expose httpClient for backward compatibility
-export const httpClient = { instance: apiClient.instance };
+export const httpClient = { instance: apiClient.http.instance };
 
 // Enable cookies for CSRF
-apiClient.instance.defaults.withCredentials = true;
+apiClient.http.instance.defaults.withCredentials = true;
 
 // Apply interceptors to the Api's axios instance
-apiClient.instance.interceptors.request.use(
+apiClient.http.instance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -146,7 +147,7 @@ apiClient.instance.interceptors.request.use(
   }
 );
 
-apiClient.instance.interceptors.response.use(
+apiClient.http.instance.interceptors.response.use(
   (response: AxiosResponse) => {
     console.log(
       "✅ API Response:",

@@ -10,6 +10,7 @@ import {
   Divider,
 } from "../../../components-v2";
 import { CopyableId } from "../../../components-v2/CopyableId";
+import { CTooltip } from "@coreui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
 import { usePermissions } from "../../../hooks/usePermissions";
@@ -101,6 +102,22 @@ export const DeactivatedStudentTable: React.FC<
     },
   });
 
+  const unflagMutation = useMutation({
+    mutationFn: (id: string) => apiClient.api.adminV2StudentsUnflagCreate(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) && query.queryKey[0] === "students",
+      });
+      setToastMessage("User unflagged successfully");
+      setShowToast(true);
+    },
+    onError: () => {
+      setToastMessage("Failed to unflag user");
+      setShowToast(true);
+    },
+  });
+
   const handleViewProfile = (student: StudentData) => {
     setSelectedStudent(student);
     setProfileModalVisible(true);
@@ -123,9 +140,13 @@ export const DeactivatedStudentTable: React.FC<
     setFlagModalVisible(true);
   };
 
-  const handleConfirmFlag = () => {
+  const handleUnflagUser = (student: StudentData) => {
+    unflagMutation.mutate(student.id);
+  };
+
+  const handleConfirmFlag = (reason: string) => {
     if (!studentToFlag) return;
-    flagMutation.mutate({ id: studentToFlag.id, reason: "Flagged by admin" });
+    flagMutation.mutate({ id: studentToFlag.id, reason: reason || "Flagged by admin" });
     setFlagModalVisible(false);
     setStudentToFlag(null);
   };
@@ -176,14 +197,16 @@ export const DeactivatedStudentTable: React.FC<
   };
 
   const sortedStudents = React.useMemo(() => {
-    const activeSortField = sortBy ?? sortField;
-    const activeSortDirection = sortOrder ?? sortDirection;
+    // If server-side sorting is active (sortBy prop provided), don't re-sort on client
+    // The data is already sorted by the server
+    if (sortBy) return students;
 
-    if (!activeSortField) return students;
+    // Client-side sorting (when no server-side sorting)
+    if (!sortField) return students;
 
     return [...students].sort((a, b) => {
-      const aValue = a[activeSortField];
-      const bValue = b[activeSortField];
+      const aValue = a[sortField];
+      const bValue = b[sortField];
 
       if (aValue === undefined || bValue === undefined) return 0;
 
@@ -194,9 +217,9 @@ export const DeactivatedStudentTable: React.FC<
         comparison = aValue - bValue;
       }
 
-      return activeSortDirection === "asc" ? comparison : -comparison;
+      return sortDirection === "asc" ? comparison : -comparison;
     });
-  }, [students, sortBy, sortField, sortOrder, sortDirection]);
+  }, [students, sortBy, sortField, sortDirection]);
 
   const isEmpty = sortedStudents.length === 0;
 
@@ -219,18 +242,27 @@ export const DeactivatedStudentTable: React.FC<
       label: "Student name",
       sortable: true,
       render: (student) => (
-        <div className="student-name-cell">
-          <div className="student-avatar">
-            {student.avatar && !student.avatar.match(/^[A-Z]$/) ? (
-              <img src={student.avatar} alt={student.name} />
-            ) : (
-              <div className="student-avatar-placeholder">
-                {student.avatar || student.name.charAt(0)}
+        <>
+          {Boolean(student.isFlagged) && (
+            <CTooltip content={student.flagReason || "Flagged"} placement="top">
+              <div className="student-flag-icon">
+                <AssetIcon name="flag-icon" size={16} color="#d32f2f" />
               </div>
-            )}
+            </CTooltip>
+          )}
+          <div className="student-name-cell">
+            <div className="student-avatar">
+              {student.avatar && !student.avatar.match(/^[A-Z]$/) ? (
+                <img src={student.avatar} alt={student.name} />
+              ) : (
+                <div className="student-avatar-placeholder">
+                  {student.avatar || student.name.charAt(0)}
+                </div>
+              )}
+            </div>
+            <span>{getFirstName(student.name)}</span>
           </div>
-          <span>{getFirstName(student.name)}</span>
-        </div>
+        </>
       ),
     },
     email: {
@@ -362,7 +394,9 @@ export const DeactivatedStudentTable: React.FC<
             sortedStudents.map((student, index) => (
               <React.Fragment key={student.id}>
                 <tr
-                  className="student-table-row"
+                  className={`student-table-row ${
+                    student.isFlagged ? "student-row-flagged" : ""
+                  }`}
                   onClick={() => onStudentClick?.(student)}
                 >
                   {columns.map((column) => (
@@ -391,11 +425,18 @@ export const DeactivatedStudentTable: React.FC<
                         ...(canModifyDeactivatedStudents
                           ? [
                               {
-                                label: "Flag",
+                                label: student.isFlagged ? "Unflag" : "Flag",
                                 icon: "flag-icon" as const,
+                                variant: student.isFlagged
+                                  ? ("danger" as const)
+                                  : undefined,
                                 onClick: (e: React.MouseEvent) => {
                                   e.stopPropagation();
-                                  handleFlagUser(student);
+                                  if (student.isFlagged) {
+                                    handleUnflagUser(student);
+                                  } else {
+                                    handleFlagUser(student);
+                                  }
                                 },
                               },
                             ]

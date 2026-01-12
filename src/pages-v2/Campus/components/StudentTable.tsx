@@ -522,14 +522,16 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     }
   };
   const sortedStudents = React.useMemo(() => {
-    const activeSortField = sortBy ?? sortField;
-    const activeSortDirection = sortOrder ?? sortDirection;
+    // If server-side sorting is active (sortBy prop provided), don't re-sort on client
+    // The data is already sorted by the server
+    if (sortBy) return students;
 
-    if (!activeSortField) return students;
+    // Client-side sorting (when no server-side sorting)
+    if (!sortField) return students;
 
     return [...students].sort((a, b) => {
-      const aValue = (a as any)[activeSortField];
-      const bValue = (b as any)[activeSortField];
+      const aValue = (a as any)[sortField];
+      const bValue = (b as any)[sortField];
 
       if (aValue === undefined || bValue === undefined) return 0;
 
@@ -540,9 +542,9 @@ export const StudentTable: React.FC<StudentTableProps> = ({
         comparison = aValue - bValue;
       }
 
-      return activeSortDirection === "asc" ? comparison : -comparison;
+      return sortDirection === "asc" ? comparison : -comparison;
     });
-  }, [students, sortBy, sortField, sortOrder, sortDirection]);
+  }, [students, sortBy, sortField, sortDirection]);
 
   const isEmpty = sortedStudents.length === 0;
   const renderInterests = (interests?: string[]) => {
@@ -793,14 +795,19 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                                   handleBanUser(student);
                                 },
                               },
-                              {
-                                label: "Deactivate user",
-                                variant: "danger" as const,
-                                onClick: (e: React.MouseEvent) => {
-                                  e.stopPropagation();
-                                  handleDeactivateUser(student);
-                                },
-                              },
+                              // Hide deactivate option for banned users
+                              ...(student.status !== "banned"
+                                ? [
+                                    {
+                                      label: "Deactivate user",
+                                      variant: "danger" as const,
+                                      onClick: (e: React.MouseEvent) => {
+                                        e.stopPropagation();
+                                        handleDeactivateUser(student);
+                                      },
+                                    },
+                                  ]
+                                : []),
                             ]
                           : []),
                       ]}
