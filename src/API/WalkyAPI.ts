@@ -3867,6 +3867,66 @@ export class Api<SecurityDataType extends unknown> {
      * No description
      *
      * @tags AdminV2
+     * @name AdminV2SettingsDeleteAccountStatusList
+     * @summary Get account deletion request status
+     * @request GET:/api/admin/v2/settings/delete-account/status
+     * @secure
+     */
+    adminV2SettingsDeleteAccountStatusList: (params: RequestParams = {}) =>
+      this.http.request<
+        {
+          hasPendingRequest: boolean;
+          request: {
+            id: string;
+            status: string;
+            reason: string;
+            createdAt: string;
+          } | null;
+        },
+        any
+      >({
+        path: `/api/admin/v2/settings/delete-account/status`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags AdminV2
+     * @name AdminV2SettingsDeleteAccountCancelCreate
+     * @summary Cancel account deletion request
+     * @request POST:/api/admin/v2/settings/delete-account/cancel
+     * @secure
+     */
+    adminV2SettingsDeleteAccountCancelCreate: (
+      data: {
+        reason?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          success: boolean;
+          message: string;
+        },
+        any
+      >({
+        path: `/api/admin/v2/settings/delete-account/cancel`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags AdminV2
      * @name AdminV2SpacesList
      * @summary Get spaces list
      * @request GET:/api/admin/v2/spaces
