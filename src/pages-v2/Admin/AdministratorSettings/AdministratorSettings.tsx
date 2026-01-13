@@ -119,6 +119,17 @@ export const AdministratorSettings: React.FC = () => {
 
   // Danger zone state
   const [deleteReason, setDeleteReason] = useState("");
+  const [deletionStatus, setDeletionStatus] = useState<{
+    hasPendingRequest: boolean;
+    request: {
+      id: string;
+      status: string;
+      reason: string;
+      createdAt: string;
+    } | null;
+  } | null>(null);
+  const [isLoadingDeletionStatus, setIsLoadingDeletionStatus] = useState(false);
+  const [isCancellingRequest, setIsCancellingRequest] = useState(false);
 
   // Avatar upload
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -132,6 +143,24 @@ export const AdministratorSettings: React.FC = () => {
       JSON.stringify(formData) !== JSON.stringify(initialFormData);
     setHasUnsavedChanges(hasChanges);
   }, [formData, initialFormData]);
+
+  // Fetch deletion request status
+  const fetchDeletionStatus = async () => {
+    try {
+      setIsLoadingDeletionStatus(true);
+      const response =
+        await apiClient.api.adminV2SettingsDeleteAccountStatusList();
+      setDeletionStatus(response.data);
+    } catch (error) {
+      console.error("Error fetching deletion status:", error);
+    } finally {
+      setIsLoadingDeletionStatus(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDeletionStatus();
+  }, []);
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -351,10 +380,30 @@ export const AdministratorSettings: React.FC = () => {
         reason: deleteReason,
       });
       setShowDeleteAccountModal(false);
+      setDeleteReason("");
       toast.success("Account deletion requested");
-    } catch (error) {
+      // Refresh deletion status
+      fetchDeletionStatus();
+    } catch (error: any) {
       console.error("Error requesting account deletion:", error);
-      toast.error("Failed to request account deletion");
+      const errorMessage =
+        error?.response?.data?.message || "Failed to request account deletion";
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleCancelDeletionRequest = async () => {
+    try {
+      setIsCancellingRequest(true);
+      await apiClient.api.adminV2SettingsDeleteAccountCancelCreate({});
+      toast.success("Deletion request cancelled");
+      // Refresh deletion status
+      fetchDeletionStatus();
+    } catch (error) {
+      console.error("Error cancelling deletion request:", error);
+      toast.error("Failed to cancel deletion request");
+    } finally {
+      setIsCancellingRequest(false);
     }
   };
 
@@ -800,37 +849,87 @@ export const AdministratorSettings: React.FC = () => {
             {/* Delete Account Section */}
             <div className="danger-zone-section">
               <h3 className="danger-title">Request to delete account</h3>
-              <p className="danger-description">
-                You're about to request the deletion of your account. Once
-                submitted, this request will be reviewed by a Walky Admin before
-                your account is permanently removed.
-              </p>
 
-              <div className="form-field">
-                <label>Reason for account deletion (optional)</label>
-                <textarea
-                  className="delete-reason-textarea"
-                  value={deleteReason}
-                  onChange={(e) => setDeleteReason(e.target.value)}
-                  placeholder="Write a explanation"
-                  rows={4}
-                />
-              </div>
+              {isLoadingDeletionStatus ? (
+                <p className="danger-description">Loading...</p>
+              ) : deletionStatus?.hasPendingRequest && deletionStatus.request ? (
+                <>
+                  <div className="pending-request-notice">
+                    <div className="pending-request-header">
+                      <span className="pending-request-badge">
+                        Request Pending
+                      </span>
+                      <span className="pending-request-date">
+                        Submitted on{" "}
+                        {new Date(
+                          deletionStatus.request.createdAt
+                        ).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="pending-request-message">
+                      Your account deletion request has been submitted and is
+                      awaiting review by a Walky Admin.
+                    </p>
+                    {deletionStatus.request.reason && (
+                      <p className="pending-request-reason">
+                        <strong>Reason:</strong> {deletionStatus.request.reason}
+                      </p>
+                    )}
+                  </div>
 
-              <div className="danger-alert">
-                <p>
-                  Deleting your account will remove your access to all admin
-                  tools and data. This action can't be undone once approved.
-                </p>
-              </div>
+                  <div className="danger-alert">
+                    <p>
+                      You can cancel this request if you've changed your mind.
+                      Once approved by an admin, the deletion cannot be undone.
+                    </p>
+                  </div>
 
-              <button
-                className="submit-delete-btn"
-                onClick={handleSubmitDeleteRequest}
-                data-testid="submit-delete-btn"
-              >
-                Submit request
-              </button>
+                  <button
+                    className="cancel-delete-btn"
+                    onClick={handleCancelDeletionRequest}
+                    disabled={isCancellingRequest}
+                    data-testid="cancel-delete-btn"
+                  >
+                    {isCancellingRequest
+                      ? "Cancelling..."
+                      : "Cancel deletion request"}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="danger-description">
+                    You're about to request the deletion of your account. Once
+                    submitted, this request will be reviewed by a Walky Admin
+                    before your account is permanently removed.
+                  </p>
+
+                  <div className="form-field">
+                    <label>Reason for account deletion (optional)</label>
+                    <textarea
+                      className="delete-reason-textarea"
+                      value={deleteReason}
+                      onChange={(e) => setDeleteReason(e.target.value)}
+                      placeholder="Write a explanation"
+                      rows={4}
+                    />
+                  </div>
+
+                  <div className="danger-alert">
+                    <p>
+                      Deleting your account will remove your access to all admin
+                      tools and data. This action can't be undone once approved.
+                    </p>
+                  </div>
+
+                  <button
+                    className="submit-delete-btn"
+                    onClick={handleSubmitDeleteRequest}
+                    data-testid="submit-delete-btn"
+                  >
+                    Submit request
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}
