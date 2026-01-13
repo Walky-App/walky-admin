@@ -911,3 +911,118 @@
   background: #2a2a2a;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
 }
+
+/* Pending Deletion Request Styles */
+.pending-request-notice {
+  background: #fff8e6;
+  border: 1px solid #ffd666;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.pending-request-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pending-request-badge {
+  background: #ffd666;
+  color: #8f5400;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 4px 12px;
+  border-radius: 16px;
+}
+
+.pending-request-date {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #8f5400;
+}
+
+.pending-request-message {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #5b6168;
+  margin: 0 0 8px 0;
+}
+
+.pending-request-reason {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #676d70;
+  margin: 8px 0 0 0;
+  padding-top: 8px;
+  border-top: 1px solid #ffd666;
+}
+
+.cancel-delete-btn {
+  background: #ffffff;
+  border: 2px solid #d53425;
+  border-radius: 12px;
+  padding: 9px 20px;
+  height: 40px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #d53425;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.cancel-delete-btn:hover:not(:disabled) {
+  background: #d53425;
+  color: #ffffff;
+}
+
+.cancel-delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Dark mode for pending request */
+[data-theme="dark"] .pending-request-notice {
+  background: #2a2510;
+  border-color: #665500;
+}
+
+[data-theme="dark"] .pending-request-badge {
+  background: #665500;
+  color: #ffd666;
+}
+
+[data-theme="dark"] .pending-request-date {
+  color: #ffd666;
+}
+
+[data-theme="dark"] .pending-request-message {
+  color: #b0b0b0;
+}
+
+[data-theme="dark"] .pending-request-reason {
+  color: #909090;
+  border-color: #665500;
+}
+
+[data-theme="dark"] .cancel-delete-btn {
+  background: #2a2a2a;
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .cancel-delete-btn:hover:not(:disabled) {
+  background: #d53425;
+  color: #ffffff;
+}
