@@ -5,6 +5,7 @@ import {
   LastUpdated,
   SkeletonLoader,
   FilterBar,
+  NoData,
 } from "../../../components-v2";
 import { TimePeriod } from "../../../components-v2/FilterBar/FilterBar.types";
 import { StatsCard } from "../../Dashboard/components";
@@ -315,43 +316,52 @@ export const SpacesInsights: React.FC = () => {
           </div>
 
           <div className="categories-list">
-            {categories.map((category, index) => (
-              <div key={index} className="category-item">
-                <div className="category-icon-container">
-                  <div className="category-icon-bg">
-                    {category.imageUrl ? (
-                      <img
-                        src={category.imageUrl}
-                        alt={category.name}
-                        className="space-logo-img"
+            {categories.length === 0 ? (
+              <NoData
+                iconName="space-icon"
+                iconColor="#526AC9"
+                iconSize={40}
+                message="No data yet"
+              />
+            ) : (
+              categories.map((category, index) => (
+                <div key={index} className="category-item">
+                  <div className="category-icon-container">
+                    <div className="category-icon-bg">
+                      {category.imageUrl ? (
+                        <img
+                          src={category.imageUrl}
+                          alt={category.name}
+                          className="space-logo-img"
+                        />
+                      ) : (
+                        <span className="category-emoji">{category.emoji}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="category-info">
+                    <div className="category-details">
+                      <p className="category-name">{category.name}</p>
+                      <p className="category-stats">
+                        {category.spaces} Spaces ({category.percentage}%)
+                      </p>
+                    </div>
+                    <div className="progress-bar-container">
+                      <div className="progress-bar-background" />
+                      <div
+                        className="progress-bar-fill"
+                        style={{
+                          width: `${Math.min(
+                            Math.max(category.percentage || 0, 0),
+                            100
+                          )}%`,
+                        }}
                       />
-                    ) : (
-                      <span className="category-emoji">{category.emoji}</span>
-                    )}
+                    </div>
                   </div>
                 </div>
-                <div className="category-info">
-                  <div className="category-details">
-                    <p className="category-name">{category.name}</p>
-                    <p className="category-stats">
-                      {category.spaces} Spaces ({category.percentage}%)
-                    </p>
-                  </div>
-                  <div className="progress-bar-container">
-                    <div className="progress-bar-background" />
-                    <div
-                      className="progress-bar-fill"
-                      style={{
-                        width: `${Math.min(
-                          Math.max(category.percentage || 0, 0),
-                          100
-                        )}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -362,32 +372,41 @@ export const SpacesInsights: React.FC = () => {
           </div>
 
           <div className="spaces-list">
-            {topSpaces.map((space) => (
-              <div key={space.rank} className="space-item">
-                <div className="space-info">
-                  <span className="space-rank">{space.rank}.</span>
-                  <div className="space-logo">
-                    {space.logo ? (
-                      <img
-                        src={space.logo}
-                        alt={space.name}
-                        className="space-logo-img"
-                      />
-                    ) : (
-                      <div className="space-logo-placeholder">
-                        <AssetIcon
-                          name="space-icon"
-                          size={20}
-                          color="#526AC9"
+            {topSpaces.length === 0 ? (
+              <NoData
+                iconName="space-icon"
+                iconColor="#526AC9"
+                iconSize={40}
+                message="No data yet"
+              />
+            ) : (
+              topSpaces.map((space) => (
+                <div key={space.rank} className="space-item">
+                  <div className="space-info">
+                    <span className="space-rank">{space.rank}.</span>
+                    <div className="space-logo">
+                      {space.logo ? (
+                        <img
+                          src={space.logo}
+                          alt={space.name}
+                          className="space-logo-img"
                         />
-                      </div>
-                    )}
+                      ) : (
+                        <div className="space-logo-placeholder">
+                          <AssetIcon
+                            name="space-icon"
+                            size={20}
+                            color="#526AC9"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <p className="space-name">{space.name}</p>
                   </div>
-                  <p className="space-name">{space.name}</p>
+                  <p className="space-members">{space.members} Members</p>
                 </div>
-                <p className="space-members">{space.members} Members</p>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
