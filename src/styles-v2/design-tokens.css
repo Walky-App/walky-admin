@@ -221,6 +221,7 @@
   /* V2 Primary - Dark Mode (lighter for visibility) */
   --v2-primary-purple-main: #7c7cff;
   --v2-primary-purple-variant: #8b8bff;
+  --v2-primary-purple-dark: #9b9bff;
   --v2-text-link: #7c7cff;
   --v2-text-link-hover: #9a9aff;
 
