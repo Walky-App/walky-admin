@@ -11,7 +11,7 @@ import { ActiveStudents } from "../pages-v2/Campus/ActiveStudents";
 import { BannedStudents } from "../pages-v2/Campus/BannedStudents";
 import { DeactivatedStudents } from "../pages-v2/Campus/DeactivatedStudents";
 import { DisengagedStudents } from "../pages-v2/Campus/DisengagedStudents";
-import { EventsManager, EventsInsights } from "../pages-v2/Events";
+import { EventsManager, EventsInsights, CheckInAnalytics } from "../pages-v2/Events";
 import { SpacesManager, SpacesInsights } from "../pages-v2/Spaces";
 import { IdeasManager, IdeasInsights } from "../pages-v2/Ideas";
 import { ReportSafety, ReportHistory } from "../pages-v2/Moderation";
@@ -179,6 +179,14 @@ const V2Routes: React.FC = () => {
               element={
                 <PermissionGuard resource="events_insights" fallback="redirect">
                   <EventsInsights />
+                </PermissionGuard>
+              }
+            />
+            <Route
+              path="events/check-in"
+              element={
+                <PermissionGuard resource="events_insights" fallback="redirect">
+                  <CheckInAnalytics />
                 </PermissionGuard>
               }
             />
