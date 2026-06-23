@@ -60,6 +60,9 @@ const EventsManager = lazy(() =>
 const EventsInsights = lazy(() =>
   import("../pages-v2/Events").then((m) => ({ default: m.EventsInsights }))
 );
+const CheckInAnalytics = lazy(() =>
+  import("../pages-v2/Events").then((m) => ({ default: m.CheckInAnalytics }))
+);
 const SpacesManager = lazy(() =>
   import("../pages-v2/Spaces").then((m) => ({ default: m.SpacesManager }))
 );
@@ -294,6 +297,17 @@ const V2Routes: React.FC = () => {
                     fallback="redirect"
                   >
                     <EventsInsights />
+                  </PermissionGuard>
+                }
+              />
+              <Route
+                path="events/check-in"
+                element={
+                  <PermissionGuard
+                    resource="events_insights"
+                    fallback="redirect"
+                  >
+                    <CheckInAnalytics />
                   </PermissionGuard>
                 }
               />

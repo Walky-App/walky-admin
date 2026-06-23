@@ -69,7 +69,8 @@
   font-weight: var(--v2-font-weight-regular);
   font-size: var(--v2-font-size-base);
   line-height: var(--v2-line-height-tight);
-  color: var(--v2-text-primary);
+  /* background stays white in dark mode, so text must stay dark (not --v2-text-primary) */
+  color: var(--v2-neutral-black);
   outline: none;
   transition: border-color var(--v2-transition-base);
 }
@@ -77,6 +78,13 @@
 .login-v2 .form-input::placeholder {
   color: var(--v2-neutral-placeholder);
   opacity: 1;
+}
+
+.login-v2 .form-input:-webkit-autofill,
+.login-v2 .form-input:-webkit-autofill:hover,
+.login-v2 .form-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--v2-neutral-white) inset;
+  -webkit-text-fill-color: var(--v2-neutral-black);
 }
 
 .login-v2 .form-input:focus {

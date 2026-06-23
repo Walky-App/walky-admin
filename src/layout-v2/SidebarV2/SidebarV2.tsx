@@ -203,6 +203,11 @@ const allMenuSections: MenuSection[] = [
             path: "/events/insights",
             resource: "events_insights",
           },
+          {
+            label: "Check-in Analytics",
+            path: "/events/check-in",
+            resource: "events_insights",
+          },
         ],
       },
       {
