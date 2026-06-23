@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CModal, CModalBody } from "@coreui/react";
+import { Drawer } from "../Drawer/Drawer";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import { Chip } from "../Chip";
 import { CustomToast } from "../CustomToast/CustomToast";
@@ -348,27 +348,19 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
 
   return (
     <>
-      <CModal
+      <Drawer
         visible={visible}
         onClose={handleModalClose}
-        alignment="center"
-        size="lg"
-        className={`student-profile-modal ${
+        width="clamp(420px, 40%, 760px)"
+        ariaLabel={`${student.name} profile`}
+        className={`student-profile-drawer ${
           isBanModalOpen || isDeactivateModalOpen || isActivateModalOpen
             ? "profile-hidden"
             : ""
         }`}
+        bodyClassName="student-profile-drawer-body"
       >
-        <CModalBody className="student-profile-modal-body">
-          <button
-            data-testid="profile-close-icon"
-            className="profile-close-icon"
-            onClick={handleModalClose}
-            aria-label="Close modal"
-          >
-            <AssetIcon name="close-button" size={16} color="#5B6168" />
-          </button>
-
+        <div className="student-profile-modal-body">
           {/* View de Profile */}
           <div className="profile-container">
             <div className="profile-header">
@@ -599,7 +591,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
               </button>
             </div>
           </div>
-        </CModalBody>
+        </div>
 
         {showToast && (
           <CustomToast
@@ -607,7 +599,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
             onClose={() => setShowToast(false)}
           />
         )}
-      </CModal>
+      </Drawer>
 
       <BanUserModal
         visible={isBanModalOpen}

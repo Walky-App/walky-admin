@@ -1,11 +1,6 @@
 import React, { useState, useMemo } from "react";
-import {
-  CModal,
-  CModalHeader,
-  CModalBody,
-  CModalFooter,
-  CButton,
-} from "@coreui/react";
+import { CButton } from "@coreui/react";
+import { Drawer } from "../Drawer/Drawer";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import { IconName } from "../AssetIcon/AssetIcon.types";
 import { SearchInput } from "../SearchInput/SearchInput";
@@ -48,15 +43,13 @@ const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
   };
 
   return (
-    <CModal
+    <Drawer
       visible={visible}
       onClose={handleClose}
-      alignment="center"
-      backdrop="static"
+      width="clamp(420px, 40%, 720px)"
+      ariaLabel="Top interests"
       className="see-all-interests-modal"
-    >
-      {/* Header */}
-      <CModalHeader closeButton className="see-all-interests-modal-header">
+      title={
         <div className="see-all-interests-header-content">
           <div className="see-all-interests-title-group">
             <div className="see-all-interests-icon">
@@ -64,12 +57,20 @@ const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
             </div>
             <h2 className="see-all-interests-title">{title}</h2>
           </div>
-          {/* <p className="see-all-interests-subtitle">{subtitle}</p> */}
         </div>
-      </CModalHeader>
-
+      }
+      footer={
+        <CButton
+          color="light"
+          onClick={handleClose}
+          className="see-all-interests-close-button"
+        >
+          Close
+        </CButton>
+      }
+    >
       {/* Body */}
-      <CModalBody className="see-all-interests-modal-body">
+      <div className="see-all-interests-modal-body">
         {/* Container with border that includes search and list */}
         <div className="see-all-interests-container">
           {/* Search Input */}
@@ -144,19 +145,8 @@ const SeeAllInterestsModal: React.FC<SeeAllInterestsModalProps> = ({
             </div>
           </div>
         </div>
-      </CModalBody>
-
-      {/* Footer */}
-      <CModalFooter className="see-all-interests-modal-footer">
-        <CButton
-          color="light"
-          onClick={handleClose}
-          className="see-all-interests-close-button"
-        >
-          Close
-        </CButton>
-      </CModalFooter>
-    </CModal>
+      </div>
+    </Drawer>
   );
 };
 

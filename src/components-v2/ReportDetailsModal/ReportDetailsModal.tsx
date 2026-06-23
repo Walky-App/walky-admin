@@ -1,5 +1,6 @@
 import React from "react";
-import { CModal, CModalHeader, CModalBody, CButton } from "@coreui/react";
+import { CButton } from "@coreui/react";
+import { Drawer } from "../Drawer/Drawer";
 import { CopyableId } from "../CopyableId";
 import SkeletonLoader from "../SkeletonLoader/SkeletonLoader";
 import {
@@ -55,15 +56,13 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
   };
 
   return (
-    <CModal
+    <Drawer
       visible={visible}
       onClose={onClose}
-      alignment="center"
-      backdrop={true}
+      width="clamp(460px, 44%, 820px)"
+      ariaLabel="Report history"
       className="report-details-modal"
-      size="lg"
-    >
-      <CModalHeader closeButton>
+      title={
         <div className="modal-header-content">
           <h3 style={{ color: theme.colors.bodyColor }}>Report history</h3>
           <p style={{ color: theme.colors.textMuted }}>
@@ -71,9 +70,24 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
             in {period}
           </p>
         </div>
-      </CModalHeader>
-
-      <CModalBody
+      }
+      footer={
+        <CButton
+          color="light"
+          onClick={onClose}
+          className="close-button"
+          style={{
+            backgroundColor: theme.colors.cardBg,
+            border: `1px solid ${theme.colors.borderColor}`,
+            color: theme.colors.bodyColor,
+          }}
+        >
+          Close
+        </CButton>
+      }
+    >
+      <div
+        className="rdm-list-body"
         style={{
           backgroundColor: theme.colors.cardBg,
         }}
@@ -253,23 +267,8 @@ const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
             )}
           </div>
         </div>
-      </CModalBody>
-
-      <div className="custom-modal-footer">
-        <CButton
-          color="light"
-          onClick={onClose}
-          className="close-button"
-          style={{
-            backgroundColor: theme.colors.cardBg,
-            border: `1px solid ${theme.colors.borderColor}`,
-            color: theme.colors.bodyColor,
-          }}
-        >
-          Close
-        </CButton>
       </div>
-    </CModal>
+    </Drawer>
   );
 };
 

@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, staging]
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test & checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        env:
+          # Skip git hooks during CI install (husky `prepare` script).
+          HUSKY: 0
+
+      # --- Hard gate: the test suite must pass to merge ---
+      - name: Unit & integration tests
+        run: yarn test --run
+
+      # --- Soft gates (informational for now) ---
+      # These run against the whole repo and may flag pre-existing issues, so
+      # they don't block merges yet. Remove `continue-on-error` to enforce once
+      # the repo is clean.
+      - name: Type check
+        run: yarn type-check
+        continue-on-error: true
+
+      - name: Lint
+        run: yarn lint
+        continue-on-error: true
+
+      - name: Test id coverage
+        run: yarn check:testids
+        continue-on-error: true
+
+      - name: Accessibility checks
+        run: yarn check:a11y
+        continue-on-error: true
