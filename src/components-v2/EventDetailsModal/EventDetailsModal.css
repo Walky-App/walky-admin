@@ -74,7 +74,7 @@
 /* Main Content */
 .event-details-main {
   display: flex;
-  gap: 40px;
+  gap: 24px;
   min-height: auto;
 }
 
@@ -82,8 +82,8 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 564px;
-  flex-shrink: 0;
+  flex: 3 1 0;
+  min-width: 0;
 }
 
 .event-details-section {
@@ -346,8 +346,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: 426px;
-  flex-shrink: 0;
+  flex: 2 1 0;
+  min-width: 0;
   padding-top: 0;
 }
 
@@ -608,4 +608,22 @@
 .event-details-modal-content [tabindex]:focus-visible:not([tabindex="-1"]) {
   outline: 2px solid #526ac9;
   outline-offset: 2px;
+}
+
+/* Stack columns when hosted in a narrow (mobile) drawer */
+@media (max-width: 768px) {
+  .event-details-main {
+    flex-direction: column;
+  }
+
+  .event-details-left,
+  .event-details-right {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .event-details-divider {
+    height: 1px;
+    width: 100%;
+  }
 }

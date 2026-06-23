@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import AssetIcon from "../AssetIcon/AssetIcon";
+import { Drawer } from "../Drawer/Drawer";
 import "./RolePermissionsModal.css";
 
 type RoleType = "Walky Admin" | "Walky Internal" | "School Admin" | "Campus Admin" | "Moderator";
@@ -181,35 +182,32 @@ const RolePermissionsModal: React.FC<RolePermissionsModalProps> = ({
 }) => {
   const [isPermissionsOpen, setIsPermissionsOpen] = useState(true);
 
-  if (!isOpen) return null;
-
   const roleData = rolePermissionsData[roleType];
-
-  const handleOverlayClick = () => {
-    onClose();
-  };
-
-  const handleContentClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
 
   const togglePermissions = () => {
     setIsPermissionsOpen(!isPermissionsOpen);
   };
 
   return (
-    <div className="role-permissions-overlay" onClick={handleOverlayClick}>
-      <div className="role-permissions-content" onClick={handleContentClick}>
-        <button
-          data-testid="role-permissions-close-btn"
-          className="role-permissions-close"
-          onClick={onClose}
-          aria-label="Close modal"
-        >
-          <AssetIcon name="close-button" size={16} />
-        </button>
+    <Drawer
+      visible={isOpen}
+      onClose={onClose}
+      width="clamp(420px, 40%, 720px)"
+      ariaLabel="Role permissions"
+      hideCloseButton
+      className="role-permissions-content"
+      bodyClassName="v2-drawer-body-flush"
+    >
+      <button
+        data-testid="role-permissions-close-btn"
+        className="role-permissions-close"
+        onClick={onClose}
+        aria-label="Close modal"
+      >
+        <AssetIcon name="close-button" size={16} />
+      </button>
 
-        <div className="role-permissions-body">
+      <div className="role-permissions-body">
           <h2 className="role-permissions-title">{roleData.title}</h2>
 
           <p className="role-permissions-description">{roleData.description}</p>
@@ -260,8 +258,7 @@ const RolePermissionsModal: React.FC<RolePermissionsModalProps> = ({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </Drawer>
   );
 };
 

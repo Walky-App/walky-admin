@@ -1,0 +1,138 @@
+.v2-drawer-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1055;
+}
+
+.v2-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.v2-drawer-open .v2-drawer-backdrop {
+  opacity: 1;
+}
+
+.v2-drawer-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  max-width: 100%;
+  background-color: var(--v2-bg-app, #ffffff);
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.v2-drawer-end {
+  right: 0;
+  transform: translateX(100%);
+}
+
+.v2-drawer-start {
+  left: 0;
+  transform: translateX(-100%);
+}
+
+.v2-drawer-open .v2-drawer-panel {
+  transform: translateX(0);
+}
+
+.v2-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px;
+  flex-shrink: 0;
+}
+
+.v2-drawer-title {
+  font-family: "Lato", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--v2-text-primary, #1d1b20);
+}
+
+.v2-drawer-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: opacity 0.2s, background-color 0.2s;
+  box-shadow: none;
+}
+
+.v2-drawer-close:hover {
+  opacity: 0.7;
+}
+
+.v2-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 24px 24px;
+}
+
+/* Helper: let the hosted content own its padding (used when a panel keeps its
+   original modal body markup/header). */
+.v2-drawer-body-flush {
+  padding: 0;
+}
+
+/* Hosted "card" bodies were rounded for a centered modal; flatten them so they
+   fill the drawer panel edge-to-edge (avoids corner gaps, esp. in dark mode). */
+.v2-drawer-body-flush > .space-details-modal-body,
+.v2-drawer-body-flush > .idea-details-modal-body,
+.v2-drawer-body-flush > .event-details-modal-body,
+.v2-drawer-body-flush > .scheduled-events-modal-body,
+.v2-drawer-body-flush > .rdm-modal-body {
+  border-radius: 0;
+  min-height: 100%;
+}
+
+/* Helper: hide the panel while a nested drawer/modal is open on top of it. */
+.v2-drawer-panel.v2-drawer-suppressed {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.v2-drawer-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--v2-border-light, #eef0f1);
+}
+
+@media (max-width: 768px) {
+  .v2-drawer-panel {
+    width: 100% !important;
+  }
+}
+
+[data-theme="dark"] .v2-drawer-footer {
+  border-top-color: #3a3a3a;
+}
+
+/* Dark mode */
+[data-theme="dark"] .v2-drawer-panel {
+  background-color: var(--v2-bg-app, #0a0a0b);
+  box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .v2-drawer-close:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}

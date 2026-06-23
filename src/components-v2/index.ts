@@ -21,6 +21,8 @@ export { DeleteAmbassadorModal } from "./DeleteAmbassadorModal";
 export { DeleteModal } from "./DeleteModal";
 export type { DeleteModalType } from "./DeleteModal";
 export { Divider } from "./Divider/Divider";
+export { Drawer } from "./Drawer";
+export type { DrawerProps } from "./Drawer";
 export { EventDetailsModal } from "./EventDetailsModal";
 export type { EventDetailsData, EventAttendee } from "./EventDetailsModal";
 export { ExportButton } from "./ExportButton";

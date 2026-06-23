@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import {
   CCard,
   CCardHeader,
@@ -10,7 +10,6 @@ import {
 import {
   GoogleMap,
   useJsApiLoader,
-  DrawingManager,
   Libraries,
   StandaloneSearchBox,
 } from "@react-google-maps/api";
@@ -31,7 +30,9 @@ interface CampusBoundaryData {
   geometry: GeoJSONPolygon;
 }
 
-const libraries: Libraries = ["drawing", "places"];
+// DrawingManager was removed from the Maps JS API in v3.65, so we draw the
+// polygon manually with core map click listeners (no "drawing" library).
+const libraries: Libraries = ["places"];
 
 interface CampusBoundaryProps {
   initialBoundaryData?: CampusBoundaryData | null;
@@ -56,17 +57,28 @@ const CampusBoundary = ({
     overflow: "hidden",
   };
 
+  const polygonStyle = {
+    fillColor: theme.isDark ? "#1e90ff" : "#3388ff",
+    fillOpacity: 0.2,
+    strokeWeight: 2,
+    strokeColor: theme.isDark ? "#1e90ff" : "#3388ff",
+  };
+
   const [boundaryData, setBoundaryData] = useState<CampusBoundaryData | null>(
     initialBoundaryData,
   );
   const [hasBeenCleared, setHasBeenCleared] = useState(false);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [vertexCount, setVertexCount] = useState(0);
 
   const polygonRef = useRef<google.maps.Polygon | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const drawingManagerRef = useRef<google.maps.drawing.DrawingManager | null>(
-    null,
-  );
   const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
+
+  // In-progress drawing state
+  const drawingPolygonRef = useRef<google.maps.Polygon | null>(null);
+  const drawingPathRef = useRef<google.maps.LatLngLiteral[]>([]);
+  const drawingListenersRef = useRef<google.maps.MapsEventListener[]>([]);
 
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
@@ -74,36 +86,65 @@ const CampusBoundary = ({
     libraries,
   });
 
+  // Convert a rendered polygon into our GeoJSON boundary shape (closed ring).
+  const polygonToBoundary = (
+    polygon: google.maps.Polygon,
+  ): CampusBoundaryData => {
+    const path = polygon.getPath();
+    const coords: number[][] = [];
+    for (let i = 0; i < path.getLength(); i++) {
+      const latLng = path.getAt(i);
+      coords.push([latLng.lng(), latLng.lat()]);
+    }
+    if (path.getLength() > 0) {
+      const firstPoint = path.getAt(0);
+      coords.push([firstPoint.lng(), firstPoint.lat()]);
+    }
+    return {
+      geometry: {
+        type: "Polygon",
+        coordinates: [coords],
+      },
+    };
+  };
+
+  const commitBoundary = useCallback(
+    (boundary: CampusBoundaryData | null, isValid: boolean) => {
+      setBoundaryData(boundary);
+      if (onBoundaryChange) onBoundaryChange(boundary);
+      if (onValidityChange) onValidityChange(isValid);
+    },
+    [onBoundaryChange, onValidityChange],
+  );
+
+  // Make a finished polygon editable, wire edit listeners, and record it.
+  const finalizePolygon = useCallback(
+    (polygon: google.maps.Polygon) => {
+      if (polygonRef.current) {
+        polygonRef.current.setMap(null);
+      }
+      polygonRef.current = polygon;
+      polygon.setEditable(true);
+
+      setHasBeenCleared(false);
+      commitBoundary(polygonToBoundary(polygon), true);
+
+      const updateFromEdit = () =>
+        commitBoundary(polygonToBoundary(polygon), true);
+
+      const path = polygon.getPath();
+      ["set_at", "insert_at", "remove_at"].forEach((event) =>
+        window.google.maps.event.addListener(path, event, updateFromEdit),
+      );
+    },
+    [commitBoundary],
+  );
+
   const onMapLoad = useCallback(
     (map: google.maps.Map) => {
       mapRef.current = map;
 
-      // Function to update boundary from polygon
-      const updateBoundaryFromPolygon = () => {
-        if (!polygonRef.current) return;
-
-        const path = polygonRef.current.getPath();
-        const coords: number[][] = [];
-        for (let i = 0; i < path.getLength(); i++) {
-          const latLng = path.getAt(i);
-          coords.push([latLng.lng(), latLng.lat()]);
-        }
-        if (path.getLength() > 0) {
-          const firstPoint = path.getAt(0);
-          coords.push([firstPoint.lng(), firstPoint.lat()]);
-        }
-        const newBoundary: CampusBoundaryData = {
-          geometry: {
-            type: "Polygon",
-            coordinates: [coords],
-          },
-        };
-        setBoundaryData(newBoundary);
-        if (onBoundaryChange) onBoundaryChange(newBoundary);
-        if (onValidityChange) onValidityChange(true);
-      };
-
-      // If there's current boundary data and it hasn't been manually cleared, render polygon on the map
+      // Render existing boundary data on first load (unless manually cleared)
       if (
         boundaryData &&
         boundaryData.geometry.coordinates.length &&
@@ -115,10 +156,7 @@ const CampusBoundary = ({
 
         const polygon = new window.google.maps.Polygon({
           paths: pathCoords,
-          fillColor: theme.isDark ? "#1e90ff" : "#3388ff",
-          fillOpacity: 0.2,
-          strokeWeight: 2,
-          strokeColor: theme.isDark ? "#1e90ff" : "#3388ff",
+          ...polygonStyle,
           clickable: !readOnly,
           editable: !readOnly,
           zIndex: 1,
@@ -127,23 +165,15 @@ const CampusBoundary = ({
 
         polygonRef.current = polygon;
 
-        // Only add event listeners if not readonly
         if (!readOnly) {
-          // Listen to polygon changes and update boundary data
-          window.google.maps.event.addListener(
-            polygon.getPath(),
-            "set_at",
-            () => updateBoundaryFromPolygon(),
-          );
-          window.google.maps.event.addListener(
-            polygon.getPath(),
-            "insert_at",
-            () => updateBoundaryFromPolygon(),
-          );
-          window.google.maps.event.addListener(
-            polygon.getPath(),
-            "remove_at",
-            () => updateBoundaryFromPolygon(),
+          const updateFromEdit = () =>
+            commitBoundary(polygonToBoundary(polygon), true);
+          ["set_at", "insert_at", "remove_at"].forEach((event) =>
+            window.google.maps.event.addListener(
+              polygon.getPath(),
+              event,
+              updateFromEdit,
+            ),
           );
         }
 
@@ -164,14 +194,8 @@ const CampusBoundary = ({
         }
       }
     },
-    [
-      boundaryData,
-      hasBeenCleared,
-      theme.isDark,
-      readOnly,
-      onBoundaryChange,
-      onValidityChange,
-    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [boundaryData, hasBeenCleared, theme.isDark, readOnly, commitBoundary],
   );
 
   const handleZoom = (delta: number) => {
@@ -199,134 +223,121 @@ const CampusBoundary = ({
     [],
   );
 
-  const onPolygonComplete = useCallback(
-    (polygon: google.maps.Polygon) => {
-      if (polygonRef.current) {
-        polygonRef.current.setMap(null);
-      }
-      polygonRef.current = polygon;
+  const stopDrawing = useCallback(() => {
+    drawingListenersRef.current.forEach((listener) => listener.remove());
+    drawingListenersRef.current = [];
+    if (drawingPolygonRef.current) {
+      drawingPolygonRef.current.setMap(null);
+      drawingPolygonRef.current = null;
+    }
+    drawingPathRef.current = [];
+    setVertexCount(0);
+    setIsDrawing(false);
+  }, []);
 
-      polygon.setEditable(true);
+  const finishDrawing = useCallback(() => {
+    // A polygon needs at least 3 vertices
+    if (drawingPathRef.current.length < 3) return;
 
-      // Update boundary from polygon
-      const path = polygon.getPath();
-      const coords: number[][] = [];
-      for (let i = 0; i < path.getLength(); i++) {
-        const latLng = path.getAt(i);
-        coords.push([latLng.lng(), latLng.lat()]);
-      }
-      if (path.getLength() > 0) {
-        const firstPoint = path.getAt(0);
-        coords.push([firstPoint.lng(), firstPoint.lat()]);
-      }
-      const newBoundary: CampusBoundaryData = {
-        geometry: {
-          type: "Polygon",
-          coordinates: [coords],
-        },
-      };
-      setBoundaryData(newBoundary);
-      if (onBoundaryChange) onBoundaryChange(newBoundary);
-      if (onValidityChange) onValidityChange(true);
+    const path = [...drawingPathRef.current];
 
-      // Reset the cleared flag since we now have a new boundary
-      setHasBeenCleared(false);
+    // Tear down the in-progress drawing state/listeners
+    drawingListenersRef.current.forEach((listener) => listener.remove());
+    drawingListenersRef.current = [];
+    if (drawingPolygonRef.current) {
+      drawingPolygonRef.current.setMap(null);
+      drawingPolygonRef.current = null;
+    }
+    drawingPathRef.current = [];
+    setVertexCount(0);
+    setIsDrawing(false);
 
-      if (drawingManagerRef.current) {
-        drawingManagerRef.current.setDrawingMode(null);
-      }
+    if (!mapRef.current) return;
 
-      // Listen for edits on polygon
-      const updateFromEdit = () => {
-        const path = polygon.getPath();
-        const coords: number[][] = [];
-        for (let i = 0; i < path.getLength(); i++) {
-          const latLng = path.getAt(i);
-          coords.push([latLng.lng(), latLng.lat()]);
-        }
-        if (path.getLength() > 0) {
-          const firstPoint = path.getAt(0);
-          coords.push([firstPoint.lng(), firstPoint.lat()]);
-        }
-        const newBoundary: CampusBoundaryData = {
-          geometry: {
-            type: "Polygon",
-            coordinates: [coords],
-          },
-        };
-        setBoundaryData(newBoundary);
-        if (onBoundaryChange) onBoundaryChange(newBoundary);
-        if (onValidityChange) onValidityChange(true);
-      };
+    const polygon = new window.google.maps.Polygon({
+      paths: path,
+      ...polygonStyle,
+      clickable: true,
+      editable: true,
+      zIndex: 1,
+      map: mapRef.current,
+    });
 
-      window.google.maps.event.addListener(
-        polygon.getPath(),
-        "set_at",
-        updateFromEdit,
-      );
-      window.google.maps.event.addListener(
-        polygon.getPath(),
-        "insert_at",
-        updateFromEdit,
-      );
-      window.google.maps.event.addListener(
-        polygon.getPath(),
-        "remove_at",
-        updateFromEdit,
-      );
-    },
-    [onBoundaryChange, onValidityChange],
-  );
+    finalizePolygon(polygon);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finalizePolygon]);
 
-  const onDrawingManagerLoad = useCallback(
-    (drawingManager: google.maps.drawing.DrawingManager) => {
-      drawingManagerRef.current = drawingManager;
-    },
-    [],
-  );
+  const handleStartDrawing = useCallback(() => {
+    if (!isLoaded || !mapRef.current || !window.google) return;
 
-  const handleClearBoundary = () => {
-    // Clear any existing polygon from the map
+    // Remove any existing committed polygon — we're drawing a fresh one
     if (polygonRef.current) {
       polygonRef.current.setMap(null);
       polygonRef.current = null;
     }
 
-    // Clear the boundary data state
-    setBoundaryData(null);
+    // Reset/seed the in-progress drawing
+    drawingPathRef.current = [];
+    setVertexCount(0);
+    if (drawingPolygonRef.current) {
+      drawingPolygonRef.current.setMap(null);
+    }
+    drawingPolygonRef.current = new window.google.maps.Polygon({
+      paths: [],
+      ...polygonStyle,
+      clickable: false,
+      editable: false,
+      zIndex: 1,
+      map: mapRef.current,
+    });
 
-    // Mark that the boundary has been manually cleared
+    setIsDrawing(true);
+
+    const map = mapRef.current;
+    const clickListener = map.addListener(
+      "click",
+      (e: google.maps.MapMouseEvent) => {
+        if (!e.latLng) return;
+        drawingPathRef.current.push(e.latLng.toJSON());
+        drawingPolygonRef.current?.setPath(drawingPathRef.current);
+        setVertexCount(drawingPathRef.current.length);
+      },
+    );
+    // Double-click closes the shape (default dbl-click zoom is disabled below)
+    const dblClickListener = map.addListener("dblclick", () => finishDrawing());
+
+    drawingListenersRef.current = [clickListener, dblClickListener];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded, finishDrawing]);
+
+  const handleClearBoundary = () => {
+    // Cancel any in-progress drawing first
+    if (isDrawing) stopDrawing();
+
+    if (polygonRef.current) {
+      polygonRef.current.setMap(null);
+      polygonRef.current = null;
+    }
+
     setHasBeenCleared(true);
-
-    // Notify parent component that boundary has been cleared
-    if (onBoundaryChange) onBoundaryChange(null);
-    if (onValidityChange) onValidityChange(false);
-
-    // Set drawing manager back to polygon mode if available
-    if (
-      drawingManagerRef.current &&
-      isLoaded &&
-      window.google &&
-      window.google.maps
-    ) {
-      drawingManagerRef.current.setDrawingMode(
-        google.maps.drawing.OverlayType.POLYGON,
-      );
-    }
+    commitBoundary(null, false);
   };
 
-  const handleStartDrawing = () => {
-    if (
-      drawingManagerRef.current &&
-      isLoaded &&
-      window.google &&
-      window.google.maps
-    ) {
-      drawingManagerRef.current.setDrawingMode(
-        google.maps.drawing.OverlayType.POLYGON,
-      );
-    }
-  };
+  // Disable default dbl-click zoom while drawing so dbl-click can close the shape
+  useEffect(() => {
+    if (!mapRef.current) return;
+    mapRef.current.setOptions({ disableDoubleClickZoom: isDrawing });
+  }, [isDrawing]);
+
+  // Clean up drawing listeners/overlays on unmount
+  useEffect(() => {
+    return () => {
+      drawingListenersRef.current.forEach((listener) => listener.remove());
+      if (drawingPolygonRef.current) {
+        drawingPolygonRef.current.setMap(null);
+      }
+    };
+  }, []);
 
   if (loadError) {
     return (
@@ -369,9 +380,9 @@ const CampusBoundary = ({
         <CCardBody>
           {!readOnly && (
             <p style={{ color: theme.colors.bodyColor }}>
-              Draw a polygon around your campus on the map below. Use the search
-              to find your location, then draw a boundary using the drawing
-              tools.
+              {isDrawing
+                ? "Click on the map to add points. Add at least 3, then click Finish (or double-click) to close the boundary."
+                : "Draw a polygon around your campus on the map below. Use the search to find your location, then click Draw Boundary and click points on the map."}
             </p>
           )}
 
@@ -422,13 +433,33 @@ const CampusBoundary = ({
                           }}
                         />
                       </StandaloneSearchBox>
-                      <CButton
-                        color="primary"
-                        className="ms-2"
-                        onClick={handleStartDrawing}
-                      >
-                        Draw Boundary
-                      </CButton>
+                      {isDrawing ? (
+                        <>
+                          <CButton
+                            color="primary"
+                            className="ms-2"
+                            onClick={finishDrawing}
+                            disabled={vertexCount < 3}
+                          >
+                            Finish{vertexCount > 0 ? ` (${vertexCount})` : ""}
+                          </CButton>
+                          <CButton
+                            color="outline-secondary"
+                            className="ms-2"
+                            onClick={stopDrawing}
+                          >
+                            Cancel
+                          </CButton>
+                        </>
+                      ) : (
+                        <CButton
+                          color="primary"
+                          className="ms-2"
+                          onClick={handleStartDrawing}
+                        >
+                          Draw Boundary
+                        </CButton>
+                      )}
                     </div>
                   </div>
                 )}
@@ -533,26 +564,7 @@ const CampusBoundary = ({
                         : [],
                     }}
                     onLoad={onMapLoad}
-                  >
-                    {!readOnly && (
-                      <DrawingManager
-                        onLoad={onDrawingManagerLoad}
-                        options={{
-                          drawingControl: false,
-                          polygonOptions: {
-                            fillColor: theme.isDark ? "#1e90ff" : "#3388ff",
-                            fillOpacity: 0.2,
-                            strokeWeight: 2,
-                            strokeColor: theme.isDark ? "#1e90ff" : "#3388ff",
-                            clickable: true,
-                            editable: true,
-                            zIndex: 1,
-                          },
-                        }}
-                        onPolygonComplete={onPolygonComplete}
-                      />
-                    )}
-                  </GoogleMap>
+                  />
 
                   {isLoaded && (
                     <div

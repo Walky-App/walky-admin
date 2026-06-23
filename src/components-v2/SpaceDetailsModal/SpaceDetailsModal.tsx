@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { CModal, CModalBody } from "@coreui/react";
 import "./SpaceDetailsModal.css";
 import {
   AssetIcon,
   CopyableId,
   SearchInput,
   EventDetailsModal,
+  Drawer,
 } from "../../components-v2";
 import { Chip } from "../../components-v2/Chip";
 import type { EventDetailsData } from "../../components-v2/EventDetailsModal/EventDetailsModal";
@@ -236,17 +236,27 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
   };
 
   return (
-    <CModal
+    <Drawer
       visible={isOpen}
       onClose={onClose}
-      size="xl"
-      alignment="center"
-      backdrop="static"
+      width="clamp(680px, 64%, 1180px)"
+      ariaLabel="Space details"
+      hideCloseButton
       className={`space-details-modal-wrapper ${
-        eventDetailsModalOpen ? "space-details-hidden" : ""
+        eventDetailsModalOpen ? "v2-drawer-suppressed" : ""
       }`}
+      bodyClassName="v2-drawer-body-flush"
+      footer={
+        <button
+          data-testid="space-details-close-footer-btn"
+          className="space-details-close-btn"
+          onClick={onClose}
+        >
+          Close
+        </button>
+      }
     >
-      <CModalBody className="space-details-modal-body">
+      <div className="space-details-modal-body">
         <button
           data-testid="space-details-close-btn"
           className="space-details-close"
@@ -545,18 +555,8 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="space-details-footer">
-            <button
-              data-testid="space-details-close-footer-btn"
-              className="space-details-close-btn"
-              onClick={onClose}
-            >
-              Close
-            </button>
-          </div>
         </div>
-      </CModalBody>
+      </div>
 
       {/* Event Details Modal */}
       <EventDetailsModal
@@ -572,6 +572,6 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
         }}
         eventData={selectedEvent}
       />
-    </CModal>
+    </Drawer>
   );
 };
