@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { CModal, CModalBody } from "@coreui/react";
 import "./ScheduledEventsModal.css";
-import { AssetIcon, SearchInput } from "../../components-v2";
+import { AssetIcon, SearchInput, Drawer } from "../../components-v2";
 
 export interface ScheduledEventItem {
   id: string;
@@ -34,14 +33,16 @@ export const ScheduledEventsModal: React.FC<ScheduledEventsModalProps> = ({
   );
 
   return (
-    <CModal
+    <Drawer
       visible={isOpen}
       onClose={onClose}
+      width="clamp(420px, 40%, 720px)"
+      ariaLabel="Scheduled events"
+      hideCloseButton
       className="scheduled-events-modal-wrapper"
-      alignment="center"
-      backdrop="static"
+      bodyClassName="v2-drawer-body-flush"
     >
-      <CModalBody className="scheduled-events-modal-body">
+      <div className="scheduled-events-modal-body">
         <button
           data-testid="scheduled-events-close-btn"
           onClick={onClose}
@@ -152,7 +153,7 @@ export const ScheduledEventsModal: React.FC<ScheduledEventsModalProps> = ({
             </button>
           </div>
         </div>
-      </CModalBody>
-    </CModal>
+      </div>
+    </Drawer>
   );
 };

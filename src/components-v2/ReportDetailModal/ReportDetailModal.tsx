@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { CModal, CModalBody } from "@coreui/react";
 import "./ReportDetailModal.css";
+import { Drawer } from "../Drawer/Drawer";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import { NoData } from "../NoData/NoData";
 import { CopyableId } from "../CopyableId/CopyableId";
@@ -845,15 +845,16 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
 
   return (
     <>
-      <CModal
+      <Drawer
         visible={isOpen}
         onClose={onClose}
-        size="xl"
-        alignment="center"
+        width="clamp(680px, 64%, 1180px)"
+        ariaLabel="Report details"
+        hideCloseButton
         className="rdm-modal"
-        backdrop="static"
+        bodyClassName="v2-drawer-body-flush"
       >
-        <CModalBody className="rdm-modal-body">
+        <div className="rdm-modal-body">
           <button
             className="rdm-close-button"
             onClick={onClose}
@@ -1089,8 +1090,8 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
               </div>
             </div>
           )}
-        </CModalBody>
-      </CModal>
+        </div>
+      </Drawer>
     </>
   );
 };

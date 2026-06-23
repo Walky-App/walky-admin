@@ -1,7 +1,6 @@
 import React from "react";
-import { CModal, CModalBody } from "@coreui/react";
 import "./IdeaDetailsModal.css";
-import { AssetIcon, CopyableId, NoData } from "../../components-v2";
+import { AssetIcon, CopyableId, NoData, Drawer } from "../../components-v2";
 
 export interface IdeaCollaborator {
   id: string;
@@ -42,15 +41,16 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
   const getFirstName = (name: string) => name?.trim().split(" ")[0] || name;
 
   return (
-    <CModal
+    <Drawer
       visible={isOpen}
       onClose={onClose}
-      size="xl"
-      alignment="center"
-      backdrop="static"
+      width="clamp(640px, 60%, 1100px)"
+      ariaLabel="Idea details"
+      hideCloseButton
       className="idea-details-modal-wrapper"
+      bodyClassName="v2-drawer-body-flush"
     >
-      <CModalBody className="idea-details-modal-body">
+      <div className="idea-details-modal-body">
         <button
           data-testid="idea-details-close-btn"
           className="idea-details-close"
@@ -189,7 +189,7 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
             </button>
           </div>
         </div>
-      </CModalBody>
-    </CModal>
+      </div>
+    </Drawer>
   );
 };

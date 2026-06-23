@@ -61,7 +61,7 @@
 /* Main Content */
 .idea-details-main {
   display: flex;
-  gap: 40px;
+  gap: 24px;
   width: 100%;
 }
 
@@ -69,8 +69,8 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 564px;
-  flex-shrink: 0;
+  flex: 3 1 0;
+  min-width: 0;
 }
 
 .idea-details-section {
@@ -256,8 +256,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: 426px;
-  flex-shrink: 0;
+  flex: 2 1 0;
+  min-width: 0;
 }
 
 .idea-collaborators-header {

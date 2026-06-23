@@ -1,7 +1,6 @@
 import React from "react";
-import { CModal, CModalBody } from "@coreui/react";
 import "./EventDetailsModal.css";
-import { AssetIcon, CopyableId } from "../../components-v2";
+import { AssetIcon, CopyableId, Drawer } from "../../components-v2";
 import { EventStatusChip } from "../../pages-v2/Events/components/EventStatusChip/EventStatusChip";
 
 export interface EventAttendee {
@@ -86,15 +85,16 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   };
 
   return (
-    <CModal
+    <Drawer
       visible={isOpen}
       onClose={onClose}
-      size="xl"
-      alignment="center"
-      backdrop="static"
+      width="clamp(640px, 60%, 1100px)"
+      ariaLabel="Event details"
+      hideCloseButton
       className="event-details-modal-wrapper"
+      bodyClassName="v2-drawer-body-flush"
     >
-      <CModalBody className="event-details-modal-body">
+      <div className="event-details-modal-body">
         <button
           data-testid="event-details-close-btn"
           className="event-details-close"
@@ -323,7 +323,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
             </button>
           </div>
         </div>
-      </CModalBody>
-    </CModal>
+      </div>
+    </Drawer>
   );
 };
