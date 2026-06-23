@@ -89,6 +89,17 @@
   padding: 0;
 }
 
+/* Hosted "card" bodies were rounded for a centered modal; flatten them so they
+   fill the drawer panel edge-to-edge (avoids corner gaps, esp. in dark mode). */
+.v2-drawer-body-flush > .space-details-modal-body,
+.v2-drawer-body-flush > .idea-details-modal-body,
+.v2-drawer-body-flush > .event-details-modal-body,
+.v2-drawer-body-flush > .scheduled-events-modal-body,
+.v2-drawer-body-flush > .rdm-modal-body {
+  border-radius: 0;
+  min-height: 100%;
+}
+
 /* Helper: hide the panel while a nested drawer/modal is open on top of it. */
 .v2-drawer-panel.v2-drawer-suppressed {
   opacity: 0;

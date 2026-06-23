@@ -41,6 +41,15 @@ export const ScheduledEventsModal: React.FC<ScheduledEventsModalProps> = ({
       hideCloseButton
       className="scheduled-events-modal-wrapper"
       bodyClassName="v2-drawer-body-flush"
+      footer={
+        <button
+          data-testid="scheduled-events-close-footer-btn"
+          onClick={onClose}
+          className="scheduled-events-close-btn"
+        >
+          Close
+        </button>
+      }
     >
       <div className="scheduled-events-modal-body">
         <button
@@ -142,16 +151,6 @@ export const ScheduledEventsModal: React.FC<ScheduledEventsModalProps> = ({
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="scheduled-events-footer">
-            <button
-              data-testid="scheduled-events-close-footer-btn"
-              onClick={onClose}
-              className="scheduled-events-close-btn"
-            >
-              Close
-            </button>
-          </div>
         </div>
       </div>
     </Drawer>

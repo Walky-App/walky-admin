@@ -853,6 +853,15 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
         hideCloseButton
         className="rdm-modal"
         bodyClassName="v2-drawer-body-flush"
+        footer={
+          <button
+            className="rdm-close-footer-button"
+            data-testid="report-detail-close-footer-button"
+            onClick={onClose}
+          >
+            Close
+          </button>
+        }
       >
         <div className="rdm-modal-body">
           <button
@@ -1078,16 +1087,6 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
               {/* Safety Record */}
               {renderSafetyRecord()}
 
-              {/* Close Button */}
-              <div className="rdm-modal-footer">
-                <button
-                  className="rdm-close-footer-button"
-                  data-testid="report-detail-close-footer-button"
-                  onClick={onClose}
-                >
-                  Close
-                </button>
-              </div>
             </div>
           )}
         </div>

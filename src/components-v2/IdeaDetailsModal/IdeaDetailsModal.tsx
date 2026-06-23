@@ -49,6 +49,15 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
       hideCloseButton
       className="idea-details-modal-wrapper"
       bodyClassName="v2-drawer-body-flush"
+      footer={
+        <button
+          data-testid="idea-details-close-footer-btn"
+          className="idea-details-close-btn"
+          onClick={onClose}
+        >
+          Close
+        </button>
+      }
     >
       <div className="idea-details-modal-body">
         <button
@@ -178,16 +187,6 @@ export const IdeaDetailsModal: React.FC<IdeaDetailsModalProps> = ({
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="idea-details-footer">
-            <button
-              data-testid="idea-details-close-footer-btn"
-              className="idea-details-close-btn"
-              onClick={onClose}
-            >
-              Close
-            </button>
-          </div>
         </div>
       </div>
     </Drawer>

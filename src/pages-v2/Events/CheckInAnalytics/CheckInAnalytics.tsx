@@ -57,13 +57,13 @@ export const CheckInAnalytics: React.FC = () => {
   const showUpRateDisplay = isLoading
     ? "—"
     : hasCheckIns
-    ? `${(data?.showUpRate ?? 0).toFixed(1)}%`
-    : "No data yet";
+      ? `${(data?.showUpRate ?? 0).toFixed(1)}%`
+      : "No data yet";
   const noShowDisplay = isLoading
     ? "—"
     : hasCheckIns
-    ? (data?.noShowCount ?? 0).toLocaleString()
-    : "No data yet";
+      ? (data?.noShowCount ?? 0).toLocaleString()
+      : "No data yet";
 
   return (
     <div style={{ padding: 24 }}>
@@ -82,7 +82,8 @@ export const CheckInAnalytics: React.FC = () => {
             Event Check-in
           </h2>
           <p style={{ color: theme.colors.textMuted, margin: "4px 0 0" }}>
-            Real attendance from ticket check-ins — who actually showed up vs. who RSVP&apos;d
+            Real attendance from ticket check-ins — who actually showed up vs.
+            who RSVP&apos;d
           </p>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -98,7 +99,9 @@ export const CheckInAnalytics: React.FC = () => {
                 border: `1px solid ${theme.colors.borderColor}`,
                 cursor: "pointer",
                 background:
-                  period === p.value ? theme.colors.iconBlue : theme.colors.cardBg,
+                  period === p.value
+                    ? theme.colors.iconBlue
+                    : theme.colors.cardBg,
                 color: period === p.value ? "#fff" : theme.colors.bodyColor,
               }}
             >
@@ -113,7 +116,9 @@ export const CheckInAnalytics: React.FC = () => {
           <StatsCard
             title="Show-up Rate"
             value={showUpRateDisplay}
-            icon={<AssetIcon name="calendar-icon" color={theme.colors.iconOrange} />}
+            icon={
+              <AssetIcon name="calendar-icon" color={theme.colors.iconOrange} />
+            }
             iconBgColor="#ffded1"
           />
         </CCol>
@@ -129,7 +134,12 @@ export const CheckInAnalytics: React.FC = () => {
           <StatsCard
             title="Confirmed RSVPs"
             value={(data?.totalConfirmed ?? 0).toLocaleString()}
-            icon={<AssetIcon name="double-users-icon" color={theme.colors.iconBlue} />}
+            icon={
+              <AssetIcon
+                name="double-users-icon"
+                color={theme.colors.iconBlue}
+              />
+            }
             iconBgColor="#d9e3f7"
           />
         </CCol>
@@ -151,7 +161,7 @@ export const CheckInAnalytics: React.FC = () => {
             new Date(d.date).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
-            })
+            }),
           )}
           color={theme.colors.iconBlue}
           backgroundColor={theme.colors.cardBg}

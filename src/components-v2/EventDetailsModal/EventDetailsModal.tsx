@@ -59,13 +59,6 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   onUnflag: _onUnflag,
   onCloseAll,
 }) => {
-  // Log event data when modal opens
-  React.useEffect(() => {
-    if (isOpen && eventData) {
-      console.log("Event Details Modal opened with data:", eventData);
-    }
-  }, [isOpen, eventData]);
-
   const getFirstName = (name: string) => name?.trim().split(" ")[0] || name;
 
   const handleBack = () => {
@@ -93,6 +86,15 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
       hideCloseButton
       className="event-details-modal-wrapper"
       bodyClassName="v2-drawer-body-flush"
+      footer={
+        <button
+          data-testid="event-details-close-footer-btn"
+          className="event-details-close-btn"
+          onClick={handleCloseAll}
+        >
+          Close
+        </button>
+      }
     >
       <div className="event-details-modal-body">
         <button
@@ -312,16 +314,6 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="event-details-footer">
-            <button
-              data-testid="event-details-close-footer-btn"
-              className="event-details-close-btn"
-              onClick={handleCloseAll}
-            >
-              Close
-            </button>
-          </div>
         </div>
       </div>
     </Drawer>

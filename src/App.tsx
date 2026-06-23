@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, Suspense, lazy } from "react";
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
@@ -7,13 +7,16 @@ import { useTheme } from "./hooks/useTheme";
 import { DeactivatedUserProvider } from "./contexts/DeactivatedUserContext";
 import { AuthGuard } from "./components-v2";
 
-import V2Routes from "./routes/v2Routes";
-
 import "./App.css";
 
-import LoginV2 from "./pages-v2/LoginV2/LoginV2";
-import RecoverPasswordV2 from "./pages-v2/RecoverPasswordV2/RecoverPasswordV2/RecoverPasswordV2.tsx";
-import ForcePasswordChange from "./pages-v2/ForcePasswordChange/ForcePasswordChange";
+const V2Routes = lazy(() => import("./routes/v2Routes"));
+const LoginV2 = lazy(() => import("./pages-v2/LoginV2/LoginV2"));
+const RecoverPasswordV2 = lazy(
+  () => import("./pages-v2/RecoverPasswordV2/RecoverPasswordV2/RecoverPasswordV2.tsx")
+);
+const ForcePasswordChange = lazy(
+  () => import("./pages-v2/ForcePasswordChange/ForcePasswordChange")
+);
 
 // Component to handle /v2/* redirects
 const V2RedirectHandler = () => {
@@ -65,31 +68,33 @@ function App() {
           },
         }}
       />
-      <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<LoginV2 />} />
+      <Suspense fallback={null}>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/login" element={<LoginV2 />} />
 
-        {/* V2 Auth Routes */}
-        <Route path="/recover-password" element={<RecoverPasswordV2 />} />
-        <Route path="/auth/otp" element={<RecoverPasswordV2 />} />
-        <Route
-          path="/force-password-change"
-          element={<ForcePasswordChange />}
-        />
+          {/* V2 Auth Routes */}
+          <Route path="/recover-password" element={<RecoverPasswordV2 />} />
+          <Route path="/auth/otp" element={<RecoverPasswordV2 />} />
+          <Route
+            path="/force-password-change"
+            element={<ForcePasswordChange />}
+          />
 
-        {/* Redirect old /v2/* paths to new root paths */}
-        <Route path="/v2/*" element={<V2RedirectHandler />} />
+          {/* Redirect old /v2/* paths to new root paths */}
+          <Route path="/v2/*" element={<V2RedirectHandler />} />
 
-        {/* V2 Layout Routes - New Design System (Default) */}
-        <Route
-          path="/*"
-          element={
-            <AuthGuard>
-              <V2Routes />
-            </AuthGuard>
-          }
-        />
-      </Routes>
+          {/* V2 Layout Routes - New Design System (Default) */}
+          <Route
+            path="/*"
+            element={
+              <AuthGuard>
+                <V2Routes />
+              </AuthGuard>
+            }
+          />
+        </Routes>
+      </Suspense>
     </DeactivatedUserProvider>
   );
 }

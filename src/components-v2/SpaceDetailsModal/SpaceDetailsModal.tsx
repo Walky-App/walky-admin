@@ -246,6 +246,15 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
         eventDetailsModalOpen ? "v2-drawer-suppressed" : ""
       }`}
       bodyClassName="v2-drawer-body-flush"
+      footer={
+        <button
+          data-testid="space-details-close-footer-btn"
+          className="space-details-close-btn"
+          onClick={onClose}
+        >
+          Close
+        </button>
+      }
     >
       <div className="space-details-modal-body">
         <button
@@ -546,16 +555,6 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="space-details-footer">
-            <button
-              data-testid="space-details-close-footer-btn"
-              className="space-details-close-btn"
-              onClick={onClose}
-            >
-              Close
-            </button>
-          </div>
         </div>
       </div>
 
