@@ -1,3 +1,5 @@
+import { logger } from "../../lib/logger";
+import { getErrorMessage } from "../../lib/utils/errors";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AssetIcon from "../../components-v2/AssetIcon/AssetIcon";
@@ -76,15 +78,15 @@ const ForcePasswordChange: React.FC = () => {
                     user.require_password_change = false;
                     localStorage.setItem("user", JSON.stringify(user));
                 } catch (e) {
-                    console.error("Failed to update local user data", e);
+                    logger.error("Failed to update local user data", e);
                 }
             }
 
             // Force reload to ensure all app state (like auth hooks) is fresh
             window.location.href = "/";
-        } catch (err: any) {
-            console.error("Password update failed:", err);
-            setError(err?.response?.data?.message || "Failed to update password.");
+        } catch (err) {
+            logger.error("Password update failed:", err);
+            setError(getErrorMessage(err, "Failed to update password."));
         } finally {
             setIsLoading(false);
         }

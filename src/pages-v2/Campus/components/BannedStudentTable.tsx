@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CTooltip } from "@coreui/react";
@@ -164,7 +165,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
       setSelectedStudent(fullStudentData);
       setProfileModalVisible(true);
     } catch (error) {
-      console.error("Error fetching student details:", error);
+      logger.error("Error fetching student details:", error);
       setToastMessage("Error fetching student details");
       setShowToast(true);
     }
@@ -176,7 +177,7 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
       setToastMessage("Email copied to clipboard");
       setShowToast(true);
     } catch (error) {
-      console.error("Failed to copy email:", error);
+      logger.error("Failed to copy email:", error);
       setToastMessage("Failed to copy email");
       setShowToast(true);
     }
@@ -693,8 +694,8 @@ export const BannedStudentTable: React.FC<BannedStudentTableProps> = ({
         visible={profileModalVisible}
         student={selectedStudent as StudentProfileData | null}
         onClose={handleCloseProfile}
-        onBanUser={(student) => console.log("Ban user", student)}
-        onDeactivateUser={(student) => console.log("Deactivate user", student)}
+        onBanUser={(student) => logger.debug("Ban user", student)}
+        onDeactivateUser={(student) => logger.debug("Deactivate user", student)}
         onUnbanUser={(student) => {
           unbanMutation.mutate(student.id);
           setProfileModalVisible(false);

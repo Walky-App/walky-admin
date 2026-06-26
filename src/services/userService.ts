@@ -1,3 +1,4 @@
+import { logger } from "../lib/logger";
 import { apiClient } from "../API";
 import { User } from "../API/WalkyAPI";
 
@@ -51,7 +52,7 @@ export const userService = {
   // Get users list with optional filters
   getUsers: async (params?: UsersListParams): Promise<UsersListResponse> => {
     try {
-      console.log("🚀 Fetching users with params:", params);
+      logger.debug("🚀 Fetching users with params:", params);
 
       const response = await apiClient.api.adminUsersList({
         page: params?.page,
@@ -62,7 +63,7 @@ export const userService = {
         role: params?.role,
       });
 
-      console.log("✅ Users response:", response.data);
+      logger.debug("✅ Users response:", response.data);
 
       const apiPagination = response.data.pagination as ApiPagination | undefined;
       return {
@@ -75,7 +76,7 @@ export const userService = {
         },
       };
     } catch (error) {
-      console.error("❌ Failed to fetch users:", error);
+      logger.error("❌ Failed to fetch users:", error);
       throw error;
     }
   },
@@ -83,9 +84,9 @@ export const userService = {
   // Search users by email or name
   searchUsers: async (query: string) => {
     try {
-      console.log("🚀 Searching users with query:", query);
+      logger.debug("🚀 Searching users with query:", query);
       const response = await apiClient.api.adminUsersSearchList({ q: query });
-      console.log("✅ Search response:", response.data);
+      logger.debug("✅ Search response:", response.data);
       // Return search results with available fields
       return (response.data.users || []).map((u) => ({
         email: u.email || "",
@@ -96,7 +97,7 @@ export const userService = {
         role: u.role,
       }));
     } catch (error) {
-      console.error("❌ Failed to search users:", error);
+      logger.error("❌ Failed to search users:", error);
       throw error;
     }
   },
@@ -104,12 +105,12 @@ export const userService = {
   // Get single user details
   getUser: async (userId: string): Promise<User> => {
     try {
-      console.log("🚀 Fetching user:", userId);
+      logger.debug("🚀 Fetching user:", userId);
       const response = await apiClient.api.adminUsersDetail(userId);
-      console.log("✅ User details response:", response.data);
+      logger.debug("✅ User details response:", response.data);
       return response.data.user as User;
     } catch (error) {
-      console.error("❌ Failed to fetch user:", error);
+      logger.error("❌ Failed to fetch user:", error);
       throw error;
     }
   },

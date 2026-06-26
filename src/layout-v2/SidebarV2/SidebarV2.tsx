@@ -1,3 +1,4 @@
+import { logger } from "../../lib/logger";
 import React, { useState, useMemo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { AssetIcon } from "../../components-v2";
@@ -324,7 +325,7 @@ const SidebarV2: React.FC = () => {
         setOpenMenus(parsed);
       }
     } catch (err) {
-      console.warn("Failed to load sidebar state", err);
+      logger.warn("Failed to load sidebar state", err);
     }
   }, []);
 
@@ -352,7 +353,7 @@ const SidebarV2: React.FC = () => {
       try {
         localStorage.setItem("sidebar-open-menus", JSON.stringify(next));
       } catch (err) {
-        console.warn("Failed to save sidebar state", err);
+        logger.warn("Failed to save sidebar state", err);
       }
       return next;
     });

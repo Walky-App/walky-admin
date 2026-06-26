@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useState, useEffect, useRef } from "react";
 import "./IdeasInsights.css";
 import { AssetIcon, LastUpdated, FilterBar } from "../../../components-v2";
@@ -165,7 +166,7 @@ export const IdeasInsights: React.FC = () => {
         setPopularIdeas(sortedIdeas);
         setLastUpdated(new Date().toISOString());
       } catch (err: unknown) {
-        console.error("Failed to fetch ideas insights:", err);
+        logger.error("Failed to fetch ideas insights:", err);
         const error = err as {
           response?: { data?: { error?: string }; status?: number };
           message?: string;

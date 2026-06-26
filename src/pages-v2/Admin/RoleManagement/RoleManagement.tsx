@@ -1,3 +1,5 @@
+import { logger } from "../../../lib/logger";
+import { getErrorMessage } from "../../../lib/utils/errors";
 import React, { useMemo, useState } from "react";
 import {
   useQuery,
@@ -234,14 +236,9 @@ export const RoleManagement: React.FC = () => {
       toast.success("Member removed");
       queryClient.invalidateQueries({ queryKey: ["members"] });
       setIsRemoveMemberModalOpen(false);
-    } catch (error: any) {
-      console.error("Failed to remove member:", error);
-      const errorMessage =
-        error?.error?.message ||
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to remove member";
-      toast.error(errorMessage);
+    } catch (error) {
+      logger.error("Failed to remove member:", error);
+      toast.error(getErrorMessage(error, "Failed to remove member"));
     }
   };;
 
@@ -260,14 +257,9 @@ export const RoleManagement: React.FC = () => {
       toast.success("Role updated");
       queryClient.invalidateQueries({ queryKey: ["members"] });
       setIsChangeRoleModalOpen(false);
-    } catch (error: any) {
-      console.error("Failed to change role:", error);
-      const errorMessage =
-        error?.error?.message ||
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to change role";
-      toast.error(errorMessage);
+    } catch (error) {
+      logger.error("Failed to change role:", error);
+      toast.error(getErrorMessage(error, "Failed to change role"));
     }
   };;
 
@@ -283,14 +275,9 @@ export const RoleManagement: React.FC = () => {
       await apiClient.api.adminV2MembersPasswordResetCreate(selectedMember.id);
       toast.success("Password reset sent");
       setIsPasswordResetModalOpen(false);
-    } catch (error: any) {
-      console.error("Failed to send password reset:", error);
-      const errorMessage =
-        error?.error?.message ||
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to send password reset";
-      toast.error(errorMessage);
+    } catch (error) {
+      logger.error("Failed to send password reset:", error);
+      toast.error(getErrorMessage(error, "Failed to send password reset"));
     }
   };
 
@@ -310,14 +297,11 @@ export const RoleManagement: React.FC = () => {
       });
       toast.success(`Member ${actionLabel} successfully`);
       queryClient.invalidateQueries({ queryKey: ["members"] });
-    } catch (error: any) {
-      console.error(`Failed to ${actionLabel.replace("d", "")} member:`, error);
-      const errorMessage =
-        error?.error?.message ||
-        error?.response?.data?.message ||
-        error?.message ||
-        `Failed to ${actionLabel.replace("d", "")} member`;
-      toast.error(errorMessage);
+    } catch (error) {
+      logger.error(`Failed to ${actionLabel.replace("d", "")} member:`, error);
+      toast.error(
+        getErrorMessage(error, `Failed to ${actionLabel.replace("d", "")} member`)
+      );
     }
   };;;
 
@@ -336,14 +320,9 @@ export const RoleManagement: React.FC = () => {
       toast.success("Member created successfully");
       queryClient.invalidateQueries({ queryKey: ["members"] });
       setIsCreateMemberModalOpen(false);
-    } catch (error: any) {
-      console.error("Failed to create member:", error);
-      const errorMessage =
-        error?.error?.message ||
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to create member";
-      toast.error(errorMessage);
+    } catch (error) {
+      logger.error("Failed to create member:", error);
+      toast.error(getErrorMessage(error, "Failed to create member"));
     }
   };;
 

@@ -31,8 +31,10 @@
   /* ========================================
      V2 COLORS - BACKGROUNDS
      ======================================== */
-  --v2-bg-page: #ffffff;
-  --v2-bg-app: #ffffff;
+  /* Page sits on a soft grey so the white cards/surfaces read as distinct
+     (was #ffffff, which made page + cards blend into one bright sheet). */
+  --v2-bg-page: #eef1f6;
+  --v2-bg-app: #eef1f6;
   --v2-bg-container: #f7f8fa;
   --v2-bg-card: #ffffff;
   --v2-bg-select: #edf2ff;

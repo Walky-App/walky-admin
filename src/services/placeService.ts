@@ -1,3 +1,4 @@
+import { logger } from "../lib/logger";
 import { Place, PlacesFilters, PlacesResponse } from "../types/place";
 import { apiClient } from "../API";
 
@@ -46,7 +47,7 @@ export const placeService = {
         };
       }
 
-      console.warn("Unexpected response structure:", response.data);
+      logger.warn("Unexpected response structure:", response.data);
       return {
         places: [],
         total: 0,
@@ -55,13 +56,13 @@ export const placeService = {
         limit: 20,
       };
     } catch (error) {
-      console.error("Failed to fetch places:", error);
+      logger.error("Failed to fetch places:", error);
 
       // Handle 404 specifically (no places found)
       if (error instanceof Error && "response" in error) {
         const axiosError = error as { response?: { status?: number } };
         if (axiosError.response?.status === 404) {
-          console.log("404 error - returning empty response");
+          logger.debug("404 error - returning empty response");
           return {
             places: [],
             total: 0,
@@ -81,7 +82,7 @@ export const placeService = {
       const response = await apiClient.admin.placesCategoriesUpdate(placeId, { app_categories: categories });
       return (response.data as { data?: Place }).data as Place;
     } catch (error) {
-      console.error("Failed to update place categories:", error);
+      logger.error("Failed to update place categories:", error);
       throw error;
     }
   },
@@ -90,7 +91,7 @@ export const placeService = {
     try {
       await apiClient.admin.placesDelete(placeId);
     } catch (error) {
-      console.error("Failed to delete place:", error);
+      logger.error("Failed to delete place:", error);
       throw error;
     }
   },
@@ -100,7 +101,7 @@ export const placeService = {
       const response = await apiClient.admin.placesRestoreCreate(placeId);
       return (response.data as { data?: Place }).data as Place;
     } catch (error) {
-      console.error("Failed to restore place:", error);
+      logger.error("Failed to restore place:", error);
       throw error;
     }
   },
@@ -109,7 +110,7 @@ export const placeService = {
     try {
       await apiClient.admin.placesSyncPhotosCreate(placeId);
     } catch (error) {
-      console.error("Failed to sync place photos:", error);
+      logger.error("Failed to sync place photos:", error);
       throw error;
     }
   },
@@ -118,7 +119,7 @@ export const placeService = {
     try {
       await apiClient.admin.placesPhotoSyncBatchCreate({ place_ids: placeIds });
     } catch (error) {
-      console.error("Failed to batch sync photos:", error);
+      logger.error("Failed to batch sync photos:", error);
       throw error;
     }
   },
@@ -155,7 +156,7 @@ export const placeService = {
 
       throw new Error("Invalid response structure");
     } catch (error) {
-      console.error("Failed to fetch nested places:", error);
+      logger.error("Failed to fetch nested places:", error);
       throw error;
     }
   }

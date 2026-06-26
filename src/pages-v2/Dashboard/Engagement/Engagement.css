@@ -58,23 +58,31 @@
 
 .stats-container > div {
   padding: 0;
-  flex: 1;
-  min-width: 250px;
+  /* 3 cards per row → the 6 cards form a clean 3 x 2 grid */
+  flex: 0 0 calc((100% - 40px) / 3);
+  max-width: calc((100% - 40px) / 3);
+  min-width: 0;
+  /* Flex container so the card stretches to fill the column → all cards in a
+     row share the same height even when some titles wrap to two lines */
+  display: flex;
 }
 
-/* At large-but-not-huge viewports, show 3 cards on the first row and push the 4th to the next line */
-@media (max-width: 1440px) {
-  .stats-container {
-    gap: 18px;
-  }
+.stats-container > div > .st-stats-card {
+  width: 100%;
+}
 
+/* Tablet: 2 cards per row */
+@media (max-width: 1200px) {
   .stats-container > div {
-    flex: 0 0 calc(33.333% - 12px);
-    max-width: calc(33.333% - 12px);
+    flex: 0 0 calc((100% - 20px) / 2);
+    max-width: calc((100% - 20px) / 2);
   }
+}
 
-  .stats-container > div:nth-child(4) {
-    flex: 0 0 100%;
+/* Mobile: 1 card per row */
+@media (max-width: 768px) {
+  .stats-container > div {
+    flex: 1 1 100%;
     max-width: 100%;
   }
 }
@@ -317,7 +325,7 @@ a:focus:not(:focus-visible) {
     display: block !important;
   }
 
-  /* Stats cards row - print in a 2-2-1 grid */
+  /* Stats cards row - print in a 2 x 3 grid (6 cards) */
   .stats-container {
     display: flex !important;
     flex-wrap: wrap !important;
@@ -329,12 +337,6 @@ a:focus:not(:focus-visible) {
     flex: 0 0 calc(50% - 8px) !important;
     max-width: calc(50% - 8px) !important;
     min-width: unset !important;
-  }
-
-  /* 5th card full width on its own row */
-  .stats-container > div:nth-child(5) {
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
   }
 
   /* Section header */

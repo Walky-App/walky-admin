@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
@@ -99,7 +100,7 @@ export const DeactivatedStudents: React.FC = () => {
   const paginatedStudents = students;
 
   const handleStudentClick = (student: StudentData) => {
-    console.log("Student clicked:", student);
+    logger.debug("Student clicked:", student);
   };
 
   const handleSortChange = (

@@ -127,10 +127,10 @@ export interface AppTheme {
 
 // Light theme colors - Modern palette inspired by Stripe/Linear
 const lightColors: ThemeColors = {
-  bodyBg: "#F7F8FA",
+  bodyBg: "#EEF1F6",
   bodyColor: "#0A0D14",
   cardBg: "#FFFFFF",
-  borderColor: "#E5E7EB",
+  borderColor: "#E2E5EC",
   primary: "#5E5CE6",
   secondary: "#4B5563",
   success: "#34C759",

@@ -1,3 +1,4 @@
+import { logger } from "../../../../lib/logger";
 import React, { useState } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../../API";
@@ -126,7 +127,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
       setDeleteModalOpen(false);
     },
     onError: (error) => {
-      console.error("Error deleting space:", error);
+      logger.error("Error deleting space:", error);
       setToastMessage("Error deleting space");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -144,7 +145,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
       setFlagModalOpen(false);
     },
     onError: (error) => {
-      console.error("Error flagging space:", error);
+      logger.error("Error flagging space:", error);
       setToastMessage("Error flagging space");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -161,7 +162,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
       setUnflagModalOpen(false);
     },
     onError: (error) => {
-      console.error("Error unflagging space:", error);
+      logger.error("Error unflagging space:", error);
       setToastMessage("Error unflagging space");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -182,7 +183,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
       setSpaceToEditCategory(null);
     },
     onError: (error) => {
-      console.error("Error updating category:", error);
+      logger.error("Error updating category:", error);
       setToastMessage("Error updating category");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -261,7 +262,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
         flagReason?: string;
       };
       const details = response.data as SpaceDetails;
-      console.log("API Space Details Response:", details);
+      logger.debug("API Space Details Response:", details);
 
       // Map API response to SpaceDetailsData
       const spaceDetails: SpaceDetailsData = {
@@ -338,7 +339,7 @@ export const SpaceTable: React.FC<SpaceTableProps> = ({
       setSelectedSpace(spaceDetails);
       setDetailsModalOpen(true);
     } catch (error) {
-      console.error("Error fetching space details:", error);
+      logger.error("Error fetching space details:", error);
       setToastMessage("Error fetching space details");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);

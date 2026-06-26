@@ -34,12 +34,18 @@ export default defineConfig({
         "src/vite-env.d.ts",
         "**/index.ts",
       ],
-      // Coverage ratchet: raise these floors at the end of each testing phase
-      // so coverage can only go up. Left unenforced for the bootstrap PR
-      // (Phase 0 + 1) because most of the app is still untested; enabling a
-      // global floor now would fail CI on pre-existing untested code.
-      // Enable once Phase 2+ lands real breadth:
-      // thresholds: { lines: 25, functions: 25, branches: 25, statements: 25 },
+      // Coverage ratchet: floors are set just below current coverage of the
+      // files exercised by the suite (~82% stmts / 70% branch / 81% funcs as of
+      // this commit). They can only go UP — when a testing phase raises actual
+      // coverage, bump these numbers so the gain is locked in and can't regress.
+      // Note: coverage here reflects files imported by tests (Vitest's default
+      // `all: false`); the goal is broadening that set over time.
+      thresholds: {
+        statements: 80,
+        branches: 65,
+        functions: 78,
+        lines: 80,
+      },
     },
   },
   resolve: {

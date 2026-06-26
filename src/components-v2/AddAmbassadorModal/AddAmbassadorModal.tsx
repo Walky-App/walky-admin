@@ -1,3 +1,4 @@
+import { logger } from "../../lib/logger";
 import React, { useState, useEffect } from "react";
 import AssetIcon from "../AssetIcon/AssetIcon";
 import { NoData } from "../NoData/NoData";
@@ -105,7 +106,7 @@ export const AddAmbassadorModal: React.FC<AddAmbassadorModalProps> = ({
       setSearchResults(students);
       setHasSearched(true);
     } catch (error) {
-      console.error("Failed to search students:", error);
+      logger.error("Failed to search students:", error);
       setSearchResults([]);
     } finally {
       setIsLoading(false);

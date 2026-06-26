@@ -1,3 +1,4 @@
+import { logger } from "../../lib/logger";
 import * as THREE from "three";
 import { Suspense, useMemo, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -34,7 +35,7 @@ function hitTone(
     osc.start(now);
     osc.stop(now + 0.4);
   } catch (e) {
-    console.warn("audio unavailable", e);
+    logger.warn("audio unavailable", e);
   }
 }
 

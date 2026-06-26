@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
@@ -41,7 +42,7 @@ const PopularFeatures: React.FC = () => {
   // Check if user can export popular features data
   const showExport = canExport("popular_features");
 
-  console.log(
+  logger.debug(
     "PopularFeatures - interestsModalVisible:",
     interestsModalVisible
   );
@@ -214,7 +215,7 @@ const PopularFeatures: React.FC = () => {
     };
   };
 
-  console.log("Visited Places data:", visitedPlaces);
+  logger.debug("Visited Places data:", visitedPlaces);
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -273,7 +274,7 @@ const PopularFeatures: React.FC = () => {
               items={topInterests}
               maxItems={5}
               onSeeAll={() => {
-                console.log("See all Interests clicked!");
+                logger.debug("See all Interests clicked!");
                 setModalData({
                   title: "Students' interests",
                   items: topInterests,
@@ -296,7 +297,7 @@ const PopularFeatures: React.FC = () => {
               maxItems={5}
               formatLabel={(raw) => formatWaysToConnectLabel(raw).label}
               onSeeAll={() => {
-                console.log("See all ways clicked!");
+                logger.debug("See all ways clicked!");
                 setModalData({
                   title: "Ways to connect",
                   items: formattedWaysToConnect,
@@ -318,7 +319,7 @@ const PopularFeatures: React.FC = () => {
               items={visitedPlaces}
               maxItems={5}
               onSeeAll={() => {
-                console.log("See all places clicked!");
+                logger.debug("See all places clicked!");
                 setModalData({
                   title: "Visited places",
                   items: visitedPlaces,
@@ -360,7 +361,7 @@ const PopularFeatures: React.FC = () => {
       <SeeAllInterestsModal
         visible={interestsModalVisible}
         onClose={() => {
-          console.log("Modal close clicked!");
+          logger.debug("Modal close clicked!");
           setInterestsModalVisible(false);
         }}
         title={modalData.title}

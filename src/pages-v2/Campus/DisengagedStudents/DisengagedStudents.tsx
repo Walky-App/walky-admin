@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { logger } from "../../../lib/logger";
 import React, { useRef, useState } from "react";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
 import {
@@ -146,7 +147,7 @@ export const DisengagedStudents: React.FC = () => {
       setSelectedStudent(fullStudentData);
       setProfileModalVisible(true);
     } catch (error) {
-      console.error("Error fetching student details:", error);
+      logger.error("Error fetching student details:", error);
       // Fallback to basic data if API call fails
       setSelectedStudent(student);
       setProfileModalVisible(true);
@@ -335,8 +336,8 @@ export const DisengagedStudents: React.FC = () => {
             : null
         }
         onClose={handleCloseProfile}
-        onBanUser={(student) => console.log("Ban user", student)}
-        onDeactivateUser={(student) => console.log("Deactivate user", student)}
+        onBanUser={(student) => logger.debug("Ban user", student)}
+        onDeactivateUser={(student) => logger.debug("Deactivate user", student)}
       />
 
       {showToast && (

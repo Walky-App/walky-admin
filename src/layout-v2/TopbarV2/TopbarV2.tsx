@@ -1,3 +1,4 @@
+import { logger } from "../../lib/logger";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -76,7 +77,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
 
         if (isSuper) {
           const response = await apiClient.api.adminV2SchoolsList();
-          console.log("Schools API response:", response);
+          logger.debug("Schools API response:", response);
 
           type RawSchool = { _id?: string; id?: string; school_name?: string; name?: string };
           let rawSchools: RawSchool[] = [];
@@ -95,7 +96,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             _id: s._id || s.id || "",
             id: s.id || s._id || "",
           })) as School[];
-          console.log("Parsed schools:", schools);
+          logger.debug("Parsed schools:", schools);
         } else {
           // Handle case where school_id might be an object (populated) or string
           const schoolId = typeof user.school_id === 'object' && user.school_id !== null
@@ -103,14 +104,14 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
             : user.school_id;
 
           if (!schoolId) {
-            console.warn("No valid school_id found for user");
+            logger.warn("No valid school_id found for user");
             setIsLoadingSchools(false);
             hasInitializedSchools.current = true;
             return;
           }
 
           const response = await apiClient.api.schoolDetail(schoolId);
-          console.log("School detail API response:", response);
+          logger.debug("School detail API response:", response);
           type RawSchool = { _id?: string; id?: string; school_name?: string; name?: string };
           const data = response.data as RawSchool | undefined;
           const rawSchools = data ? [data] : [];
@@ -123,7 +124,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
           })) as School[];
         }
 
-        console.log("Setting available schools:", schools);
+        logger.debug("Setting available schools:", schools);
         setAvailableSchools(schools);
 
         // Auto-select first school if none selected
@@ -134,7 +135,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
         setIsLoadingSchools(false);
         hasInitializedSchools.current = true;
       } catch (error) {
-        console.error("Failed to fetch schools:", error);
+        logger.error("Failed to fetch schools:", error);
         setAvailableSchools([]);
         setIsLoadingSchools(false);
       }
@@ -232,7 +233,7 @@ const TopbarV2: React.FC<TopbarV2Props> = ({ onToggleSidebar }) => {
         setIsLoadingCampuses(false);
         hasInitializedCampuses.current = true;
       } catch (error) {
-        console.error("Failed to fetch campuses:", error);
+        logger.error("Failed to fetch campuses:", error);
         setAvailableCampuses([]);
         setIsLoadingCampuses(false);
       }

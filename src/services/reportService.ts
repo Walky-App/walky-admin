@@ -1,3 +1,4 @@
+import { logger } from "../lib/logger";
 import { apiClient } from "../API";
 import { BannedUser, UserBanHistory } from "../types/report";
 
@@ -25,10 +26,10 @@ export const reportService = {
     limit?: number;
   }) => {
     try {
-      console.log("🚀 Fetching reports with filters:", filters);
+      logger.debug("🚀 Fetching reports with filters:", filters);
 
       const response = await apiClient.api.adminReportsList(filters);
-      console.log("✅ Reports response:", response.data);
+      logger.debug("✅ Reports response:", response.data);
 
       return {
         reports: response.data.reports || [],
@@ -40,7 +41,7 @@ export const reportService = {
         },
       };
     } catch (error) {
-      console.error("❌ Failed to fetch reports:", error);
+      logger.error("❌ Failed to fetch reports:", error);
       throw error;
     }
   },
@@ -48,12 +49,12 @@ export const reportService = {
   // Get report details
   getReportDetails: async (reportId: string) => {
     try {
-      console.log("🚀 Fetching report details for:", reportId);
+      logger.debug("🚀 Fetching report details for:", reportId);
       const response = await apiClient.api.adminReportsDetail(reportId);
-      console.log("✅ Report details response:", response.data);
+      logger.debug("✅ Report details response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Failed to fetch report details:", error);
+      logger.error("❌ Failed to fetch report details:", error);
       throw error;
     }
   },
@@ -67,15 +68,15 @@ export const reportService = {
     },
   ) => {
     try {
-      console.log("🚀 Updating report status:", reportId, data);
+      logger.debug("🚀 Updating report status:", reportId, data);
       const response = await apiClient.api.adminReportsStatusPartialUpdate(
         reportId,
         data,
       );
-      console.log("✅ Update status response:", response.data);
+      logger.debug("✅ Update status response:", response.data);
       return response.data.report;
     } catch (error) {
-      console.error("❌ Failed to update report status:", error);
+      logger.error("❌ Failed to update report status:", error);
       throw error;
     }
   },
@@ -90,15 +91,15 @@ export const reportService = {
     },
   ) => {
     try {
-      console.log("🚀 Banning user from report:", reportId, data);
+      logger.debug("🚀 Banning user from report:", reportId, data);
       const response = await apiClient.api.adminReportsBanUserCreate(
         reportId,
         data,
       );
-      console.log("✅ Ban user response:", response.data);
+      logger.debug("✅ Ban user response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Failed to ban user:", error);
+      logger.error("❌ Failed to ban user:", error);
       throw error;
     }
   },
@@ -110,12 +111,12 @@ export const reportService = {
     admin_notes?: string;
   }) => {
     try {
-      console.log("🚀 Bulk updating reports:", data);
+      logger.debug("🚀 Bulk updating reports:", data);
       const response = await apiClient.api.adminReportsBulkPartialUpdate(data);
-      console.log("✅ Bulk update response:", response.data);
+      logger.debug("✅ Bulk update response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Failed to bulk update reports:", error);
+      logger.error("❌ Failed to bulk update reports:", error);
       throw error;
     }
   },
@@ -128,10 +129,10 @@ export const reportService = {
     school_id?: string;
   }): Promise<BannedUsersResponse> => {
     try {
-      console.log("🚀 Fetching banned users:", params);
+      logger.debug("🚀 Fetching banned users:", params);
 
       const response = await apiClient.api.adminUsersBannedList(params);
-      console.log("✅ Banned users response:", response.data);
+      logger.debug("✅ Banned users response:", response.data);
 
       return {
         users: (response.data.users || []) as BannedUser[],
@@ -143,7 +144,7 @@ export const reportService = {
         },
       };
     } catch (error) {
-      console.error("❌ Failed to fetch banned users:", error);
+      logger.error("❌ Failed to fetch banned users:", error);
       throw error;
     }
   },
@@ -151,15 +152,15 @@ export const reportService = {
   // Unban user
   unbanUser: async (userId: string, data?: { unban_reason?: string }) => {
     try {
-      console.log("🚀 Unbanning user:", userId, data);
+      logger.debug("🚀 Unbanning user:", userId, data);
       const response = await apiClient.api.adminUsersUnbanCreate(
         userId,
         data || {},
       );
-      console.log("✅ Unban response:", response.data);
+      logger.debug("✅ Unban response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Failed to unban user:", error);
+      logger.error("❌ Failed to unban user:", error);
       throw error;
     }
   },
@@ -167,12 +168,12 @@ export const reportService = {
   // Get user ban history
   getUserBanHistory: async (userId: string): Promise<UserBanHistory> => {
     try {
-      console.log("🚀 Fetching ban history for user:", userId);
+      logger.debug("🚀 Fetching ban history for user:", userId);
       const response = await apiClient.api.adminUsersBanHistoryList(userId);
-      console.log("✅ Ban history response:", response.data);
+      logger.debug("✅ Ban history response:", response.data);
       return response.data as unknown as UserBanHistory;
     } catch (error) {
-      console.error("❌ Failed to fetch ban history:", error);
+      logger.error("❌ Failed to fetch ban history:", error);
       throw error;
     }
   },
@@ -180,7 +181,7 @@ export const reportService = {
   // Remove user (existing functionality)
   removeUser: async (userId: string, reason: string, sendEmail = true) => {
     try {
-      console.log("🚀 Removing user:", userId);
+      logger.debug("🚀 Removing user:", userId);
       const response = await apiClient.http.instance.delete(
         `/api/admin/users/${userId}/remove`,
         {
@@ -188,10 +189,10 @@ export const reportService = {
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log("✅ Remove user response:", response.data);
+      logger.debug("✅ Remove user response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Failed to remove user:", error);
+      logger.error("❌ Failed to remove user:", error);
       throw error;
     }
   },

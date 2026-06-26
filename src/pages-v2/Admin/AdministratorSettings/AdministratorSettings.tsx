@@ -1,3 +1,5 @@
+import { logger } from "../../../lib/logger";
+import { getErrorMessage } from "../../../lib/utils/errors";
 import React, { useState, useEffect, useRef } from "react";
 import { apiClient } from "../../../API";
 import { useNavigate } from "react-router-dom";
@@ -73,7 +75,7 @@ export const AdministratorSettings: React.FC = () => {
           twoFactorEnabled: data.twoFactorEnabled ?? false,
         }));
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        logger.error("Error fetching profile:", error);
         // Fall back to user from auth context
         setFormData({
           firstName: user?.first_name || "",
@@ -89,7 +91,7 @@ export const AdministratorSettings: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log("AdministratorSettings component loaded", {
+  logger.debug("AdministratorSettings component loaded", {
     user,
     profileData,
     activeTab,
@@ -152,7 +154,7 @@ export const AdministratorSettings: React.FC = () => {
         await apiClient.api.adminV2SettingsDeleteAccountStatusList();
       setDeletionStatus(response.data);
     } catch (error) {
-      console.error("Error fetching deletion status:", error);
+      logger.error("Error fetching deletion status:", error);
     } finally {
       setIsLoadingDeletionStatus(false);
     }
@@ -220,7 +222,7 @@ export const AdministratorSettings: React.FC = () => {
 
       toast.success("Avatar updated successfully");
     } catch (error) {
-      console.error("Error uploading avatar:", error);
+      logger.error("Error uploading avatar:", error);
       toast.error("Failed to upload avatar");
     } finally {
       setIsUploadingAvatar(false);
@@ -259,7 +261,7 @@ export const AdministratorSettings: React.FC = () => {
             : "Two-factor authentication disabled"
         );
       } catch (error) {
-        console.error("Error updating 2FA setting:", error);
+        logger.error("Error updating 2FA setting:", error);
         // Revert on error
         setSecurityData((prev) => ({
           ...prev,
@@ -303,7 +305,7 @@ export const AdministratorSettings: React.FC = () => {
 
   //     toast.success("Notification settings saved");
   //   } catch (error) {
-  //     console.error("Error saving notification settings:", error);
+  //     logger.error("Error saving notification settings:", error);
   //     // Revert on error
   //     setNotificationData(previousState);
   //     toast.error("Failed to save notification settings");
@@ -322,7 +324,7 @@ export const AdministratorSettings: React.FC = () => {
       setHasUnsavedChanges(false);
       toast.success("Profile updated successfully");
     } catch (error) {
-      console.error("Error saving changes:", error);
+      logger.error("Error saving changes:", error);
       toast.error("Failed to update profile");
     }
   };
@@ -341,7 +343,7 @@ export const AdministratorSettings: React.FC = () => {
         confirmPassword: "",
       }));
     } catch (error) {
-      console.error("Error changing password:", error);
+      logger.error("Error changing password:", error);
       toast.error("Failed to update password");
     }
   };
@@ -365,7 +367,7 @@ export const AdministratorSettings: React.FC = () => {
       setShowLogoutAllModal(false);
       toast.success("Logged out from all other devices");
     } catch (error) {
-      console.error("Error logging out all devices:", error);
+      logger.error("Error logging out all devices:", error);
       toast.error("Failed to logout all devices");
     }
   };
@@ -384,11 +386,9 @@ export const AdministratorSettings: React.FC = () => {
       toast.success("Account deletion requested");
       // Refresh deletion status
       fetchDeletionStatus();
-    } catch (error: any) {
-      console.error("Error requesting account deletion:", error);
-      const errorMessage =
-        error?.response?.data?.message || "Failed to request account deletion";
-      toast.error(errorMessage);
+    } catch (error) {
+      logger.error("Error requesting account deletion:", error);
+      toast.error(getErrorMessage(error, "Failed to request account deletion"));
     }
   };
 
@@ -400,7 +400,7 @@ export const AdministratorSettings: React.FC = () => {
       // Refresh deletion status
       fetchDeletionStatus();
     } catch (error) {
-      console.error("Error cancelling deletion request:", error);
+      logger.error("Error cancelling deletion request:", error);
       toast.error("Failed to cancel deletion request");
     } finally {
       setIsCancellingRequest(false);
@@ -452,7 +452,7 @@ export const AdministratorSettings: React.FC = () => {
   };
   const roleDisplayName = getRoleDisplayName(profileData?.role || user?.role);
 
-  console.log("Rendering AdministratorSettings", {
+  logger.debug("Rendering AdministratorSettings", {
     activeTab,
     hasUnsavedChanges,
   });

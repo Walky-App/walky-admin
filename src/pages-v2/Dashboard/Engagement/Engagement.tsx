@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { apiClient } from "../../../API";
+import { logger } from "../../../lib/logger";
 import {
   CRow,
   CCol,
@@ -12,6 +13,7 @@ import {
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
+  CSpinner,
 } from "@coreui/react";
 import { AssetIcon, FilterBar, LastUpdated } from "../../../components-v2";
 import {
@@ -71,7 +73,13 @@ const Engagement: React.FC = () => {
     [selectedSchool?._id, selectedCampus?._id]
   );
 
-  const { data: engagementData, isLoading: isEngagementLoading } = useQuery({
+  const {
+    data: engagementData,
+    isLoading: isEngagementLoading,
+    isError: isEngagementError,
+    isFetching: isEngagementFetching,
+    refetch: refetchEngagement,
+  } = useQuery({
     queryKey: [
       "engagementStats",
       timePeriod,
@@ -83,7 +91,13 @@ const Engagement: React.FC = () => {
     placeholderData: keepPreviousData,
   });
 
-  const { data: retentionData, isLoading: isRetentionLoading } = useQuery({
+  const {
+    data: retentionData,
+    isLoading: isRetentionLoading,
+    isError: isRetentionError,
+    isFetching: isRetentionFetching,
+    refetch: refetchRetention,
+  } = useQuery({
     queryKey: [
       "retentionStats",
       timePeriod,
@@ -95,7 +109,13 @@ const Engagement: React.FC = () => {
     placeholderData: keepPreviousData,
   });
 
-  const { data: dashboardStats, isLoading: isStatsLoading } = useQuery({
+  const {
+    data: dashboardStats,
+    isLoading: isStatsLoading,
+    isError: isStatsError,
+    isFetching: isStatsFetching,
+    refetch: refetchStats,
+  } = useQuery({
     queryKey: [
       "dashboardStats",
       timePeriod,
@@ -152,7 +172,31 @@ const Engagement: React.FC = () => {
     fetchRetentionStats,
   ]);
 
+  // Log whenever the active school/campus filter changes so we can confirm the
+  // dashboard is reacting to selector changes (dev only — see lib/logger). The
+  // API response interceptor logs the matching network request, so the console
+  // shows the full "filter changed → request → response" sequence on a switch.
+  useEffect(() => {
+    logger.debug("[Engagement] filter changed → refetching dashboard", {
+      schoolId: selectedSchool?._id,
+      campusId: selectedCampus?._id,
+      timePeriod,
+    });
+  }, [selectedSchool?._id, selectedCampus?._id, timePeriod]);
+
   const isLoading = isEngagementLoading || isRetentionLoading || isStatsLoading;
+  const isError = isEngagementError || isRetentionError || isStatsError;
+  const isFetching =
+    isEngagementFetching || isRetentionFetching || isStatsFetching;
+  // True when data for a newly-selected school/campus is loading while the
+  // previous selection's data is still on screen (placeholderData keeps it).
+  const isRefetching = isFetching && !isLoading;
+
+  const handleRetry = () => {
+    refetchEngagement();
+    refetchRetention();
+    refetchStats();
+  };
 
   // Helper to get trend text based on time period
   const getTrendText = () => {
@@ -236,11 +280,97 @@ const Engagement: React.FC = () => {
         showExport={showExport}
       />
 
+      {/* Refetch failed: don't silently keep showing the previous selection's
+          data — tell the user the update failed and let them retry. */}
+      {isError && (
+        <div
+          role="alert"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            padding: "12px 16px",
+            margin: "0 0 16px",
+            borderRadius: 8,
+            backgroundColor: "#f8d7da",
+            color: "#842029",
+            border: "1px solid #f5c2c7",
+            fontWeight: 600,
+          }}
+        >
+          <span>
+            Couldn't load data for the selected school/campus. Any values below
+            may be from your previous selection.
+          </span>
+          <button
+            type="button"
+            data-testid="engagement-retry-button"
+            onClick={handleRetry}
+            style={{
+              flexShrink: 0,
+              border: "none",
+              borderRadius: 6,
+              padding: "6px 14px",
+              backgroundColor: "#842029",
+              color: "#fff",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Background refetch after a school/campus switch: make it visible so a
+          slow update doesn't look like "nothing happened". */}
+      {isRefetching && !isError && (
+        <div
+          aria-live="polite"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "6px 12px",
+            margin: "0 0 12px",
+            borderRadius: 999,
+            backgroundColor: theme.colors.cardBg,
+            border: `1px solid ${theme.colors.borderColor}`,
+            color: theme.colors.textMuted,
+            fontSize: 13,
+            fontWeight: 600,
+          }}
+        >
+          <CSpinner size="sm" /> Updating…
+        </div>
+      )}
+
       {/* Stats Cards */}
       <CRow className="stats-container">
         <CCol xs={12} sm={6} md={6} lg={3}>
           <StatsCard
             title="Total Students"
+            value={
+              (dashboardStats?.data as any)?.totalRegisteredStudents?.toString() ||
+              "0"
+            }
+            icon={
+              <AssetIcon
+                name="double-users-icon"
+                color={theme.colors.iconPurple}
+              />
+            }
+            iconBgColor={theme.colors.iconPurpleBg}
+            trend={formatTrend(
+              (dashboardStats?.data as any)?.registeredStudentsChange
+            )}
+            hideComparison={timePeriod === "all-time"}
+          />
+        </CCol>
+        <CCol xs={12} sm={6} md={6} lg={3}>
+          <StatsCard
+            title="Total Active Students"
             value={
               (dashboardStats?.data as any)?.totalStudents?.toString() ||
               dashboardStats?.data.totalUsers?.toString() ||

@@ -1,3 +1,6 @@
+import { logger } from "../../../lib/logger";
+import { getErrorMessage } from "../../../lib/utils/errors";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -7,6 +10,11 @@ import ResetPasswordStep from "../ResetPasswordStep/ResetPasswordStep";
 import { AssetIcon, CustomToast } from "../../../components-v2";
 
 type RecoveryStep = "email" | "verify" | "reset";
+
+interface ResetErrorBody {
+  message?: string;
+  errors?: string[];
+}
 
 import { apiClient } from "../../../API";
 
@@ -44,9 +52,9 @@ const RecoverPasswordV2: React.FC = () => {
     try {
       await apiClient.api.forgotPasswordCreate({ email });
       setCurrentStep("verify");
-    } catch (err: any) {
-      console.error("Password recovery request failed:", err);
-      setError(err?.response?.data?.message || "Failed to send reset link.");
+    } catch (err) {
+      logger.error("Password recovery request failed:", err);
+      setError(getErrorMessage(err, "Failed to send reset link."));
     } finally {
       setIsLoading(false);
     }
@@ -65,11 +73,11 @@ const RecoverPasswordV2: React.FC = () => {
   };
 
   const handleResendCode = async () => {
-    console.log("Resending code to:", email);
+    logger.debug("Resending code to:", email);
     try {
       await apiClient.api.forgotPasswordCreate({ email });
     } catch (err) {
-      console.error("Resend code failed:", err);
+      logger.error("Resend code failed:", err);
     }
   };
 
@@ -84,15 +92,17 @@ const RecoverPasswordV2: React.FC = () => {
         password,
         password_confirmed: password,
       });
-      console.log("Password reset complete");
+      logger.debug("Password reset complete");
       setShowSuccessToast(true);
       // Navigate after showing toast
       setTimeout(() => {
         navigate("/login");
       }, 2000);
-    } catch (err: any) {
-      console.error("Password reset failed:", err);
-      const data = err?.response?.data;
+    } catch (err) {
+      logger.error("Password reset failed:", err);
+      const data = axios.isAxiosError<ResetErrorBody>(err)
+        ? err.response?.data
+        : undefined;
 
       // Handle password validation errors - show in form, not alert
       if (data?.message === "Password validation failed" && data?.errors) {

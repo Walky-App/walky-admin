@@ -1,3 +1,5 @@
+import { logger } from "../../lib/logger";
+import { getErrorMessage } from "../../lib/utils/errors";
 import { useEffect, useState } from "react";
 import { apiClient } from "../../API";
 
@@ -43,9 +45,9 @@ export function useActiveUsersData(period: TimePeriod) {
         if (!ignore && combined.length) {
           setData(combined);
         }
-      } catch (err: any) {
-        console.error("Failed to load active users", err);
-        if (!ignore) setError(err?.message ?? "Failed to load data");
+      } catch (err) {
+        logger.error("Failed to load active users", err);
+        if (!ignore) setError(getErrorMessage(err, "Failed to load data"));
       } finally {
         if (!ignore) setLoading(false);
       }
