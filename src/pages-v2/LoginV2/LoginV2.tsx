@@ -1,3 +1,5 @@
+import { logger } from "../../lib/logger";
+import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CModal, CModalBody } from "@coreui/react";
@@ -6,6 +8,15 @@ import AssetImage from "../../components-v2/AssetImage/AssetImage";
 import "./LoginV2.css";
 
 import { apiClient } from "../../API";
+
+interface LoginErrorBody {
+  status?: string;
+  redirect?: string;
+  email?: string;
+  phoneNumber?: string;
+  code?: string;
+  message?: string;
+}
 
 const LoginV2: React.FC = () => {
   const navigate = useNavigate();
@@ -42,7 +53,7 @@ const LoginV2: React.FC = () => {
             const phoneFromUrl = url.searchParams.get("phoneNumber");
             redirectPhone = phoneFromUrl || redirectPhone;
           } catch (parseErr) {
-            console.warn("Failed to parse redirectPath", parseErr);
+            logger.warn("Failed to parse redirectPath", parseErr);
           }
         }
 
@@ -122,16 +133,20 @@ const LoginV2: React.FC = () => {
 
       // Reload to update auth state (since useAuth reads from localStorage on mount)
       window.location.href = "/";
-    } catch (err: any) {
-      console.error("Login failed:", err);
+    } catch (err) {
+      logger.error("Login failed:", err);
 
-      const status = err?.response?.data?.status;
+      const data = axios.isAxiosError<LoginErrorBody>(err)
+        ? err.response?.data
+        : undefined;
+
+      const status = data?.status;
       if (status === "not_verified") {
-        const redirectPath = err?.response?.data?.redirect;
+        const redirectPath = data?.redirect;
 
         // Extract params from backend redirect if present
-        let redirectEmail = err?.response?.data?.email || email;
-        let redirectPhone = err?.response?.data?.phoneNumber;
+        let redirectEmail = data?.email || email;
+        let redirectPhone = data?.phoneNumber;
         if (redirectPath) {
           try {
             const url = new URL(redirectPath, window.location.origin);
@@ -139,7 +154,7 @@ const LoginV2: React.FC = () => {
             const phoneFromUrl = url.searchParams.get("phoneNumber");
             redirectPhone = phoneFromUrl || redirectPhone;
           } catch (parseErr) {
-            console.warn("Failed to parse redirectPath", parseErr);
+            logger.warn("Failed to parse redirectPath", parseErr);
           }
         }
 
@@ -155,12 +170,12 @@ const LoginV2: React.FC = () => {
       }
 
       // Check if user is deactivated
-      if (err?.response?.data?.code === "USER_DEACTIVATED") {
+      if (data?.code === "USER_DEACTIVATED") {
         setShowDeactivatedModal(true);
         return;
       }
 
-      setError(err?.response?.data?.message || "Invalid email or password.");
+      setError(data?.message || "Invalid email or password.");
     } finally {
       setIsLoading(false);
     }

@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useState, useEffect, useMemo } from "react";
 import {
   AssetIcon,
@@ -126,7 +127,7 @@ export const Ambassadors: React.FC = () => {
 
       setAmbassadors(transformedAmbassadors);
     } catch (error) {
-      console.error("Failed to fetch ambassadors:", error);
+      logger.error("Failed to fetch ambassadors:", error);
     } finally {
       setLoading(false);
     }
@@ -164,7 +165,7 @@ export const Ambassadors: React.FC = () => {
         )
       );
 
-      console.log("Adding ambassadors:", selectedStudents);
+      logger.debug("Adding ambassadors:", selectedStudents);
       setToastMessage(
         `${selectedStudents.length} ambassador${
           selectedStudents.length > 1 ? "s" : ""
@@ -176,7 +177,7 @@ export const Ambassadors: React.FC = () => {
       // Refresh list
       fetchAmbassadors();
     } catch (error) {
-      console.error("Failed to add ambassadors:", error);
+      logger.error("Failed to add ambassadors:", error);
       setToastMessage("Failed to add ambassadors");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -195,7 +196,7 @@ export const Ambassadors: React.FC = () => {
     if (ambassadorToDelete) {
       try {
         await apiClient.api.adminAmbassadorsDelete(ambassadorToDelete.id);
-        console.log("Deleting ambassador:", ambassadorToDelete.id);
+        logger.debug("Deleting ambassador:", ambassadorToDelete.id);
         setToastMessage("Ambassador deleted successfully");
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
@@ -203,7 +204,7 @@ export const Ambassadors: React.FC = () => {
         // Refresh list
         fetchAmbassadors();
       } catch (error) {
-        console.error("Failed to delete ambassador:", error);
+        logger.error("Failed to delete ambassador:", error);
         setToastMessage("Failed to delete ambassador");
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);

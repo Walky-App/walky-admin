@@ -1,3 +1,4 @@
+import { logger } from "../lib/logger";
 import React, {
   createContext,
   useContext,
@@ -49,7 +50,7 @@ export const CampusProvider: React.FC<CampusProviderProps> = ({ children }) => {
       try {
         setSelectedCampusState(JSON.parse(savedCampus));
       } catch (error) {
-        console.error("Failed to parse saved campus:", error);
+        logger.error("Failed to parse saved campus:", error);
         localStorage.removeItem("selectedCampus");
       }
     }

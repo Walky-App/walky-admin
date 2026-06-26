@@ -1,6 +1,15 @@
+import { logger } from "../../../lib/logger";
+import axios from "axios";
 import React, { useState } from "react";
 import { AssetIcon } from "../../../components-v2";
 import { apiClient } from "../../../API";
+
+interface VerifyOtpErrorBody {
+  locked?: boolean;
+  expired?: boolean;
+  remainingAttempts?: number;
+  message?: string;
+}
 
 interface VerifyCodeStepProps {
   email: string;
@@ -50,9 +59,11 @@ const VerifyCodeStep: React.FC<VerifyCodeStepProps> = ({
         // OTP is valid, proceed to password reset
         onVerify(verificationCode.trim());
       }
-    } catch (err: any) {
-      console.error("OTP verification failed:", err);
-      const data = err?.response?.data;
+    } catch (err) {
+      logger.error("OTP verification failed:", err);
+      const data = axios.isAxiosError<VerifyOtpErrorBody>(err)
+        ? err.response?.data
+        : undefined;
 
       if (data?.locked) {
         setError("Too many failed attempts. Please request a new verification code.");

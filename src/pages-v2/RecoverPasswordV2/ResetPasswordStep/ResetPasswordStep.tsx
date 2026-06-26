@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useState } from "react";
 import { AssetIcon } from "../../../components-v2";
 
@@ -39,7 +40,7 @@ const ResetPasswordStep: React.FC<ResetPasswordStepProps> = ({
     try {
       await onReset(newPassword);
     } catch (err) {
-      console.error(err);
+      logger.error(err);
     } finally {
       setIsLoading(false);
     }

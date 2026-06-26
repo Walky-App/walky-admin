@@ -1,3 +1,4 @@
+import { logger } from "../../lib/logger";
 import React, { useState } from "react";
 import "./SpaceDetailsModal.css";
 import {
@@ -202,7 +203,7 @@ export const SpaceDetailsModal: React.FC<SpaceDetailsModalProps> = ({
       setSelectedEvent(mappedEvent);
       setEventDetailsModalOpen(true);
     } catch (error) {
-      console.error("Failed to fetch event details for space event:", error);
+      logger.error("Failed to fetch event details for space event:", error);
       // Fallback to minimal data if API fails
       const fallback: EventDetailsData = {
         id: event.id,

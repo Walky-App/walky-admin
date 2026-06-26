@@ -1,3 +1,4 @@
+import { logger } from "../../../../lib/logger";
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../../../../API";
@@ -84,7 +85,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
       setDeleteModalOpen(false);
     },
     onError: (error) => {
-      console.error("Error deleting idea:", error);
+      logger.error("Error deleting idea:", error);
       setToastMessage("Error deleting idea");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -102,7 +103,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
       setFlagModalOpen(false);
     },
     onError: (error) => {
-      console.error("Error flagging idea:", error);
+      logger.error("Error flagging idea:", error);
       setToastMessage("Error flagging idea");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -119,7 +120,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
       setUnflagModalOpen(false);
     },
     onError: (error) => {
-      console.error("Error unflagging idea:", error);
+      logger.error("Error unflagging idea:", error);
       setToastMessage("Error unflagging idea");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -198,7 +199,7 @@ export const IdeasTable: React.FC<IdeasTableProps> = ({
       setSelectedIdea(ideaDetails);
       setDetailsModalOpen(true);
     } catch (error) {
-      console.error("Error fetching idea details:", error);
+      logger.error("Error fetching idea details:", error);
       setToastMessage("Error fetching idea details");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);

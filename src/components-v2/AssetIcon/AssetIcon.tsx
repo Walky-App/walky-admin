@@ -1,3 +1,4 @@
+import { logger } from "../../lib/logger";
 import React from "react";
 import IconMap from "./icons.generated";
 import { AssetIconProps } from "./AssetIcon.types";
@@ -14,7 +15,7 @@ const AssetIcon: React.FC<AssetIconProps> = ({
 }) => {
   const SvgIcon = IconMap[name];
   if (!SvgIcon) {
-    console.warn(`Icon "${name}" not found`);
+    logger.warn(`Icon "${name}" not found`);
     return null;
   }
   return (

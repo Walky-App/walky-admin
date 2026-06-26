@@ -1,3 +1,4 @@
+import { logger } from "../../lib/logger";
 import { useMemo, useRef, useState, useEffect } from "react";
 import { useDashboard } from "../../contexts/DashboardContext";
 import { useActiveUsersData } from "./useActiveUsersData";
@@ -48,7 +49,7 @@ export default function ActiveUsersGuitar() {
       osc.start(now);
       osc.stop(now + 0.6);
     } catch (e) {
-      console.warn("audio not available", e);
+      logger.warn("audio not available", e);
     }
   };
 

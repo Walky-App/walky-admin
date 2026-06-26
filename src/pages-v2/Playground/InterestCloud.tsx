@@ -1,3 +1,4 @@
+import { logger } from "../../lib/logger";
 import * as THREE from "three";
 import { useRef, useState, useMemo, useEffect, Suspense } from "react";
 import type { ComponentProps } from "react";
@@ -434,7 +435,7 @@ function Word({
         />
         <Text
           ref={ref as any}
-          onClick={() => console.log("clicked", item.label)}
+          onClick={() => logger.debug("clicked", item.label)}
           {...fontProps}
           fontSize={fontSize}
           position={[0, -1.5, 0]}

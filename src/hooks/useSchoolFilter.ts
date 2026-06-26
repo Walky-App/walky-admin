@@ -1,3 +1,4 @@
+import { logger } from "../lib/logger";
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSchool } from "../contexts/SchoolContext";
@@ -26,7 +27,7 @@ export const useSchoolFilter = () => {
               ...config.params,
               school_id: schoolId,
             };
-            console.log(
+            logger.debug(
               "📤 Adding school_id to GET request:",
               config.url,
               "school_id:",
@@ -40,7 +41,7 @@ export const useSchoolFilter = () => {
                 ...config.data,
                 school_id: schoolId,
               };
-              console.log(
+              logger.debug(
                 "📤 Adding school_id to",
                 config.method?.toUpperCase(),
                 "request:",
@@ -64,7 +65,7 @@ export const useSchoolFilter = () => {
       previousSchoolIdRef.current !== schoolId;
 
     if (schoolChanged) {
-      console.log(
+      logger.debug(
         "🔄 School changed from",
         previousSchoolIdRef.current,
         "to",

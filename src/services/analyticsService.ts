@@ -3,6 +3,7 @@
  * API service for fetching campus analytics data
  */
 
+import { logger } from "../lib/logger";
 import { apiClient } from '../API'
 import {
   SocialHealthMetrics,
@@ -33,7 +34,7 @@ export const analyticsService = {
       )
       return response.data as unknown as SocialHealthMetrics
     } catch (error) {
-      console.error('Failed to fetch social health metrics:', error)
+      logger.error('Failed to fetch social health metrics:', error)
       throw error
     }
   },
@@ -52,7 +53,7 @@ export const analyticsService = {
       )
       return response.data as unknown as WellbeingMetrics
     } catch (error) {
-      console.error('Failed to fetch wellbeing metrics:', error)
+      logger.error('Failed to fetch wellbeing metrics:', error)
       throw error
     }
   },
@@ -65,7 +66,7 @@ export const analyticsService = {
       const response = await apiClient.api.adminCampusMetricsKpisList(campusId)
       return response.data as unknown as CampusKPIs
     } catch (error) {
-      console.error('Failed to fetch campus KPIs:', error)
+      logger.error('Failed to fetch campus KPIs:', error)
       throw error
     }
   },
@@ -88,7 +89,7 @@ export const analyticsService = {
         timestamp: new Date(entry.timestamp as string),
       })) as ActivityLogEntry[]
     } catch (error) {
-      console.error('Failed to fetch activity timeline:', error)
+      logger.error('Failed to fetch activity timeline:', error)
       throw error
     }
   },
@@ -112,7 +113,7 @@ export const analyticsService = {
         updatedAt: alert.updatedAt ? new Date(alert.updatedAt as string) : undefined,
       })) as CampusAlert[]
     } catch (error) {
-      console.error('Failed to fetch campus alerts:', error)
+      logger.error('Failed to fetch campus alerts:', error)
       throw error
     }
   },
@@ -127,7 +128,7 @@ export const analyticsService = {
     try {
       await apiClient.api.adminCampusAlertsMarkReadPartialUpdate(campusId, alertId)
     } catch (error) {
-      console.error('Failed to mark alert as read:', error)
+      logger.error('Failed to mark alert as read:', error)
       throw error
     }
   },
@@ -139,7 +140,7 @@ export const analyticsService = {
     try {
       await apiClient.api.adminCampusAlertsMarkAllReadPartialUpdate(campusId)
     } catch (error) {
-      console.error('Failed to mark all alerts as read:', error)
+      logger.error('Failed to mark all alerts as read:', error)
       throw error
     }
   },

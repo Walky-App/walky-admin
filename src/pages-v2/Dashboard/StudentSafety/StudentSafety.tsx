@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useEffect, useRef, useState } from "react";
 import {
   keepPreviousData,
@@ -150,7 +151,7 @@ const StudentSafety: React.FC = () => {
 
       setModalReports(transformedReports);
     } catch (error) {
-      console.error("Failed to fetch modal reports:", error);
+      logger.error("Failed to fetch modal reports:", error);
       setModalReports([]);
       setModalTotalCount(0);
     } finally {

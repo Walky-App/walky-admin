@@ -1,3 +1,4 @@
+import { logger } from "../lib/logger";
 import { useState, useEffect } from "react";
 
 interface User {
@@ -27,7 +28,7 @@ export const useAuth = () => {
         setIsAuthenticated(true);
         return;
       } catch (error) {
-        console.error("Failed to parse user data:", error);
+        logger.error("Failed to parse user data:", error);
         localStorage.removeItem("token");
         localStorage.removeItem("user");
       }

@@ -1,3 +1,4 @@
+import { logger } from "../../../../lib/logger";
 import React, { useState, useEffect } from "react";
 import "./EventCalendar.css";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -63,7 +64,7 @@ export const EventCalendar: React.FC = () => {
       setEventDetailsModalOpen(false);
     },
     onError: (error) => {
-      console.error("Error deleting event:", error);
+      logger.error("Error deleting event:", error);
       setToastMessage("Error deleting event");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -82,7 +83,7 @@ export const EventCalendar: React.FC = () => {
       setEventDetailsModalOpen(false);
     },
     onError: (error) => {
-      console.error("Error flagging event:", error);
+      logger.error("Error flagging event:", error);
       setToastMessage("Error flagging event");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -100,7 +101,7 @@ export const EventCalendar: React.FC = () => {
       setEventDetailsModalOpen(false);
     },
     onError: (error) => {
-      console.error("Error unflagging event:", error);
+      logger.error("Error unflagging event:", error);
       setToastMessage("Error unflagging event");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -423,7 +424,7 @@ export const EventCalendar: React.FC = () => {
         setEventDetailsModalOpen(true);
       }
     } catch (error) {
-      console.error("Failed to fetch event details", error);
+      logger.error("Failed to fetch event details", error);
     }
   };
 

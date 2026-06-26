@@ -5,6 +5,7 @@
  * It can be imported into any page for testing or as a reference implementation.
  */
 
+import { logger } from "../../lib/logger";
 import React, { useState } from "react";
 import { FlagUserModal } from "./FlagUserModal";
 
@@ -17,7 +18,7 @@ export const FlagUserModalDemo: React.FC = () => {
     setShowModal(false);
 
     // Here you would typically call your API to flag the user
-    console.log("Flagging user...");
+    logger.debug("Flagging user...");
   };
 
   const handleCancel = () => {

@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useRef, useState } from "react";
 import { SearchInput, Pagination } from "../../../components-v2";
 import { ExportButton } from "../../../components-v2/ExportButton/ExportButton";
@@ -186,7 +187,7 @@ export const BannedStudents: React.FC = () => {
   const paginatedStudents = students;
 
   const handleStudentClick = (student: StudentData) => {
-    console.log("Student clicked:", student);
+    logger.debug("Student clicked:", student);
   };
 
   const handleSortChange = (

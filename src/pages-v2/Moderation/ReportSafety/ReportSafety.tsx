@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -171,7 +172,7 @@ const ReportSafety: React.FC = () => {
       refetch();
     },
     onError: (error) => {
-      console.error("Error banning user:", error);
+      logger.error("Error banning user:", error);
       setToastMessage("Error banning user");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -504,7 +505,7 @@ const ReportSafety: React.FC = () => {
       const res = (await apiClient.api.adminV2ReportsDetail(report.id)) as any;
       setSelectedReportDetails(res.data);
     } catch (error) {
-      console.error("Failed to fetch report details:", error);
+      logger.error("Failed to fetch report details:", error);
     }
   };
 
@@ -1063,7 +1064,7 @@ const ReportSafety: React.FC = () => {
             setIsBanModalOpen(false);
             setBanUserData(null);
           } else {
-            console.error("❌ Cannot ban user: banUserData.id is missing");
+            logger.error("❌ Cannot ban user: banUserData.id is missing");
             setToastMessage("Error: User ID not found");
             setShowToast(true);
             setTimeout(() => setShowToast(false), 3000);

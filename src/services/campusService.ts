@@ -1,3 +1,4 @@
+import { logger } from "../lib/logger";
 import { apiClient } from "../API";
 import { Campus } from "../types/campus";
 
@@ -9,9 +10,9 @@ export const campusService = {
     try {
       const response = await apiClient.api.campusesList();
 
-      console.log("📋 Fetched campuses raw response:", response);
-      console.log("📋 Response data type:", typeof response.data);
-      console.log("📋 Response data:", response.data);
+      logger.debug("📋 Fetched campuses raw response:", response);
+      logger.debug("📋 Response data type:", typeof response.data);
+      logger.debug("📋 Response data:", response.data);
 
       // Handle different response structures
       let campusArray: Campus[] = [];
@@ -20,12 +21,12 @@ export const campusService = {
         if (response.data.data && Array.isArray(response.data.data)) {
           campusArray = response.data.data;
         } else {
-          console.warn("⚠️ Unexpected response structure:", response.data);
+          logger.warn("⚠️ Unexpected response structure:", response.data);
           return [];
         }
       }
 
-      console.log("📋 Campus array to process:", campusArray);
+      logger.debug("📋 Campus array to process:", campusArray);
 
       // Map _id to id for frontend compatibility
       const campuses = campusArray.map((campus) => ({
@@ -33,16 +34,16 @@ export const campusService = {
         id: campus._id || "",
       }));
 
-      console.log("📋 Processed campuses:", campuses);
+      logger.debug("📋 Processed campuses:", campuses);
       return campuses;
     } catch (error) {
-      console.error("Failed to fetch campuses:", error);
+      logger.error("Failed to fetch campuses:", error);
 
       // Handle 404 specifically (no campuses found)
       if (error instanceof Error && "response" in error) {
         const axiosError = error as { response?: { status?: number } };
         if (axiosError.response?.status === 404) {
-          console.log("📋 404 error - returning empty array");
+          logger.debug("📋 404 error - returning empty array");
           return [];
         }
       }
@@ -70,14 +71,14 @@ export const campusService = {
     is_active?: boolean;
   }): Promise<CampusWithId> => {
     try {
-      console.log(
+      logger.debug(
         "📤 Sending campus data to backend:",
         JSON.stringify(data, null, 2)
       );
 
       const response = await apiClient.api.campusesCreate(data);
 
-      console.log("✅ Campus created successfully:", response.data);
+      logger.debug("✅ Campus created successfully:", response.data);
 
       const campus = response.data.data;
 
@@ -90,7 +91,7 @@ export const campusService = {
         id: campus._id || "",
       };
     } catch (error) {
-      console.error("❌ Failed to create campus:", error);
+      logger.error("❌ Failed to create campus:", error);
 
       if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as {
@@ -105,7 +106,7 @@ export const campusService = {
           };
         };
 
-        console.error("🔍 Campus creation error details:", {
+        logger.error("🔍 Campus creation error details:", {
           status: axiosError.response?.status,
           statusText: axiosError.response?.statusText,
           url: axiosError.config?.url,
@@ -114,7 +115,7 @@ export const campusService = {
         });
 
         if (axiosError.response?.status === 400) {
-          console.error(
+          logger.error(
             "💥 Backend validation error (400):",
             axiosError.response.data
           );
@@ -160,20 +161,20 @@ export const campusService = {
         id: campus._id || "",
       };
     } catch (error) {
-      console.error("Failed to update campus:", error);
+      logger.error("Failed to update campus:", error);
       throw error;
     }
   },
 
   delete: async (id: string): Promise<void> => {
     try {
-      console.log("🗑️ Deleting campus with ID:", id);
-      console.log("🔗 Making DELETE request to:", `/campus/${id}`);
+      logger.debug("🗑️ Deleting campus with ID:", id);
+      logger.debug("🔗 Making DELETE request to:", `/campus/${id}`);
 
       const response = await apiClient.api.campusesDelete(id);
-      console.log("✅ Delete response:", response);
+      logger.debug("✅ Delete response:", response);
     } catch (error) {
-      console.error("❌ Failed to delete campus:", error);
+      logger.error("❌ Failed to delete campus:", error);
 
       if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as {
@@ -188,7 +189,7 @@ export const campusService = {
           };
         };
 
-        console.error("🔍 Error details:", {
+        logger.error("🔍 Error details:", {
           status: axiosError.response?.status,
           statusText: axiosError.response?.statusText,
           data: axiosError.response?.data,

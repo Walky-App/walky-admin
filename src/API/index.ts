@@ -1,3 +1,4 @@
+import { logger } from "../lib/logger";
 import axios, {
   InternalAxiosRequestConfig,
   AxiosResponse,
@@ -32,7 +33,7 @@ API.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   } else {
-    console.warn("⚠️ No token found for request:", config.url);
+    logger.warn("⚠️ No token found for request:", config.url);
   }
 
   // Add CSRF token for non-GET requests
@@ -54,7 +55,7 @@ API.interceptors.request.use((config) => {
 // Add response interceptor to log errors
 API.interceptors.response.use(
   (response) => {
-    console.log(
+    logger.debug(
       "✅ API Response:",
       response.config.method?.toUpperCase(),
       response.config.url,
@@ -63,7 +64,7 @@ API.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error(
+    logger.error(
       "❌ API Error:",
       error.config?.method?.toUpperCase(),
       error.config?.url,
@@ -71,7 +72,7 @@ API.interceptors.response.use(
       error.response?.statusText
     );
     if (error.response?.data) {
-      console.error("📄 Error data:", error.response.data);
+      logger.error("📄 Error data:", error.response.data);
     }
 
     // Handle 401 Unauthorized errors
@@ -127,7 +128,7 @@ apiClient.http.instance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     } else {
-      console.warn("⚠️ No token found for request:", config.url);
+      logger.warn("⚠️ No token found for request:", config.url);
     }
 
     // Add CSRF token for non-GET requests
@@ -149,7 +150,7 @@ apiClient.http.instance.interceptors.request.use(
 
 apiClient.http.instance.interceptors.response.use(
   (response: AxiosResponse) => {
-    console.log(
+    logger.debug(
       "✅ API Response:",
       response.config.method?.toUpperCase(),
       response.config.url,
@@ -158,7 +159,7 @@ apiClient.http.instance.interceptors.response.use(
     return response;
   },
   (error: AxiosError) => {
-    console.error(
+    logger.error(
       "❌ API Error:",
       error.config?.method?.toUpperCase(),
       error.config?.url,
@@ -166,7 +167,7 @@ apiClient.http.instance.interceptors.response.use(
       error.response?.statusText
     );
     if (error.response?.data) {
-      console.error("📄 Error data:", error.response.data);
+      logger.error("📄 Error data:", error.response.data);
     }
 
     // Handle 401 Unauthorized errors

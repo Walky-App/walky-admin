@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useState } from "react";
 import {
   AssetIcon,
@@ -129,7 +130,7 @@ export const DeactivatedStudentTable: React.FC<
       setToastMessage("Email copied to clipboard");
       setShowToast(true);
     } catch (error) {
-      console.error("Failed to copy email:", error);
+      logger.error("Failed to copy email:", error);
       setToastMessage("Failed to copy email");
       setShowToast(true);
     }
@@ -478,8 +479,8 @@ export const DeactivatedStudentTable: React.FC<
         visible={profileModalVisible}
         student={selectedStudent as StudentProfileData | null}
         onClose={handleCloseProfile}
-        onBanUser={(student) => console.log("Ban user", student)}
-        onDeactivateUser={(student) => console.log("Deactivate user", student)}
+        onBanUser={(student) => logger.debug("Ban user", student)}
+        onDeactivateUser={(student) => logger.debug("Deactivate user", student)}
         onActivateUser={(student) => {
           activateMutation.mutate(student.id);
           handleCloseProfile();

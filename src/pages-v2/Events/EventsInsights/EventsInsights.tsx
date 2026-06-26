@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useState, useRef } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import "./EventsInsights.css";
@@ -192,7 +193,7 @@ export const EventsInsights: React.FC = () => {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log("Selected School:", interests);
+  logger.debug("Selected School:", interests);
 
   const handleEventClick = async (eventId: string) => {
     try {
@@ -285,7 +286,7 @@ export const EventsInsights: React.FC = () => {
       setSelectedEvent(eventDetails);
       setIsModalOpen(true);
     } catch (error) {
-      console.error("Failed to fetch event details:", error);
+      logger.error("Failed to fetch event details:", error);
     }
   };
 

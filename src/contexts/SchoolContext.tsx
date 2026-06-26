@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import { logger } from "../lib/logger";
 import React, {
   createContext,
   useContext,
@@ -42,7 +43,7 @@ export const SchoolProvider: React.FC<SchoolProviderProps> = ({ children }) => {
       try {
         setSelectedSchoolState(JSON.parse(savedSchool));
       } catch (error) {
-        console.error("Failed to parse saved school:", error);
+        logger.error("Failed to parse saved school:", error);
         localStorage.removeItem("selectedSchool");
       }
     }

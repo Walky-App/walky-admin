@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   CDropdown,
@@ -150,7 +151,7 @@ const CommonInterests: React.FC<CommonInterestsProps> = ({
     });
   }, [datasets, interests, selectedFilter]);
 
-  console.log("CommonInterests modalVisible:", false);
+  logger.debug("CommonInterests modalVisible:", false);
 
   return (
     <div className="common-interests-container">

@@ -1,3 +1,4 @@
+import { logger } from "../../../lib/logger";
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CTooltip } from "@coreui/react";
@@ -171,7 +172,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       setStudentToDeactivate(null);
     },
     onError: (error) => {
-      console.error("Error deactivating student:", error);
+      logger.error("Error deactivating student:", error);
       setToastMessage("Error deactivating student");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -199,7 +200,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       setStudentToBan(null);
     },
     onError: (error) => {
-      console.error("Error banning student:", error);
+      logger.error("Error banning student:", error);
       setToastMessage("Error banning student");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -218,7 +219,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       setStudentToFlag(null);
     },
     onError: (error) => {
-      console.error("Error flagging student:", error);
+      logger.error("Error flagging student:", error);
       setToastMessage("Error flagging student");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -234,7 +235,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       setTimeout(() => setShowToast(false), 3000);
     },
     onError: (error) => {
-      console.error("Error unflagging student:", error);
+      logger.error("Error unflagging student:", error);
       setToastMessage("Error unflagging student");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -255,7 +256,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       setTimeout(() => setShowToast(false), 3000);
     },
     onError: (error) => {
-      console.error("Error unbanning student:", error);
+      logger.error("Error unbanning student:", error);
       setToastMessage("Error unbanning student");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -405,7 +406,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
       setSelectedStudent(fullStudentData);
       setProfileModalVisible(true);
     } catch (error) {
-      console.error("Error fetching student details:", error);
+      logger.error("Error fetching student details:", error);
       setToastMessage("Error fetching student details");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
