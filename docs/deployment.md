@@ -1,107 +1,107 @@
-# Configuração e Deploy — walky-admin
+# Configuration and Deployment — walky-admin
 
-> Como configurar, testar, validar e publicar o painel administrativo Walky
-> (React 19 + CoreUI 5 + Vite 7 + Node ≥ 20). Reflete exatamente o
+> How to configure, test, validate, and publish the Walky admin panel
+> (React 19 + CoreUI 5 + Vite 7 + Node ≥ 20). Mirrors exactly the
 > [`package.json`](../package.json), [`vite.config.ts`](../vite.config.ts),
 > [`vitest.config.ts`](../vitest.config.ts), [`vercel.json`](../vercel.json),
-> [`.env.example`](../.env.example) e os workflows em `.github/workflows/`.
+> [`.env.example`](../.env.example), and the workflows in `.github/workflows/`.
 
-Documentos relacionados: [integrations.md](./integrations.md) · [TESTING.md](./TESTING.md) ·
-Contexto do ecossistema: [`../AI_CONTEXT.md`](../AI_CONTEXT.md)
+Related documents: [integrations.md](./integrations.md) · [TESTING.md](./TESTING.md) ·
+Ecosystem context: [`../AI_CONTEXT.md`](../AI_CONTEXT.md)
 
 ---
 
-## Sumário
+## Table of Contents
 
-- [1. Requisitos](#1-requisitos)
-- [2. Variáveis de ambiente](#2-variáveis-de-ambiente)
-- [3. Scripts do package.json](#3-scripts-do-packagejson)
-- [4. Setup local](#4-setup-local)
+- [1. Requirements](#1-requisitos)
+- [2. Environment variables](#2-environment-variables)
+- [3. package.json scripts](#3-scripts-do-packagejson)
+- [4. Local setup](#4-setup-local)
 - [5. Build (Vite)](#5-build-vite)
-- [6. Testes (Vitest + RTL + MSW)](#6-testes-vitest--rtl--msw)
-- [7. Checagens de qualidade (test IDs, a11y, lint)](#7-checagens-de-qualidade-test-ids-a11y-lint)
+- [6. Testing (Vitest + RTL + MSW)](#6-testes-vitest--rtl--msw)
+- [7. Quality checks (test IDs, a11y, lint)](#7-checagens-de-qualidade-test-ids-a11y-lint)
 - [8. Git hooks (Husky + lint-staged)](#8-git-hooks-husky--lint-staged)
 - [9. CI/CD (GitHub Actions)](#9-cicd-github-actions)
-- [10. Deploy (Vercel)](#10-deploy-vercel)
+- [10. Deployment (Vercel)](#10-deploy-vercel)
 
 ---
 
-## 1. Requisitos
+## 1. Requirements
 
-- **Node ≥ 20** — declarado em `package.json` (`"engines": { "node": ">=20.0.0" }`). Os workflows
-  de CI usam Node 20; o build da Vercel usa Node 22 (`vercel.json` → `NODE_VERSION: "22"`).
-- **Gerenciador de pacotes:** `npm` funciona; a CI e os hooks usam **Yarn** (`cache: yarn`,
-  `yarn install --frozen-lockfile`). A build da Vercel usa `npm run build`.
-- Para regenerar tipos (`generate:api`): repositório **`../walky-backend`** clonado ao lado, com
-  `swagger.json` disponível. Ver [integrations.md §3](./integrations.md#3-swagger-typescript-api-geração-de-tipos).
+- **Node ≥ 20** — declared in `package.json` (`"engines": { "node": ">=20.0.0" }`). The CI workflows
+  use Node 20; the Vercel build uses Node 22 (`vercel.json` → `NODE_VERSION: "22"`).
+- **Package manager:** `npm` works; CI and the hooks use **Yarn** (`cache: yarn`,
+  `yarn install --frozen-lockfile`). The Vercel build uses `npm run build`.
+- To regenerate types (`generate:api`): the **`../walky-backend`** repository cloned alongside, with
+  `swagger.json` available. See [integrations.md §3](./integrations.md#3-swagger-typescript-api-type-generation).
 
 ---
 
-## 2. Variáveis de ambiente
+## 2. Environment variables
 
-Todas prefixadas com `VITE_` (expostas ao client pelo Vite). Fonte: [`.env.example`](../.env.example).
+All prefixed with `VITE_` (exposed to the client by Vite). Source: [`.env.example`](../.env.example).
 
-| Variável | Exemplo | Usada no código? | Descrição |
+| Variable | Example | Used in code? | Description |
 |---|---|---|---|
-| `VITE_API_BASE_URL` | `https://api.walkyapp.com/api` | **Sim** (`src/API/index.ts`, `src/test/handlers.ts`) | Base da API. Fallback `http://localhost:8080/api`. O cliente gerado remove o sufixo `/api`. |
-| `VITE_APP_NAME` | `Walky Admin` | Não encontrada em `src/` | Nome da aplicação (sugestão do `.env.example`). |
-| `VITE_ENV` | `production` | Não encontrada em `src/` | Ambiente lógico: `development` / `staging` / `production`. |
-| `VITE_GOOGLE_MAPS_API_KEY` | `your_key` | **Não** (comentada no `.env.example`) | A chave do Google Maps está **hardcoded** em `CampusBoundary.tsx` — ver [integrations.md §4](./integrations.md#4-google-maps). |
-| `VITE_SENTRY_DSN` | `your_dsn` | **Não** (comentada no `.env.example`) | Sem integração de Sentry no código — ver [integrations.md §5](./integrations.md#5-sentry). |
+| `VITE_API_BASE_URL` | `https://api.walkyapp.com/api` | **Yes** (`src/API/index.ts`, `src/test/handlers.ts`) | API base URL. Fallback `http://localhost:8080/api`. The generated client strips the `/api` suffix. |
+| `VITE_APP_NAME` | `Walky Admin` | Not found in `src/` | Application name (suggested by `.env.example`). |
+| `VITE_ENV` | `production` | Not found in `src/` | Logical environment: `development` / `staging` / `production`. |
+| `VITE_GOOGLE_MAPS_API_KEY` | `your_key` | **No** (commented out in `.env.example`) | The Google Maps key is **hardcoded** in `CampusBoundary.tsx` — see [integrations.md §4](./integrations.md#4-google-maps). |
+| `VITE_SENTRY_DSN` | `your_dsn` | **No** (commented out in `.env.example`) | No Sentry integration in the code — see [integrations.md §5](./integrations.md#5-sentry). |
 
-Valores de `VITE_API_BASE_URL` por ambiente (comentados no `.env.example`):
+`VITE_API_BASE_URL` values per environment (commented out in `.env.example`):
 
-- Produção: `https://api.walkyapp.com/api`
+- Production: `https://api.walkyapp.com/api`
 - Staging: `https://staging.walkyapp.com/api`
-- Local: `http://localhost:8081/api` (ou `8080`)
+- Local: `http://localhost:8081/api` (or `8080`)
 
-> Na prática, a **única** env var de aplicação lida em `src/` é `VITE_API_BASE_URL` (mais o built-in
-> `import.meta.env.DEV`, usado pelo logger). As demais são placeholders no `.env.example`.
+> In practice, the **only** application env var read in `src/` is `VITE_API_BASE_URL` (plus the built-in
+> `import.meta.env.DEV`, used by the logger). The rest are placeholders in `.env.example`.
 
-**Setup local:** copie `.env.example` para `.env` e ajuste `VITE_API_BASE_URL`. Na Vercel, defina as
-env vars em *Project Settings → Environment Variables*.
+**Local setup:** copy `.env.example` to `.env` and adjust `VITE_API_BASE_URL`. On Vercel, define the
+env vars in *Project Settings → Environment Variables*.
 
 ---
 
-## 3. Scripts do package.json
+## 3. package.json scripts
 
-Todos os scripts (fonte: [`package.json`](../package.json)):
+All scripts (source: [`package.json`](../package.json)):
 
-| Script | Comando | O que faz |
+| Script | Command | What it does |
 |---|---|---|
-| `dev` | `vite` | Dev server (Vite) — porta padrão **5173** (ou próxima livre). |
-| `build` | `tsc -b && vite build` | Type-check (`tsc -b`) e build de produção → `dist/`. |
-| `preview` | `vite preview` | Servidor local para pré-visualizar o build de `dist/`. |
-| `lint` | `eslint .` | ESLint em todo o repo (flat config `eslint.config.js`). |
-| `tsc` | `tsc` | Compilador TypeScript (sem build incremental). |
-| `type-check` | `tsc -b` | Type-check incremental (project references), sem emitir. |
-| `clean` | `./clean-build.sh` | Script de limpeza de build. |
-| `test` | `vitest` | Testes em modo watch (Vitest). Use `test -- --run` para rodar uma vez. |
-| `test:ui` | `vitest --ui` | UI interativa do Vitest. |
-| `test:coverage` | `vitest --coverage` | Testes + relatório de cobertura (v8). |
-| `check:testids` | `node scripts/check-test-ids.js` | Valida `data-testid` em `<button>`, `<input>`, `<form>`. |
-| `check:a11y` | `node scripts/check-accessibility.js` | Checagem de acessibilidade dos componentes. |
-| `check:all` | `check:testids && check:a11y && test -- --run` | Roda os três gates de qualidade em sequência. |
-| `generate:api` | `npx swagger-typescript-api generate -p ../walky-backend/swagger.json -o ./src/API --axios --name WalkyAPI.ts` | Gera cliente/tipos a partir do Swagger do backend. Ver [integrations.md §3](./integrations.md#3-swagger-typescript-api-geração-de-tipos). |
-| `generate:icons` | `node scripts/generate-icons.cjs` | Gera componentes React de ícones a partir dos SVGs em `src/assets-v2/svg` → `src/components-v2/AssetIcon/`. |
-| `generate:images` | `node scripts/generate-images.cjs` | Gera componentes de imagem a partir de PNG/JPEG em `src/assets-v2/images` → `src/components-v2/AssetImage/`. |
-| `prepare` | `husky` | Instala os git hooks do Husky (roda no `install`). |
+| `dev` | `vite` | Dev server (Vite) — default port **5173** (or the next free one). |
+| `build` | `tsc -b && vite build` | Type-check (`tsc -b`) and production build → `dist/`. |
+| `preview` | `vite preview` | Local server to preview the `dist/` build. |
+| `lint` | `eslint .` | ESLint across the whole repo (flat config `eslint.config.js`). |
+| `tsc` | `tsc` | TypeScript compiler (no incremental build). |
+| `type-check` | `tsc -b` | Incremental type-check (project references), no emit. |
+| `clean` | `./clean-build.sh` | Build cleanup script. |
+| `test` | `vitest` | Tests in watch mode (Vitest). Use `test -- --run` to run once. |
+| `test:ui` | `vitest --ui` | Interactive Vitest UI. |
+| `test:coverage` | `vitest --coverage` | Tests + coverage report (v8). |
+| `check:testids` | `node scripts/check-test-ids.js` | Validates `data-testid` on `<button>`, `<input>`, `<form>`. |
+| `check:a11y` | `node scripts/check-accessibility.js` | Accessibility check of the components. |
+| `check:all` | `check:testids && check:a11y && test -- --run` | Runs the three quality gates in sequence. |
+| `generate:api` | `npx swagger-typescript-api generate -p ../walky-backend/swagger.json -o ./src/API --axios --name WalkyAPI.ts` | Generates the client/types from the backend Swagger. See [integrations.md §3](./integrations.md#3-swagger-typescript-api-type-generation). |
+| `generate:icons` | `node scripts/generate-icons.cjs` | Generates React icon components from the SVGs in `src/assets-v2/svg` → `src/components-v2/AssetIcon/`. |
+| `generate:images` | `node scripts/generate-images.cjs` | Generates image components from PNG/JPEG in `src/assets-v2/images` → `src/components-v2/AssetImage/`. |
+| `prepare` | `husky` | Installs the Husky git hooks (runs on `install`). |
 
 ---
 
-## 4. Setup local
+## 4. Local setup
 
 ```bash
-# 1. Instalar dependências (Node ≥ 20)
-yarn install          # ou: npm install
+# 1. Install dependencies (Node ≥ 20)
+yarn install          # or: npm install
 
-# 2. Configurar env
-cp .env.example .env  # ajuste VITE_API_BASE_URL
+# 2. Configure env
+cp .env.example .env  # adjust VITE_API_BASE_URL
 
-# 3. (opcional) Regenerar tipos a partir do backend
-yarn generate:api     # requer ../walky-backend/swagger.json
+# 3. (optional) Regenerate types from the backend
+yarn generate:api     # requires ../walky-backend/swagger.json
 
-# 4. Rodar em dev
+# 4. Run in dev
 yarn dev              # http://localhost:5173
 ```
 
@@ -111,101 +111,101 @@ yarn dev              # http://localhost:5173
 
 Config: [`vite.config.ts`](../vite.config.ts).
 
-- **Plugins:** `@vitejs/plugin-react` e `vite-plugin-svgr` (importar SVG como componente via
+- **Plugins:** `@vitejs/plugin-react` and `vite-plugin-svgr` (import SVG as a component via
   `*.svg?react`; `exportType: "default"`, `ref: true`, `titleProp: true`).
-- **esbuild `pure`:** em builds de produção, remove `console.log/info/debug` (mantém `warn`/`error`).
-- **Saída:** `dist/` (`outDir: "dist"`, `emptyOutDir: true`).
-- **Manual chunks** (code splitting para vendor):
+- **esbuild `pure`:** in production builds, removes `console.log/info/debug` (keeps `warn`/`error`).
+- **Output:** `dist/` (`outDir: "dist"`, `emptyOutDir: true`).
+- **Manual chunks** (vendor code splitting):
   - `react-vendor`: `react`, `react-dom`, `react-router-dom`
   - `coreui`: `@coreui/react`, `@coreui/coreui`, `@coreui/icons-react`, `@coreui/icons`
   - `charts`: `recharts`
   - `query`: `@tanstack/react-query`
 
-O `build` roda `tsc -b` antes do `vite build`, então **erros de tipo bloqueiam o build**.
+`build` runs `tsc -b` before `vite build`, so **type errors block the build**.
 
 ---
 
-## 6. Testes (Vitest + RTL + MSW)
+## 6. Testing (Vitest + RTL + MSW)
 
-Config: [`vitest.config.ts`](../vitest.config.ts). Documento dedicado: [TESTING.md](./TESTING.md).
+Config: [`vitest.config.ts`](../vitest.config.ts). Dedicated document: [TESTING.md](./TESTING.md).
 
 - **Runner:** Vitest 4 (`globals: true`, `environment: "jsdom"`, `css: true`).
 - **Setup:** `setupFiles: "./src/test/setup.ts"`.
 - **Alias:** `@` → `./src`.
-- **Biblioteca de componentes:** React Testing Library + `@testing-library/jest-dom` +
+- **Component library:** React Testing Library + `@testing-library/jest-dom` +
   `@testing-library/user-event`.
-- **Mock de rede:** **MSW** (`msw`). O servidor fica em `src/test/server.ts` (`setupServer(...handlers)`),
-  os handlers padrão em `src/test/handlers.ts`, e o ciclo de vida em `src/test/setup.ts`:
-  - `beforeAll`: `server.listen({ onUnhandledRequest: "error" })` — qualquer request sem handler
-    **falha o teste** (nenhum teste toca a rede real).
-  - `afterEach`: `cleanup()`, `server.resetHandlers()`, limpa `localStorage`/`sessionStorage`, `vi.clearAllMocks()`.
+- **Network mocking:** **MSW** (`msw`). The server lives in `src/test/server.ts` (`setupServer(...handlers)`),
+  the default handlers in `src/test/handlers.ts`, and the lifecycle in `src/test/setup.ts`:
+  - `beforeAll`: `server.listen({ onUnhandledRequest: "error" })` — any request without a handler
+    **fails the test** (no test touches the real network).
+  - `afterEach`: `cleanup()`, `server.resetHandlers()`, clears `localStorage`/`sessionStorage`, `vi.clearAllMocks()`.
   - `afterAll`: `server.close()`.
-  - `API_BASE` em `handlers.ts` espelha `src/API/index.ts` (usa `VITE_API_BASE_URL` e remove `/api`).
-- **Polyfills jsdom** (em `setup.ts`): `matchMedia`, `ResizeObserver`, `IntersectionObserver`,
-  `scrollTo`, `scrollIntoView`, `navigator.clipboard` — exigidos por ThemeProvider, recharts,
-  simplebar e componentes CoreUI.
-- **Utilitários:** `src/test/test-utils.tsx` (render com providers) e `src/test/factories.ts`.
+  - `API_BASE` in `handlers.ts` mirrors `src/API/index.ts` (uses `VITE_API_BASE_URL` and strips `/api`).
+- **jsdom polyfills** (in `setup.ts`): `matchMedia`, `ResizeObserver`, `IntersectionObserver`,
+  `scrollTo`, `scrollIntoView`, `navigator.clipboard` — required by ThemeProvider, recharts,
+  simplebar, and CoreUI components.
+- **Utilities:** `src/test/test-utils.tsx` (render with providers) and `src/test/factories.ts`.
 
-**Cobertura** (`test:coverage`): provider `v8`, reporters `text`/`json`/`html`/`lcov`. Exclui
-`node_modules`, `dist`, arquivos de teste/config, `scripts/**`, `src/main.tsx`, o gerado
-`src/API/WalkyAPI.ts`, `*.d.ts` e `**/index.ts`. **Ratchet de thresholds** (só sobe):
+**Coverage** (`test:coverage`): `v8` provider, `text`/`json`/`html`/`lcov` reporters. Excludes
+`node_modules`, `dist`, test/config files, `scripts/**`, `src/main.tsx`, the generated
+`src/API/WalkyAPI.ts`, `*.d.ts`, and `**/index.ts`. **Threshold ratchet** (can only go up):
 `statements 80` · `branches 65` · `functions 78` · `lines 80`.
 
 ```bash
 yarn test               # watch
-yarn test -- --run      # uma execução (usado em CI)
-yarn test:coverage      # com cobertura
-yarn test:ui            # UI do Vitest
+yarn test -- --run      # single run (used in CI)
+yarn test:coverage      # with coverage
+yarn test:ui            # Vitest UI
 ```
 
 ---
 
-## 7. Checagens de qualidade (test IDs, a11y, lint)
+## 7. Quality checks (test IDs, a11y, lint)
 
-- **`check:testids`** (`scripts/check-test-ids.js`): garante que `<button>`, `<input>` e `<form>`
-  tenham `data-testid` (testabilidade). Roda no pre-commit.
-- **`check:a11y`** (`scripts/check-accessibility.js`): valida regras de acessibilidade dos componentes.
-- **`lint`** (`eslint .`): ESLint 9 flat config com `typescript-eslint`, `eslint-plugin-react-hooks`
-  e `eslint-plugin-react-refresh`.
-- **`check:all`**: encadeia `check:testids` + `check:a11y` + `test -- --run`.
+- **`check:testids`** (`scripts/check-test-ids.js`): ensures that `<button>`, `<input>`, and `<form>`
+  have `data-testid` (testability). Runs on pre-commit.
+- **`check:a11y`** (`scripts/check-accessibility.js`): validates the accessibility rules of the components.
+- **`lint`** (`eslint .`): ESLint 9 flat config with `typescript-eslint`, `eslint-plugin-react-hooks`,
+  and `eslint-plugin-react-refresh`.
+- **`check:all`**: chains `check:testids` + `check:a11y` + `test -- --run`.
 
 ---
 
 ## 8. Git hooks (Husky + lint-staged)
 
-- **Husky** instalado via `prepare: "husky"`. Hook em `.husky/pre-commit` executa, na ordem:
-  1. `yarn build` (bloqueia commit se o build falhar),
+- **Husky** installed via `prepare: "husky"`. The hook in `.husky/pre-commit` runs, in order:
+  1. `yarn build` (blocks the commit if the build fails),
   2. `node scripts/check-test-ids.js`,
   3. `node scripts/check-accessibility.js`,
   4. `npx lint-staged`.
-- **lint-staged** (config no `package.json`): para `*.{ts,tsx}` roda
-  `./clean-build.sh` seguido de `eslint --fix` (com `--max-old-space-size=4096`).
+- **lint-staged** (config in `package.json`): for `*.{ts,tsx}` it runs
+  `./clean-build.sh` followed by `eslint --fix` (with `--max-old-space-size=4096`).
 
 ---
 
 ## 9. CI/CD (GitHub Actions)
 
-Dois workflows em `.github/workflows/` (todos com Node 20, cache `yarn`):
+Two workflows in `.github/workflows/` (all on Node 20, `yarn` cache):
 
 ### `test.yml` — "CI"
-- Dispara em `pull_request` e em `push` para `main`/`staging`. Usa `concurrency` para cancelar runs
-  superados no mesmo ref.
-- Instala com `yarn install --frozen-lockfile` (`HUSKY: 0` para pular hooks).
-- **Gate rígido (bloqueia merge):** `yarn test --run` (testes unit/integração).
-- **Gates informativos** (`continue-on-error: true`, não bloqueiam): `type-check`, `lint`,
+- Triggers on `pull_request` and on `push` to `main`/`staging`. Uses `concurrency` to cancel superseded
+  runs on the same ref.
+- Installs with `yarn install --frozen-lockfile` (`HUSKY: 0` to skip hooks).
+- **Hard gate (blocks merge):** `yarn test --run` (unit/integration tests).
+- **Informational gates** (`continue-on-error: true`, non-blocking): `type-check`, `lint`,
   `check:testids`, `check:a11y`.
 
 ### `code-quality.yml` — "Code Quality Check"
-- Dispara em `pull_request` para `main`/`develop`/`staging`/`feat/*` e em `push` para
+- Triggers on `pull_request` to `main`/`develop`/`staging`/`feat/*` and on `push` to
   `main`/`develop`/`staging`.
-- Quatro jobs paralelos: **Test IDs** (`yarn check:testids`), **Accessibility** (`yarn check:a11y`),
+- Four parallel jobs: **Test IDs** (`yarn check:testids`), **Accessibility** (`yarn check:a11y`),
   **Unit Tests** (`yarn test --run --reporter=verbose`), **Lint** (`yarn lint`).
 
-> Não há workflow de deploy nos Actions — o deploy é feito pela integração Git da **Vercel** (§10).
+> There is no deploy workflow in Actions — deployment is handled by the **Vercel** Git integration (§10).
 
 ---
 
-## 10. Deploy (Vercel)
+## 10. Deployment (Vercel)
 
 Config: [`vercel.json`](../vercel.json).
 
@@ -219,19 +219,19 @@ Config: [`vercel.json`](../vercel.json).
 }
 ```
 
-- **Framework:** Vite (detectado automaticamente).
-- **Build:** `npm run build` (→ `tsc -b && vite build`), saída em `dist/`.
-- **Node:** 22 no build da Vercel (o app exige ≥ 20).
-- **SPA routing:** o `rewrites` reescreve **qualquer** rota para `/index.html`, deixando o
-  React Router (v7) resolver a navegação client-side (evita 404 em refresh de rotas internas).
-- **Env vars:** definidas no painel da Vercel (*Project Settings → Environment Variables*) — no
-  mínimo `VITE_API_BASE_URL` para o ambiente correto.
-- **Fluxo:** push no Git → build automática na Vercel → deploy. Preview deployments por PR; produção
-  no branch de produção. Domínio/SSL geridos pela Vercel (ver [README](../README.md#-deploying-to-vercel)).
+- **Framework:** Vite (auto-detected).
+- **Build:** `npm run build` (→ `tsc -b && vite build`), output in `dist/`.
+- **Node:** 22 in the Vercel build (the app requires ≥ 20).
+- **SPA routing:** the `rewrites` rewrite **any** route to `/index.html`, letting
+  React Router (v7) resolve navigation client-side (avoids 404s when refreshing internal routes).
+- **Env vars:** defined in the Vercel dashboard (*Project Settings → Environment Variables*) — at
+  minimum `VITE_API_BASE_URL` for the correct environment.
+- **Flow:** push to Git → automatic build on Vercel → deploy. Preview deployments per PR; production
+  on the production branch. Domain/SSL managed by Vercel (see [README](../README.md#-deploying-to-vercel)).
 
 ```mermaid
 flowchart LR
-  DEV["git push / PR"] --> V["Vercel (integração Git)"]
+  DEV["git push / PR"] --> V["Vercel (Git integration)"]
   V -->|npm run build<br/>Node 22| B["dist/"]
   B --> CDN["Vercel Edge/CDN"]
   CDN -->|rewrites → /index.html| SPA["SPA (React Router)"]

@@ -1,173 +1,175 @@
 # Troubleshooting — walky-admin
 
-> Sintomas → causa → solução, baseados em pistas reais do código. Itens marcados **(inferência)**
-> não estão explicitados no código, mas seguem da configuração observada.
+> Symptom → cause → fix, based on real clues from the code. Items marked **(inference)**
+> are not spelled out in the code but follow from the observed configuration.
 
-## Índice
+## Table of Contents
 
-- [Backend errado / sem dados / CORS](#backend-errado--sem-dados--cors)
-- [401 em loop / redirect para /login](#401-em-loop--redirect-para-login)
-- [403 abrindo modal de conta desativada](#403-abrindo-modal-de-conta-desativada)
-- [Tipos da API desatualizados / faltando método](#tipos-da-api-desatualizados--faltando-método)
-- [Commit bloqueado: testids faltando](#commit-bloqueado-testids-faltando)
-- [Commit bloqueado: acessibilidade](#commit-bloqueado-acessibilidade)
-- [Dark mode não aplica / cores hardcoded](#dark-mode-não-aplica--cores-hardcoded)
-- [`console.*` reprovado no lint](#console-reprovado-no-lint)
-- [Rota some / PermissionGuard redireciona sempre](#rota-some--permissionguard-redireciona-sempre)
-- [Testes falhando: request sem mock / provider ausente](#testes-falhando-request-sem-mock--provider-ausente)
-- [Vercel: 404 ao dar refresh numa rota (SPA routing)](#vercel-404-ao-dar-refresh-numa-rota-spa-routing)
-- [`.env` editado e nada muda](#env-editado-e-nada-muda)
+- [Wrong backend / no data / CORS](#backend-errado--sem-dados--cors)
+- [401 loop / redirect to /login](#401-em-loop--redirect-para-login)
+- [403 opening the deactivated-account modal](#403-abrindo-modal-de-conta-desativada)
+- [Stale API types / missing method](#stale-api-types--missing-method)
+- [Commit blocked: missing testids](#commit-bloqueado-testids-faltando)
+- [Commit blocked: accessibility](#commit-bloqueado-acessibilidade)
+- [Dark mode not applying / hardcoded colors](#dark-mode-not-applying--hardcoded-colors)
+- [`console.*` rejected by lint](#console-reprovado-no-lint)
+- [Route disappears / PermissionGuard always redirects](#rota-some--permissionguard-redireciona-sempre)
+- [Failing tests: unmocked request / missing provider](#testes-falhando-request-sem-mock--provider-ausente)
+- [Vercel: 404 when refreshing a route (SPA routing)](#vercel-404-ao-dar-refresh-numa-rota-spa-routing)
+- [`.env` edited and nothing changes](#env-editado-e-nada-muda)
 
 Cross-links: [conventions.md](./conventions.md) · [development.md](./development.md) · [ai-reference.md](./ai-reference.md)
 
 ---
 
-## Backend errado / sem dados / CORS
+## Wrong backend / no data / CORS
 
-**Sintoma:** telas vazias, erros de rede no console, ou CORS bloqueado.
+**Symptom:** empty screens, network errors in the console, or CORS blocked.
 
-**Causa/solução:** `VITE_API_BASE_URL` (`.env`) determina o backend. O client em `src/API/index.ts`
-faz `baseURL.replace(/\/api\/?$/, "")` para o cliente OpenAPI (rotas admin já trazem `/api`; rotas
-legadas batem na raiz). Por isso **a URL deve terminar em `/api`**. Fallback quando ausente:
+**Cause/fix:** `VITE_API_BASE_URL` (`.env`) determines the backend. The client in `src/API/index.ts`
+does `baseURL.replace(/\/api\/?$/, "")` for the OpenAPI client (admin routes already include `/api`;
+legacy routes hit the root). That's why **the URL must end in `/api`**. Fallback when absent:
 `http://localhost:8080/api`.
 
-- Local: `VITE_API_BASE_URL=http://localhost:8080/api` (ou `:8081/api`) com o `walky-backend` rodando.
-- O `.env` versionado hoje aponta para **staging** (`https://staging.walkyapp.com/api`) — troque para dev local.
-- Reinicie `yarn dev` após editar `.env`.
-- **CORS (inferência):** o Axios usa `withCredentials: true` (cookies para CSRF). Se o backend local
-  não permitir a origem `http://localhost:5173` com credenciais, requests não-GET podem falhar —
-  garanta o CORS do backend liberando essa origem.
+- Local: `VITE_API_BASE_URL=http://localhost:8080/api` (or `:8081/api`) with `walky-backend` running.
+- Your local `.env` (git-ignored) may point to **staging** (`https://staging.walkyapp.com/api`); the
+  committed `.env.example` defaults to **production** (`https://api.walkyapp.com/api`). Switch to your
+  local dev backend during development.
+- Restart `yarn dev` after editing `.env`.
+- **CORS (inference):** Axios uses `withCredentials: true` (cookies for CSRF). If the local backend
+  doesn't allow the origin `http://localhost:5173` with credentials, non-GET requests may fail —
+  make sure the backend's CORS allows that origin.
 
-## 401 em loop / redirect para /login
+## 401 loop / redirect to /login
 
-**Sintoma:** volta para `/login` repetidamente, ou logout inesperado.
+**Symptom:** you keep getting sent back to `/login`, or an unexpected logout.
 
-**Causa:** os interceptors de resposta (`src/API/index.ts`) tratam **401** removendo `localStorage.token`
-e navegando para `/login` (`window.location.href = "/login"`). Auth é lido de `localStorage`
-(`token` + `user`) por `useAuth` (`src/hooks/useAuth.ts`); `AuthGuard` redireciona quem não está autenticado.
+**Cause:** the response interceptors (`src/API/index.ts`) handle **401** by removing `localStorage.token`
+and navigating to `/login` (`window.location.href = "/login"`). Auth is read from `localStorage`
+(`token` + `user`) by `useAuth` (`src/hooks/useAuth.ts`); `AuthGuard` redirects anyone not authenticated.
 
-**Solução:**
-- Token expirado/inválido → refaça login. Não há refresh automático **(inferência: não há lógica de
-  refresh nos interceptors deste repo)**; um 401 sempre desloga.
-- Se o backend local rejeita o token (segredo JWT diferente de staging/prod), gere um token no mesmo
-  backend para onde `VITE_API_BASE_URL` aponta.
-- Estado dessincronizado entre abas: `useAuth` escuta `storage` e `auth:user-updated`; limpar
-  `localStorage` e recarregar resolve estados corrompidos (`user` inválido também dispara logout).
+**Fix:**
+- Expired/invalid token → log in again. There is no automatic refresh **(inference: there is no refresh
+  logic in this repo's interceptors)**; a 401 always logs you out.
+- If the local backend rejects the token (JWT secret different from staging/prod), generate a token on the
+  same backend that `VITE_API_BASE_URL` points to.
+- State out of sync across tabs: `useAuth` listens for `storage` and `auth:user-updated`; clearing
+  `localStorage` and reloading resolves corrupted state (an invalid `user` also triggers logout).
 
-## 403 abrindo modal de conta desativada
+## 403 opening the deactivated-account modal
 
-**Sintoma:** ação retorna 403 e aparece o modal de "conta desativada".
+**Symptom:** an action returns 403 and the "deactivated account" modal appears.
 
-**Causa:** o interceptor só dispara `triggerDeactivatedModal()` quando `error.response.data.code` é
-`ACCOUNT_DEACTIVATED` ou `USER_DEACTIVATED` (`src/API/index.ts` + `src/contexts/DeactivatedUserContext`).
-403 por **falta de permissão** (código diferente) **não** abre o modal.
+**Cause:** the interceptor only fires `triggerDeactivatedModal()` when `error.response.data.code` is
+`ACCOUNT_DEACTIVATED` or `USER_DEACTIVATED` (`src/API/index.ts` + `src/contexts/DeactivatedUserContext`).
+A 403 from **lack of permission** (a different code) does **not** open the modal.
 
-**Solução:** se você não deveria estar desativado, verifique a conta no backend. Se for erro de
-permissão, cheque a role/matriz (ver seção do PermissionGuard).
+**Fix:** if you shouldn't be deactivated, check the account on the backend. If it's a permission error,
+check the role/matrix (see the PermissionGuard section).
 
-## Tipos da API desatualizados / faltando método
+## Stale API types / missing method
 
-**Sintoma:** `apiClient.api.<método>` não existe, ou tipos divergem da resposta real do backend.
+**Symptom:** `apiClient.api.<method>` doesn't exist, or the types diverge from the backend's actual response.
 
-**Causa:** `src/API/WalkyAPI.ts` é **gerado** do Swagger e pode estar velho.
+**Cause:** `src/API/WalkyAPI.ts` is **generated** from Swagger and may be out of date.
 
-**Solução:**
+**Fix:**
 ```bash
-yarn generate:api   # precisa de ../walky-backend/swagger.json atualizado
+yarn generate:api   # needs an up-to-date ../walky-backend/swagger.json
 ```
-Regenere o `swagger.json` no backend primeiro (Swagger em `http://localhost:8081/api-docs/`). Não edite
-os arquivos gerados à mão (`src/API/WalkyAPI.ts`, `Api.ts`, `data-contracts.ts`, `http-client.ts`).
+Regenerate `swagger.json` on the backend first (Swagger at `http://localhost:8081/api-docs/`). Do not
+hand-edit the generated files (`src/API/WalkyAPI.ts`, `Api.ts`, `data-contracts.ts`, `http-client.ts`).
 
-## Commit bloqueado: testids faltando
+## Commit blocked: missing testids
 
-**Sintoma:** pre-commit/CI falha com "Add data-testid to elements".
+**Symptom:** pre-commit/CI fails with "Add data-testid to elements".
 
-**Causa:** `scripts/check-test-ids.js` exige `data-testid` em `<button>`/`<input>`/`<form>` dentro de
-`src/pages-v2` e `src/components-v2`.
+**Cause:** `scripts/check-test-ids.js` requires `data-testid` on `<button>`/`<input>`/`<form>` inside
+`src/pages-v2` and `src/components-v2`.
 
-**Solução:** adicione `data-testid="descritivo"` ao elemento (ou, em componentes que abstraem o
-elemento, passe a prop de testid — ex.: `FilterDropdown testId="..."`). Rode `yarn check:testids`.
+**Fix:** add `data-testid="descriptive"` to the element (or, for components that abstract the element,
+pass the testid prop — e.g., `FilterDropdown testId="..."`). Run `yarn check:testids`.
 
-## Commit bloqueado: acessibilidade
+## Commit blocked: accessibility
 
-**Sintoma:** pre-commit/CI falha com violações WCAG.
+**Symptom:** pre-commit/CI fails with WCAG violations.
 
-**Causa:** `scripts/check-accessibility.js` varre `pages-v2`/`components-v2`/`layout-v2`.
+**Cause:** `scripts/check-accessibility.js` scans `pages-v2`/`components-v2`/`layout-v2`.
 
-**Soluções por regra:**
-- `<img>` → `alt="..."` ou `aria-hidden="true"` (decorativa).
-- `<button>` só-ícone → `aria-label="..."`.
-- `<input>`/`<select>` → `aria-label`, `aria-labelledby` ou `id` (para `<label>`).
+**Fixes by rule:**
+- `<img>` → `alt="..."` or `aria-hidden="true"` (decorative).
+- Icon-only `<button>` → `aria-label="..."`.
+- `<input>`/`<select>` → `aria-label`, `aria-labelledby`, or `id` (for `<label>`).
 - `role="radio"` → `aria-checked`; `role="tab"` → `aria-selected`; landmarks/widgets → `aria-label`.
-- Warning de foco: adicione `:focus`/`:focus-visible` no `.css` do componente.
+- Focus warning: add `:focus`/`:focus-visible` in the component's `.css`.
 
-Rode `yarn check:a11y` para ver arquivo/linha exatos.
+Run `yarn check:a11y` to see the exact file/line.
 
-## Dark mode não aplica / cores hardcoded
+## Dark mode not applying / hardcoded colors
 
-**Sintoma:** componente não muda no tema escuro.
+**Symptom:** a component doesn't change in dark theme.
 
-**Causa:** o dark mode sobrescreve tokens `--v2-*` sob `:root[data-coreui-theme="dark"]` e
-`[data-theme="dark"]` (`src/styles-v2/design-tokens.css`). Cores hardcoded no CSS não herdam.
+**Cause:** dark mode overrides `--v2-*` tokens under `:root[data-coreui-theme="dark"]` and
+`[data-theme="dark"]` (`src/styles-v2/design-tokens.css`). Colors hardcoded in CSS don't inherit.
 
-**Solução:** use as CSS variables `--v2-*` (ex.: `color: var(--v2-text-primary); background: var(--v2-bg-card);`)
-em vez de hex fixos. O `ThemeProvider` (`src/contexts/ThemeProvider.tsx`) seta `data-coreui-theme` e
-`data-theme` no `<html>` e alterna `body.dark-theme`; o `App.tsx` alterna `body.dark-mode`. Se o toggle
-não persiste, verifique `localStorage("theme")`.
+**Fix:** use the `--v2-*` CSS variables (e.g., `color: var(--v2-text-primary); background: var(--v2-bg-card);`)
+instead of fixed hex values. `ThemeProvider` (`src/contexts/ThemeProvider.tsx`) sets `data-coreui-theme`
+and `data-theme` on `<html>` and toggles `body.dark-theme`; `App.tsx` toggles `body.dark-mode`. If the
+toggle doesn't persist, check `localStorage("theme")`.
 
-## `console.*` reprovado no lint
+## `console.*` rejected by lint
 
-**Sintoma:** ESLint falha com `no-console`.
+**Symptom:** ESLint fails with `no-console`.
 
-**Causa:** regra `no-console: 'error'` (`eslint.config.js`) para não vazar PII em produção.
+**Cause:** the `no-console: 'error'` rule (`eslint.config.js`) prevents leaking PII in production.
 
-**Solução:** use `logger` de `src/lib/logger.ts` (`logger.debug/info/warn/error`). `debug`/`info` só
-saem em DEV; o build ainda remove `console.log/info/debug` (`vite.config.ts`). Só `logger.ts` pode usar
+**Fix:** use `logger` from `src/lib/logger.ts` (`logger.debug/info/warn/error`). `debug`/`info` are emitted
+only in DEV; the build still strips `console.log/info/debug` (`vite.config.ts`). Only `logger.ts` may use
 `console` (via `eslint-disable`).
 
-## Rota some / PermissionGuard redireciona sempre
+## Route disappears / PermissionGuard always redirects
 
-**Sintoma:** usuário é jogado para `/dashboard/engagement` ao abrir uma tela; ou item some da sidebar.
+**Symptom:** the user is thrown to `/dashboard/engagement` when opening a screen; or an item disappears from the sidebar.
 
-**Causa:** `PermissionGuard` (`fallback="redirect"`) checa `permissionMatrix[role][resource].read`
-(`src/lib/permissions.ts`). Se a role não tem `read` no `resource`, redireciona para `redirectTo`
-(default `/dashboard/engagement`). Ex.: `moderator`/`walky_internal` têm `noPermissions` em
+**Cause:** `PermissionGuard` (`fallback="redirect"`) checks `permissionMatrix[role][resource].read`
+(`src/lib/permissions.ts`). If the role has no `read` on the `resource`, it redirects to `redirectTo`
+(default `/dashboard/engagement`). E.g., `moderator`/`walky_internal` have `noPermissions` on
 `active_students`, etc.
 
-**Solução:**
-- Confirme a `role` do usuário (`localStorage.user`) e a linha correspondente na `permissionMatrix`.
-- Rota nova sem entrada em `routeResourceMap` é liberada por default (`canAccessRoute` retorna `true`).
-- Ao adicionar rota protegida: inclua o `resource` no union, na matriz de **todas** as roles, e em
-  `routeResourceMap`. Ver [development.md §4](./development.md#4-adicionar-uma-página-nova-rota-lazy--permissionguard).
-- Enquanto `useAuth().isLoading`, os guards renderizam `null` (evita flash) — não confunda com "página em branco".
+**Fix:**
+- Confirm the user's `role` (`localStorage.user`) and the corresponding row in the `permissionMatrix`.
+- A new route with no entry in `routeResourceMap` is allowed by default (`canAccessRoute` returns `true`).
+- When adding a protected route: include the `resource` in the union, in the matrix for **all** roles, and
+  in `routeResourceMap`. See [development.md §4](./development.md#4-adding-a-new-page-lazy-route--permissionguard).
+- While `useAuth().isLoading`, the guards render `null` (avoids flash) — don't confuse this with a "blank page".
 
-## Testes falhando: request sem mock / provider ausente
+## Failing tests: unmocked request / missing provider
 
-**Sintoma:** teste falha por request de rede real, ou hook lança "must be used within a Provider".
+**Symptom:** a test fails on a real network request, or a hook throws "must be used within a Provider".
 
-**Causa:** MSW faz requests sem handler **falharem** de propósito; e contextos exigem seus providers.
+**Cause:** MSW makes unhandled requests **fail** on purpose; and contexts require their providers.
 
-**Solução:**
-- Renderize com `renderWithProviders` (`src/test/test-utils.tsx`) — já monta Theme/School/Campus/
+**Fix:**
+- Render with `renderWithProviders` (`src/test/test-utils.tsx`) — it already mounts Theme/School/Campus/
   Dashboard/DeactivatedUser/Router/QueryClient.
-- Mocke a rota com `server.use(http.get(\`${API_BASE}/...\`, ...))` (`src/test/handlers.ts`,
-  `src/test/server.ts`). Handlers default cobrem casos comuns; override é resetado após cada teste.
-- Auth: semeie `localStorage` (`token`, `user`) antes de renderizar.
+- Mock the route with `server.use(http.get(\`${API_BASE}/...\`, ...))` (`src/test/handlers.ts`,
+  `src/test/server.ts`). The default handlers cover common cases; overrides are reset after each test.
+- Auth: seed `localStorage` (`token`, `user`) before rendering.
 
-## Vercel: 404 ao dar refresh numa rota (SPA routing)
+## Vercel: 404 when refreshing a route (SPA routing)
 
-**Sintoma:** navegar client-side funciona, mas F5 em `/events` dá 404 no deploy.
+**Symptom:** client-side navigation works, but pressing F5 on `/events` returns 404 on the deploy.
 
-**Causa/solução:** SPA precisa de rewrite para `index.html`. Já configurado em `vercel.json`
-(`"rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]`). Se hospedar fora da Vercel
-**(inferência)**, replique esse rewrite/fallback no servidor (ex.: `try_files` no Nginx). O router usa
-`BrowserRouter` (`src/main.tsx`), então paths reais precisam cair no `index.html`.
+**Cause/fix:** an SPA needs a rewrite to `index.html`. Already configured in `vercel.json`
+(`"rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]`). If you host outside Vercel
+**(inference)**, replicate that rewrite/fallback on the server (e.g., `try_files` in Nginx). The router uses
+`BrowserRouter` (`src/main.tsx`), so real paths must resolve to `index.html`.
 
-## `.env` editado e nada muda
+## `.env` edited and nothing changes
 
-**Sintoma:** mudou `VITE_*` mas o app usa o valor antigo.
+**Symptom:** you changed a `VITE_*` value but the app uses the old one.
 
-**Causa:** Vite lê env no boot e só expõe variáveis com prefixo `VITE_`.
+**Cause:** Vite reads env at boot and only exposes variables with the `VITE_` prefix.
 
-**Solução:** reinicie `yarn dev`. Confirme o prefixo `VITE_`. Em produção/preview, rebuilde
-(`yarn build`) — os valores são embutidos no bundle.
+**Fix:** restart `yarn dev`. Confirm the `VITE_` prefix. In production/preview, rebuild
+(`yarn build`) — the values are inlined into the bundle.

@@ -1,62 +1,61 @@
-# Walky Admin — Arquitetura
+# Walky Admin — Architecture
 
-> Como o painel é montado: React Router v7 com rotas lazy, Context + React Query para estado,
-> uma service layer sobre um cliente Axios gerado por Swagger, RBAC com `AuthGuard`/`PermissionGuard`
-> e o design system `layout-v2`. Este documento explica o **fluxo de dados** e o **porquê** de cada
-> decisão.
+> How the panel is assembled: React Router v7 with lazy routes, Context + React Query for state,
+> a service layer over an Axios client generated from Swagger, RBAC with `AuthGuard`/`PermissionGuard`,
+> and the `layout-v2` design system. This document explains the **data flow** and the **why** behind
+> each decision.
 
-## Índice
+## Table of Contents
 
-- [1. Visão macro](#1-visão-macro)
-- [2. Bootstrap e árvore de providers](#2-bootstrap-e-árvore-de-providers)
-- [3. Roteamento (React Router v7 + lazy)](#3-roteamento-react-router-v7--lazy)
-- [4. Camada de dados: Axios gerado + services + React Query](#4-camada-de-dados-axios-gerado--services--react-query)
-- [5. Autenticação e RBAC](#5-autenticação-e-rbac)
-- [6. Multi-tenant: School e Campus](#6-multi-tenant-school-e-campus)
-- [7. Tema e design tokens](#7-tema-e-design-tokens)
-- [8. Tipos gerados por Swagger](#8-tipos-gerados-por-swagger)
-- [9. Fluxo de dados ponta a ponta](#9-fluxo-de-dados-ponta-a-ponta)
-- [10. Decisões e trade-offs](#10-decisões-e-trade-offs)
+- [1. High-level overview](#1-high-level-overview)
+- [2. Bootstrap and provider tree](#2-bootstrap-and-provider-tree)
+- [3. Routing (React Router v7 + lazy)](#3-routing-react-router-v7--lazy)
+- [4. Data layer: generated Axios + services + React Query](#4-data-layer-generated-axios--services--react-query)
+- [5. Authentication and RBAC](#5-authentication-and-rbac)
+- [6. Multi-tenant: School and Campus](#6-multi-tenant-school-and-campus)
+- [7. Theme and design tokens](#7-theme-and-design-tokens)
+- [8. Swagger-generated types](#8-swagger-generated-types)
+- [9. End-to-end data flow](#9-end-to-end-data-flow)
+- [10. Decisions and trade-offs](#10-decisions-and-trade-offs)
 - [Cross-links](#cross-links)
 
 ---
 
-## 1. Visão macro
+## 1. High-level overview
 
 ```mermaid
 flowchart TB
     subgraph Browser["Browser (SPA)"]
         Router["React Router v7<br/>(lazy routes)"]
         Guards["AuthGuard + PermissionGuard"]
-        Pages["pages-v2/* (telas)"]
+        Pages["pages-v2/* (screens)"]
         Layout["layout-v2 (Sidebar + Topbar)"]
         Ctx["Contexts<br/>Theme · School · Campus · Dashboard · DeactivatedUser"]
         RQ["React Query cache"]
         Svc["services/* (userService, campusService, ...)"]
-        Client["apiClient (WalkyAPI.ts, gerado por Swagger)"]
+        Client["apiClient (WalkyAPI.ts, Swagger-generated)"]
         Axios["Axios + interceptors<br/>(token, CSRF, 401/403)"]
     end
-    BE["walky-backend<br/>API REST"]
+    BE["walky-backend<br/>REST API"]
 
     Router --> Guards --> Layout --> Pages
     Pages --> RQ --> Svc --> Client --> Axios --> BE
-    Pages -.lê/escreve.-> Ctx
-    Ctx -.injeta campus_id.-> Axios
+    Pages -.reads/writes.-> Ctx
+    Ctx -.selection read per query.-> Svc
 ```
 
-Princípios:
+Principles:
 
-- **SPA sem estado próprio de servidor** — todo dado vem do backend; React Query é o cache.
-- **Estado = Context + React Query** (sem Redux/Zustand). Context para UI/seleção; React Query para
-  dados remotos.
-- **Contrato tipado do backend** — o cliente HTTP é **gerado** do Swagger, não escrito à mão.
-- **Segurança em duas camadas** — `AuthGuard` (autenticado?) e `PermissionGuard` (pode este
-  recurso?), espelhando a matriz de `lib/permissions.ts`.
+- **SPA with no server state of its own** — all data comes from the backend; React Query is the cache.
+- **State = Context + React Query** (no Redux/Zustand). Context for UI/selection; React Query for
+  remote data.
+- **Typed backend contract** — the HTTP client is **generated** from Swagger, not hand-written.
+- **Two-layer security** — `AuthGuard` (authenticated?) and `PermissionGuard` (can access this
+  resource?), mirroring the matrix in `lib/permissions.ts`.
 
-## 2. Bootstrap e árvore de providers
+## 2. Bootstrap and provider tree
 
-Entry point [`src/main.tsx`](../src/main.tsx). A ordem dos providers importa (dependências de fora
-para dentro):
+Entry point [`src/main.tsx`](../src/main.tsx). Provider order matters (dependencies flow outside-in):
 
 ```mermaid
 flowchart TD
@@ -68,228 +67,233 @@ flowchart TD
     BR --> App["App"]
 ```
 
-- Importa os CSS globais: `@coreui/coreui/dist/css/coreui.min.css` + os `styles-v2/*.css`
+- Imports the global CSS: `@coreui/coreui/dist/css/coreui.min.css` + the `styles-v2/*.css` files
   (`ThemeComponents`, `design-tokens`, `global`).
-- `App.tsx` adiciona: `DeactivatedUserProvider`, o `<Toaster>` do react-hot-toast (estilizado à
-  identidade Walky) e o `<Suspense>` que envolve as rotas lazy.
-- `CampusProvider` e `DashboardProvider` ficam **dentro** de `V2Routes` (só existem na área
-  autenticada), enquanto `School`/`Theme` são globais (envolvem inclusive as telas públicas de
-  login).
+- `App.tsx` adds: `DeactivatedUserProvider`, the react-hot-toast `<Toaster>` (styled to the Walky
+  identity), and the `<Suspense>` that wraps the lazy routes.
+- `CampusProvider` and `DashboardProvider` live **inside** `V2Routes` (they only exist in the
+  authenticated area), whereas `School`/`Theme` are global (they wrap even the public login screens).
 
-## 3. Roteamento (React Router v7 + lazy)
+## 3. Routing (React Router v7 + lazy)
 
-Dois níveis de rotas.
+Two levels of routes.
 
-**Nível 1 — [`src/App.tsx`](../src/App.tsx):** separa rotas **públicas** das **protegidas**.
+**Level 1 — [`src/App.tsx`](../src/App.tsx):** separates **public** routes from **protected** ones.
 
-| Rota | Elemento |
+| Route | Element |
 |------|----------|
 | `/login` | `LoginV2` (lazy) |
 | `/recover-password`, `/auth/otp` | `RecoverPasswordV2` (lazy) |
 | `/force-password-change` | `ForcePasswordChange` (lazy) |
-| `/v2/*` | `V2RedirectHandler` — redireciona paths legados `/v2/...` para a raiz |
-| `/*` | `<AuthGuard><V2Routes/></AuthGuard>` — **tudo o mais exige autenticação** |
+| `/v2/*` | `V2RedirectHandler` — redirects legacy `/v2/...` paths to the root |
+| `/*` | `<AuthGuard><V2Routes/></AuthGuard>` — **everything else requires authentication** |
 
-**Nível 2 — [`src/routes/v2Routes.tsx`](../src/routes/v2Routes.tsx):** dentro de `<LayoutV2/>`
-(shell com sidebar/topbar via `<Outlet/>`), cada tela é **lazy-loaded** e envolvida por um
-`<PermissionGuard resource="..." fallback="redirect">`. O índice `/` redireciona para
+**Level 2 — [`src/routes/v2Routes.tsx`](../src/routes/v2Routes.tsx):** inside `<LayoutV2/>`
+(the shell with sidebar/topbar via `<Outlet/>`), each screen is **lazy-loaded** and wrapped in a
+`<PermissionGuard resource="..." fallback="redirect">`. The index `/` redirects to
 `dashboard/engagement`.
 
-**Por que lazy?** Code-splitting por rota: o bundle inicial carrega só o shell; cada página vira um
-chunk sob demanda (`React.lazy` + `Suspense`). Exports nomeados de barris (`pages-v2/Events`, etc.)
-são desembrulhados via `.then(m => ({ default: m.Name }))`. O Playground (Three.js, pesado) fica
-todo em chunks separados. Complementa o `manualChunks` do Vite (`react-vendor`, `coreui`, `charts`,
-`query`).
+**Why lazy?** Per-route code-splitting: the initial bundle loads only the shell; each page becomes an
+on-demand chunk (`React.lazy` + `Suspense`). Named barrel exports (`pages-v2/Events`, etc.) are
+unwrapped via `.then(m => ({ default: m.Name }))`. The Playground (Three.js, heavy) lives entirely in
+separate chunks. This complements Vite's `manualChunks` (`react-vendor`, `coreui`, `charts`, `query`).
 
-## 4. Camada de dados: Axios gerado + services + React Query
+## 4. Data layer: generated Axios + services + React Query
 
-Três anéis concêntricos.
+Three concentric rings.
 
-### 4.1 Cliente HTTP gerado — `src/API/`
+### 4.1 Generated HTTP client — `src/API/`
 
-- [`src/API/WalkyAPI.ts`](../src/API/WalkyAPI.ts) (~15k linhas) é **gerado** por
-  `swagger-typescript-api` a partir de `../walky-backend/swagger.json`. Contém a classe `Api` (todos
-  os endpoints tipados) e o `HttpClient` (wrapper Axios). É `// @ts-nocheck` — não editar à mão.
-- [`src/API/index.ts`](../src/API/index.ts) instancia e **configura** o cliente:
-  - `baseURL` = `VITE_API_BASE_URL` (default `http://localhost:8080/api`). Como o Swagger mistura
-    rotas com e sem prefixo `/api`, o código **remove o `/api` do baseURL** do `HttpClient`
-    (`baseURL.replace(/\/api\/?$/, "")`) para que rotas admin (`/api/admin/...`) e rotas legadas na
-    raiz (`/ambassadors`) funcionem.
-  - **Interceptor de request:** injeta `Authorization: Bearer <token>` (de `localStorage`) e, em
-    métodos não-GET, adiciona headers CSRF (`X-CSRF-Token` / `X-XSRF-Token`) lidos de cookies
-    (`csrf_cookie_rr`, `XSRF-TOKEN`, ...). `withCredentials: true` para enviar cookies.
-  - **Interceptor de response:** loga via `logger`; em **401** limpa o token e redireciona para
-    `/login`; em **403** com `code` `ACCOUNT_DEACTIVATED`/`USER_DEACTIVATED` dispara o modal de conta
-    desativada (`triggerDeactivatedModal`).
-  - Exporta `apiClient` (a instância de `Api`) — é o que os services usam.
-  - Também exporta um `API` axios "cru" com os mesmos interceptors (compatibilidade).
+- [`src/API/WalkyAPI.ts`](../src/API/WalkyAPI.ts) (~15k lines) is **generated** by
+  `swagger-typescript-api` from `../walky-backend/swagger.json`. It contains the `Api` class (all
+  typed endpoints) and the `HttpClient` (Axios wrapper). It is `// @ts-nocheck` — do not edit by hand.
+- [`src/API/index.ts`](../src/API/index.ts) instantiates and **configures** the client:
+  - `baseURL` = `VITE_API_BASE_URL` (default `http://localhost:8080/api`). Because Swagger mixes
+    routes with and without the `/api` prefix, the code **strips `/api` from the `HttpClient` baseURL**
+    (`baseURL.replace(/\/api\/?$/, "")`) so that admin routes (`/api/admin/...`) and legacy root
+    routes (`/ambassadors`) both work.
+  - **Request interceptor:** injects `Authorization: Bearer <token>` (from `localStorage`) and, on
+    non-GET methods, adds CSRF headers (`X-CSRF-Token` / `X-XSRF-Token`) read from cookies
+    (`csrf_cookie_rr`, `XSRF-TOKEN`, ...). `withCredentials: true` to send cookies.
+  - **Response interceptor:** logs via `logger`; on **401** it clears the token and redirects to
+    `/login`; on **403** with a `code` of `ACCOUNT_DEACTIVATED`/`USER_DEACTIVATED` it triggers the
+    deactivated-account modal (`triggerDeactivatedModal`).
+  - Exports `apiClient` (the `Api` instance) — this is what the services use.
+  - Also exports a "raw" `API` axios instance with the same interceptors (for compatibility).
 
 ### 4.2 Service layer — `src/services/`
 
 12 services (`userService`, `campusService`, `schoolService`, `ambassadorService`,
 `analyticsService`, `reportService`, `rolesService`, `interestService`, `placeService`,
-`placeTypeService`, `lockedUsersService`, `campusSyncService`). Padrão comum:
+`placeTypeService`, `lockedUsersService`, `campusSyncService`). Common pattern:
 
 ```ts
 import { apiClient } from "../API";
 export const userService = {
   getUsers: async (params) => {
     const response = await apiClient.api.adminUsersList({ ... });
-    return /* dados normalizados */;
+    return /* normalized data */;
   },
 };
 ```
 
-Todos importam o **`apiClient` gerado** (nenhum fala com o Axios cru), fazem try/catch, logam via
-`logger`, e **normalizam** a resposta para os tipos que as telas esperam (ex.: mapear `_id → id`,
-achatar paginação, unir tipos gerados com tipos de `src/types/`). É a fronteira entre "forma do
-backend" e "forma da UI".
+They all import the **generated `apiClient`** (none talk to the raw Axios), use try/catch, log via
+`logger`, and **normalize** the response into the types the screens expect (e.g. mapping `_id → id`,
+flattening pagination, merging generated types with types from `src/types/`). This is the boundary
+between "backend shape" and "UI shape".
 
-> **Por que uma service layer se o cliente já é tipado?** Para isolar as telas das idiossincrasias
-> do backend (nomes de endpoint gerados como `adminUsersList`, paginação inconsistente, `_id` vs
-> `id`) e concentrar a normalização em um só lugar.
+> **Why a service layer if the client is already typed?** To insulate the screens from the backend's
+> idiosyncrasies (generated endpoint names like `adminUsersList`, inconsistent pagination, `_id` vs
+> `id`) and to concentrate normalization in one place.
 
 ### 4.3 React Query — `src/lib/queryClient.ts`
 
-`QueryClient` com defaults:
+`QueryClient` with defaults:
 
-- `staleTime: 5min`, `gcTime: 10min` — dado admin muda devagar; evita refetch agressivo.
-- `retry` custom: **não** retenta 4xx (exceto 408); até 3 tentativas caso contrário. Mutations: 1
+- `staleTime: 5min`, `gcTime: 10min` — admin data changes slowly; avoids aggressive refetching.
+- Custom `retry`: does **not** retry 4xx (except 408); up to 3 attempts otherwise. Mutations: 1
   retry.
 - `refetchOnWindowFocus: false`.
 
-Há um `queryKeys` factory (campuses, campus, students, geofences, ambassadors, ...) para chaves
-consistentes.
+There is a `queryKeys` factory (campuses, campus, students, geofences, ambassadors, ...) for
+consistent keys.
 
-## 5. Autenticação e RBAC
+## 5. Authentication and RBAC
 
-### 5.1 Sessão
+### 5.1 Session
 
-Não há AuthProvider global de contexto; a sessão vive em **`localStorage`** (`token`, `user`) e é
-lida pelo hook [`src/hooks/useAuth.ts`](../src/hooks/useAuth.ts):
+There is no global auth context provider; the session lives in **`localStorage`** (`token`, `user`)
+and is read by the [`src/hooks/useAuth.ts`](../src/hooks/useAuth.ts) hook:
 
-- Lê `token` + `user` do storage; expõe `user`, `isAuthenticated`, `isLoading`, `hasRole`,
+- Reads `token` + `user` from storage; exposes `user`, `isAuthenticated`, `isLoading`, `hasRole`,
   `isSuperAdmin/isSchoolAdmin/isCampusAdmin`, `updateUser`.
-- **Sincroniza entre abas**: ouve o evento `storage` do browser e um evento custom
-  `auth:user-updated` (disparado por `updateUser`) — logout em uma aba reflete nas outras.
+- **Syncs across tabs**: listens to the browser `storage` event and a custom `auth:user-updated`
+  event (fired by `updateUser`) — logging out in one tab is reflected in the others.
 
-O **login** ([`pages-v2/LoginV2/LoginV2.tsx`](../src/pages-v2/LoginV2/LoginV2.tsx)) chama
-`apiClient.api.loginCreate({ email, password })` e trata:
+**Login** ([`pages-v2/LoginV2/LoginV2.tsx`](../src/pages-v2/LoginV2/LoginV2.tsx)) calls
+`apiClient.api.loginCreate({ email, password })` and handles:
 
 ```mermaid
 flowchart TD
     L["loginCreate(email,password)"] --> S{status?}
     S -->|"not_verified"| OTP["redirect /auth/otp?step=verify (2FA)"]
-    S -->|ok| R{role é admin?}
-    R -->|não| Err["erro: não é conta admin"]
-    R -->|sim| PC{require_password_change?}
-    PC -->|sim| FPC["redirect /force-password-change"]
-    PC -->|não| Store["salva token + user no localStorage"]
+    S -->|ok| R{role is admin?}
+    R -->|no| Err["error: not an admin account"]
+    R -->|yes| PC{require_password_change?}
+    PC -->|yes| FPC["redirect /force-password-change"]
+    PC -->|no| Store["save token + user in localStorage"]
     Store --> Home["window.location.href = '/' (reload)"]
-    S -->|USER_DEACTIVATED| Modal["modal conta desativada"]
+    S -->|USER_DEACTIVATED| Modal["deactivated-account modal"]
 ```
 
-O role precisa estar em uma allowlist de contas admin; a UI faz `window.location.href = "/"` para
-recarregar e reinicializar o estado de auth.
+The role must be in an allowlist of admin accounts; the UI does `window.location.href = "/"` to
+reload and reinitialize the auth state.
 
 ### 5.2 Guards
 
 ```mermaid
 flowchart LR
-    Route["Rota protegida"] --> AG{AuthGuard<br/>isLoading?}
+    Route["Protected route"] --> AG{AuthGuard<br/>isLoading?}
     AG -->|loading| Null["render null"]
-    AG -->|não autenticado| Login["Navigate /login (guarda origem em state.from)"]
-    AG -->|autenticado| PG{PermissionGuard<br/>can(resource, action)?}
+    AG -->|not authenticated| Login["Navigate /login (saves origin in state.from)"]
+    AG -->|authenticated| PG{PermissionGuard<br/>can(resource, action)?}
     PG -->|loading| Null2["render null"]
-    PG -->|sem permissão + fallback=redirect| Redir["Navigate /dashboard/engagement"]
-    PG -->|sem permissão + fallback=hidden| Hidden["render null"]
-    PG -->|permitido| Page["render tela"]
+    PG -->|no permission + fallback=redirect| Redir["Navigate /dashboard/engagement"]
+    PG -->|no permission + fallback=hidden| Hidden["render null"]
+    PG -->|allowed| Page["render screen"]
 ```
 
-- [`AuthGuard`](../src/components-v2/AuthGuard/AuthGuard.tsx): envolve `V2Routes` (todo o app
-  autenticado). Aguarda `isLoading`, senão redireciona a `/login` preservando `location` em
+- [`AuthGuard`](../src/components-v2/AuthGuard/AuthGuard.tsx): wraps `V2Routes` (the entire
+  authenticated app). Waits on `isLoading`, otherwise redirects to `/login`, preserving `location` in
   `state.from`.
 - [`PermissionGuard`](../src/components-v2/PermissionGuard/PermissionGuard.tsx): props `resource`,
   `action` (default `read`), `fallback` (`'hidden' | 'redirect' | ReactNode`, default `hidden`),
-  `redirectTo` (default `/dashboard/engagement`). Usa `usePermissions().can(...)`. Espera o auth
-  carregar antes de decidir (evita loop de redirect no refresh). Também há um HOC `withPermission()`.
-  - **Como guarda de rota** (em `v2Routes.tsx`): `fallback="redirect"`.
-  - **Como guarda inline** (esconder botão de export/editar): `fallback="hidden"` (default).
+  `redirectTo` (default `/dashboard/engagement`). Uses `usePermissions().can(...)`. Waits for auth to
+  load before deciding (avoids a redirect loop on refresh). There is also a `withPermission()` HOC.
+  - **As a route guard** (in `v2Routes.tsx`): `fallback="redirect"`.
+  - **As an inline guard** (hiding an export/edit button): `fallback="hidden"` (default).
 
-### 5.3 Matriz de permissões
+### 5.3 Permission matrix
 
-[`src/lib/permissions.ts`](../src/lib/permissions.ts) é a fonte da verdade do RBAC no cliente:
+[`src/lib/permissions.ts`](../src/lib/permissions.ts) is the source of truth for client-side RBAC:
 
-- `permissionMatrix: Record<RoleName, Record<PermissionResource, ResourcePermission>>` — para cada
-  um dos 5 roles e ~24 recursos, um objeto com flags `read/create/update/delete/export/manage`.
+- `permissionMatrix: Record<RoleName, Record<PermissionResource, ResourcePermission>>` — for each of
+  the 5 roles and ~24 resources, an object with `read/create/update/delete/export/manage` flags.
 - Helpers: `getPermissions`, `hasPermission`, `canAccessRoute` (+ `routeResourceMap`),
-  `getAssignableRoles`/`canAssignRole` (hierarquia de atribuição), `roleDisplayNameMap`.
-- [`usePermissions`](../src/hooks/usePermissions.ts) expõe `can/canRead/canCreate/canUpdate/
-  canDelete/canExport/canManage/canAccessPath` + flags `isSuperAdmin/...`, memoizados por `userRole`.
+  `getAssignableRoles`/`canAssignRole` (assignment hierarchy), `roleDisplayNameMap`.
+- [`usePermissions`](../src/hooks/usePermissions.ts) exposes `can/canRead/canCreate/canUpdate/
+  canDelete/canExport/canManage/canAccessPath` + `isSuperAdmin/...` flags, memoized by `userRole`.
 
-A **sidebar** ([`layout-v2/SidebarV2`](../src/layout-v2/SidebarV2/SidebarV2.tsx)) usa `canRead(resource)`
-para **filtrar itens de menu**: item sem permissão é removido; submenu vazio some junto do pai.
-Assim, o usuário só vê o que pode acessar — a UI, a rota e a API concordam com a mesma matriz.
+The **sidebar** ([`layout-v2/SidebarV2`](../src/layout-v2/SidebarV2/SidebarV2.tsx)) uses
+`canRead(resource)` to **filter menu items**: an item without permission is removed; an empty submenu
+disappears along with its parent. This way the user only sees what they can access — the UI, the route,
+and the API all agree on the same matrix.
 
-> **Defesa em profundidade:** o RBAC do cliente é UX (esconder/guardar), **não** segurança final. O
-> backend valida cada request (JWT + permissões). O cliente evita mostrar o que não deve, mas a
-> autoridade é do servidor.
+> **Defense in depth:** client-side RBAC is UX (hide/guard), **not** final security. The backend
+> validates every request (JWT + permissions). The client avoids showing what it shouldn't, but the
+> authority belongs to the server.
 
-## 6. Multi-tenant: School e Campus
+## 6. Multi-tenant: School and Campus
 
-A plataforma é multi-tenant por **escola** e **campus**. Dois contexts (persistidos em
-`localStorage`) guardam a seleção atual:
+The platform is multi-tenant by **school** and **campus**. Two contexts (persisted to `localStorage`)
+hold the current selection:
 
 - [`SchoolContext`](../src/contexts/SchoolContext.tsx): `selectedSchool`, `availableSchools`,
-  `setSelectedSchool` (persiste `selectedSchool`), `clearSchoolSelection`.
+  `setSelectedSchool` (persists `selectedSchool`), `clearSchoolSelection`.
 - [`CampusContext`](../src/contexts/CampusContext.tsx): `selectedCampus`, `availableCampuses`,
-  `setSelectedCampus` (persiste `selectedCampus`), `clearCampusSelection`.
+  `setSelectedCampus` (persists `selectedCampus`), `clearCampusSelection`.
 
-Os seletores ficam na **Topbar** ([`layout-v2/TopbarV2`](../src/layout-v2/TopbarV2/TopbarV2.tsx)):
-super_admin escolhe escola/campus; para school_admin/campus_admin a seleção é derivada do seu
+The selectors live in the **Topbar** ([`layout-v2/TopbarV2`](../src/layout-v2/TopbarV2/TopbarV2.tsx)):
+super_admin picks the school/campus; for school_admin/campus_admin the selection is derived from their
 `school_id`/`campus_id`.
 
-**Como o campus entra nas requests:** o hook
-[`useCampusFilter`](../src/hooks/useCampusFilter.ts) registra um **interceptor de request** que
-injeta `campus_id` automaticamente — em `params` para GET e no corpo para POST/PUT/PATCH — sempre que
-há campus selecionado, e faz `eject` do interceptor ao trocar de campus/desmontar. Assim as telas
-não precisam passar `campus_id` manualmente.
+**How the campus reaches the requests:** each query reads the selected campus/school from these
+contexts and passes `campus_id`/`schoolId` **explicitly** as a parameter to the service call.
 
-## 7. Tema e design tokens
+> **Caveat — the filter hooks are not wired up.** The hooks
+> [`useCampusFilter`](../src/hooks/useCampusFilter.ts) and
+> [`useSchoolFilter`](../src/hooks/useSchoolFilter.ts) are **defined but never invoked**: they were
+> designed to register an Axios request interceptor that would automatically inject `campus_id`/
+> `schoolId` (into `params` for GET and into the body for POST/PUT/PATCH). That mechanism is **not
+> active**. In practice, the effective multi-tenant filter is applied by **passing `campus_id`/
+> `schoolId` explicitly per query**, not through a global interceptor.
 
-Sistema de tema **dual** (CoreUI + tokens V2), em [`ThemeProvider`](../src/contexts/ThemeProvider.tsx)
-+ [`ThemeContext`](../src/contexts/ThemeContext.ts) + [`src/theme.ts`](../src/theme.ts):
+## 7. Theme and design tokens
 
-- Estado `isDarkMode` inicializado de `localStorage` (`theme`) ou `prefers-color-scheme`.
-- Ao alternar, aplica no `<html>` `data-coreui-theme` (para o CoreUI) **e** `data-theme`, injeta as
-  cores como CSS vars `--app-*`, e toggla classes no `<body>` (`dark-theme`, e `dark-mode` via
+A **dual** theme system (CoreUI + V2 tokens), in
+[`ThemeProvider`](../src/contexts/ThemeProvider.tsx) + [`ThemeContext`](../src/contexts/ThemeContext.ts)
++ [`src/theme.ts`](../src/theme.ts):
+
+- `isDarkMode` state initialized from `localStorage` (`theme`) or `prefers-color-scheme`.
+- On toggle, it sets `data-coreui-theme` (for CoreUI) **and** `data-theme` on `<html>`, injects the
+  colors as `--app-*` CSS vars, and toggles classes on `<body>` (`dark-theme`, and `dark-mode` via
   `App.tsx`).
-- Tokens de design ficam em `src/styles-v2/`: `design-tokens.css`/`.ts` (auto-gerados do Figma),
-  `theme-variables.css`, `ThemeComponents.css`, `global.css`. A versão `.ts` (`design-tokens.ts`)
-  exporta `spacing`, `cornerRadius`, `colors`, etc., para uso em JS.
+- Design tokens live in `src/styles-v2/`: `design-tokens.css`/`.ts` (auto-generated from Figma),
+  `theme-variables.css`, `ThemeComponents.css`, `global.css`. The `.ts` version (`design-tokens.ts`)
+  exports `spacing`, `cornerRadius`, `colors`, etc., for use in JS.
 
-## 8. Tipos gerados por Swagger
+## 8. Swagger-generated types
 
 ```mermaid
 flowchart LR
-    SW["../walky-backend/swagger.json"] -->|"npm run generate:api"| GEN["src/API/WalkyAPI.ts + data-contracts.ts (gerados)"]
+    SW["../walky-backend/swagger.json"] -->|"npm run generate:api"| GEN["src/API/WalkyAPI.ts + data-contracts.ts (generated)"]
     GEN --> SVC["services/*"]
-    HT["src/types/* (hand-written: extensões, unions, helpers)"] --> SVC
+    HT["src/types/* (hand-written: extensions, unions, helpers)"] --> SVC
     SVC --> Pages["pages-v2/*"]
 ```
 
-- **Gerado:** `src/API/WalkyAPI.ts` (+ arquivos irmãos `Api.ts`, `data-contracts.ts`, `Admin.ts`,
+- **Generated:** `src/API/WalkyAPI.ts` (+ sibling files `Api.ts`, `data-contracts.ts`, `Admin.ts`,
   `Users.ts`, `Auth.ts`, `Analytics.ts`, `Ambassadors.ts`, `Audit.ts`, `Age.ts`, `http-client.ts`) —
-  todos com o header "GENERATED VIA SWAGGER-TYPESCRIPT-API".
+  all carrying the "GENERATED VIA SWAGGER-TYPESCRIPT-API" header.
 - **Hand-written:** `src/types/*` (`ambassador`, `analytics`, `api`, `campus`, `place`, `placeType`,
-  `report`, `role`) — extensões/uniões específicas da UI que os services combinam com os tipos
-  gerados (ex.: `UserWithRoles extends Omit<User, ...>` em `userService.ts`).
+  `report`, `role`) — UI-specific extensions/unions that the services merge with the generated types
+  (e.g. `UserWithRoles extends Omit<User, ...>` in `userService.ts`).
 
-Regenerar após mudança de contrato no backend: `npm run generate:api`.
+Regenerate after a backend contract change: `npm run generate:api`.
 
-## 9. Fluxo de dados ponta a ponta
+## 9. End-to-end data flow
 
-Exemplo: **abrir "Active Students" e exportar**.
+Example: **open "Active Students" and export**.
 
 ```mermaid
 sequenceDiagram
@@ -302,40 +306,41 @@ sequenceDiagram
     participant I as Axios interceptors
     participant B as walky-backend
 
-    U->>R: navega /manage-students/active
-    R->>R: can('active_students','read')? sim
-    R->>P: monta a tela
+    U->>R: navigate /manage-students/active
+    R->>R: can('active_students','read')? yes
+    R->>P: mount the screen
     P->>Q: useQuery(students)
-    Q->>S: userService.getUsers({page,limit,search})
+    Q->>S: userService.getUsers({page,limit,search,campus_id})
+    Note over Q,S: campus_id is passed explicitly per query<br/>(useCampusFilter is defined but not wired up)
     S->>C: apiClient.api.adminUsersList(...)
-    C->>I: request → + Bearer token, + campus_id (useCampusFilter), + CSRF
+    C->>I: request → + Bearer token, + CSRF
     I->>B: GET /api/admin/users?...&campus_id=...
     B-->>I: 200 { users, pagination }
-    I-->>Q: normaliza → cacheia (staleTime 5min)
-    Q-->>P: dados
-    U->>P: clica "Export" (só visível se can('active_students','export'))
-    P->>P: gera CSV/PDF (ExportButton / html2pdf)
+    I-->>Q: normalize → cache (staleTime 5min)
+    Q-->>P: data
+    U->>P: clicks "Export" (only visible if can('active_students','export'))
+    P->>P: generate CSV/PDF (ExportButton / html2pdf)
 ```
 
-Erros: 401 → interceptor limpa token e vai a `/login`; 403 `ACCOUNT_DEACTIVATED` → modal;
-outros 4xx → React Query não retenta.
+Errors: 401 → interceptor clears the token and goes to `/login`; 403 `ACCOUNT_DEACTIVATED` → modal;
+other 4xx → React Query does not retry.
 
-## 10. Decisões e trade-offs
+## 10. Decisions and trade-offs
 
-| Decisão | Porquê | Trade-off |
+| Decision | Why | Trade-off |
 |---------|--------|-----------|
-| **Cliente HTTP gerado por Swagger** | Contrato único com o backend; menos drift; tipos grátis | Arquivo enorme `// @ts-nocheck`; precisa regenerar quando o backend muda |
-| **Service layer sobre o cliente gerado** | Isola telas de nomes/formatos do backend; centraliza normalização (`_id→id`, paginação) | Camada extra de indireção |
-| **Context + React Query (sem Redux/Zustand)** | Estado remoto no React Query; UI/seleção em Context simples; menos boilerplate | Sem store centralizada; seleção multi-tenant espalhada em contexts |
-| **Sessão em localStorage + sync por eventos** | Simples; funciona entre abas; sobrevive a reload | Suscetível a XSS (mitigado por CSP/backend); não é httpOnly |
-| **RBAC no cliente (matriz em `permissions.ts`)** | UX: esconder o que o usuário não pode; guardar rotas | Não é segurança — o backend precisa reforçar tudo |
-| **Rotas lazy + manualChunks** | Bundle inicial pequeno; Playground/Three.js isolados | Suspense/flash de loading por rota |
-| **`campus_id` via interceptor (`useCampusFilter`)** | Multi-tenant transparente; telas não passam campus manualmente | Interceptor global com efeito "mágico"; cuidado ao depurar |
-| **Sufixo `-v2` na camada de UI** | Redesign completo da UI preservando a arquitetura (ver folder-structure) | Coexistência de nomes; `assets/` legado ao lado de `assets-v2/` |
+| **Swagger-generated HTTP client** | Single contract with the backend; less drift; free types | Huge `// @ts-nocheck` file; must be regenerated when the backend changes |
+| **Service layer over the generated client** | Insulates screens from backend names/formats; centralizes normalization (`_id→id`, pagination) | Extra layer of indirection |
+| **Context + React Query (no Redux/Zustand)** | Remote state in React Query; UI/selection in simple Context; less boilerplate | No centralized store; multi-tenant selection spread across contexts |
+| **Session in localStorage + event-based sync** | Simple; works across tabs; survives a reload | Susceptible to XSS (mitigated by CSP/backend); not httpOnly |
+| **Client-side RBAC (matrix in `permissions.ts`)** | UX: hide what the user can't do; guard routes | Not security — the backend must enforce everything |
+| **Lazy routes + manualChunks** | Small initial bundle; Playground/Three.js isolated | Suspense/loading flash per route |
+| **`campus_id` passed explicitly per query** | Multi-tenant filtering that is easy to trace; no hidden global interceptor (the `useCampusFilter`/`useSchoolFilter` interceptor hooks exist but are not wired up) | Each query must remember to pass `campus_id`/`schoolId` |
+| **`-v2` suffix on the UI layer** | Complete UI redesign while preserving the architecture (see folder-structure) | Coexisting names; legacy `assets/` alongside `assets-v2/` |
 
 ---
 
 ## Cross-links
 
-- [Visão geral](./overview.md) — propósito, público, stack.
-- [Estrutura de pastas](./folder-structure.md) — cada diretório e o sufixo `-v2`.
+- [Overview](./overview.md) — purpose, audience, stack.
+- [Folder structure](./folder-structure.md) — each directory and the `-v2` suffix.

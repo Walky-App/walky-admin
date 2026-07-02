@@ -1,47 +1,47 @@
-# Walky Admin — Regras de Negócio
+# Walky Admin — Business Rules
 
-> Regras extraídas **do código** do painel `walky-admin`. Cada regra cita o arquivo que a
-> implementa. Regras que dependem do backend (não confirmáveis só pelo admin) estão marcadas com
-> **(não confirmado no admin)**. O RBAC do admin é de **UX/apresentação**; a autorização efetiva é
-> do backend.
+> Rules extracted **from the code** of the `walky-admin` panel. Each rule cites the file that
+> implements it. Rules that depend on the backend (not verifiable from the admin alone) are marked
+> **(not confirmed in the admin)**. The admin's RBAC is **UX/presentation**; effective authorization
+> lives in the backend.
 >
-> Documento-irmão: [workflows.md](./workflows.md) (fluxos com diagramas).
-> Ver também [overview.md](./overview.md), [integrations.md](./integrations.md).
+> Companion document: [workflows.md](./workflows.md) (flows with diagrams).
+> See also [overview.md](./overview.md), [integrations.md](./integrations.md).
 
-## Índice
+## Table of Contents
 
-- [1. Matriz de permissões por role](#1-matriz-de-permissões-por-role)
-- [2. Hierarquia de atribuição de roles](#2-hierarquia-de-atribuição-de-roles)
-- [3. Regras de moderação e gestão de estudantes](#3-regras-de-moderação-e-gestão-de-estudantes)
-- [4. Nomes de roles e mapeamentos](#4-nomes-de-roles-e-mapeamentos)
-- [5. Regras de sessão e segurança](#5-regras-de-sessão-e-segurança)
-- [6. Regras de campus, geofences e ambassadors](#6-regras-de-campus-geofences-e-ambassadors)
-- [7. Validações de formulários](#7-validações-de-formulários)
-- [8. Proteção de rotas (route → resource)](#8-proteção-de-rotas-route--resource)
+- [1. Permission matrix by role](#1-permission-matrix-by-role)
+- [2. Role assignment hierarchy](#2-role-assignment-hierarchy)
+- [3. Moderation and student management rules](#3-moderation-and-student-management-rules)
+- [4. Role names and mappings](#4-role-names-and-mappings)
+- [5. Session and security rules](#5-session-and-security-rules)
+- [6. Campus, geofence, and ambassador rules](#6-campus-geofence-and-ambassador-rules)
+- [7. Form validations](#7-form-validations)
+- [8. Route protection (route → resource)](#8-route-protection-route--resource)
 - [Cross-links](#cross-links)
 
 ---
 
-## 1. Matriz de permissões por role
+## 1. Permission matrix by role
 
-**Arquivo:** `src/lib/permissions.ts` (`permissionMatrix`). Ações possíveis por recurso:
+**File:** `src/lib/permissions.ts` (`permissionMatrix`). Possible actions per resource:
 `read | create | update | delete | export | manage`.
 
-### Recursos (`PermissionResource`)
+### Resources (`PermissionResource`)
 
 Dashboard: `engagement`, `popular_features`, `user_interactions`, `community`, `student_safety`,
-`student_behavior`. Estudantes: `active_students`, `banned_students`, `inactive_students`,
-`disengaged_students`, `reported_content`. Conteúdo: `events_manager`, `events_insights`,
-`spaces_manager`, `spaces_insights`, `ideas_manager`, `ideas_insights`. Moderação: `report_safety`,
+`student_behavior`. Students: `active_students`, `banned_students`, `inactive_students`,
+`disengaged_students`, `reported_content`. Content: `events_manager`, `events_insights`,
+`spaces_manager`, `spaces_insights`, `ideas_manager`, `ideas_insights`. Moderation: `report_safety`,
 `report_history`. Admin: `campuses`, `ambassadors`, `role_management`.
 
-### Matriz consolidada (o que cada role pode)
+### Consolidated matrix (what each role can do)
 
-Legenda: **R**=read, **C**=create, **U**=update, **D**=delete, **E**=export, **M**=manage, **—**=sem acesso.
+Legend: **R**=read, **C**=create, **U**=update, **D**=delete, **E**=export, **M**=manage, **—**=no access.
 
-| Recurso | super_admin | school_admin | campus_admin | moderator | walky_internal |
+| Resource | super_admin | school_admin | campus_admin | moderator | walky_internal |
 |---|---|---|---|---|---|
-| **Dashboards** (todos os 6) | R, E | R, E | R, E | R | R |
+| **Dashboards** (all 6) | R, E | R, E | R, E | R | R |
 | `active_students` | R, U, E | R, U, E | R, U, E | — | — |
 | `banned_students` | R, U, E | R, U, E | R, U, E | — | — |
 | `inactive_students` | R, U, E | R, U, E | R, U, E | — | — |
@@ -59,100 +59,101 @@ Legenda: **R**=read, **C**=create, **U**=update, **D**=delete, **E**=export, **M
 | `ambassadors` | R, C, D | R, C, D | R, C, D | — | R |
 | `role_management` | R, C, U, D, M | R, C, U, D, M | R, C, U, D, M | — | R |
 
-**Observações do código:**
-- `super_admin`, `school_admin` e `campus_admin` têm **matriz idêntica** em `permissions.ts`. A
-  diferença entre eles é **escopo/tenant** (super vê todas as escolas; school vê sua escola; campus
-  seu campus), imposto no backend e refletido nos seletores de escola/campus (ver §5 e
-  [workflows.md §6](./workflows.md#6-troca-de-escola--campus-multi-tenant)).
-- **`moderator`:** dashboards **sem export**; **sem acesso** à gestão de estudantes e à área Admin;
-  seu poder está em **Moderação** (report_safety/report_history: R, U, E).
-- **`walky_internal`** (funcionário interno, "read-only"): tudo **R** apenas (inclui `campuses`,
-  `ambassadors`, `role_management` em read); **sem** moderação e **sem** gestão de estudantes.
-- Role **desconhecido** → `noPermissions` (tudo `false`), via `getPermissions()`.
+**Notes from the code:**
+- `super_admin`, `school_admin`, and `campus_admin` have an **identical matrix** in `permissions.ts`.
+  The difference between them is **scope/tenant** (super sees all schools; school sees its school;
+  campus sees its campus), enforced in the backend and reflected in the school/campus selectors (see
+  §5 and [workflows.md §6](./workflows.md#6-switching-school--campus-multi-tenant)).
+- **`moderator`:** dashboards **without export**; **no access** to student management or the Admin
+  area; its power is in **Moderation** (report_safety/report_history: R, U, E).
+- **`walky_internal`** (internal employee, "read-only"): everything **R** only (including `campuses`,
+  `ambassadors`, `role_management` in read); **no** moderation and **no** student management.
+- **Unknown** role → `noPermissions` (everything `false`), via `getPermissions()`.
 
-> **(não confirmado no admin)** O backend é a fonte real da autorização; a matriz acima só governa a
-> UI/rotas do admin.
+> **(not confirmed in the admin)** The backend is the real source of authorization; the matrix above
+> only governs the admin's UI/routes.
 
 ---
 
-## 2. Hierarquia de atribuição de roles
+## 2. Role assignment hierarchy
 
-**Arquivo:** `src/lib/permissions.ts` (`roleHierarchy`, `getAssignableRoles`, `canAssignRole`).
+**File:** `src/lib/permissions.ts` (`roleHierarchy`, `getAssignableRoles`, `canAssignRole`).
 
-Quem pode **atribuir** qual role a outros membros (usado no RoleManagement / CreateMemberModal):
+Who can **assign** which role to other members (used in RoleManagement / CreateMemberModal):
 
-| Role do usuário | Pode atribuir |
+| User's role | Can assign |
 |---|---|
 | `super_admin` | `school_admin`, `campus_admin`, `moderator` |
 | `school_admin` | `campus_admin`, `moderator` |
 | `campus_admin` | `moderator` |
-| `moderator` | (nenhum) |
-| `walky_internal` | (nenhum) |
+| `moderator` | (none) |
+| `walky_internal` | (none) |
 
-- Ninguém (via essa hierarquia) pode atribuir `super_admin` ou `walky_internal` — não aparecem em
-  nenhuma lista de `roleHierarchy`.
-- `getAssignableRoleDisplayNames(userRole)` traduz para os nomes de exibição usados nos dropdowns.
+- No one (via this hierarchy) can assign `super_admin` or `walky_internal` — they do not appear in
+  any `roleHierarchy` list.
+- `getAssignableRoleDisplayNames(userRole)` translates to the display names used in the dropdowns.
 - Helpers: `canAssignRole(userRole, targetRole)`, `canAssignRoleByDisplayName(userRole, displayName)`.
 
 ---
 
-## 3. Regras de moderação e gestão de estudantes
+## 3. Moderation and student management rules
 
-**Arquivos:** `src/pages-v2/Campus/components/{StudentTable,BannedStudentTable,DeactivatedStudentTable}.tsx`,
-`src/pages-v2/Moderation/ReportSafety/ReportSafety.tsx`, modais em `src/components-v2/*`,
-`src/services/reportService.ts` (legado — ver nota).
+**Files:** `src/pages-v2/Campus/components/{StudentTable,BannedStudentTable,DeactivatedStudentTable}.tsx`,
+`src/pages-v2/Moderation/ReportSafety/ReportSafety.tsx`, modals in `src/components-v2/*`,
+`src/services/reportService.ts` (legacy — see note).
 
-### 3.1 Ações sobre estudantes (endpoints v2 reais)
+### 3.1 Student actions (actual v2 endpoints)
 
-| Ação | Endpoint | Payload / Regra |
+| Action | Endpoint | Payload / Rule |
 |---|---|---|
-| Ban | `PUT /api/admin/v2/students/{id}/lock-settings` | `{ isLocked:true, lockReason, lockDuration }` — `lockReason` obrigatório (modal bloqueia se vazio) |
+| Ban | `PUT /api/admin/v2/students/{id}/lock-settings` | `{ isLocked:true, lockReason, lockDuration }` — `lockReason` required (modal blocks if empty) |
 | Unban | `POST /api/admin/v2/students/{id}/unban` | — |
-| Deactivate | `DELETE /api/admin/v2/students/{id}` | Estudante é **notificado por email** sobre a desativação (texto do `DeactivateUserModal`). Reversível. |
-| Activate | `POST /api/admin/v2/students/{id}/activate` | Reativa conta desativada |
-| Flag | `POST /api/admin/v2/students/{id}/flag` | `{ reason }` (motivo pode ser auto-gerado a partir do email do admin) |
+| Deactivate | `DELETE /api/admin/v2/students/{id}` | The student is **notified by email** about the deactivation (text from `DeactivateUserModal`). Reversible. |
+| Activate | `POST /api/admin/v2/students/{id}/activate` | Reactivates a deactivated account |
+| Flag | `POST /api/admin/v2/students/{id}/flag` | `{ reason }` (the reason may be auto-generated from the admin's email) |
 | Unflag | `POST /api/admin/v2/students/{id}/unflag` | — |
 
-**Durações de ban** (`BanUserModal`, mapeadas para dias): 1, 3, 7, 14, 30, 90.
-**"Permanent" → 36500 dias** (100 anos). O modal também tem o checkbox **"Resolve all related reports
-for this user"** (default marcado).
+**Ban durations** (`BanUserModal`, mapped to days): 1, 3, 7, 14, 30, 90.
+**"Permanent" → 36500 days** (100 years). The modal also has the **"Resolve all related reports
+for this user"** checkbox (checked by default).
 
-### 3.2 Status de "onboarding incompleto" (ActiveStudents)
+### 3.2 "Incomplete onboarding" status (ActiveStudents)
 
-**Arquivo:** `src/pages-v2/Campus/ActiveStudents/ActiveStudents.tsx`. Um estudante é exibido como
-**`incomplete`** quando `isOnboarded === false` **ou** possui **menos de 3 interesses**
-(`interestCount < 3`). Caso contrário mantém o `status` do backend.
+**File:** `src/pages-v2/Campus/ActiveStudents/ActiveStudents.tsx`. A student is displayed as
+**`incomplete`** when `isOnboarded === false` **or** they have **fewer than 3 interests**
+(`interestCount < 3`). Otherwise the backend's `status` is kept.
 
 ### 3.3 Reports (ReportSafety)
 
-- **Status (labels da tela):** `Pending review`, `Under evaluation`, `Resolved`, `Dismissed`.
-- **Nota obrigatória:** mudar status para **Resolved** ou **Dismissed** exige nota (via
-  `WriteNoteModal`, não-vazia, máx **500** caracteres). A nota (`adminV2ReportsNoteCreate`) é gravada
-  **antes** da mudança de status (`adminV2ReportsStatusPartialUpdate`). Outros status mudam direto.
-- **Flag/Unflag do item denunciado:** roteia por tipo — `Students`/`Events`/`Ideas`/`Spaces`
-  (`adminV2{Tipo}FlagCreate/UnflagCreate`), com update otimista da lista `["reports"]`.
-- **Banir/Desativar a partir do report:** reutiliza `adminV2StudentsLockSettingsUpdate` e
+- **Statuses (screen labels):** `Pending review`, `Under evaluation`, `Resolved`, `Dismissed`.
+- **Mandatory note:** changing a status to **Resolved** or **Dismissed** requires a note (via
+  `WriteNoteModal`, non-empty, max **500** characters). The note (`adminV2ReportsNoteCreate`) is
+  written **before** the status change (`adminV2ReportsStatusPartialUpdate`). Other statuses change
+  directly.
+- **Flag/Unflag the reported item:** routed by type — `Students`/`Events`/`Ideas`/`Spaces`
+  (`adminV2{Type}FlagCreate/UnflagCreate`), with an optimistic update of the `["reports"]` list.
+- **Ban/Deactivate from the report:** reuses `adminV2StudentsLockSettingsUpdate` and
   `adminV2StudentsDelete`.
 
-### 3.4 Camada `reportService` (legado / não usado pela tela)
+### 3.4 `reportService` layer (legacy / not used by the screen)
 
-`src/services/reportService.ts` implementa outra convenção de moderação, apontando para endpoints
-**sem `v2`**: `adminReportsList/Detail/StatusPartialUpdate/BanUserCreate/BulkPartialUpdate`, com
+`src/services/reportService.ts` implements another moderation convention, pointing to endpoints
+**without `v2`**: `adminReportsList/Detail/StatusPartialUpdate/BanUserCreate/BulkPartialUpdate`, with
 - **Status:** `pending | under_review | resolved | dismissed`
 - **Bulk `action`:** `resolve | dismiss | under_review`
-- **Ban a partir do report:** `{ ban_duration, ban_reason, resolve_related_reports }`
-- **removeUser:** `DELETE /api/admin/users/{id}/remove` com `{ reason, sendEmail }` (default `sendEmail=true`)
+- **Ban from the report:** `{ ban_duration, ban_reason, resolve_related_reports }`
+- **removeUser:** `DELETE /api/admin/users/{id}/remove` with `{ reason, sendEmail }` (default `sendEmail=true`)
 
-> A tela `ReportSafety` **não** usa esse service (usa `adminV2Reports*`). Tratado como **camada
-> antiga**; mantido no repo mas fora do caminho ativo de UI.
+> The `ReportSafety` screen does **not** use this service (it uses `adminV2Reports*`). Treated as an
+> **old layer**; kept in the repo but outside the active UI path.
 
 ---
 
-## 4. Nomes de roles e mapeamentos
+## 4. Role names and mappings
 
-**Arquivo:** `src/lib/permissions.ts` (`roleDisplayNameMap`, `displayNameToRoleMap`).
+**File:** `src/lib/permissions.ts` (`roleDisplayNameMap`, `displayNameToRoleMap`).
 
-| Nome interno | Nome de exibição |
+| Internal name | Display name |
 |---|---|
 | `super_admin` | Walky Admin |
 | `school_admin` | School Admin |
@@ -160,128 +161,129 @@ for this user"** (default marcado).
 | `moderator` | Moderator |
 | `walky_internal` | Walky Internal |
 
-**Allowlist de login** (`src/pages-v2/LoginV2/LoginV2.tsx`) — roles aceitos no painel:
+**Login allowlist** (`src/pages-v2/LoginV2/LoginV2.tsx`) — roles accepted into the panel:
 `super_admin`, `walky_internal`, `school_admin`, `campus_admin`, `editor`, `moderator`, `staff`,
-`viewer`. (Note que `editor`, `staff`, `viewer` **passam no login mas não têm entrada na
-`permissionMatrix`** → cairiam em `noPermissions` para todo recurso mapeado.)
+`viewer`. (Note that `editor`, `staff`, `viewer` **pass login but have no entry in the
+`permissionMatrix`** → they would fall into `noPermissions` for every mapped resource.)
 
-**Roles atribuíveis via `rolesService.assignRole`** (`src/services/rolesService.ts`) — o tipo aceita
-um conjunto maior: `super_admin | school_admin | campus_admin | editor | moderator | staff | viewer |
-student | faculty | parent`. **(não confirmado no admin)** quais são de fato válidos é decidido pelo
-backend.
+**Roles assignable via `rolesService.assignRole`** (`src/services/rolesService.ts`) — the type accepts
+a larger set: `super_admin | school_admin | campus_admin | editor | moderator | staff | viewer |
+student | faculty | parent`. **(not confirmed in the admin)** which ones are actually valid is decided
+by the backend.
 
 ---
 
-## 5. Regras de sessão e segurança
+## 5. Session and security rules
 
-**Arquivos:** `src/hooks/useAuth.ts`, `src/API/index.ts`, `src/layout-v2/TopbarV2/TopbarV2.tsx`,
+**Files:** `src/hooks/useAuth.ts`, `src/API/index.ts`, `src/layout-v2/TopbarV2/TopbarV2.tsx`,
 `src/contexts/DeactivatedUserContext.tsx`, `src/pages-v2/ForcePasswordChange/ForcePasswordChange.tsx`.
 
-1. **Fonte de verdade da sessão = `localStorage`** (`token`, `user`). Não há cookie de sessão do lado
-   do app para auth (mas `withCredentials: true` é usado para o cookie de CSRF).
-2. **Token JWT em `Authorization: Bearer`** injetado em toda request pelo interceptor. Se `user` no
-   storage estiver corrompido, `useAuth` limpa `token` + `user`.
-3. **CSRF:** em requests **não-GET** (`!get/head/options`), o interceptor lê o cookie CSRF
-   (`csrf_cookie_rr` → `XSRF-TOKEN` → `csrf_token` → `_csrf`) e o envia em `X-CSRF-Token` **e**
+1. **Session source of truth = `localStorage`** (`token`, `user`). There is no app-side session
+   cookie for auth (but `withCredentials: true` is used for the CSRF cookie).
+2. **JWT token in `Authorization: Bearer`** injected into every request by the interceptor. If `user`
+   in storage is corrupted, `useAuth` clears `token` + `user`.
+3. **CSRF:** on **non-GET** requests (`!get/head/options`), the interceptor reads the CSRF cookie
+   (`csrf_cookie_rr` → `XSRF-TOKEN` → `csrf_token` → `_csrf`) and sends it in `X-CSRF-Token` **and**
    `X-XSRF-Token`.
-4. **401 → logout:** o interceptor remove `token` e redireciona a `/login` (se ainda não estiver lá).
-   **Não há refresh token** no admin: o `refresh_token` do login não é persistido e
-   `POST /api/refresh-token` não é chamado.
-5. **403 `ACCOUNT_DEACTIVATED` / `USER_DEACTIVATED` → modal de conta desativada** (bloqueante). Um
-   403 comum de permissão **não** abre o modal.
-6. **Troca forçada de senha:** se `require_password_change` no login, o usuário é levado a
-   `/force-password-change` (nova senha mín. 8, confirmar igual; `currentPassword` vazio por ser reset
-   forçado). A rota é pública mas a página revalida sessão e a flag.
-7. **Sync entre abas:** logout/login numa aba propaga para outras via evento nativo `storage`
-   (`useAuth`), e na mesma aba via evento custom `auth:user-updated`.
-8. **Logout:** remove `token`+`user` (Topbar) — **não** remove `selectedSchool`/`selectedCampus`. O
-   logout de conta desativada remove também `refreshToken`. Ambos usam `window.location.href = "/login"`.
-9. **RBAC é client-side (UX):** `AuthGuard` protege a área autenticada e `PermissionGuard` cada rota;
-   ações inline somem via `can*()`/`fallback="hidden"`. **A autorização real é do backend.**
-10. **Logout de todos os dispositivos** e **2FA** existem em AdministratorSettings
-    (`adminV2SettingsLogoutAllCreate`, `adminProfile2Fa{Enable,Disable}Create`) — a validação/efeito
-    real é do backend. **(não confirmado no admin)**.
+4. **401 → logout:** the interceptor removes `token` and redirects to `/login` (if not already there).
+   **There is no refresh token** in the admin: the login's `refresh_token` is not persisted and
+   `POST /api/refresh-token` is not called.
+5. **403 `ACCOUNT_DEACTIVATED` / `USER_DEACTIVATED` → deactivated-account modal** (blocking). An
+   ordinary permission 403 does **not** open the modal.
+6. **Forced password change:** if `require_password_change` at login, the user is taken to
+   `/force-password-change` (new password min. 8, confirm matching; `currentPassword` empty because it
+   is a forced reset). The route is public but the page revalidates the session and the flag.
+7. **Cross-tab sync:** logout/login in one tab propagates to others via the native `storage` event
+   (`useAuth`), and within the same tab via the custom `auth:user-updated` event.
+8. **Logout:** removes `token`+`user` (Topbar) — does **not** remove `selectedSchool`/`selectedCampus`.
+   The deactivated-account logout also removes `refreshToken`. Both use `window.location.href = "/login"`.
+9. **RBAC is client-side (UX):** `AuthGuard` protects the authenticated area and `PermissionGuard`
+   protects each route; inline actions disappear via `can*()`/`fallback="hidden"`. **Real authorization
+   lives in the backend.**
+10. **Log out of all devices** and **2FA** exist in AdministratorSettings
+    (`adminV2SettingsLogoutAllCreate`, `adminProfile2Fa{Enable,Disable}Create`) — the real
+    validation/effect lives in the backend. **(not confirmed in the admin)**.
 
-> **Nota (segurança):** a base do cliente gerado remove o sufixo `/api` (`baseURL.replace(/\/api\/?$/, "")`)
-> porque rotas admin já incluem `/api/...` e rotas legadas batem na raiz (`/campus`, `/ambassadors`).
-> Ver [workflows.md §T1](./workflows.md#t1-camada-axios-interceptors-csrf-token).
+> **Note (security):** the generated client's base strips the `/api` suffix (`baseURL.replace(/\/api\/?$/, "")`)
+> because admin routes already include `/api/...` and legacy routes hit the root (`/campus`, `/ambassadors`).
+> See [workflows.md §T1](./workflows.md#t1-axios-layer-interceptors-csrf-token).
 
 ---
 
-## 6. Regras de campus, geofences e ambassadors
+## 6. Campus, geofence, and ambassador rules
 
-**Arquivos:** `src/services/campusService.ts`, `src/services/campusSyncService.ts`,
+**Files:** `src/services/campusService.ts`, `src/services/campusSyncService.ts`,
 `src/pages-v2/CampusBoundary/CampusBoundary.tsx`, `src/services/ambassadorService.ts`,
 `src/components-v2/AddAmbassadorModal/AddAmbassadorModal.tsx`.
 
 ### 6.1 Campus
 
-- **Campos do create/update** (`campusService.create/update`): **obrigatórios** `campus_name`,
-  `phone_number`, `address`, `city`, `state`, `zip`, `time_zone`. **Opcionais** `campus_short_name`,
+- **Create/update fields** (`campusService.create/update`): **required** `campus_name`,
+  `phone_number`, `address`, `city`, `state`, `zip`, `time_zone`. **Optional** `campus_short_name`,
   `image_url`, `ambassador_ids[]`, `coordinates` (Polygon), `dawn_to_dusk[]`, `is_active` (default `true`).
-- **`campusService.getAll`** trata **404 como lista vazia** (sem erro). O create loga detalhes extras
-  em erro 400 (validação do backend).
-- **Mapeamento** `_id → id` para compat com o frontend.
+- **`campusService.getAll`** treats **404 as an empty list** (no error). Create logs extra details on
+  a 400 error (backend validation).
+- **Mapping** `_id → id` for frontend compatibility.
 
 ### 6.2 Geofence (boundary)
 
-- Polígono desenhado no Google Maps precisa de **mínimo 3 vértices**; o anel é **fechado** (primeiro
-  ponto repetido no fim) e salvo como GeoJSON `Polygon` com coords **`[lng, lat]`** (WGS84).
-- **`previewCampusBoundary(id)`** retorna `bounds`, `center`, `area_sqm`/`area_acres`, `search_points`
-  usados no sync de places.
-- **Chave do Google Maps hardcoded** em `CampusBoundary.tsx` (a env `VITE_GOOGLE_MAPS_API_KEY`
-  sugerida no `.env.example` **não é lida**). Ver [integrations.md](./integrations.md).
+- A polygon drawn on Google Maps needs a **minimum of 3 vertices**; the ring is **closed** (first
+  point repeated at the end) and saved as a GeoJSON `Polygon` with coords **`[lng, lat]`** (WGS84).
+- **`previewCampusBoundary(id)`** returns `bounds`, `center`, `area_sqm`/`area_acres`, `search_points`
+  used in the place sync.
+- **Google Maps key hardcoded** in `CampusBoundary.tsx` (the `VITE_GOOGLE_MAPS_API_KEY` env suggested
+  in `.env.example` is **not read**). See [integrations.md](./integrations.md).
 
-### 6.3 Sync de places
+### 6.3 Place sync
 
 `campusSyncService`: `syncCampus`, `syncAllCampuses`, `getSyncLogs`, `getCampusesWithSyncStatus`,
-`previewCampusBoundary`. Status de sync: `completed | failed | partial | in_progress`. Cada sync
-reporta `places_added/updated/removed`, `api_calls_used`, `sync_duration_ms`, `errors[]`.
-**(não confirmado no admin)** as regras de quantas chamadas ao Google Places / limites são do backend.
+`previewCampusBoundary`. Sync status: `completed | failed | partial | in_progress`. Each sync
+reports `places_added/updated/removed`, `api_calls_used`, `sync_duration_ms`, `errors[]`.
+**(not confirmed in the admin)** the rules for how many Google Places calls / limits live in the backend.
 
 ### 6.4 Ambassadors
 
-- Campos do create (`ambassadorService.create`): `name`, `email` (obrigatórios); opcionais `phone`,
+- Create fields (`ambassadorService.create`): `name`, `email` (required); optional `phone`,
   `student_id`, `is_active` (default `true`), `profile_image_url`, `bio`, `graduation_year`, `major`.
-- **`getAll` é fail-soft** (retorna `[]` em erro); as demais operações propagam erro.
-- No `AddAmbassadorModal`, estudantes são buscados por **nome exato**
-  (`adminV2MembersList({ role:"student", exactMatch:true })`) e cada seleção vira um ambassador com
-  `{ name, email, user_id, school_id, campuses_id[] }`.
-- Ações gated por `canCreate("ambassadors")` / `canDelete("ambassadors")`.
+- **`getAll` is fail-soft** (returns `[]` on error); the other operations propagate errors.
+- In `AddAmbassadorModal`, students are searched by **exact name**
+  (`adminV2MembersList({ role:"student", exactMatch:true })`) and each selection becomes an ambassador
+  with `{ name, email, user_id, school_id, campuses_id[] }`.
+- Actions gated by `canCreate("ambassadors")` / `canDelete("ambassadors")`.
 
 ---
 
-## 7. Validações de formulários
+## 7. Form validations
 
-Fonte: componentes de cada tela/modal citados.
+Source: the components of each screen/modal cited.
 
-| Formulário | Campo | Regra | Arquivo |
+| Form | Field | Rule | File |
 |---|---|---|---|
-| Login | email/senha | ambos `required`; role deve estar na allowlist | `LoginV2.tsx` |
-| Force password change | newPassword | `>= 8` chars e `=== confirmPassword` | `ForcePasswordChange.tsx` |
-| Recover — OTP | otp | exatamente **6 dígitos** (`/^\d{6}$/`), trim; máx 6 tentativas (lockout) | `RecoverPasswordV2/VerifyCodeStep.tsx` |
-| Recover — reset | password | `>= 8` e `=== confirm`; erros de backend "Password validation failed" listados | `RecoverPasswordV2/ResetPasswordStep.tsx` |
-| Settings — senha | newPassword | `>= 8`, confirmar igual, `currentPassword` obrigatório | `AdministratorSettings.tsx` |
-| Settings — avatar | avatar | imagem, máx **5MB** | `AdministratorSettings.tsx` |
-| Ban user | reason | **obrigatório** (botão desabilitado se vazio); duração default "1 Day" | `BanUserModal.tsx` |
-| Write note (report) | note | não-vazia; `maxCharacters` **500** | `WriteNoteModal.tsx` |
-| Create member | firstName, lastName, email, role | todos obrigatórios; email formato; role filtrado por hierarquia | `CreateMemberModal.tsx` |
-| Campus | campus_name, phone_number, address, city, state, zip, time_zone | obrigatórios | `campusService.ts` / form da página |
-| Ambassador | name, email | obrigatórios | `ambassadorService.ts` / `AddAmbassadorModal.tsx` |
+| Login | email/password | both `required`; role must be in the allowlist | `LoginV2.tsx` |
+| Force password change | newPassword | `>= 8` chars and `=== confirmPassword` | `ForcePasswordChange.tsx` |
+| Recover — OTP | otp | exactly **6 digits** (`/^\d{6}$/`), trimmed; max 6 attempts (lockout) | `RecoverPasswordV2/VerifyCodeStep.tsx` |
+| Recover — reset | password | `>= 8` and `=== confirm`; backend "Password validation failed" errors listed | `RecoverPasswordV2/ResetPasswordStep.tsx` |
+| Settings — password | newPassword | `>= 8`, confirm matching, `currentPassword` required | `AdministratorSettings.tsx` |
+| Settings — avatar | avatar | image, max **5MB** | `AdministratorSettings.tsx` |
+| Ban user | reason | **required** (button disabled if empty); default duration "1 Day" | `BanUserModal.tsx` |
+| Write note (report) | note | non-empty; `maxCharacters` **500** | `WriteNoteModal.tsx` |
+| Create member | firstName, lastName, email, role | all required; email format; role filtered by hierarchy | `CreateMemberModal.tsx` |
+| Campus | campus_name, phone_number, address, city, state, zip, time_zone | required | `campusService.ts` / page form |
+| Ambassador | name, email | required | `ambassadorService.ts` / `AddAmbassadorModal.tsx` |
 
-> Muitas validações são **duplicadas no backend** — o admin faz a validação de UX; o backend rejeita
-> definitivamente. **(não confirmado no admin)** os limites exatos do backend (ex.: política de senha).
+> Many validations are **duplicated in the backend** — the admin does the UX validation; the backend
+> rejects definitively. **(not confirmed in the admin)** the exact backend limits (e.g., password policy).
 
 ---
 
-## 8. Proteção de rotas (route → resource)
+## 8. Route protection (route → resource)
 
-**Arquivo:** `src/lib/permissions.ts` (`routeResourceMap`, `canAccessRoute`) + `src/routes/v2Routes.tsx`.
+**File:** `src/lib/permissions.ts` (`routeResourceMap`, `canAccessRoute`) + `src/routes/v2Routes.tsx`.
 
-Cada rota mapeada a um recurso é protegida por `PermissionGuard` com `action = 'read'`
+Each route mapped to a resource is protected by `PermissionGuard` with `action = 'read'`
 (`fallback="redirect"` → `/dashboard/engagement`).
 
-| Rota | Recurso |
+| Route | Resource |
 |---|---|
 | `/dashboard/engagement` | `engagement` |
 | `/dashboard/popular-features` | `popular_features` |
@@ -299,24 +301,24 @@ Cada rota mapeada a um recurso é protegida por `PermissionGuard` com `action = 
 | `/report-safety` · `/report-history` | `report_safety` · `report_history` |
 | `/admin/campuses` · `/admin/ambassadors` · `/admin/role-management` | `campuses` · `ambassadors` · `role_management` |
 
-**Regras de `canAccessRoute`:**
-- Rota **sem** mapeamento → **permitida por padrão** (ex.: `/admin/settings` — sem `PermissionGuard`
-  no roteador; qualquer admin autenticado acessa).
-- Rota mapeada → exige `hasPermission(role, resource, 'read')`.
-- `/manage-students/deactivated` mapeia para o recurso **`inactive_students`** (nome interno difere
-  do caminho "deactivated").
-- Rotas do **Playground** (14 visualizações) e o `*` (404) não têm guard de permissão.
-- Redirects legados: `/campuses`, `/ambassadors`, `/role-management` → `/admin/...`.
+**`canAccessRoute` rules:**
+- Route **without** a mapping → **allowed by default** (e.g., `/admin/settings` — no `PermissionGuard`
+  in the router; any authenticated admin can access it).
+- Mapped route → requires `hasPermission(role, resource, 'read')`.
+- `/manage-students/deactivated` maps to the **`inactive_students`** resource (the internal name
+  differs from the "deactivated" path).
+- **Playground** routes (14 views) and the `*` (404) have no permission guard.
+- Legacy redirects: `/campuses`, `/ambassadors`, `/role-management` → `/admin/...`.
 
 ---
 
 ## Cross-links
 
-- [workflows.md](./workflows.md) — fluxos de ponta a ponta com diagramas Mermaid.
-- [overview.md](./overview.md) — propósito, stack, público-alvo, env vars.
-- [integrations.md](./integrations.md) — camada de API e integrações (Google Maps, etc.).
-- [conventions.md](./conventions.md) — convenções de código.
-- Controllers do backend:
+- [workflows.md](./workflows.md) — end-to-end flows with Mermaid diagrams.
+- [overview.md](./overview.md) — purpose, stack, audience, env vars.
+- [integrations.md](./integrations.md) — API layer and integrations (Google Maps, etc.).
+- [conventions.md](./conventions.md) — code conventions.
+- Backend controllers:
   [admin/admin-students-controller.md](./admin/admin-students-controller.md),
   [admin/admin-reports-controller.md](./admin/admin-reports-controller.md),
   [admin/admin-settings-controller.md](./admin/admin-settings-controller.md),

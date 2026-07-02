@@ -1,61 +1,61 @@
-# Convenções — walky-admin
+# Conventions — walky-admin
 
-> Padrões **reais** do painel administrativo Walky (React 19 + CoreUI 5 + Vite 7).
-> Todos os exemplos abaixo são trechos verdadeiros do código-fonte. Cite sempre paths
-> absolutos ao referenciar arquivos.
+> **Real** patterns of the Walky administrative dashboard (React 19 + CoreUI 5 + Vite 7).
+> All examples below are genuine snippets from the source code. Always cite absolute
+> paths when referencing files.
 
-## Índice
+## Table of Contents
 
-- [1. O sufixo `-v2`](#1-o-sufixo--v2)
-- [2. Nomenclatura de arquivos e símbolos](#2-nomenclatura-de-arquivos-e-símbolos)
-- [3. Componente: pasta `.tsx` + `.css` namespaced](#3-componente-pasta-tsx--css-namespaced)
-- [4. `data-testid` obrigatório (`check:testids`)](#4-data-testid-obrigatório-checktestids)
-- [5. Acessibilidade (`check:a11y`)](#5-acessibilidade-checka11y)
+- [1. The `-v2` suffix](#1-the--v2-suffix)
+- [2. File and symbol naming](#2-file-and-symbol-naming)
+- [3. Component: folder with `.tsx` + namespaced `.css`](#3-component-folder-with-tsx--namespaced-css)
+- [4. Required `data-testid` (`check:testids`)](#4-required-data-testid-checktestids)
+- [5. Accessibility (`check:a11y`)](#5-accessibility-checka11y)
 - [6. Barrel exports (`index.ts`)](#6-barrel-exports-indexts)
-- [7. Camada de services](#7-camada-de-services)
+- [7. Services layer](#7-services-layer)
 - [8. React Query](#8-react-query)
 - [9. Design tokens (CSS variables) + dark mode](#9-design-tokens-css-variables--dark-mode)
-- [10. `PermissionGuard` / `AuthGuard` em rotas](#10-permissionguard--authguard-em-rotas)
-- [11. Logging (nunca `console.*` direto)](#11-logging-nunca-console-direto)
+- [10. `PermissionGuard` / `AuthGuard` on routes](#10-permissionguard--authguard-on-routes)
+- [11. Logging (never `console.*` directly)](#11-logging-never-console-directly)
 
 Cross-links: [development.md](./development.md) · [troubleshooting.md](./troubleshooting.md) · [ai-reference.md](./ai-reference.md)
 
 ---
 
-## 1. O sufixo `-v2`
+## 1. The `-v2` suffix
 
-O app foi migrado para um novo design system. **O código novo vive em pastas com sufixo `-v2`**;
-o código legado (sem sufixo) está em processo de descontinuação. Ao criar algo novo, use sempre a
-variante `-v2`.
+The app was migrated to a new design system. **New code lives in folders with the `-v2` suffix**;
+legacy code (without the suffix) is being phased out. When creating something new, always use the
+`-v2` variant.
 
-| Legado | Atual (usar) |
+| Legacy | Current (use this) |
 |--------|--------------|
 | `src/components/` | `src/components-v2/` |
 | `src/pages/`, `src/views/` | `src/pages-v2/` |
 | `src/layout/` | `src/layout-v2/` |
 | `src/assets/` | `src/assets-v2/` |
 | `src/styles/` | `src/styles-v2/` |
-| rotas antigas | `src/routes/v2Routes.tsx` |
+| old routes | `src/routes/v2Routes.tsx` |
 
-O `App.tsx` monta `V2Routes` como rota default (`/*`) e redireciona paths antigos `/v2/*` para a raiz
-(`src/App.tsx`). As checagens de qualidade (`scripts/check-test-ids.js`, `scripts/check-accessibility.js`)
-**só varrem** `src/pages-v2`, `src/components-v2` e `src/layout-v2`.
+`App.tsx` mounts `V2Routes` as the default route (`/*`) and redirects old `/v2/*` paths to the root
+(`src/App.tsx`). The quality checks (`scripts/check-test-ids.js`, `scripts/check-accessibility.js`)
+**only scan** `src/pages-v2`, `src/components-v2`, and `src/layout-v2`.
 
-## 2. Nomenclatura de arquivos e símbolos
+## 2. File and symbol naming
 
-- **Componentes/páginas**: `PascalCase`. A pasta tem o mesmo nome do componente:
+- **Components/pages**: `PascalCase`. The folder has the same name as the component:
   `src/components-v2/Chip/Chip.tsx`, `src/pages-v2/Events/EventsManager/EventsManager.tsx`.
-- **CSS pareado**: mesmo nome do componente — `Chip.tsx` → `Chip.css`.
-- **Barrel**: cada pasta tem um `index.ts` que reexporta.
-- **Hooks**: `camelCase` com prefixo `use` — `src/hooks/useAuth.ts`, `useDebounce.ts`.
-- **Services**: `camelCase` + sufixo `Service` — `src/services/userService.ts`, `campusService.ts`.
-- **Testes**: um arquivo por fonte, ao lado — `Foo.tsx` → `Foo.test.tsx` (ver [development.md](./development.md#testes)).
-- **Classes CSS**: `kebab-case` prefixado pelo nome do componente (ver seção 3).
+- **Paired CSS**: same name as the component — `Chip.tsx` → `Chip.css`.
+- **Barrel**: each folder has an `index.ts` that re-exports.
+- **Hooks**: `camelCase` with a `use` prefix — `src/hooks/useAuth.ts`, `useDebounce.ts`.
+- **Services**: `camelCase` + `Service` suffix — `src/services/userService.ts`, `campusService.ts`.
+- **Tests**: one file per source, alongside it — `Foo.tsx` → `Foo.test.tsx` (see [development.md](./development.md#testes)).
+- **CSS classes**: `kebab-case` prefixed with the component name (see section 3).
 
-## 3. Componente: pasta `.tsx` + `.css` namespaced
+## 3. Component: folder with `.tsx` + namespaced `.css`
 
-Cada componente é uma pasta com três arquivos: o `.tsx`, o `.css` de mesmo nome e o `index.ts`.
-Não há CSS Modules; o isolamento é feito por **convenção de prefixo** nas classes.
+Each component is a folder with three files: the `.tsx`, the `.css` of the same name, and the
+`index.ts`. There are no CSS Modules; isolation is done by a **prefix convention** on the classes.
 
 ```
 src/components-v2/Chip/
@@ -64,7 +64,7 @@ src/components-v2/Chip/
 └── index.ts      # barrel
 ```
 
-O `.tsx` importa o `.css` diretamente e todas as classes começam com o nome do componente:
+The `.tsx` imports the `.css` directly and every class begins with the component name:
 
 ```tsx
 // src/components-v2/Chip/Chip.tsx
@@ -86,15 +86,15 @@ export const Chip: React.FC<ChipProps> = ({ value, type, className = "" }) => {
 .chip-badge__label { display: block; white-space: pre-line; }
 ```
 
-Páginas seguem o mesmo padrão: `EventsManager.tsx` importa `./EventsManager.css` e usa classes
-`events-manager-*` (`src/pages-v2/Events/EventsManager/`). Sub-componentes de uma página moram em
-`components/` dentro da pasta da feature (ex.: `src/pages-v2/Events/components/EventTable/`).
+Pages follow the same pattern: `EventsManager.tsx` imports `./EventsManager.css` and uses
+`events-manager-*` classes (`src/pages-v2/Events/EventsManager/`). Sub-components of a page live in
+`components/` inside the feature folder (e.g., `src/pages-v2/Events/components/EventTable/`).
 
-## 4. `data-testid` obrigatório (`check:testids`)
+## 4. Required `data-testid` (`check:testids`)
 
-**Todo `<button>`, `<input>` e `<form>`** em `pages-v2`/`components-v2` precisa de `data-testid`.
-O script `scripts/check-test-ids.js` roda no pre-commit e no CI (`.github/workflows/code-quality.yml`)
-e **bloqueia** o commit se faltar.
+**Every `<button>`, `<input>`, and `<form>`** in `pages-v2`/`components-v2` needs a `data-testid`.
+The `scripts/check-test-ids.js` script runs on pre-commit and in CI (`.github/workflows/code-quality.yml`)
+and **blocks** the commit if one is missing.
 
 ```tsx
 // src/pages-v2/Events/EventsManager/EventsManager.tsx
@@ -107,24 +107,24 @@ e **bloqueia** o commit se faltar.
 </button>
 ```
 
-Componentes de UI compartilhados expõem props para propagar o testid ao elemento interativo interno
-(ex.: `FilterDropdown` recebe `testId="event-type-filter"`). Nos testes, prefira consultar por
-role/label/testid — nunca por classe CSS (ver `docs/TESTING.md`).
+Shared UI components expose props to propagate the testid to the inner interactive element (e.g.,
+`FilterDropdown` takes `testId="event-type-filter"`). In tests, prefer querying by
+role/label/testid — never by CSS class (see `docs/TESTING.md`).
 
-## 5. Acessibilidade (`check:a11y`)
+## 5. Accessibility (`check:a11y`)
 
-O `scripts/check-accessibility.js` (WCAG 2.1 AA) roda no pre-commit e no CI, varrendo
-`pages-v2`, `components-v2`, `layout-v2`. Regras aplicadas (violação = commit bloqueado):
+`scripts/check-accessibility.js` (WCAG 2.1 AA) runs on pre-commit and in CI, scanning `pages-v2`,
+`components-v2`, `layout-v2`. Rules applied (violation = commit blocked):
 
-- `<img>` precisa de `alt` ou `aria-hidden="true"`.
-- `<button>` precisa de texto visível **ou** `aria-label`/`aria-labelledby` (botões só-ícone
-  exigem `aria-label`).
-- `<input>`/`<select>` precisam de `aria-label`, `aria-labelledby` ou `id` (para associar `<label>`).
-- Roles de landmark/widget (`region`, `group`, `navigation`, `form`, …) exigem rótulo acessível.
+- `<img>` needs `alt` or `aria-hidden="true"`.
+- `<button>` needs visible text **or** `aria-label`/`aria-labelledby` (icon-only buttons require
+  `aria-label`).
+- `<input>`/`<select>` need `aria-label`, `aria-labelledby`, or `id` (to associate a `<label>`).
+- Landmark/widget roles (`region`, `group`, `navigation`, `form`, …) require an accessible label.
 - `role="radio"` → `aria-checked`; `role="tab"` → `aria-selected`.
 
-Warnings (não bloqueiam): páginas em `pages-v2` deveriam ter landmark `<main>`; componentes com
-`onClick` cujo `.css` não tem `:focus`/`:focus-visible`. Exemplo real de página com `<main>`:
+Warnings (non-blocking): pages in `pages-v2` should have a `<main>` landmark; components with
+`onClick` whose `.css` has no `:focus`/`:focus-visible`. A real example of a page with `<main>`:
 
 ```tsx
 // src/pages-v2/Events/EventsManager/EventsManager.tsx
@@ -133,7 +133,7 @@ return <main className="events-manager-container"> ... </main>;
 
 ## 6. Barrel exports (`index.ts`)
 
-Cada componente/feature exporta via `index.ts`, e há um barrel raiz agregando tudo:
+Each component/feature exports via `index.ts`, and there is a root barrel aggregating everything:
 
 ```ts
 // src/components-v2/Chip/index.ts
@@ -149,21 +149,22 @@ export { PermissionGuard } from "./PermissionGuard";
 export { AuthGuard } from "./AuthGuard";
 ```
 
-Consumidores importam do barrel, não do arquivo interno:
+Consumers import from the barrel, not the inner file:
 
 ```tsx
 import { Pagination, SearchInput, FilterDropdown, NoData } from "../../../components-v2";
 ```
 
-Barrels de feature também reexportam tipos usados fora dela — ex.:
-`src/pages-v2/Events/index.ts` exporta `EventsManager`, `EventsInsights`, `CheckInAnalytics` e os
-tipos `EventData`/`EventType`.
+Feature barrels also re-export types used outside the feature — e.g.,
+`src/pages-v2/Events/index.ts` exports `EventsManager`, `EventsInsights`, `CheckInAnalytics`, and the
+`EventData`/`EventType` types.
 
-## 7. Camada de services
+## 7. Services layer
 
-`src/services/*` encapsula chamadas ao **cliente Swagger gerado** (`apiClient` de `src/API`),
-normaliza a resposta e centraliza logging/erros. Não chame `apiClient` cru em componentes de negócio
-quando um service existir. Estrutura típica: objeto com métodos `async` + `export default`.
+`src/services/*` wraps calls to the **generated Swagger client** (`apiClient` from `src/API`),
+normalizes the response, and centralizes logging/errors. Don't call raw `apiClient` in business
+components when a service exists. Typical structure: an object with `async` methods + `export
+default`.
 
 ```ts
 // src/services/userService.ts
@@ -187,17 +188,17 @@ export const userService = {
 export default userService;
 ```
 
-Convenções: parâmetros/retornos tipados via interfaces; normalização de campos opcionais com `??`/`||`;
-`logger.debug` na entrada/sucesso e `logger.error` + `throw` no catch (para o React Query tratar).
+Conventions: typed parameters/returns via interfaces; normalization of optional fields with `??`/`||`;
+`logger.debug` on entry/success and `logger.error` + `throw` in the catch (so React Query can handle it).
 
 ## 8. React Query
 
-Server state é sempre via `@tanstack/react-query`. O client global (`src/lib/queryClient.ts`) define:
-`staleTime` 5 min, `gcTime` 10 min, `refetchOnWindowFocus: false`, e um `retry` que **não** repete
-4xx (exceto 408), até 3 tentativas; mutations `retry: 1`.
+Server state always goes through `@tanstack/react-query`. The global client (`src/lib/queryClient.ts`)
+defines: `staleTime` 5 min, `gcTime` 10 min, `refetchOnWindowFocus: false`, and a `retry` that does
+**not** repeat 4xx (except 408), up to 3 attempts; mutations `retry: 1`.
 
-Uso em página, com `queryKey` incluindo todos os filtros e contexto de school/campus, e
-`placeholderData: keepPreviousData` para paginação suave:
+Usage in a page, with the `queryKey` including all filters and school/campus context, and
+`placeholderData: keepPreviousData` for smooth pagination:
 
 ```tsx
 // src/pages-v2/Events/EventsManager/EventsManager.tsx
@@ -209,18 +210,18 @@ const { data: eventsData, isLoading } = useQuery({
 });
 ```
 
-Há uma factory de chaves em `queryClient.ts` (`queryKeys.campuses`, `queryKeys.campus(id)`, …) para
-domínios com invalidação. Buscas com input de texto passam por `useDebounce` (`src/hooks/useDebounce.ts`,
-500 ms típico) antes de virar `queryKey`.
+There is a key factory in `queryClient.ts` (`queryKeys.campuses`, `queryKeys.campus(id)`, …) for
+domains with invalidation. Text-input searches pass through `useDebounce` (`src/hooks/useDebounce.ts`,
+typically 500 ms) before becoming a `queryKey`.
 
 ## 9. Design tokens (CSS variables) + dark mode
 
-Convivem **dois** sistemas de tema: os do CoreUI (`data-coreui-theme`) e os tokens **V2** próprios.
+**Two** theme systems coexist: CoreUI's (`data-coreui-theme`) and the custom **V2** tokens.
 
-- Tokens V2 em `src/styles-v2/design-tokens.css` como CSS variables `--v2-*`
+- V2 tokens in `src/styles-v2/design-tokens.css` as `--v2-*` CSS variables
   (`--v2-primary-purple-main: #526ac9`, `--v2-bg-card`, `--v2-text-primary`, `--v2-spacing-16`, …).
-  Origem: Figma "Walky Admin Portal". Importados uma vez em `src/main.tsx`.
-- **Dark mode** sobrescreve os mesmos tokens sob dois seletores:
+  Source: the Figma "Walky Admin Portal". Imported once in `src/main.tsx`.
+- **Dark mode** overrides the same tokens under two selectors:
 
 ```css
 /* src/styles-v2/design-tokens.css */
@@ -228,22 +229,22 @@ Convivem **dois** sistemas de tema: os do CoreUI (`data-coreui-theme`) e os toke
 [data-theme="dark"] { /* redefine --v2-* para o tema escuro */ }
 ```
 
-O `ThemeProvider` (`src/contexts/ThemeProvider.tsx`) inicializa de `localStorage("theme")` ou
-`prefers-color-scheme`, e no toggle seta `data-coreui-theme` + `data-theme` no `<html>`, injeta cores
-`--app-*` e adiciona/remove `body.dark-theme`. O `App.tsx` também alterna `body.dark-mode`.
-No CSS de componentes, **use as variáveis `--v2-*`** em vez de cores hardcoded para herdar dark mode.
+The `ThemeProvider` (`src/contexts/ThemeProvider.tsx`) initializes from `localStorage("theme")` or
+`prefers-color-scheme`, and on toggle sets `data-coreui-theme` + `data-theme` on `<html>`, injects
+`--app-*` colors, and adds/removes `body.dark-theme`. `App.tsx` also toggles `body.dark-mode`.
+In component CSS, **use the `--v2-*` variables** instead of hardcoded colors to inherit dark mode.
 
-## 10. `PermissionGuard` / `AuthGuard` em rotas
+## 10. `PermissionGuard` / `AuthGuard` on routes
 
-RBAC é declarado por rota. Roles: `super_admin`, `school_admin`, `campus_admin`, `moderator`,
-`walky_internal`. A matriz de permissões vive em `src/lib/permissions.ts`
+RBAC is declared per route. Roles: `super_admin`, `school_admin`, `campus_admin`, `moderator`,
+`walky_internal`. The permission matrix lives in `src/lib/permissions.ts`
 (`permissionMatrix[role][resource] → { read, create, update, delete, export, manage }`).
 
-- `AuthGuard` (`src/components-v2/AuthGuard/`) protege toda a árvore autenticada em `App.tsx`:
-  redireciona para `/login` se não autenticado, e **renderiza `null` enquanto `isLoading`** (evita
-  flash de redirect no refresh).
-- `PermissionGuard` (`src/components-v2/PermissionGuard/`) envolve cada rota protegida em
-  `src/routes/v2Routes.tsx`, com `resource` e `fallback="redirect"`:
+- `AuthGuard` (`src/components-v2/AuthGuard/`) protects the entire authenticated tree in `App.tsx`:
+  redirects to `/login` if not authenticated, and **renders `null` while `isLoading`** (avoids a
+  redirect flash on refresh).
+- `PermissionGuard` (`src/components-v2/PermissionGuard/`) wraps each protected route in
+  `src/routes/v2Routes.tsx`, with `resource` and `fallback="redirect"`:
 
 ```tsx
 // src/routes/v2Routes.tsx
@@ -254,14 +255,14 @@ RBAC é declarado por rota. Roles: `super_admin`, `school_admin`, `campus_admin`
 } />
 ```
 
-Em UI inline (botões de ação), use o mesmo guard com `fallback="hidden"` (default) ou o HOC
-`withPermission`. Para checagens imperativas, `usePermissions()` expõe `can/canRead/canUpdate/
-canExport/canCreate/canDelete/canManage` e flags `isSuperAdmin`/`isModerator`/… (`src/hooks/usePermissions.ts`).
+In inline UI (action buttons), use the same guard with `fallback="hidden"` (default) or the
+`withPermission` HOC. For imperative checks, `usePermissions()` exposes `can/canRead/canUpdate/
+canExport/canCreate/canDelete/canManage` and `isSuperAdmin`/`isModerator`/… flags (`src/hooks/usePermissions.ts`).
 
-## 11. Logging (nunca `console.*` direto)
+## 11. Logging (never `console.*` directly)
 
-A regra ESLint `no-console: error` **proíbe** `console.*` no código. Todo log passa por
-`src/lib/logger.ts` (`logger.debug/info/warn/error`). `debug`/`info` só emitem em DEV
-(`import.meta.env.DEV`) para não vazar payloads/PII em produção; `warn`/`error` sempre emitem.
-Vite também remove `console.log/info/debug` no build (`vite.config.ts` → `esbuild.pure`).
-O único arquivo com `console` permitido é o próprio `logger.ts` (via `eslint-disable`).
+The ESLint rule `no-console: error` **forbids** `console.*` in the code. Every log goes through
+`src/lib/logger.ts` (`logger.debug/info/warn/error`). `debug`/`info` only emit in DEV
+(`import.meta.env.DEV`) so as not to leak payloads/PII in production; `warn`/`error` always emit.
+Vite also strips `console.log/info/debug` in the build (`vite.config.ts` → `esbuild.pure`).
+The only file where `console` is allowed is `logger.ts` itself (via `eslint-disable`).

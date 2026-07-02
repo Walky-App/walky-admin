@@ -1,203 +1,203 @@
-# Walky Admin — Estrutura de Pastas
+# Walky Admin — Folder Structure
 
-> O que cada diretório importante contém e **por quê**. Foco em `src/`, no significado do sufixo
-> **`-v2`**, e nas fronteiras entre camada de dados, RBAC, UI e tema.
+> What each important directory contains and **why**. Focused on `src/`, on the meaning of the
+> **`-v2`** suffix, and on the boundaries between the data layer, RBAC, UI, and theme.
 
-## Índice
+## Table of Contents
 
-- [1. Raiz do repositório](#1-raiz-do-repositório)
-- [2. `src/` — mapa geral](#2-src--mapa-geral)
-- [3. O sufixo `-v2` — por que existe](#3-o-sufixo--v2--por-que-existe)
-- [4. `API/` — cliente gerado por Swagger](#4-api--cliente-gerado-por-swagger)
+- [1. Repository root](#1-repository-root)
+- [2. `src/` — general map](#2-src--general-map)
+- [3. The `-v2` suffix — why it exists](#3-the--v2-suffix--why-it-exists)
+- [4. `API/` — Swagger-generated client](#4-api--swagger-generated-client)
 - [5. `services/` — service layer](#5-services--service-layer)
-- [6. `lib/` — permissões, query, logger, utils](#6-lib--permissões-query-logger-utils)
-- [7. `contexts/` — estado de UI/seleção](#7-contexts--estado-de-uiseleção)
-- [8. `hooks/` — auth, permissões, filtros, tema](#8-hooks--auth-permissões-filtros-tema)
+- [6. `lib/` — permissions, query, logger, utils](#6-lib--permissions-query-logger-utils)
+- [7. `contexts/` — UI/selection state](#7-contexts--uiselection-state)
+- [8. `hooks/` — auth, permissions, filters, theme](#8-hooks--auth-permissions-filters-theme)
 - [9. `layout-v2/` — shell (Sidebar + Topbar)](#9-layout-v2--shell-sidebar--topbar)
-- [10. `components-v2/` — biblioteca de componentes](#10-components-v2--biblioteca-de-componentes)
-- [11. `pages-v2/` — as telas](#11-pages-v2--as-telas)
-- [12. `routes/` — mapa de rotas](#12-routes--mapa-de-rotas)
-- [13. `types/` — tipos hand-written](#13-types--tipos-hand-written)
-- [14. `styles-v2/` e `theme.ts`](#14-styles-v2-e-themets)
+- [10. `components-v2/` — component library](#10-components-v2--component-library)
+- [11. `pages-v2/` — the screens](#11-pages-v2--the-screens)
+- [12. `routes/` — route map](#12-routes--route-map)
+- [13. `types/` — hand-written types](#13-types--hand-written-types)
+- [14. `styles-v2/` and `theme.ts`](#14-styles-v2-and-themets)
 - [15. `test/`, `scripts/`, `docs/`](#15-test-scripts-docs)
 - [Cross-links](#cross-links)
 
 ---
 
-## 1. Raiz do repositório
+## 1. Repository root
 
-| Path | O que é |
+| Path | What it is |
 |------|---------|
-| `package.json` | Pacote `admin-panel`; scripts, deps (ver [overview](./overview.md#6-stack-completa-versões-reais-e-o-porquê)). |
-| `vite.config.ts` | Config Vite: plugins react + svgr; `esbuild.pure` remove console.* em prod; `manualChunks` (react-vendor/coreui/charts/query). |
-| `vitest.config.ts` | Config de teste (jsdom, setup, coverage V8 com ratchet, alias `@ → src`). |
-| `tsconfig*.json` | `tsconfig.json` (referências) → `tsconfig.app.json` (app, `strict`, `noUnusedLocals`) + `tsconfig.node.json` (config files). |
+| `package.json` | The `admin-panel` package; scripts, deps (see [overview](./overview.md#6-full-stack-actual-versions-and-the-rationale)). |
+| `vite.config.ts` | Vite config: react + svgr plugins; `esbuild.pure` strips console.* in prod; `manualChunks` (react-vendor/coreui/charts/query). |
+| `vitest.config.ts` | Test config (jsdom, setup, V8 coverage with ratchet, `@ → src` alias). |
+| `tsconfig*.json` | `tsconfig.json` (references) → `tsconfig.app.json` (app, `strict`, `noUnusedLocals`) + `tsconfig.node.json` (config files). |
 | `eslint.config.js` | ESLint flat config (typescript-eslint + react-hooks/react-refresh). |
-| `.env` / `.env.example` / `.env.template` | Env `VITE_*` (ver overview). |
+| `.env` / `.env.example` / `.env.template` | `VITE_*` env vars (see overview). |
 | `.nvmrc` | Node **22**. |
-| `vercel.json` | Deploy Vercel: framework vite, SPA rewrite, `NODE_VERSION 22`. |
-| `index.html` | HTML raiz da SPA (monta `#root`). |
-| `clean-build.sh` | Usado no pré-commit (lint-staged) e no script `clean`. |
+| `vercel.json` | Vercel deploy: vite framework, SPA rewrite, `NODE_VERSION 22`. |
+| `index.html` | Root HTML of the SPA (mounts `#root`). |
+| `clean-build.sh` | Used in the pre-commit hook (lint-staged) and in the `clean` script. |
 | `scripts/` | `generate-icons.cjs`, `generate-images.cjs`, `check-test-ids.js`, `check-accessibility.js`. |
-| `docs/` | Esta documentação + `docs/admin/*` (docs dos controllers do backend) e `docs/TESTING.md`. |
-| `public/`, `dist/`, `coverage/` | Estáticos, build e relatório de cobertura. |
+| `docs/` | This documentation + `docs/admin/*` (backend controller docs) and `docs/TESTING.md`. |
+| `public/`, `dist/`, `coverage/` | Static assets, build output, and coverage report. |
 
-## 2. `src/` — mapa geral
+## 2. `src/` — general map
 
 ```
 src/
 ├── main.tsx            # entry: providers (QueryClient→Theme→School→BrowserRouter→App)
-├── App.tsx             # rotas públicas vs. AuthGuard→V2Routes; Toaster
-├── theme.ts            # getTheme(isDark) → objeto de cores do app
-├── index.css / App.css # CSS base
-├── API/                # cliente HTTP GERADO por Swagger + interceptors (index.ts)
-├── services/           # service layer sobre apiClient (12 services)
+├── App.tsx             # public routes vs. AuthGuard→V2Routes; Toaster
+├── theme.ts            # getTheme(isDark) → app color object
+├── index.css / App.css # base CSS
+├── API/                # Swagger-GENERATED HTTP client + interceptors (index.ts)
+├── services/           # service layer over apiClient (12 services)
 ├── lib/                # permissions, queryClient, logger, utils
 ├── contexts/           # Theme, School, Campus, Dashboard, DeactivatedUser
 ├── hooks/              # useAuth, usePermissions, useCampusFilter, useTheme, ...
-├── types/              # tipos TS hand-written (extensões dos gerados)
+├── types/              # hand-written TS types (extensions of the generated ones)
 ├── routes/             # v2Routes.tsx (lazy routes + PermissionGuard)
 ├── layout-v2/          # shell: LayoutV2 + SidebarV2 + TopbarV2
-├── components-v2/      # 50+ componentes reutilizáveis (guards, modais, tabelas, filtros)
-├── pages-v2/           # telas (Dashboard, Campus, Events, Spaces, Ideas, Moderation, Admin, ...)
+├── components-v2/      # 52 reusable components (guards, modals, tables, filters)
+├── pages-v2/           # screens (Dashboard, Campus, Events, Spaces, Ideas, Moderation, Admin, ...)
 ├── styles-v2/          # design tokens (CSS vars + .ts), global.css
-├── assets-v2/          # imagens/svg do design V2
-├── assets/             # assets legados (coexistem)
-└── test/               # setup + helpers de teste (Vitest/MSW)
+├── assets-v2/          # V2 design images/svg
+├── assets/             # legacy assets (coexist)
+└── test/               # setup + test helpers (Vitest/MSW)
 ```
 
-## 3. O sufixo `-v2` — por que existe
+## 3. The `-v2` suffix — why it exists
 
-O `-v2` marca um **redesign completo da camada de UI**, feito **sem** reescrever a arquitetura de
-dados. A divisão é nítida:
+The `-v2` marks a **complete redesign of the UI layer**, done **without** rewriting the data
+architecture. The split is clean:
 
-| Com `-v2` (camada de UI redesenhada) | Sem `-v2` (fundação preservada / genérica) |
+| With `-v2` (redesigned UI layer) | Without `-v2` (preserved / generic foundation) |
 |---|---|
 | `components-v2/`, `pages-v2/`, `layout-v2/`, `styles-v2/`, `assets-v2/` | `API/`, `services/`, `lib/`, `contexts/`, `hooks/`, `types/`, `routes/`, `test/`, `assets/` |
 
-Ou seja: a **apresentação** (componentes, telas, layout, estilos, assets do Figma) foi refeita numa
-nova geração V2, enquanto **cliente HTTP, services, contexts, hooks, permissões e tipos** continuam
-compartilhados/estáveis. Sinais no código que confirmam a migração:
+In other words: the **presentation** (components, screens, layout, styles, Figma assets) was rebuilt
+as a new V2 generation, while the **HTTP client, services, contexts, hooks, permissions, and types**
+remain shared/stable. Signals in the code that confirm the migration:
 
-- `App.tsx` redireciona paths legados `/v2/*` para a raiz (`V2RedirectHandler`) — os caminhos novos
-  viraram o padrão e o prefixo `/v2` antigo é reescrito.
-- `assets/` (legado) **coexiste** com `assets-v2/` (novo, com `README.md`, `images/`, `svg/`).
-- `routes/v2Routes.tsx` (o único arquivo de rotas ativo) monta tudo dentro de `layout-v2`.
+- `App.tsx` redirects legacy `/v2/*` paths to the root (`V2RedirectHandler`) — the new paths became
+  the standard and the old `/v2` prefix is rewritten.
+- `assets/` (legacy) **coexists** with `assets-v2/` (new, with `README.md`, `images/`, `svg/`).
+- `routes/v2Routes.tsx` (the only active routes file) mounts everything inside `layout-v2`.
 
-> Regra prática ao contribuir: **UI nova vai em `*-v2`**; lógica de dados/estado vai nos diretórios
-> sem sufixo.
+> Practical rule when contributing: **new UI goes in `*-v2`**; data/state logic goes in the
+> unsuffixed directories.
 
-## 4. `API/` — cliente gerado por Swagger
+## 4. `API/` — Swagger-generated client
 
-`src/API/` — a fronteira HTTP com o backend. Ver detalhes em
-[architecture §4](./architecture.md#4-camada-de-dados-axios-gerado--services--react-query).
+`src/API/` — the HTTP boundary with the backend. See details in
+[architecture §4](./architecture.md#4-data-layer-generated-axios--services--react-query).
 
-| Arquivo | Conteúdo |
+| File | Contents |
 |---------|----------|
-| `WalkyAPI.ts` | **Gerado** (`swagger-typescript-api`, ~15k linhas): classe `Api` (endpoints tipados) + `HttpClient`. `// @ts-nocheck`. |
-| `Api.ts`, `Admin.ts`, `Users.ts`, `Auth.ts`, `Analytics.ts`, `Ambassadors.ts`, `Audit.ts`, `Age.ts` | Módulos gerados (agrupamentos de endpoints por domínio). |
-| `data-contracts.ts` | **Gerado**: interfaces de dados (Chat, Message, Idea, ...). |
-| `http-client.ts` | **Gerado**: wrapper Axios base (default `baseURL` `http://localhost:8081`). |
-| `index.ts` | **Hand-written**: instancia `apiClient`, remove `/api` do baseURL, aplica interceptors (Bearer, CSRF, 401→login, 403 desativação). Exporta `apiClient` (e um `API` axios cru). |
+| `WalkyAPI.ts` | **Generated** (`swagger-typescript-api`, ~15k lines): the `Api` class (typed endpoints) + `HttpClient`. `// @ts-nocheck`. |
+| `Api.ts`, `Admin.ts`, `Users.ts`, `Auth.ts`, `Analytics.ts`, `Ambassadors.ts`, `Audit.ts`, `Age.ts` | Generated modules (endpoint groupings by domain). |
+| `data-contracts.ts` | **Generated**: data interfaces (Chat, Message, Idea, ...). |
+| `http-client.ts` | **Generated**: base Axios wrapper (default `baseURL` `http://localhost:8081`). |
+| `index.ts` | **Hand-written**: instantiates `apiClient`, strips `/api` from the baseURL, applies interceptors (Bearer, CSRF, 401→login, 403 deactivation). Exports `apiClient` (and a raw `API` axios). |
 
-**Não editar os arquivos gerados** — rode `npm run generate:api` (lê `../walky-backend/swagger.json`).
+**Do not edit the generated files** — run `npm run generate:api` (reads `../walky-backend/swagger.json`).
 
 ## 5. `services/` — service layer
 
-`src/services/` — 12 módulos entre o `apiClient` gerado e as telas. Cada um: importa `apiClient` de
-`../API`, chama endpoints, normaliza a resposta, loga via `logger`.
+`src/services/` — 12 modules between the generated `apiClient` and the screens. Each one: imports
+`apiClient` from `../API`, calls endpoints, normalizes the response, logs via `logger`.
 
-| Service | Responsabilidade | Endpoint exemplo |
+| Service | Responsibility | Example endpoint |
 |---------|------------------|------------------|
-| `userService.ts` | Lista/gerencia usuários (paginação, filtros de escola/campus/role); tipo `UserWithRoles`. | `adminUsersList` |
-| `campusService.ts` | Lista/cria/atualiza campuses; mapeia `_id→id`. | `campusesList` |
-| `schoolService.ts` | Escolas; define/re-exporta o tipo `School`. | lista de escolas |
-| `ambassadorService.ts` | Embaixadores (CRUD parcial). | `ambassadors.ambassadorsList` (namespace legado) |
-| `analyticsService.ts` | Social health, wellbeing, KPIs, alertas dos dashboards. | `adminCampusMetricsSocialHealthList` |
-| `reportService.ts` | Denúncias (filtro por status/tipo) e usuários banidos. | `adminReportsList` |
-| `rolesService.ts` | Roles, permissões, atribuição de role. | `adminRolesList` |
-| `interestService.ts` | Interesses. | — |
+| `userService.ts` | Lists/manages users (pagination, school/campus/role filters); `UserWithRoles` type. | `adminUsersList` |
+| `campusService.ts` | Lists/creates/updates campuses; maps `_id→id`. | `campusesList` |
+| `schoolService.ts` | Schools; defines/re-exports the `School` type. | school list |
+| `ambassadorService.ts` | Ambassadors (partial CRUD). | `ambassadors.ambassadorsList` (legacy namespace) |
+| `analyticsService.ts` | Social health, wellbeing, KPIs, dashboard alerts. | `adminCampusMetricsSocialHealthList` |
+| `reportService.ts` | Reports (filter by status/type) and banned users. | `adminReportsList` |
+| `rolesService.ts` | Roles, permissions, role assignment. | `adminRolesList` |
+| `interestService.ts` | Interests. | — |
 | `placeService.ts` | Places/Spaces. | — |
-| `placeTypeService.ts` | Tipos de place. | — |
-| `lockedUsersService.ts` | Usuários bloqueados. | — |
-| `campusSyncService.ts` | Sincronização de dados de campus. | — |
+| `placeTypeService.ts` | Place types. | — |
+| `lockedUsersService.ts` | Locked users. | — |
+| `campusSyncService.ts` | Campus data synchronization. | — |
 
-## 6. `lib/` — permissões, query, logger, utils
+## 6. `lib/` — permissions, query, logger, utils
 
-`src/lib/` — fundação transversal (não-UI).
+`src/lib/` — the cross-cutting (non-UI) foundation.
 
-| Arquivo | Papel |
+| File | Role |
 |---------|-------|
-| `permissions.ts` | **RBAC**: tipos `RoleName`/`PermissionResource`/`PermissionAction`, `permissionMatrix` (5 roles × ~24 recursos × 6 ações), helpers (`hasPermission`, `canAccessRoute`, `getAssignableRoles`), mapas de display name. Fonte da verdade do controle de acesso no cliente. Ver [architecture §5.3](./architecture.md#53-matriz-de-permissões). |
-| `queryClient.ts` | `QueryClient` do React Query (staleTime 5min, gcTime 10min, retry sem 4xx exceto 408) + `queryKeys` factory. |
-| `logger.ts` | Wrapper de console: `debug`/`info` só em dev; `warn`/`error` sempre. Evita vazar PII em prod. |
-| `utils/` | `dateUtils.ts`, `errors.ts`, `nameUtils.ts` (+ testes). Utilidades puras. |
-| `permissions.test.ts`, `queryClient.test.ts` | Testes das peças críticas. |
+| `permissions.ts` | **RBAC**: `RoleName`/`PermissionResource`/`PermissionAction` types, `permissionMatrix` (5 roles × ~24 resources × 6 actions), helpers (`hasPermission`, `canAccessRoute`, `getAssignableRoles`), display-name maps. Source of truth for client-side access control. See [architecture §5.3](./architecture.md#53-permission-matrix). |
+| `queryClient.ts` | React Query `QueryClient` (staleTime 5min, gcTime 10min, no retry on 4xx except 408) + `queryKeys` factory. |
+| `logger.ts` | Console wrapper: `debug`/`info` only in dev; `warn`/`error` always. Avoids leaking PII in prod. |
+| `utils/` | `dateUtils.ts`, `errors.ts`, `nameUtils.ts` (+ tests). Pure utilities. |
+| `permissions.test.ts`, `queryClient.test.ts` | Tests for the critical pieces. |
 
-## 7. `contexts/` — estado de UI/seleção
+## 7. `contexts/` — UI/selection state
 
-`src/contexts/` — React Context para estado que **não** é dado remoto (esse fica no React Query).
+`src/contexts/` — React Context for state that is **not** remote data (that lives in React Query).
 
-| Arquivo | Estado / função |
+| File | State / function |
 |---------|-----------------|
-| `SchoolContext.tsx` | Escola selecionada (persistida em `localStorage`), lista disponível. Multi-tenant. |
-| `CampusContext.tsx` | Campus selecionado (persistido), lista disponível. Tipo `Campus`. |
-| `DashboardContext.tsx` | `timePeriod` dos dashboards (default `"month"`). |
-| `DeactivatedUserContext.tsx` | Flag de conta desativada + `handleLogout`; expõe `triggerDeactivatedModal()` (setter global usado pelos interceptors, fora do React). |
-| `ThemeContext.ts` + `ThemeProvider.tsx` | Tema (dark/light) — ver [§14](#14-styles-v2-e-themets). |
-| `index.ts` | Barrel de exports. |
+| `SchoolContext.tsx` | Selected school (persisted to `localStorage`), available list. Multi-tenant. |
+| `CampusContext.tsx` | Selected campus (persisted), available list. `Campus` type. |
+| `DashboardContext.tsx` | The dashboards' `timePeriod` (default `"month"`). |
+| `DeactivatedUserContext.tsx` | Deactivated-account flag + `handleLogout`; exposes `triggerDeactivatedModal()` (a global setter used by the interceptors, outside React). |
+| `ThemeContext.ts` + `ThemeProvider.tsx` | Theme (dark/light) — see [§14](#14-styles-v2-and-themets). |
+| `index.ts` | Barrel of exports. |
 
-## 8. `hooks/` — auth, permissões, filtros, tema
+## 8. `hooks/` — auth, permissions, filters, theme
 
 `src/hooks/`
 
-| Hook | Papel |
+| Hook | Role |
 |------|-------|
-| `useAuth.ts` | Lê `token`/`user` do `localStorage`; sync entre abas (evento `storage` + `auth:user-updated`); `isAuthenticated`, `hasRole`, `updateUser`. |
-| `usePermissions.ts` | Envolve `lib/permissions`: `can/canRead/canUpdate/canExport/...` + flags `isSuperAdmin/...`. |
-| `useCampusFilter.ts` | Interceptor que injeta `campus_id` nas requests do campus selecionado (GET params / body). |
-| `useSchoolFilter.ts` | Análogo para escola. |
-| `useTheme.ts` | Acessa o `ThemeContext`. |
-| `useDashboardPrefetch.ts` | Prefetch de dados de dashboard. |
-| `useDebounce.ts` / `useMediaQuery.ts` / `useToolTip.ts` | Utilitários de UI (+ testes). |
+| `useAuth.ts` | Reads `token`/`user` from `localStorage`; cross-tab sync (`storage` + `auth:user-updated` events); `isAuthenticated`, `hasRole`, `updateUser`. |
+| `usePermissions.ts` | Wraps `lib/permissions`: `can/canRead/canUpdate/canExport/...` + `isSuperAdmin/...` flags. |
+| `useCampusFilter.ts` | **Defined but not wired up.** Intended as an interceptor that would inject `campus_id` into the selected campus's requests (GET params / body). It is never invoked; in practice `campus_id` is passed explicitly per query. See [architecture §6](./architecture.md#6-multi-tenant-school-and-campus). |
+| `useSchoolFilter.ts` | Analogous to `useCampusFilter` (for school) — also defined but not wired up. |
+| `useTheme.ts` | Accesses `ThemeContext`. |
+| `useDashboardPrefetch.ts` | Dashboard data prefetch — defined but not currently wired up. |
+| `useDebounce.ts` / `useMediaQuery.ts` / `useToolTip.ts` | UI utilities (+ tests). |
 | `index.ts` | Barrel. |
 
 ## 9. `layout-v2/` — shell (Sidebar + Topbar)
 
-`src/layout-v2/` — o "casco" das telas autenticadas (renderizado por `v2Routes` em torno do
+`src/layout-v2/` — the "shell" of the authenticated screens (rendered by `v2Routes` around the
 `<Outlet/>`).
 
-| Arquivo | Papel |
+| File | Role |
 |---------|-------|
-| `LayoutV2.tsx` | Compõe `SidebarV2` + `TopbarV2` + `<Outlet/>`; controla visibilidade responsiva da sidebar (auto-fecha ≤992px, fecha ao trocar de rota no mobile); monta o `DeactivatedUserModal`. |
-| `SidebarV2/SidebarV2.tsx` | Navegação. **Filtra itens por permissão** via `usePermissions().canRead(resource)`: item sem permissão some; submenu vazio remove o pai. |
-| `TopbarV2/TopbarV2.tsx` | Seletores de **escola/campus** (`useSchool`/`useCampus`, buscando via `apiClient`), toggle de tema, logout. |
+| `LayoutV2.tsx` | Composes `SidebarV2` + `TopbarV2` + `<Outlet/>`; controls the sidebar's responsive visibility (auto-closes ≤992px, closes on route change on mobile); mounts the `DeactivatedUserModal`. |
+| `SidebarV2/SidebarV2.tsx` | Navigation. **Filters items by permission** via `usePermissions().canRead(resource)`: an item without permission disappears; an empty submenu removes its parent. |
+| `TopbarV2/TopbarV2.tsx` | **School/campus** selectors (`useSchool`/`useCampus`, fetching via `apiClient`), theme toggle, logout. |
 
-## 10. `components-v2/` — biblioteca de componentes
+## 10. `components-v2/` — component library
 
-`src/components-v2/` — ~50 componentes reutilizáveis (exportados por `index.ts`). Categorias:
+`src/components-v2/` — 52 reusable components (exported from `index.ts`). Categories:
 
-- **Guards:** `AuthGuard`, `PermissionGuard` (+ HOC `withPermission`) — ver
+- **Guards:** `AuthGuard`, `PermissionGuard` (+ `withPermission` HOC) — see
   [architecture §5.2](./architecture.md#52-guards).
-- **Filtros/busca:** `FilterBar`, `FilterDropdown`, `MultiSelectFilterDropdown`, `SearchInput`,
+- **Filters/search:** `FilterBar`, `FilterDropdown`, `MultiSelectFilterDropdown`, `SearchInput`,
   `StatusDropdown`, `ActionDropdown`.
-- **Tabela/lista:** `Pagination`, `NoData`, `SkeletonLoader`, `LastUpdated`, `CopyableId`, `Chip`,
+- **Table/list:** `Pagination`, `NoData`, `SkeletonLoader`, `LastUpdated`, `CopyableId`, `Chip`,
   `Divider`, `Drawer`, `BoundaryAvatar`.
-- **Export/gráficos:** `ExportButton` (CSV/PDF), `StackedBarChart`.
-- **Modais (muitos):** de usuário (`BanUserModal`, `UnbanUserModal`, `ActivateUserModal`,
+- **Export/charts:** `ExportButton` (CSV/PDF), `StackedBarChart`.
+- **Modals (many):** user (`BanUserModal`, `UnbanUserModal`, `ActivateUserModal`,
   `DeactivateUserModal`, `DeleteAccountModal`, `StudentProfileModal`, `SendPasswordResetModal`,
-  `LogoutAllDevicesModal`, `WriteNoteModal`), de moderação (`FlagModal`, `FlagUserModal`,
-  `UnflagModal`, `ReportDetailModal`, `ReportDetailsModal`), de conteúdo (`EventDetailsModal`,
+  `LogoutAllDevicesModal`, `WriteNoteModal`), moderation (`FlagModal`, `FlagUserModal`,
+  `UnflagModal`, `ReportDetailModal`, `ReportDetailsModal`), content (`EventDetailsModal`,
   `SpaceDetailsModal`, `IdeaDetailsModal`, `ScheduledEventsModal`, `ChangeCategoryModal`,
-  `SeeAllInterestsModal`), de admin/roles (`CreateMemberModal`, `RemoveMemberModal`,
+  `SeeAllInterestsModal`), admin/roles (`CreateMemberModal`, `RemoveMemberModal`,
   `ChangeRoleModal`, `RolePermissionsModal`, `AddAmbassadorModal`, `DeleteAmbassadorModal`),
-  genéricos (`DeleteModal`, `UnsavedChangesModal`, `DeactivatedUserModal`).
+  generic (`DeleteModal`, `UnsavedChangesModal`, `DeactivatedUserModal`).
 - **Assets/toast:** `AssetIcon`, `AssetImage`, `CustomToast`, `utils`.
 
-## 11. `pages-v2/` — as telas
+## 11. `pages-v2/` — the screens
 
-`src/pages-v2/` — cada rota de [v2Routes](../src/routes/v2Routes.tsx) tem sua tela aqui. Subpastas
-frequentemente têm `components/` locais + barril `index.ts`.
+`src/pages-v2/` — each route in [v2Routes](../src/routes/v2Routes.tsx) has its screen here. Subfolders
+often have local `components/` + an `index.ts` barrel.
 
 ```
 pages-v2/
@@ -206,64 +206,64 @@ pages-v2/
 │   ├── Community/  StudentSafety/  StudentBehavior/
 ├── Campus/               # ActiveStudents, BannedStudents,
 │                         #   DeactivatedStudents, DisengagedStudents
-├── CampusBoundary/       # componente de geofence/limite de campus
+├── CampusBoundary/       # campus geofence/boundary component
 ├── Events/               # EventsManager, EventsInsights, CheckInAnalytics
 ├── Spaces/               # SpacesManager, SpacesInsights
 ├── Ideas/                # IdeasManager, IdeasInsights
 ├── Moderation/           # ReportSafety, ReportHistory
 ├── Admin/                # AdministratorSettings, Ambassadors,
 │                         #   Campuses, RoleManagement (+ index.ts)
-├── Playground/           # 14 visualizações experimentais (Interest* + ActiveUsers*, Three.js)
+├── Playground/           # 14 experimental visualizations (Interest* + ActiveUsers*, Three.js)
 ├── LoginV2/              # login (2FA/OTP, force-password-change) + LoginV2.css
 ├── RecoverPasswordV2/    # RecoverPasswordV2 + VerifyCodeStep + ResetPasswordStep
-└── ForcePasswordChange/  # troca forçada de senha no 1º login
+└── ForcePasswordChange/  # forced password change on first login
 ```
 
-> Nota: `Dashboard` expõe os 6 painéis via export default; `Campus`, `Events`, `Spaces`, `Ideas`,
-> `Moderation`, `Admin` usam exports nomeados de barris (desembrulhados em `v2Routes` com
+> Note: `Dashboard` exposes the 6 panels via default export; `Campus`, `Events`, `Spaces`, `Ideas`,
+> `Moderation`, `Admin` use named barrel exports (unwrapped in `v2Routes` with
 > `.then(m => ({ default: m.Name }))`).
 
-## 12. `routes/` — mapa de rotas
+## 12. `routes/` — route map
 
-`src/routes/v2Routes.tsx` — único arquivo de rotas ativo. Monta `<LayoutV2/>` com as telas
-**lazy-loaded**, cada uma envolvida por `<PermissionGuard resource="..." fallback="redirect">`.
-Também provê `CampusProvider` + `DashboardProvider` e trata redirects de paths legados
-(`/campuses → /admin/campuses`, etc.). Ver [architecture §3](./architecture.md#3-roteamento-react-router-v7--lazy).
+`src/routes/v2Routes.tsx` — the only active routes file. Mounts `<LayoutV2/>` with the
+**lazy-loaded** screens, each wrapped in `<PermissionGuard resource="..." fallback="redirect">`.
+It also provides `CampusProvider` + `DashboardProvider` and handles legacy-path redirects
+(`/campuses → /admin/campuses`, etc.). See [architecture §3](./architecture.md#3-routing-react-router-v7--lazy).
 
-## 13. `types/` — tipos hand-written
+## 13. `types/` — hand-written types
 
-`src/types/` — tipos TS **escritos à mão** que estendem/combinam os gerados: `ambassador.ts`,
-`analytics.ts`, `api.ts`, `campus.ts`, `place.ts`, `placeType.ts`, `report.ts`, `role.ts`. Os
-services (`services/*`) unem esses tipos com os de `API/data-contracts.ts`/`WalkyAPI.ts` para
-entregar às telas a forma que elas esperam.
+`src/types/` — **hand-written** TS types that extend/combine the generated ones: `ambassador.ts`,
+`analytics.ts`, `api.ts`, `campus.ts`, `place.ts`, `placeType.ts`, `report.ts`, `role.ts`. The
+services (`services/*`) merge these types with those from `API/data-contracts.ts`/`WalkyAPI.ts` to
+deliver to the screens the shape they expect.
 
-## 14. `styles-v2/` e `theme.ts`
+## 14. `styles-v2/` and `theme.ts`
 
-`src/styles-v2/` — sistema de estilo dual (CoreUI + tokens V2):
+`src/styles-v2/` — a dual style system (CoreUI + V2 tokens):
 
-| Arquivo | Conteúdo |
+| File | Contents |
 |---------|----------|
-| `design-tokens.css` / `design-tokens.ts` | Tokens (spacing, cornerRadius, colors, ...) auto-gerados do Figma — CSS vars e versão TS. |
-| `theme-variables.css` | Variáveis de tema (light/dark). |
-| `ThemeComponents.css` | Estilos de componentes temáticos. |
-| `global.css` | Estilos globais. |
+| `design-tokens.css` / `design-tokens.ts` | Tokens (spacing, cornerRadius, colors, ...) auto-generated from Figma — CSS vars and TS version. |
+| `theme-variables.css` | Theme variables (light/dark). |
+| `ThemeComponents.css` | Themed component styles. |
+| `global.css` | Global styles. |
 
-`src/theme.ts` — `getTheme(isDark)` retorna o objeto de cores consumido por
-[`ThemeProvider`](../src/contexts/ThemeProvider.tsx), que aplica `data-coreui-theme` + `data-theme` +
-CSS vars `--app-*` no `<html>`/`<body>`. Ver [architecture §7](./architecture.md#7-tema-e-design-tokens).
+`src/theme.ts` — `getTheme(isDark)` returns the color object consumed by
+[`ThemeProvider`](../src/contexts/ThemeProvider.tsx), which applies `data-coreui-theme` + `data-theme`
++ `--app-*` CSS vars on `<html>`/`<body>`. See [architecture §7](./architecture.md#7-theme-and-design-tokens).
 
 ## 15. `test/`, `scripts/`, `docs/`
 
-- `src/test/` — `setup.ts` (setup do Vitest/Testing Library) e helpers; MSW para mock de rede. Testes
-  ficam ao lado do código (`*.test.ts[x]`).
-- `scripts/` — `check-test-ids.js` (exige `data-testid`), `check-accessibility.js` (a11y),
+- `src/test/` — `setup.ts` (Vitest/Testing Library setup) and helpers; MSW for network mocking. Tests
+  live next to the code (`*.test.ts[x]`).
+- `scripts/` — `check-test-ids.js` (requires `data-testid`), `check-accessibility.js` (a11y),
   `generate-icons.cjs`, `generate-images.cjs`.
-- `docs/` — esta documentação (`overview`, `architecture`, `folder-structure`), além de `docs/admin/`
-  (referência dos controllers do backend) e `docs/TESTING.md`.
+- `docs/` — this documentation (`overview`, `architecture`, `folder-structure`), plus `docs/admin/`
+  (backend controller reference) and `docs/TESTING.md`.
 
 ---
 
 ## Cross-links
 
-- [Visão geral](./overview.md) — propósito, público, stack.
-- [Arquitetura](./architecture.md) — fluxo de dados, RBAC, decisões.
+- [Overview](./overview.md) — purpose, audience, stack.
+- [Architecture](./architecture.md) — data flow, RBAC, decisions.

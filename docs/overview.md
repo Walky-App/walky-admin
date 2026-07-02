@@ -1,262 +1,262 @@
-# Walky Admin — Visão Geral
+# Walky Admin — Overview
 
-> Painel administrativo da plataforma Walky. React 19 + CoreUI 5 + Vite 7. Cliente do
-> `walky-backend`, com tipos TypeScript gerados a partir do Swagger/OpenAPI do backend.
+> Administrative panel of the Walky platform. React 19 + CoreUI 5 + Vite 7. Client of
+> `walky-backend`, with TypeScript types generated from the backend's Swagger/OpenAPI.
 
-## Índice
+## Table of Contents
 
-- [1. Propósito](#1-propósito)
-- [2. O problema que resolve](#2-o-problema-que-resolve)
-- [3. Papel no ecossistema Walky](#3-papel-no-ecossistema-walky)
-- [4. Público-alvo (RBAC de roles)](#4-público-alvo-rbac-de-roles)
-- [5. Quem consome / o que gerencia](#5-quem-consome--o-que-gerencia)
-- [6. Stack completa (versões reais e o porquê)](#6-stack-completa-versões-reais-e-o-porquê)
-- [7. Variáveis de ambiente](#7-variáveis-de-ambiente)
-- [8. Scripts de build/run](#8-scripts-de-buildrun)
+- [1. Purpose](#1-purpose)
+- [2. The problem it solves](#2-the-problem-it-solves)
+- [3. Role in the Walky ecosystem](#3-role-in-the-walky-ecosystem)
+- [4. Target audience (role-based RBAC)](#4-target-audience-role-based-rbac)
+- [5. Who consumes it / what it manages](#5-who-consumes-it--what-it-manages)
+- [6. Full stack (actual versions and the rationale)](#6-full-stack-actual-versions-and-the-rationale)
+- [7. Environment variables](#7-environment-variables)
+- [8. Build/run scripts](#8-buildrun-scripts)
 - [Cross-links](#cross-links)
 
 ---
 
-## 1. Propósito
+## 1. Purpose
 
-O **walky-admin** é o **painel administrativo web** da plataforma Walky — uma rede social para
-campus universitários. Ele dá a **admins de campus, admins de escola, moderadores e super-admins**
-(além de funcionários internos com visibilidade "read-only") as ferramentas operacionais para
-gerenciar a comunidade de estudantes, o conteúdo gerado por eles e a configuração de cada campus.
+**walky-admin** is the **web administrative panel** of the Walky platform — a social network for
+university campuses. It gives **campus admins, school admins, moderators, and super-admins**
+(plus internal staff with "read-only" visibility) the operational tools to
+manage the student community, the content they generate, and the configuration of each campus.
 
-É uma **Single Page Application (SPA)** construída com **CoreUI** (biblioteca de componentes de
-admin sobre Bootstrap 5). Todo o seu estado de servidor vem do backend Walky via HTTP; ele não tem
-banco de dados próprio.
+It is a **Single Page Application (SPA)** built with **CoreUI** (an admin component
+library on top of Bootstrap 5). All of its server state comes from the backend Walky via HTTP; it has no
+database of its own.
 
-O nome do pacote em `package.json` é literalmente `admin-panel` (`version: 0.0.0`, privado).
+The package name in `package.json` is literally `admin-panel` (`version: 0.0.0`, private).
 
-## 2. O problema que resolve
+## 2. The problem it solves
 
-A operação de uma rede social de campus gera necessidades administrativas contínuas:
+Operating a campus social network creates continuous administrative needs:
 
-- **Moderação:** revisar denúncias (reports) de conteúdo/usuários, banir/desbanir estudantes,
-  acompanhar histórico de moderação (Report Safety, Report History).
-- **Gestão de estudantes:** ver estudantes ativos, banidos, desativados e "desengajados"; atualizar
-  status; exportar listas.
-- **Gestão de conteúdo:** administrar Events, Spaces e Ideas criados pelos estudantes (editar,
-  remover, exportar).
-- **Analytics operacional:** 6 dashboards (Engagement, Popular Features, User Interactions,
-  Community, Student Safety, Student Behavior) para acompanhar a saúde de cada campus.
-- **Configuração de campus:** geofences, embaixadores (ambassadors), gestão de roles/administradores.
+- **Moderation:** review content/user reports, ban/unban students,
+  track moderation history (Report Safety, Report History).
+- **Student management:** view active, banned, deactivated, and "disengaged" students; update
+  status; export lists.
+- **Content management:** administer Events, Spaces, and Ideas created by students (edit,
+  remove, export).
+- **Operational analytics:** 6 dashboards (Engagement, Popular Features, User Interactions,
+  Community, Student Safety, Student Behavior) to track the health of each campus.
+- **Campus configuration:** geofences, ambassadors, role/administrator management.
 
-Sem esse painel, essas tarefas exigiriam acesso direto ao banco/API. O admin encapsula tudo numa
-interface com **RBAC** (controle de acesso por papel) que limita o que cada tipo de admin pode ver e
-fazer, e por **campus/escola** (multi-tenant).
+Without this panel, these tasks would require direct database/API access. The admin encapsulates everything in a
+single interface with **RBAC** (role-based access control) that limits what each type of admin can see and
+do, and by **campus/school** (multi-tenant).
 
-## 3. Papel no ecossistema Walky
+## 3. Role in the Walky ecosystem
 
-A plataforma Walky tem **4 repositórios**, todos em `/Volumes/SSDDEV/DEV_PROJETOS/`:
+The Walky platform has **4 repositories**, all under `/Volumes/SSDDEV/DEV_PROJETOS/`:
 
-| Repositório | Papel | Público |
+| Repository | Role | Audience |
 |-------------|-------|---------|
-| `walkyApp` | App móvel (RN/Expo) | Estudantes |
-| `walky-backend` | API REST + WebSockets (Node/Express/Mongo) | serve todos |
-| **`walky-admin`** | **Painel admin (CoreUI)** | **Admins de campus/escola, moderadores** |
-| `walky-hq` | Painel super-admin/analytics (shadcn) | Super-admins internos Walky |
+| `walkyApp` | Mobile app (RN/Expo) | Students |
+| `walky-backend` | REST API + WebSockets (Node/Express/Mongo) | serves everyone |
+| **`walky-admin`** | **Admin panel (CoreUI)** | **Campus/school admins, moderators** |
+| `walky-hq` | Super-admin/analytics panel (shadcn) | Internal Walky super-admins |
 
 ```mermaid
 flowchart TD
-    BE["walky-backend<br/>API REST + WebSockets<br/>MongoDB · Redis · Socket.io"]
+    BE["walky-backend<br/>REST API + WebSockets<br/>MongoDB · Redis · Socket.io"]
     APP["walkyApp<br/>RN / Expo"]
-    ADMIN["walky-admin<br/>React + CoreUI (ESTE REPO)"]
+    ADMIN["walky-admin<br/>React + CoreUI (THIS REPO)"]
     HQ["walky-hq<br/>React + shadcn"]
     APP --> BE
     ADMIN --> BE
     HQ --> BE
-    BE -. "swagger.json (contrato OpenAPI)" .-> ADMIN
+    BE -. "swagger.json (OpenAPI contract)" .-> ADMIN
 ```
 
-**Cliente do backend.** O admin **não fala com o banco**; consome a API REST do backend (base via
-`VITE_API_BASE_URL`, tipicamente `https://api.walkyapp.com/api` em produção ou
-`http://localhost:8080/api` em dev). Autentica via JWT Bearer (ver
-[architecture.md](./architecture.md#5-autenticação-e-rbac)).
+**Client of the backend.** The admin **does not talk to the database**; it consumes the backend's REST API (base via
+`VITE_API_BASE_URL`, typically `https://api.walkyapp.com/api` in production or
+`http://localhost:8080/api` in dev). It authenticates via JWT Bearer (see
+[architecture.md](./architecture.md#5-authentication-and-rbac)).
 
-**Tipos gerados por Swagger.** O contrato de tipos do admin é **derivado do backend**. O script
-`npm run generate:api` roda:
+**Swagger-generated types.** The admin's type contract is **derived from the backend**. The
+`npm run generate:api` script runs:
 
 ```
 npx swagger-typescript-api generate -p ../walky-backend/swagger.json -o ./src/API --axios --name WalkyAPI.ts
 ```
 
-Isso lê o `swagger.json` do repositório irmão `walky-backend` e gera o cliente Axios tipado
-`src/API/WalkyAPI.ts` (~15k linhas). **Regra de ouro do ecossistema:** mudou o contrato no backend →
-regenerar o cliente nos frontends. O `walkyApp` faz o equivalente com Orval; o `walky-hq` também usa
-tipos derivados do mesmo Swagger.
+This reads the `swagger.json` from the sibling `walky-backend` repository and generates the typed Axios client
+`src/API/WalkyAPI.ts` (~15k lines). **Golden rule of the ecosystem:** if the contract changes in the backend →
+regenerate the client in the frontends. The `walkyApp` does the equivalent with Orval; `walky-hq` also uses
+types derived from the same Swagger.
 
-**Diferença Admin vs HQ:** ambos têm sobreposição funcional (users, events, spaces, ideas, reports,
-roles, campus). A distinção é de **escopo e público**: o **admin** é operação por **campus/escola**
-(CoreUI, orientado a operação/moderação); o **HQ** é super-admin/analytics **global** (shadcn +
-Tailwind, config de entidades core da plataforma).
+**Admin vs. HQ difference:** both have functional overlap (users, events, spaces, ideas, reports,
+roles, campus). The distinction is **scope and audience**: the **admin** is per-**campus/school** operation
+(CoreUI, operation/moderation-oriented); the **HQ** is **global** super-admin/analytics (shadcn +
+Tailwind, config of the platform's core entities).
 
-## 4. Público-alvo (RBAC de roles)
+## 4. Target audience (role-based RBAC)
 
-O acesso é governado por uma **matriz de permissões** hardcoded em
-[`src/lib/permissions.ts`](../src/lib/permissions.ts). Há **5 roles** (`RoleName`):
+Access is governed by a **permission matrix** hardcoded in
+[`src/lib/permissions.ts`](../src/lib/permissions.ts). There are **5 roles** (`RoleName`):
 
-| Role interno | Nome de exibição | Escopo | Perfil de permissão |
+| Internal role | Display name | Scope | Permission profile |
 |--------------|------------------|--------|---------------------|
-| `super_admin` | Walky Admin | Todos os campi/escolas | Acesso total: dashboards+export, gestão de estudantes, CRUD de conteúdo, moderação, campuses/ambassadors, CRUD+manage de roles |
-| `school_admin` | School Admin | Uma escola (todos os campi dela) | Igual ao super_admin na prática (matriz idêntica) |
-| `campus_admin` | Campus Admin | Um campus | Igual ao super/school_admin na matriz |
-| `moderator` | Moderator | Um campus | Dashboards read-only (sem export), **sem** gestão de estudantes/admin; **poder de moderação** (Report Safety/History: read/update/export) |
-| `walky_internal` | Walky Internal | Visibilidade interna | **Read-only** em dashboards, events/spaces/ideas e campuses/ambassadors; **sem** moderação nem gestão de estudantes |
+| `super_admin` | Walky Admin | All campuses/schools | Full access: dashboards+export, student management, content CRUD, moderation, campuses/ambassadors, role CRUD+manage |
+| `school_admin` | School Admin | One school (all its campuses) | Same as super_admin in practice (identical matrix) |
+| `campus_admin` | Campus Admin | One campus | Same as super/school_admin in the matrix |
+| `moderator` | Moderator | One campus | Read-only dashboards (no export), **no** student/admin management; **moderation power** (Report Safety/History: read/update/export) |
+| `walky_internal` | Walky Internal | Internal visibility | **Read-only** on dashboards, events/spaces/ideas, and campuses/ambassadors; **no** moderation or student management |
 
-> **Nota fiel ao código:** na matriz atual (`permissionMatrix`), `super_admin`, `school_admin` e
-> `campus_admin` têm **exatamente os mesmos direitos por recurso**. A diferença real de escopo entre
-> eles é aplicada por **campus/escola** (contexts + filtros, e pelo backend), não pela matriz de
-> ações. Ver [architecture.md](./architecture.md#5-autenticação-e-rbac).
+> **Note faithful to the code:** in the current matrix (`permissionMatrix`), `super_admin`, `school_admin`, and
+> `campus_admin` have **exactly the same rights per resource**. The real scope difference between
+> them is enforced per **campus/school** (contexts + filters, and by the backend), not by the action
+> matrix. See [architecture.md](./architecture.md#5-authentication-and-rbac).
 
-**Hierarquia de atribuição de roles** (`roleHierarchy` em `permissions.ts`): quem pode criar/atribuir
-quais roles — `super_admin` → School/Campus/Moderator; `school_admin` → Campus/Moderator;
-`campus_admin` → Moderator; `moderator` e `walky_internal` → ninguém.
+**Role assignment hierarchy** (`roleHierarchy` in `permissions.ts`): who can create/assign
+which roles — `super_admin` → School/Campus/Moderator; `school_admin` → Campus/Moderator;
+`campus_admin` → Moderator; `moderator` and `walky_internal` → no one.
 
-As 6 ações possíveis (`PermissionAction`) são: `read`, `create`, `update`, `delete`, `export`,
-`manage`. Cada recurso (`PermissionResource`, ~24 recursos: dashboards, listas de estudantes,
-events, spaces, ideas, moderação, campuses, ambassadors, role_management) recebe um objeto
-`ResourcePermission` com essas 6 flags booleanas.
+The 6 possible actions (`PermissionAction`) are: `read`, `create`, `update`, `delete`, `export`,
+`manage`. Each resource (`PermissionResource`, ~24 resources: dashboards, student lists,
+events, spaces, ideas, moderation, campuses, ambassadors, role_management) receives a
+`ResourcePermission` object with these 6 boolean flags.
 
-## 5. Quem consome / o que gerencia
+## 5. Who consumes it / what it manages
 
-Os usuários do painel (admins/moderadores) gerenciam, por telas (rotas em
+Panel users (admins/moderators) manage, via screens (routes in
 [`src/routes/v2Routes.tsx`](../src/routes/v2Routes.tsx)):
 
 - **Dashboards (6):** `dashboard/engagement`, `popular-features`, `user-interactions`, `community`,
   `student-safety`, `student-behavior`.
-- **Estudantes (4 listas):** `manage-students/active | banned | deactivated | disengaged`.
+- **Students (4 lists):** `manage-students/active | banned | deactivated | disengaged`.
 - **Events:** `events` (Manager), `events/insights`, `events/check-in` (Check-In Analytics).
 - **Spaces:** `spaces` (Manager), `spaces/insights`.
 - **Ideas:** `ideas` (Manager), `ideas/insights`.
-- **Moderação:** `report-safety`, `report-history`.
-- **Administração:** `admin/campuses` (geofences), `admin/ambassadors`, `admin/role-management`,
+- **Moderation:** `report-safety`, `report-history`.
+- **Administration:** `admin/campuses` (geofences), `admin/ambassadors`, `admin/role-management`,
   `admin/settings`.
-- **Playground (14 rotas):** visualizações experimentais de dados (interest cloud/constellation/
+- **Playground (14 routes):** experimental data visualizations (interest cloud/constellation/
   chord/pyramid + "active users" spiral/heat/rings/funnel/guitar/drums/chimes/waves/orbs/galaxy),
-  várias usando Three.js.
-- **Auth (públicas):** `login`, `recover-password` / `auth/otp`, `force-password-change`.
+  several using Three.js.
+- **Auth (public):** `login`, `recover-password` / `auth/otp`, `force-password-change`.
 
-Ver o mapa completo de telas em
+See the complete screen map in
 [folder-structure.md](./folder-structure.md#pages-v2--as-telas).
 
-## 6. Stack completa (versões reais e o porquê)
+## 6. Full stack (actual versions and the rationale)
 
-Versões extraídas de [`package.json`](../package.json). Node **≥ 20** (`engines`); `.nvmrc` fixa
-**22**; Vercel builda com `NODE_VERSION: 22`.
+Versions extracted from [`package.json`](../package.json). Node **≥ 20** (`engines`); `.nvmrc` pins
+**22**; Vercel builds with `NODE_VERSION: 22`.
 
 ### Core
 
-| Lib | Versão | Por quê |
+| Lib | Version | Why |
 |-----|--------|---------|
-| **react** / **react-dom** | ^19.1.0 | Framework de UI. React 19 (última major). |
-| **typescript** | ~5.8.3 | Tipagem estática; `strict: true` em `tsconfig.app.json`. |
-| **vite** | ^7.0.4 | Bundler/dev-server rápido (ESBuild + Rollup). Substitui CRA/Webpack; HMR instantâneo. |
-| **@vitejs/plugin-react** | ^4.6.0 | Integração React (Fast Refresh) no Vite. |
-| **react-router-dom** | ^7.6.3 | Roteamento SPA. v7 com `BrowserRouter` + rotas aninhadas e `lazy` para code-splitting. |
+| **react** / **react-dom** | ^19.1.0 | UI framework. React 19 (latest major). |
+| **typescript** | ~5.8.3 | Static typing; `strict: true` in `tsconfig.app.json`. |
+| **vite** | ^7.0.4 | Fast bundler/dev-server (ESBuild + Rollup). Replaces CRA/Webpack; instant HMR. |
+| **@vitejs/plugin-react** | ^4.6.0 | React integration (Fast Refresh) in Vite. |
+| **react-router-dom** | ^7.6.3 | SPA routing. v7 with `BrowserRouter` + nested routes and `lazy` for code-splitting. |
 
 ### UI
 
-| Lib | Versão | Por quê |
+| Lib | Version | Why |
 |-----|--------|---------|
-| **@coreui/react** | ^5.7.0 | Framework de componentes de admin (dashboards, tabelas, cards, sidebar). Escolha do produto p/ padrão visual de painel. |
-| **@coreui/coreui** | ^5.4.1 | CSS/estilos base do CoreUI (importado em `main.tsx`). |
-| **@coreui/icons** / **@coreui/icons-react** | ^3.0.1 / ^2.3.0 | Ícones do CoreUI (`CIcon`). |
-| **@coreui/utils** | ^2.0.2 | Utilitários do CoreUI. |
-| **bootstrap** | ^5.3.7 | CoreUI é construído sobre Bootstrap 5. |
-| **react-bootstrap** | ^2.10.10 | Componentes Bootstrap adicionais em React. |
-| **lucide-react** | ^0.525.0 | Ícones adicionais (linha fina, usados na UI V2). |
-| **react-hot-toast** | ^2.6.0 | Notificações toast (configurado globalmente em `App.tsx`). |
-| **simplebar-react** | ^3.3.2 | Scrollbars customizadas (ex.: sidebar). |
+| **@coreui/react** | ^5.7.0 | Admin component framework (dashboards, tables, cards, sidebar). Product choice for the panel visual standard. |
+| **@coreui/coreui** | ^5.4.1 | CoreUI base CSS/styles (imported in `main.tsx`). |
+| **@coreui/icons** / **@coreui/icons-react** | ^3.0.1 / ^2.3.0 | CoreUI icons (`CIcon`). |
+| **@coreui/utils** | ^2.0.2 | CoreUI utilities. |
+| **bootstrap** | ^5.3.7 | CoreUI is built on top of Bootstrap 5. |
+| **react-bootstrap** | ^2.10.10 | Additional Bootstrap components in React. |
+| **lucide-react** | ^0.525.0 | Additional icons (thin line, used in the V2 UI). |
+| **react-hot-toast** | ^2.6.0 | Toast notifications (configured globally in `App.tsx`). |
+| **simplebar-react** | ^3.3.2 | Custom scrollbars (e.g., sidebar). |
 
-### Dados / estado
+### Data / state
 
-| Lib | Versão | Por quê |
+| Lib | Version | Why |
 |-----|--------|---------|
-| **axios** | ^1.10.0 | Cliente HTTP; usado pelo cliente gerado e pela instância raiz `src/API/index.ts` (interceptors de auth/CSRF/401/403). |
-| **@tanstack/react-query** | ^5.82.0 | Estado de servidor (cache, stale-time, retry). `staleTime 5min`, `gcTime 10min`, retry custom (pula 4xx exceto 408). |
-| **swagger-typescript-api** | (via `npx`) | Gera o cliente Axios tipado `WalkyAPI.ts` a partir do Swagger do backend. |
+| **axios** | ^1.10.0 | HTTP client; used by the generated client and the root instance `src/API/index.ts` (auth/CSRF/401/403 interceptors). |
+| **@tanstack/react-query** | ^5.82.0 | Server state (cache, stale-time, retry). `staleTime 5min`, `gcTime 10min`, custom retry (skips 4xx except 408). |
+| **swagger-typescript-api** | (via `npx`) | Generates the typed Axios client `WalkyAPI.ts` from the backend's Swagger. |
 
-> **Estado:** o admin usa **React Context + React Query** — não há Zustand/Redux. Context para estado
-> de UI/seleção (School, Campus, Theme, Dashboard, DeactivatedUser); React Query para dados remotos.
+> **State:** the admin uses **React Context + React Query** — there is no Zustand/Redux. Context for
+> UI/selection state (School, Campus, Theme, Dashboard, DeactivatedUser); React Query for remote data.
 
-### Visualização
+### Visualization
 
-| Lib | Versão | Por quê |
+| Lib | Version | Why |
 |-----|--------|---------|
-| **recharts** | ^3.4.1 | Gráficos dos dashboards (linhas, barras, pizza). |
-| **three** | ^0.182.0 | Visualizações 3D experimentais do "Playground". |
-| **@react-three/fiber** / **@react-three/drei** | ^9.4.2 / ^10.7.7 | React renderer + helpers para Three.js. |
-| **@react-google-maps/api** + **@types/google.maps** | ^2.20.7 / ^3.58.1 | Mapas (geofences de campus, seleção de área). |
+| **recharts** | ^3.4.1 | Dashboard charts (lines, bars, pie). |
+| **three** | ^0.182.0 | Experimental 3D visualizations in the "Playground". |
+| **@react-three/fiber** / **@react-three/drei** | ^9.4.2 / ^10.7.7 | React renderer + helpers for Three.js. |
+| **@react-google-maps/api** + **@types/google.maps** | ^2.20.7 / ^3.58.1 | Maps (campus geofences, area selection). |
 
-### Utilitários
+### Utilities
 
-| Lib | Versão | Por quê |
+| Lib | Version | Why |
 |-----|--------|---------|
-| **date-fns** | ^4.1.0 | Manipulação/formatação de datas. |
-| **html2canvas** + **html2pdf.js** | ^1.4.1 / ^0.12.1 | Exportação de dashboards/relatórios para PDF/imagem. |
-| **react-is** | ^19.2.0 | Peer util de introspeção de elementos React. |
+| **date-fns** | ^4.1.0 | Date manipulation/formatting. |
+| **html2canvas** + **html2pdf.js** | ^1.4.1 / ^0.12.1 | Exporting dashboards/reports to PDF/image. |
+| **react-is** | ^19.2.0 | Peer utility for React element introspection. |
 
-### Estilo
+### Styling
 
-- **CSS + Sass** (`sass` ^1.89.2). Design tokens em **CSS variables** (dual: CoreUI + tokens V2):
-  `src/styles-v2/design-tokens.css`, `theme-variables.css`, `ThemeComponents.css`, `global.css`, e a
-  versão TS `src/styles-v2/design-tokens.ts` (auto-gerada do Figma). Dark mode via
-  `data-coreui-theme` + `data-theme` + CSS vars `--app-*` (ver `ThemeProvider`).
-- **vite-plugin-svgr** ^4.5.0: importa SVGs como componentes React (`*.svg?react`).
+- **CSS + Sass** (`sass` ^1.89.2). Design tokens as **CSS variables** (dual: CoreUI + V2 tokens):
+  `src/styles-v2/design-tokens.css`, `theme-variables.css`, `ThemeComponents.css`, `global.css`, and the
+  TS version `src/styles-v2/design-tokens.ts` (auto-generated from Figma). Dark mode via
+  `data-coreui-theme` + `data-theme` + `--app-*` CSS vars (see `ThemeProvider`).
+- **vite-plugin-svgr** ^4.5.0: imports SVGs as React components (`*.svg?react`).
 
-### Testes / qualidade
+### Testing / quality
 
-| Lib | Versão | Por quê |
+| Lib | Version | Why |
 |-----|--------|---------|
-| **vitest** | ^4.0.8 | Test runner (ambiente `jsdom`, `globals: true`). Coverage V8 com **ratchet** (thresholds: stmts 80 / branches 65 / funcs 78 / lines 80). |
-| **@testing-library/react** + **/dom** + **/jest-dom** + **/user-event** | 16.x / 10.x / 6.x / 14.x | Testes de componente centrados no usuário. |
-| **msw** | ^2.14.6 | Mock de rede (Mock Service Worker) nos testes. |
-| **eslint** + **typescript-eslint** + plugins react-hooks/react-refresh | 9.x / 8.x | Lint. |
-| **husky** + **lint-staged** | 9.x / 16.x | Git hooks: em pré-commit roda `clean-build.sh` + `eslint --fix`. |
-| **scripts próprios** | — | `check:testids` (garante `data-testid`) e `check:a11y` (acessibilidade) em `scripts/`. |
+| **vitest** | ^4.0.8 | Test runner (`jsdom` environment, `globals: true`). V8 coverage with a **ratchet** (thresholds: stmts 80 / branches 65 / funcs 78 / lines 80). |
+| **@testing-library/react** + **/dom** + **/jest-dom** + **/user-event** | 16.x / 10.x / 6.x / 14.x | User-centric component tests. |
+| **msw** | ^2.14.6 | Network mocking (Mock Service Worker) in tests. |
+| **eslint** + **typescript-eslint** + react-hooks/react-refresh plugins | 9.x / 8.x | Linting. |
+| **husky** + **lint-staged** | 9.x / 16.x | Git hooks: pre-commit runs `clean-build.sh` + `eslint --fix`. |
+| **custom scripts** | — | `check:testids` (ensures `data-testid`) and `check:a11y` (accessibility) in `scripts/`. |
 
 ### Deploy
 
-- **Vercel** (`vercel.json`): framework `vite`, `outputDirectory: dist`, SPA rewrite de `/(.*)` →
+- **Vercel** (`vercel.json`): framework `vite`, `outputDirectory: dist`, SPA rewrite of `/(.*)` →
   `/index.html`, `NODE_VERSION: 22`.
 
-## 7. Variáveis de ambiente
+## 7. Environment variables
 
-Prefixo `VITE_` (expostas ao bundle). De `.env.example`:
+Prefix `VITE_` (exposed to the bundle). From `.env.example`:
 
-| Var | Obrigatória | Descrição |
+| Var | Required | Description |
 |-----|-------------|-----------|
-| `VITE_API_BASE_URL` | sim | Base da API. Prod `https://api.walkyapp.com/api`; staging `https://staging.walkyapp.com/api`; local `http://localhost:8081/api` (ou `8080/api`). Default no código: `http://localhost:8080/api`. |
-| `VITE_APP_NAME` | — | Nome exibido (ex.: `Walky Admin`). |
+| `VITE_API_BASE_URL` | yes | API base. Prod `https://api.walkyapp.com/api`; staging `https://staging.walkyapp.com/api`; local `http://localhost:8081/api` (or `8080/api`). Default in code: `http://localhost:8080/api`. |
+| `VITE_APP_NAME` | — | Display name (e.g., `Walky Admin`). |
 | `VITE_ENV` | — | `development` / `staging` / `production`. |
-| `VITE_GOOGLE_MAPS_API_KEY` | opc. | Google Maps (geofences). Comentada no example. |
-| `VITE_SENTRY_DSN` | opc. | Sentry. Comentada no example. |
+| `VITE_GOOGLE_MAPS_API_KEY` | opt. | Google Maps (geofences). Commented out in the example. |
+| `VITE_SENTRY_DSN` | opt. | Sentry. Commented out in the example. |
 
-## 8. Scripts de build/run
+## 8. Build/run scripts
 
-De [`package.json`](../package.json):
+From [`package.json`](../package.json):
 
-| Script | O que faz |
+| Script | What it does |
 |--------|-----------|
-| `npm run dev` | Vite dev server (porta padrão **5173**). |
-| `npm run build` | `tsc -b && vite build` → `dist/` (com `manualChunks`: react-vendor, coreui, charts, query). |
-| `npm run preview` | Serve o build de produção localmente. |
-| `npm run type-check` | `tsc -b` (checagem de tipos). |
-| `npm run lint` | ESLint em todo o projeto. |
+| `npm run dev` | Vite dev server (default port **5173**). |
+| `npm run build` | `tsc -b && vite build` → `dist/` (with `manualChunks`: react-vendor, coreui, charts, query). |
+| `npm run preview` | Serves the production build locally. |
+| `npm run type-check` | `tsc -b` (type checking). |
+| `npm run lint` | ESLint across the whole project. |
 | `npm run test` / `test:ui` / `test:coverage` | Vitest (watch / UI / coverage). |
-| `npm run check:testids` / `check:a11y` / `check:all` | Guardas de `data-testid`, a11y e suite completa. |
-| `npm run generate:api` | Regenera `src/API/WalkyAPI.ts` do `../walky-backend/swagger.json`. |
-| `npm run generate:icons` / `generate:images` | Geração de assets. |
+| `npm run check:testids` / `check:a11y` / `check:all` | `data-testid`, a11y, and full-suite guards. |
+| `npm run generate:api` | Regenerates `src/API/WalkyAPI.ts` from `../walky-backend/swagger.json`. |
+| `npm run generate:icons` / `generate:images` | Asset generation. |
 | `npm run clean` | `./clean-build.sh`. |
 
-Build em produção remove `console.log/info/debug` via `esbuild.pure` (mantém `warn`/`error`).
+Production builds strip `console.log/info/debug` via `esbuild.pure` (keeps `warn`/`error`).
 
 ---
 
 ## Cross-links
 
-- [Arquitetura](./architecture.md) — fluxo de dados, service layer, RBAC, decisões.
-- [Estrutura de pastas](./folder-structure.md) — cada diretório e o porquê do sufixo `-v2`.
+- [Architecture](./architecture.md) — data flow, service layer, RBAC, decisions.
+- [Folder structure](./folder-structure.md) — each directory and the rationale for the `-v2` suffix.
