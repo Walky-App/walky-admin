@@ -368,6 +368,15 @@ const Engagement: React.FC = () => {
             hideComparison={timePeriod === "all-time"}
           />
         </CCol>
+        {/* "Total Active Students" — hidden rather than deleted, so the figure
+            is one uncomment away if it is wanted back.
+
+            It counted a strict subset of the card above: active, not banned,
+            and holding at least three interests. Next to "Total Students" that
+            read as a contradiction — two student totals disagreeing with
+            nothing on screen to explain why — so the higher figure, everyone
+            registered, is the one kept.
+
         <CCol xs={12} sm={6} md={6} lg={3}>
           <StatsCard
             title="Total Active Students"
@@ -390,6 +399,7 @@ const Engagement: React.FC = () => {
             hideComparison={timePeriod === "all-time"}
           />
         </CCol>
+        */}
         <CCol xs={12} sm={6} md={6} lg={3}>
           <StatsCard
             title="Deactivated Students"
