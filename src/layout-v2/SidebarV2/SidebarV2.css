@@ -7,23 +7,18 @@
   background-color: var(--v2-bg-sidebar);
   display: flex;
   flex-direction: column;
-  /* The whole sidebar used to scroll, taking the logo with it. Now only the
-     menu does, so the brand stays put and the scrollbar is confined to the
-     navigation. */
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
   z-index: 1;
 }
 
 /* Logo */
 .sidebar-logo {
-  /* Was 39px 42px. With 29 items below it, the header was spending a tenth of
-     the viewport on whitespace. */
-  padding: 22px 24px 18px;
+  padding: 39px 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
 }
 
 .sidebar-logo img {
@@ -31,28 +26,20 @@
   height: auto;
 }
 
-/* Menu — the only part of the sidebar that scrolls.
-
-   Spacing here is deliberately tight. There are 29 items across four sections;
-   at the old 16px between every one of them, the gaps alone came to more than
-   400px and the list ran well past the bottom of any laptop screen. */
+/* Menu */
 .sidebar-menu {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 0 var(--v2-spacing-8) var(--v2-spacing-16);
-  margin-top: var(--v2-spacing-8);
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  gap: 25px;
+  padding: 0 var(--v2-spacing-8);
+  margin-top: var(--v2-spacing-24);
 }
 
 /* Menu Section */
 .menu-section {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--v2-spacing-16);
 }
 
 .menu-section-header {
@@ -60,21 +47,15 @@
   font-size: var(--v2-font-size-xs);
   font-weight: var(--v2-font-weight-black);
   color: var(--v2-text-primary);
-  padding: 6px var(--v2-spacing-8) 4px;
+  padding: 0 var(--v2-spacing-8);
   letter-spacing: 0.5px;
   line-height: 100%;
-  /* Keeps the section name visible while its own items scroll past, so a long
-     list never leaves you without a heading. */
-  position: sticky;
-  top: 0;
-  background-color: var(--v2-bg-sidebar);
-  z-index: 1;
 }
 
 .menu-items {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--v2-spacing-16);
 }
 
 /* Menu Item */
@@ -87,7 +68,7 @@
   display: flex;
   align-items: center;
   gap: var(--v2-spacing-12);
-  padding: 8px var(--v2-spacing-12);
+  padding: var(--v2-spacing-12);
   padding-left: 21px; /* 6px original + 3px indicator + 12px gap */
   border-radius: var(--v2-radius-md);
   cursor: pointer;
@@ -188,28 +169,22 @@
   font-weight: var(--v2-font-weight-semibold);
 }
 
-/* Scrollbar — on the menu now, since that is what scrolls. Kept thin and
-   transparent-tracked so it does not read as a second border beside the
-   content area. */
-.sidebar-menu::-webkit-scrollbar {
+/* Scrollbar */
+.sidebar-v2::-webkit-scrollbar {
   width: 6px;
 }
 
-.sidebar-menu::-webkit-scrollbar-track {
-  background: transparent;
+.sidebar-v2::-webkit-scrollbar-track {
+  background: var(--v2-bg-hover);
 }
 
-.sidebar-menu::-webkit-scrollbar-thumb {
+.sidebar-v2::-webkit-scrollbar-thumb {
   background: var(--v2-border-dark);
   border-radius: var(--v2-radius-xs);
 }
 
-.sidebar-menu::-webkit-scrollbar-thumb:hover {
+.sidebar-v2::-webkit-scrollbar-thumb:hover {
   background: var(--v2-text-tertiary);
-}
-
-.sidebar-menu {
-  scrollbar-width: thin;
 }
 
 /* Responsive */
@@ -219,28 +194,11 @@
   }
 
   .sidebar-logo {
-    padding: 18px 20px 14px;
+    padding: 30px 24px;
   }
 
   .menu-label {
     font-size: 13px;
-  }
-}
-
-/* Short screens — laptops at 1280x800 and below, where 29 items have no chance
-   of fitting. Squeezes the rows further rather than relying on scrolling. */
-@media (max-height: 860px) {
-  .sidebar-logo {
-    padding: 16px 24px 12px;
-  }
-
-  .sidebar-menu {
-    gap: 10px;
-  }
-
-  .sidebar-v2 .sidebar-menu-item {
-    padding-top: 6px;
-    padding-bottom: 6px;
   }
 }
 
