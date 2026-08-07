@@ -129,7 +129,7 @@
 
 /* Dark mode */
 [data-theme="dark"] .v2-drawer-panel {
-  background-color: var(--v2-bg-app, #0a0a0b);
+  background-color: var(--v2-bg-app, #0f131b);
   box-shadow: 0px 6px 54px 0px rgba(0, 0, 0, 0.5);
 }
 
