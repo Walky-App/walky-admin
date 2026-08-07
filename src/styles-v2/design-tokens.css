@@ -33,17 +33,17 @@
      ======================================== */
   /* Page sits on a soft grey so the white cards/surfaces read as distinct
      (was #ffffff, which made page + cards blend into one bright sheet). */
-  --v2-bg-page: #e9edf5;
-  --v2-bg-app: #e9edf5;
-  --v2-bg-container: #f4f6fb;
+  --v2-bg-page: #eef1f6;
+  --v2-bg-app: #eef1f6;
+  --v2-bg-container: #f7f8fa;
   --v2-bg-card: #ffffff;
-  --v2-bg-select: #e4ebfb;
-  --v2-bg-hover: #f1f4fa;
-  --v2-bg-title: #e6ecf9;
-  --v2-bg-dropdown: #fbfcfe;
-  --v2-bg-table: #f3f6fb;
-  --v2-bg-sidebar: #f2f5fc;
-  --v2-bg-topbar: #ffffff;
+  --v2-bg-select: #edf2ff;
+  --v2-bg-hover: #f8f9fa;
+  --v2-bg-title: #ebf0fa;
+  --v2-bg-dropdown: #fcfdfd;
+  --v2-bg-table: #f1f4f9;
+  --v2-bg-sidebar: #f6f9ff;
+  --v2-bg-topbar: #f6f9ff;
   --v2-tooltip-bg: #4d4d4d;
   --v2-tooltip-text: #ffffff;
   --v2-overlay-bg: rgba(0, 0, 0, 0.5);
@@ -51,33 +51,33 @@
   /* ========================================
      V2 COLORS - BORDERS & LINES
      ======================================== */
-  --v2-border-default: #d8dfeb;
-  --v2-border-outline: #bfc8da;
-  --v2-border-light: #e8edf6;
-  --v2-border-dark: #c9d3e3;
-  --v2-border-divider: #c9d3e3;
+  --v2-border-default: #e0e0e0;
+  --v2-border-outline: #cac4d0;
+  --v2-border-light: #eef0f1;
+  --v2-border-dark: #d2d2d3;
+  --v2-border-divider: #d2d2d3;
 
   /* ========================================
      V2 COLORS - TEXT
      ======================================== */
-  --v2-text-primary: #171d2a;
-  --v2-text-secondary: #55617a;
-  --v2-text-tertiary: #7c879c;
-  --v2-text-muted: #55617a;
+  --v2-text-primary: #1d1b20;
+  --v2-text-secondary: #5b6168;
+  --v2-text-tertiary: #6d747d;
+  --v2-text-muted: #5b6168;
   --v2-text-link: #526ac9;
   --v2-text-link-hover: #4865d0;
 
   /* ========================================
      V2 COLORS - ICONS
      ======================================== */
-  --v2-icon-user-bg: #e7e6ff;
-  --v2-icon-user: #6b68f0;
-  --v2-icon-events-bg: #ffe2d5;
-  --v2-icon-events: #e86f42;
-  --v2-icon-spaces-bg: #dde4f8;
-  --v2-icon-spaces: #3f41c9;
-  --v2-icon-ideas-bg: #fdf0cf;
-  --v2-icon-ideas: #c08c0f;
+  --v2-icon-user-bg: #e5e4ff;
+  --v2-icon-user: #8280ff;
+  --v2-icon-events-bg: #ffded1;
+  --v2-icon-events: #ff9871;
+  --v2-icon-spaces-bg: #d9e3f7;
+  --v2-icon-spaces: #4a4cd9;
+  --v2-icon-ideas-bg: #fff3d6;
+  --v2-icon-ideas: #ebb129;
   --v2-icon-green-bg: #e9fcf4;
   --v2-icon-green: #00c617;
   --v2-icon-orange-bg: #fcf3e9;
