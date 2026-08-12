@@ -75,8 +75,11 @@
   transition: border-color var(--v2-transition-base);
 }
 
+/* background stays white in dark mode, so the placeholder must stay dark too.
+   !important is needed to beat the global dark-theme ::placeholder overrides
+   in index.css and styles-v2/ThemeComponents.css. */
 .login-v2 .form-input::placeholder {
-  color: var(--v2-neutral-placeholder);
+  color: var(--v2-neutral-placeholder) !important;
   opacity: 1;
 }
 
