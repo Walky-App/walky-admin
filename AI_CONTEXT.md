@@ -325,8 +325,8 @@ The distinction is one of **scope and audience**: Admin is per-campus/school ope
 └── walky-hq/        # HQ super-admin    — React / shadcn / Vite
 ```
 
-Each repository has its own `README.md`; `walky-hq` and `walky-admin` also have a
-`claude.md`/`CLAUDE.md` with development notes.
+Each repository has its own `README.md` and an `AGENTS.md` with agent instructions
+(`CLAUDE.md` imports it, so Claude and Codex share the same context).
 
 ---
 

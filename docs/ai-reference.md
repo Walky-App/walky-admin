@@ -26,6 +26,7 @@ Admin panel for the **Walky** ecosystem (campus social network). Audience: `supe
 `school_admin`, `campus_admin`, `moderator`, `walky_internal`. Client of `walky-backend` (derives its
 types from Swagger). Deployed on Vercel. Repo at `/Volumes/SSDDEV/DEV_PROJETOS/walky-admin`.
 Ecosystem context: `/Volumes/SSDDEV/DEV_PROJETOS/walky-admin/AI_CONTEXT.md`.
+Agent instructions: `AGENTS.md` (`CLAUDE.md` imports it).
 
 ## Stack
 
